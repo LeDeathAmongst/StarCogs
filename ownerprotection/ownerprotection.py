@@ -276,7 +276,7 @@ class OwnerProtection(commands.Cog):
             else:
                 await ctx.send("Owner role does not exist.")
         else:
-            await ctx.send("Owner role does not exist.")
+            await ctx.send("Owner role does not exist. Create it with `,owner create`.")
 
     @owner.command()
     @commands.is_owner()
