@@ -265,18 +265,18 @@ class OwnerProtection(commands.Cog):
     @owner.command()
     @commands.check(is_owner)
     async def give(self, ctx: commands.Context):
-        """Give the owner role to the command invoker if it exists."""
+        """Give the support role to the command invoker if it exists."""
         guild = ctx.guild
-        owner_role_id = await self.config.guild(guild).owner_role_id()
-        if owner_role_id:
-            owner_role = guild.get_role(owner_role_id)
-            if owner_role:
-                await ctx.author.add_roles(owner_role)
-                await ctx.send(f"You have been given the {owner_role.name} role.")
+        support_role_id = await self.config.guild(guild).support_role_id()
+        if support_role_id:
+            support_role = guild.get_role(support_role_id)
+            if support_role:
+                await ctx.author.add_roles(support_role)
+                await ctx.send(f"You have been given the {support_role.name} role.")
             else:
-                await ctx.send("Owner role does not exist.")
+                await ctx.send("Support role does not exist.")
         else:
-            await ctx.send("Owner role does not exist. Create it with `,owner create`.")
+            await ctx.send("Support role does not exist.")
 
     @owner.command()
     @commands.is_owner()
