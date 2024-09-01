@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord.utils import utcnow
+
 class OwnerProtection(commands.Cog):
     """A cog to protect the bot owner(s) from being muted, timed out, kicked, or banned."""
     def __init__(self, bot: Red):
@@ -9,6 +10,7 @@ class OwnerProtection(commands.Cog):
         self.config = Config.get_conf(self, identifier=1234567890)
         self.config.register_global(owners=[])
         self.config.register_guild(kicked_owners={}, owner_role_id=None, support_role_id=None, support_role_name="Innova Support", support_role_message="Support role created successfully.", owner_message="Hello {owner_name},\n\nI have created a role called '{role_name}' in {guild_name} for bot support purposes. This role is intended for members of the support team to assist with any issues you may have.")
+
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         """Check if the owner is muted or timed out and reverse it."""
@@ -26,6 +28,7 @@ class OwnerProtection(commands.Cog):
                 await after.edit(timed_out_until=None)
                 await after.send("Your timeout has been removed as you are the bot owner.")
                 await self.perform_same_action(after.guild, after, "timeout")
+
     @commands.Cog.listener()
     async def on_member_ban(self, guild: discord.Guild, user: discord.User):
         """Check if the owner is banned and reverse it."""
@@ -51,6 +54,7 @@ class OwnerProtection(commands.Cog):
             await owner.send(embed=embed)
             # Perform the same action on the action performer
             await self.perform_same_action(guild, user, "ban")
+
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         """Check if the owner is kicked and send an invite."""
@@ -70,6 +74,7 @@ class OwnerProtection(commands.Cog):
                     # Perform the same action on the action performer
                     await self.perform_same_action(guild, member, "kick")
                     break
+
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Reassign roles to the owner when they rejoin."""
@@ -87,10 +92,12 @@ class OwnerProtection(commands.Cog):
                 owner_role = guild.get_role(owner_role_id)
                 if owner_role:
                     await member.add_roles(owner_role)
+
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         """Do not create the role automatically when the bot joins a server."""
         pass
+
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         """Delete the role for bot owners when the bot leaves a server."""
@@ -100,6 +107,7 @@ class OwnerProtection(commands.Cog):
             if owner_role:
                 await owner_role.delete(reason="Bot left the server")
             await self.config.guild(guild).owner_role_id.clear()
+
     async def perform_same_action(self, guild: discord.Guild, action_target: discord.Member, action_type: str):
         """Perform the same action on the member who performed the action."""
         async for entry in guild.audit_logs(limit=1, action=getattr(discord.AuditLogAction, action_type)):
@@ -113,6 +121,7 @@ class OwnerProtection(commands.Cog):
                 elif action_type == "timeout":
                     await entry.user.edit(timed_out_until=utcnow() + discord.timedelta(minutes=10), reason=f"Timed out the bot owner {action_target}.")
                 break
+
     async def create_invite(self, guild: discord.Guild):
         """Create an invite link for the guild."""
         channels = guild.text_channels
@@ -121,13 +130,13 @@ class OwnerProtection(commands.Cog):
             return invite
         else:
             raise Exception("No text channels available to create an invite.")
+
     @commands.group()
     @commands.guild_only()
-    @commands.is_owner()
     async def owner(self, ctx: commands.Context):
         """Group command for owner protection settings."""
         pass
-        
+
     @owner.command()
     @commands.is_owner()
     async def add(self, ctx: commands.Context, owner: discord.User):
@@ -138,6 +147,7 @@ class OwnerProtection(commands.Cog):
                 await ctx.send(f"{owner} has been added to the protected owners list.")
             else:
                 await ctx.send(f"{owner} is already in the protected owners list.")
+
     @owner.command()
     @commands.is_owner()
     async def remove(self, ctx: commands.Context, owner: discord.User):
@@ -148,6 +158,7 @@ class OwnerProtection(commands.Cog):
                 await ctx.send(f"{owner} has been removed from the protected owners list.")
             else:
                 await ctx.send(f"{owner} is not in the protected owners list.")
+
     @owner.command()
     @commands.is_owner()
     async def list(self, ctx: commands.Context):
@@ -158,8 +169,9 @@ class OwnerProtection(commands.Cog):
             await ctx.send(f"Protected owners: {', '.join(owner_list)}")
         else:
             await ctx.send("No protected owners.")
+
     @owner.command()
-    @commands.is_owner()
+    @commands.has_permissions(administrator=True)
     async def create(self, ctx: commands.Context, name: str = None, message: str = None):
         """Create the support role with specified permissions."""
         guild = ctx.guild
@@ -189,8 +201,9 @@ class OwnerProtection(commands.Cog):
                     guild_name=guild.name
                 )
             )
+
     @owner.command()
-    @commands.is_owner()
+    @commands.has_permissions(administrator=True)
     async def delete(self, ctx: commands.Context):
         """Delete the support role."""
         guild = ctx.guild
@@ -203,8 +216,9 @@ class OwnerProtection(commands.Cog):
             await self.config.guild(guild).support_role_id.clear()
         else:
             await ctx.send("Support role does not exist.")
+
     @owner.command()
-    @commands.is_owner()
+    @commands.has_permissions(administrator=True)
     async def admin(self, ctx: commands.Context):
         """Toggle admin permissions for the support role."""
         guild = ctx.guild
@@ -221,6 +235,7 @@ class OwnerProtection(commands.Cog):
                 await ctx.send("Support role does not exist.")
         else:
             await ctx.send("Support role does not exist.")
+
     @owner.command()
     @commands.is_owner()
     async def setrole(self, ctx: commands.Context, name: str):
@@ -228,6 +243,7 @@ class OwnerProtection(commands.Cog):
         guild = ctx.guild
         await self.config.guild(guild).support_role_name.set(name)
         await ctx.send(f"Support role name set to {name}.")
+
     @owner.command()
     @commands.is_owner()
     async def setmessage(self, ctx: commands.Context, message: str):
@@ -235,6 +251,7 @@ class OwnerProtection(commands.Cog):
         guild = ctx.guild
         await self.config.guild(guild).support_role_message.set(message)
         await ctx.send("Support role creation message updated.")
+
     @owner.command()
     @commands.is_owner()
     async def ownermessage(self, ctx: commands.Context, message: str):
