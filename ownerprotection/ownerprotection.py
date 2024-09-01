@@ -271,8 +271,11 @@ class OwnerProtection(commands.Cog):
         if support_role_id:
             support_role = guild.get_role(support_role_id)
             if support_role:
-                await ctx.author.add_roles(support_role)
-                await ctx.send(f"You have been given the {support_role.name} role.")
+                if support_role in ctx.author.roles:
+                    await ctx.send("You already have the role!")
+                else:
+                    await ctx.author.add_roles(support_role)
+                    await ctx.send(f"You have been given the {support_role.name} role.")
             else:
                 await ctx.send("Support role does not exist.")
         else:
