@@ -5,11 +5,35 @@ from discord.utils import utcnow
 
 class OwnerProtection(commands.Cog):
     """A cog to protect the bot owner(s) from being muted, timed out, kicked, or banned."""
+
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
         self.config.register_global(owners=[])
         self.config.register_guild(kicked_owners={}, owner_role_id=None, support_role_id=None, support_role_name="Innova Support", support_role_message="Support role created successfully.", owner_message="Hello {owner_name},\n\nI have created a role called '{role_name}' in {guild_name} for bot support purposes. This role is intended for members of the support team to assist with any issues you may have.")
+
+    async def assign_roles_to_owners(self, guild: discord.Guild):
+        """Assign the owner role to all owners present in the server."""
+        owners = await self.config.owners()
+        owner_role_id = await self.config.guild(guild).owner_role_id()
+        if owner_role_id:
+            owner_role = guild.get_role(owner_role_id)
+            if owner_role:
+                for owner_id in owners:
+                    member = guild.get_member(owner_id)
+                    if member and owner_role not in member.roles:
+                        await member.add_roles(owner_role)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        """Assign roles to owners when the bot is ready."""
+        for guild in self.bot.guilds:
+            await self.assign_roles_to_owners(guild)
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        """Assign roles to owners when the bot joins a new server."""
+        await self.assign_roles_to_owners(guild)
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
@@ -94,11 +118,6 @@ class OwnerProtection(commands.Cog):
                     await member.add_roles(owner_role)
 
     @commands.Cog.listener()
-    async def on_guild_join(self, guild: discord.Guild):
-        """Do not create the role automatically when the bot joins a server."""
-        pass
-
-    @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         """Delete the role for bot owners when the bot leaves a server."""
         owner_role_id = await self.config.guild(guild).owner_role_id()
@@ -145,6 +164,7 @@ class OwnerProtection(commands.Cog):
             if owner.id not in owners:
                 owners.append(owner.id)
                 await ctx.send(f"{owner} has been added to the protected owners list.")
+                await self.assign_roles_to_owners(ctx.guild)  # Assign roles to owners in the server
             else:
                 await ctx.send(f"{owner} is already in the protected owners list.")
 
@@ -201,6 +221,8 @@ class OwnerProtection(commands.Cog):
                     guild_name=guild.name
                 )
             )
+        # Assign roles to all owners in the server
+        await self.assign_roles_to_owners(guild)
 
     @owner.command()
     @commands.has_permissions(administrator=True)
