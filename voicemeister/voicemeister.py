@@ -104,9 +104,11 @@ class ActivitySelection(discord.ui.Select):
             await interaction.followup.send("Failed to create an **invite** for the selected **activity**!", ephemeral=True)
 
 class Interface(discord.ui.View):
-    def __init__(self, bot: Red, member: discord.Member):
+    def __init__(self, bot: Red):
         self.bot = bot
         super().__init__(timeout=None)
+
+    def add_transfer_ownership(self, member: discord.Member):
         if len(member.voice.channel.members) > 1:
             self.add_item(TransferOwnership(member))
 
@@ -292,12 +294,6 @@ class Interface(discord.ui.View):
         await self.config.guild(interaction.guild).clear()
         await interaction.response.send_message("All **VoiceMeister** configurations have been reset", ephemeral=True)
 
-    @discord.ui.select(placeholder="Transfer Ownership", options=[], custom_id="voicemeister:transfer")
-    async def transfer_ownership(self, interaction: discord.Interaction, select: discord.ui.Select):
-        view = Interface(self.bot)
-        view.add_item(TransferOwnership(interaction.user))
-        await interaction.response.send_message("Select a member from the **dropdown** to transfer ownership.", view=view, ephemeral=True)
-
 class VoiceMeister(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
@@ -310,7 +306,7 @@ class VoiceMeister(commands.Cog):
             region=None,
             bitrate=None
         )
-        # Remove the Interface initialization from here, as it doesn't have a member to pass
+        # Do not add a view here, as it needs a member context
         # self.bot.add_view(Interface(bot))
 
     @commands.group(name="voicemeister", aliases=["vm"], invoke_without_command=True)
@@ -336,10 +332,11 @@ class VoiceMeister(commands.Cog):
             description="Click the buttons below to control your voice channel",
             color=discord.Color.blue()
         )
-        # Create the Interface with a member when sending the embed
+        # Create the Interface without a member for setup
         await interface.send(embed=embed, view=Interface(self.bot))
 
         await ctx.send("VoiceMeister setup complete.")
+
     @voicemeister.command(name="activityinvite")
     async def activity_invite(self, ctx: commands.Context, activity_name: str):
         """Generate an invite for a popular Discord activity."""
