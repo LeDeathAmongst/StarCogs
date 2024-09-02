@@ -58,9 +58,15 @@ class TransferOwnership(discord.ui.Select):
             )
             for m in self.channel.members if m != member
         ]
+        if not options:
+            options.append(discord.SelectOption(value="none", label="No members available"))
         super().__init__(placeholder="Choose a member to transfer ownership...", min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
+        if self.values[0] == "none":
+            await interaction.response.send_message("No members available to transfer ownership.", ephemeral=True)
+            return
+
         member_id = int(self.values[0])
         new_owner = self.guild.get_member(member_id)
         if new_owner:
@@ -98,9 +104,11 @@ class ActivitySelection(discord.ui.Select):
             await interaction.followup.send("Failed to create an **invite** for the selected **activity**!", ephemeral=True)
 
 class Interface(discord.ui.View):
-    def __init__(self, bot: Red):
+    def __init__(self, bot: Red, member: discord.Member):
         self.bot = bot
         super().__init__(timeout=None)
+        if len(member.voice.channel.members) > 1:
+            self.add_item(TransferOwnership(member))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         user_voice = interaction.user.voice
