@@ -310,7 +310,8 @@ class VoiceMeister(commands.Cog):
             region=None,
             bitrate=None
         )
-        self.bot.add_view(Interface(bot))
+        # Remove the Interface initialization from here, as it doesn't have a member to pass
+        # self.bot.add_view(Interface(bot))
 
     @commands.group(name="voicemeister", aliases=["vm"], invoke_without_command=True)
     async def voicemeister(self, ctx: commands.Context):
@@ -335,10 +336,10 @@ class VoiceMeister(commands.Cog):
             description="Click the buttons below to control your voice channel",
             color=discord.Color.blue()
         )
+        # Create the Interface with a member when sending the embed
         await interface.send(embed=embed, view=Interface(self.bot))
 
         await ctx.send("VoiceMeister setup complete.")
-
     @voicemeister.command(name="activityinvite")
     async def activity_invite(self, ctx: commands.Context, activity_name: str):
         """Generate an invite for a popular Discord activity."""
