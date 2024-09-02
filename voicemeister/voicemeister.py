@@ -1,5 +1,5 @@
 import discord
-from redbot.core import Cog, commands, Config
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord.ext.commands import *
 from typing import List, Union, Dict
