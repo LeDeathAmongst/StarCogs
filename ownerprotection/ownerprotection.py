@@ -1,16 +1,65 @@
+from Star_Utils import Cog, Settings  # Use Star_Utils for Cog and Settings
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord.utils import utcnow
+from redbot.core.i18n import Translator, cog_i18n  # Ensure i18n is used
 
-class OwnerProtection(commands.Cog):
+_ = Translator("OwnerProtection", __file__)
+
+@cog_i18n(_)
+class OwnerProtection(Cog):  # Inherit from Cog in Star_Utils
     """A cog to protect the bot owner(s) from being muted, timed out, kicked, or banned."""
 
     def __init__(self, bot: Red):
-        self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567890)
+        super().__init__(bot=bot)  # Initialize using the parent class constructor
+
+        self.config: Config = Config.get_conf(
+            self,
+            identifier=1234567890,
+            force_registration=True,
+        )
         self.config.register_global(owners=[])
-        self.config.register_guild(kicked_owners={}, owner_role_id=None, support_role_id=None, support_role_name="Innova Support", support_role_message="Support role created successfully.", owner_message="Hello {owner_name},\n\nI have created a role called '{role_name}' in {guild_name} for bot support purposes. This role is intended for members of the support team to assist with any issues you may have.")
+        self.config.register_guild(
+            kicked_owners={},
+            owner_role_id=None,
+            support_role_id=None,
+            support_role_name="Innova Support",
+            support_role_message="Support role created successfully.",
+            owner_message=("Hello {owner_name},\n\nI have created a role called '{role_name}' "
+                           "in {guild_name} for bot support purposes. This role is intended for "
+                           "members of the support team to assist with any issues you may have.")
+        )
+
+        _settings = {
+            "owner_role_name": {
+                "converter": str,
+                "description": "The name of the owner role.",
+            },
+            "support_role_message": {
+                "converter": str,
+                "description": "Message sent when the support role is created.",
+            },
+            "owner_message": {
+                "converter": str,
+                "description": "Message sent to the server owner when the support role is created.",
+            },
+        }
+        self.settings: Settings = Settings(
+            bot=self.bot,
+            cog=self,
+            config=self.config,
+            group=self.config.GUILD,
+            settings=_settings,
+            global_path=[],
+            use_profiles_system=False,
+            can_edit=True,
+            commands_group=self.owner,
+        )
+
+    async def cog_load(self) -> None:
+        await super().cog_load()
+        await self.settings.add_commands()
 
     async def assign_roles_to_owners(self, guild: discord.Guild):
         """Assign the owner role to all owners present in the server."""
