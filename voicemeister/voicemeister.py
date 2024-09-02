@@ -1,8 +1,8 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from discord.ext.commands import *
-from typing import List, Union, Dict
+from discord.ext.commands import Cog
+from typing import List, Dict
 from contextlib import suppress
 
 # Define popular Discord activities with their respective application IDs
@@ -53,11 +53,10 @@ class ActivitySelection(discord.ui.Select):
         self.channel = member.voice.channel
         options = [
             discord.SelectOption(
-                value=activity["id"],
-                label=activity["name"],
-                emoji=activity["emoji"],
+                value=str(activity_id),
+                label=activity_name
             )
-            for activity in activity_types
+            for activity_name, activity_id in popular_activities.items()
         ]
         super().__init__(placeholder="Choose an activity...", min_values=1, max_values=1, options=options)
 
@@ -261,7 +260,7 @@ class Interface(discord.ui.View):
         await self.config.guild(interaction.guild).clear()
         await interaction.response.send_message("All **VoiceMeister** configurations have been reset", ephemeral=True)
 
-class VoiceMeister(Cog):
+class VoiceMeister(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
