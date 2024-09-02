@@ -1,8 +1,8 @@
 import discord
+import asyncio
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from discord.ext.commands import Cog
-from typing import List, Dict
+from typing import Dict
 from contextlib import suppress
 
 # Define popular Discord activities with their respective application IDs
@@ -45,6 +45,30 @@ class DisconnectMembers(discord.ui.Select):
                 failed += 1
 
         await interaction.followup.send(f"Successfully **disconnected** {disconnected} member(s) (`{failed}` failed)", ephemeral=True)
+
+class TransferOwnership(discord.ui.Select):
+    def __init__(self, member: discord.Member):
+        self.member = member
+        self.guild = member.guild
+        self.channel = member.voice.channel
+        options = [
+            discord.SelectOption(
+                value=str(m.id),
+                label=f"{m} ({m.id})"
+            )
+            for m in self.channel.members if m != member
+        ]
+        super().__init__(placeholder="Choose a member to transfer ownership...", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        member_id = int(self.values[0])
+        new_owner = self.guild.get_member(member_id)
+        if new_owner:
+            await self.channel.set_permissions(new_owner, connect=True, read_messages=True)
+            await self.channel.set_permissions(self.member, overwrite=None)
+            await interaction.response.send_message(f"Ownership transferred to {new_owner.mention}.", ephemeral=True)
+        else:
+            await interaction.response.send_message("Failed to transfer ownership.", ephemeral=True)
 
 class ActivitySelection(discord.ui.Select):
     def __init__(self, member: discord.Member):
@@ -105,7 +129,7 @@ class Interface(discord.ui.View):
 
         return True
 
-    @discord.ui.button(label="Lock", style=discord.ButtonStyle.grey, custom_id="voicemeister:lock", emoji="<:Locked:1279848927587467447>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:lock", emoji="<:Locked:1279848927587467447>")
     async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.voice.channel.set_permissions(
             interaction.guild.default_role,
@@ -114,7 +138,7 @@ class Interface(discord.ui.View):
         )
         await interaction.response.send_message("Your **voice channel** has been locked", ephemeral=True)
 
-    @discord.ui.button(label="Unlock", style=discord.ButtonStyle.grey, custom_id="voicemeister:unlock", emoji="<:Unlocked:1279848944570073109>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:unlock", emoji="<:Unlocked:1279848944570073109>")
     async def unlock(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.voice.channel.set_permissions(
             interaction.guild.default_role,
@@ -123,7 +147,7 @@ class Interface(discord.ui.View):
         )
         await interaction.response.send_message("Your **voice channel** has been unlocked", ephemeral=True)
 
-    @discord.ui.button(label="Ghost", style=discord.ButtonStyle.grey, custom_id="voicemeister:ghost", emoji="<:Crossed_Eye:1279848957475819723>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:ghost", emoji="<:Crossed_Eye:1279848957475819723>")
     async def ghost(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.voice.channel.set_permissions(
             interaction.guild.default_role,
@@ -132,7 +156,7 @@ class Interface(discord.ui.View):
         )
         await interaction.response.send_message("Your **voice channel** has been hidden", ephemeral=True)
 
-    @discord.ui.button(label="Reveal", style=discord.ButtonStyle.grey, custom_id="voicemeister:reveal", emoji="<:Eye:1279848986299076728>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:reveal", emoji="<:Eye:1279848986299076728>")
     async def reveal(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.voice.channel.set_permissions(
             interaction.guild.default_role,
@@ -141,7 +165,7 @@ class Interface(discord.ui.View):
         )
         await interaction.response.send_message("Your **voice channel** has been revealed", ephemeral=True)
 
-    @discord.ui.button(label="Claim", style=discord.ButtonStyle.grey, custom_id="voicemeister:claim", emoji="<:Crown:1279848977658810451>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:claim", emoji="<:Crown:1279848977658810451>")
     async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.bot.db.execute(
             """
@@ -163,19 +187,19 @@ class Interface(discord.ui.View):
 
         await interaction.response.send_message("You are now the owner of this **channel**!", ephemeral=True)
 
-    @discord.ui.button(label="Disconnect", style=discord.ButtonStyle.grey, custom_id="voicemeister:disconnect")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:disconnect", emoji="<:Hammer:1279848987922530365>")
     async def disconnect(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = Interface(self.bot)
         view.add_item(DisconnectMembers(interaction.user))
         await interaction.response.send_message("Select members from the **dropdown** to disconnect.", view=view, ephemeral=True)
 
-    @discord.ui.button(label="Activity", style=discord.ButtonStyle.grey, custom_id="voicemeister:activity")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:activity", emoji="<:Invite:1279857570634272818>")
     async def activity(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = Interface(self.bot)
         view.add_item(ActivitySelection(interaction.user))
         await interaction.response.send_message("Select an activity from the **dropdown** to start!", view=view, ephemeral=True)
 
-    @discord.ui.button(label="Information", style=discord.ButtonStyle.grey, custom_id="voicemeister:information", emoji="<:Information:1279848926383702056>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:information", emoji="<:Information:1279848926383702056>")
     async def information(self, interaction: discord.Interaction, button: discord.ui.Button):
         with suppress(discord.InteractionResponded):
             await interaction.response.defer(ephemeral=True)
@@ -213,7 +237,7 @@ class Interface(discord.ui.View):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-    @discord.ui.button(label="Increase", style=discord.ButtonStyle.grey, custom_id="voicemeister:increase", emoji="<:People:1279848931043573790>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:increase", emoji="<:People:1279848931043573790>")
     async def increase(self, interaction: discord.Interaction, button: discord.ui.Button):
         limit = interaction.user.voice.channel.user_limit or 0
 
@@ -227,7 +251,7 @@ class Interface(discord.ui.View):
         )
         await interaction.response.send_message(f"Your **voice channel**'s limit has been updated to `{limit + 1}`", ephemeral=True)
 
-    @discord.ui.button(label="Decrease", style=discord.ButtonStyle.grey, custom_id="voicemeister:decrease", emoji="<:People:1279848931043573790>")
+    @discord.ui.button(style=discord.ButtonStyle.grey, custom_id="voicemeister:decrease", emoji="<:People:1279848931043573790>")
     async def decrease(self, interaction: discord.Interaction, button: discord.ui.Button):
         limit = interaction.user.voice.channel.user_limit or 0
 
@@ -244,21 +268,27 @@ class Interface(discord.ui.View):
         else:
             await interaction.response.send_message(f"Your **voice channel**'s limit has been updated to `{limit - 1}`", ephemeral=True)
 
-    @discord.ui.button(label="Delete Channel", style=discord.ButtonStyle.red, custom_id="voicemeister:delete", emoji="<:TrashCan:1279875131136806993>")
+    @discord.ui.button(style=discord.ButtonStyle.red, custom_id="voicemeister:delete", emoji="<:TrashCan:1279875131136806993>")
     async def delete_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.voice.channel.delete(reason=f"VoiceMeister: {interaction.user} deleted their voice channel")
         await interaction.response.send_message("Your **voice channel** has been deleted", ephemeral=True)
 
-    @discord.ui.button(label="Create Text Channel", style=discord.ButtonStyle.blurple, custom_id="voicemeister:create_text", emoji="<:SpeachBubble:1279890650535428198>")
+    @discord.ui.button(style=discord.ButtonStyle.blurple, custom_id="voicemeister:create_text", emoji="<:SpeachBubble:1279890650535428198>")
     async def create_text_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
         category = interaction.user.voice.channel.category
         text_channel = await category.create_text_channel(f"{interaction.user.display_name}-text")
         await interaction.response.send_message(f"Text channel {text_channel.mention} created for your voice channel", ephemeral=True)
 
-    @discord.ui.button(label="Reset Configurations", style=discord.ButtonStyle.red, custom_id="voicemeister:reset", emoji="<:reset:1280057459146362880>")
+    @discord.ui.button(style=discord.ButtonStyle.red, custom_id="voicemeister:reset", emoji="<:reset:1280057459146362880>")
     async def reset_configurations(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.config.guild(interaction.guild).clear()
         await interaction.response.send_message("All **VoiceMeister** configurations have been reset", ephemeral=True)
+
+    @discord.ui.select(placeholder="Transfer Ownership", options=[], custom_id="voicemeister:transfer")
+    async def transfer_ownership(self, interaction: discord.Interaction, select: discord.ui.Select):
+        view = Interface(self.bot)
+        view.add_item(TransferOwnership(interaction.user))
+        await interaction.response.send_message("Select a member from the **dropdown** to transfer ownership.", view=view, ephemeral=True)
 
 class VoiceMeister(commands.Cog):
     def __init__(self, bot: Red):
@@ -279,7 +309,29 @@ class VoiceMeister(commands.Cog):
         """VoiceMeister command group."""
         await ctx.send_help()
 
-    @commands.command(name="activityinvite")
+    @voicemeister.command(name="setup")
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
+    async def setup(self, ctx: commands.Context):
+        """Setup VoiceMeister in the server."""
+        category = await ctx.guild.create_category("Voice Channels")
+        interface = await category.create_text_channel("interface")
+        channel = await category.create_voice_channel("Join to Create")
+
+        await self.config.guild(ctx.guild).category_id.set(category.id)
+        await self.config.guild(ctx.guild).interface_id.set(interface.id)
+        await self.config.guild(ctx.guild).channel_id.set(channel.id)
+
+        embed = discord.Embed(
+            title="VoiceMeister Interface",
+            description="Click the buttons below to control your voice channel",
+            color=discord.Color.blue()
+        )
+        await interface.send(embed=embed, view=Interface(self.bot))
+
+        await ctx.send("VoiceMeister setup complete.")
+
+    @voicemeister.command(name="activityinvite")
     async def activity_invite(self, ctx: commands.Context, activity_name: str):
         """Generate an invite for a popular Discord activity."""
         if not ctx.author.voice or not ctx.author.voice.channel:
@@ -302,228 +354,97 @@ class VoiceMeister(commands.Cog):
         except Exception as e:
             await ctx.send(f"Failed to create an invite for **{activity_name}**. Error: {str(e)}")
 
-    @commands.command(name="setup")
-    @commands.guild_only()
+    @voicemeister.command(name="setlimit")
     @commands.admin_or_permissions(manage_guild=True)
-    async def setup(self, ctx: commands.Context):
-        """Setup VoiceMeister in the server."""
-        category = await ctx.guild.create_category("Voice Channels")
-        interface = await category.create_text_channel("interface")
-        channel = await category.create_voice_channel("Join to Create")
+    async def setlimit(self, ctx: commands.Context, num: int):
+        """Set the default channel limit for your server."""
+        await self.config.guild(ctx.guild).set_raw("channel_limit", value=num)
+        await ctx.send("You have changed the default channel limit for your server!")
 
-        await self.config.guild(ctx.guild).category_id.set(category.id)
-        await self.config.guild(ctx.guild).interface_id.set(interface.id)
-        await self.config.guild(ctx.guild).channel_id.set(channel.id)
-
-        embed = discord.Embed(
-            title="VoiceMeister Interface",
-            description="Click the buttons below to control your voice channel",
-            color=discord.Color.blue()
-        )
-        await interface.send(embed=embed, view=Interface(self.bot))
-
-        await ctx.send("VoiceMeister setup complete.")
-
-    @Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-        if not after.channel:
-            return
-
-        if before and before.channel == after.channel:
-            return
-
-        config_data = await self.config.guild(member.guild).all()
-        if config_data['channel_id'] != after.channel.id:
-            return
-
-        channel = await member.guild.create_voice_channel(
-            name=f"{member.display_name}'s channel",
-            category=member.guild.get_channel(config_data['category_id']) or after.channel.category,
-            bitrate=config_data.get('bitrate', int(member.guild.bitrate_limit)),
-            rtc_region=config_data.get('region'),
-            reason=f"VoiceMeister: Created a voice channel for {member}",
-        )
-
-        try:
-            await member.move_to(channel, reason="VoiceMeister: Created their own voice channel")
-        except discord.HTTPException:
-            await channel.delete(reason="VoiceMeister: Failed to move member")
-            return
-
-        await channel.set_permissions(
-            member,
-            read_messages=True,
-            connect=True,
-            reason=f"VoiceMeister: {member} created a new voice channel",
-        )
-
-        await self.bot.db.execute(
-            """
-            INSERT INTO voicemaster_channels (
-                guild_id,
-                channel_id,
-                owner_id
-            ) VALUES ($1, $2, $3)
-            """,
-            member.guild.id,
-            channel.id,
-            member.id,
-        )
-
-        role_id = config_data.get('role_id')
-        if role_id and (role := member.guild.get_role(role_id)) and role not in member.roles:
-            try:
-                await member.add_roles(role, reason="VoiceMeister: Gave the owner the default role")
-            except Exception:
-                pass
-
-    @Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-        if not before.channel:
-            return
-
-        if after and before.channel == after.channel:
-            return
-
-        role_id = await self.config.guild(member.guild).role_id()
-        if role_id and role_id in (role.id for role in member.roles):
-            try:
-                await member.remove_roles(member.guild.get_role(role_id), reason="VoiceMeister: Removed the default role")
-            except Exception:
-                pass
-
-        if list(filter(lambda m: not m.bot, before.channel.members)):
-            return
-
-        owner_id = await self.bot.db.fetchval(
-            """
-            DELETE FROM voicemaster_channels
-            WHERE channel_id = $1
-            RETURNING owner_id
-            """,
-            before.channel.id,
-        )
-
-        if not owner_id:
-            return
-
-        try:
-            await before.channel.delete()
-        except discord.HTTPException:
-            pass
-
-    @commands.command(name="claim")
-    async def claim(self, ctx: commands.Context):
-        """Claim an inactive voice channel."""
-        await self.bot.db.execute(
-            """
-            UPDATE voicemaster_channels
-            SET owner_id = $2
-            WHERE channel_id = $1
-            """,
-            ctx.author.voice.channel.id,
-            ctx.author.id,
-        )
-
-        if ctx.author.voice.channel.name.endswith("channel"):
-            try:
-                await ctx.author.voice.channel.edit(
-                    name=f"{ctx.author.display_name}'s channel"
-                )
-            except Exception:
-                pass
-
-        await ctx.send("You are now the owner of this **channel**!")
-
-    @commands.command(name="lock")
+    @voicemeister.command(name="lock")
     async def lock(self, ctx: commands.Context):
         """Lock your voice channel."""
-        await ctx.author.voice.channel.set_permissions(
-            ctx.guild.default_role,
-            connect=False,
-            reason=f"VoiceMeister: {ctx.author} locked voice channel",
-        )
-        await ctx.send("Your **voice channel** has been locked")
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
+            return
 
-    @commands.command(name="unlock")
+        channel = self.bot.get_channel(channel_id)
+        await channel.set_permissions(ctx.guild.default_role, connect=False)
+        await ctx.send(f'{ctx.author.mention} Voice chat locked!')
+
+    @voicemeister.command(name="unlock")
     async def unlock(self, ctx: commands.Context):
         """Unlock your voice channel."""
-        await ctx.author.voice.channel.set_permissions(
-            ctx.guild.default_role,
-            connect=None,
-            reason=f"VoiceMeister: {ctx.author} unlocked voice channel",
-        )
-        await ctx.send("Your **voice channel** has been unlocked")
-
-    @commands.command(name="ghost")
-    async def ghost(self, ctx: commands.Context):
-        """Hide your voice channel."""
-        await ctx.author.voice.channel.set_permissions(
-            ctx.guild.default_role,
-            view_channel=False,
-            reason=f"VoiceMeister: {ctx.author} made voice channel hidden",
-        )
-        await ctx.send("Your **voice channel** has been hidden")
-
-    @commands.command(name="reveal")
-    async def reveal(self, ctx: commands.Context):
-        """Reveal your voice channel."""
-        await ctx.author.voice.channel.set_permissions(
-            ctx.guild.default_role,
-            view_channel=None,
-            reason=f"VoiceMeister: {ctx.author} revealed voice channel",
-        )
-        await ctx.send("Your **voice channel** has been revealed")
-
-    @commands.command(name="increase")
-    async def increase(self, ctx: commands.Context):
-        """Increase the user limit of your voice channel."""
-        limit = ctx.author.voice.channel.user_limit or 0
-
-        if limit == 99:
-            await ctx.send("Channel member limit cannot be more than **99 members**!")
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
             return
 
-        await ctx.author.voice.channel.edit(
-            user_limit=limit + 1,
-            reason=f"VoiceMeister: {ctx.author} increased voice channel user limit",
-        )
-        await ctx.send(f"Your **voice channel**'s limit has been updated to `{limit + 1}`")
+        channel = self.bot.get_channel(channel_id)
+        await channel.set_permissions(ctx.guild.default_role, connect=True)
+        await ctx.send(f'{ctx.author.mention} Voice chat unlocked!')
 
-    @commands.command(name="decrease")
-    async def decrease(self, ctx: commands.Context):
-        """Decrease the user limit of your voice channel."""
-        limit = ctx.author.voice.channel.user_limit or 0
-
-        if limit == 0:
-            await ctx.send("Channel member limit must be greater than **0 members**")
+    @voicemeister.command(name="permit")
+    async def permit(self, ctx: commands.Context, member: discord.Member):
+        """Give a user permission to join your voice channel."""
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
             return
 
-        await ctx.author.voice.channel.edit(
-            user_limit=limit - 1,
-            reason=f"VoiceMeister: {ctx.author} decreased voice channel user limit",
-        )
-        if (limit - 1) == 0:
-            await ctx.send("Your **voice channel**'s limit has been **removed**")
-        else:
-            await ctx.send(f"Your **voice channel**'s limit has been updated to `{limit - 1}`")
+        channel = self.bot.get_channel(channel_id)
+        await channel.set_permissions(member, connect=True)
+        await ctx.send(f'{ctx.author.mention} You have permitted {member.name} to have access to the channel.')
 
-    @commands.command(name="delete")
-    async def delete_channel(self, ctx: commands.Context):
-        """Delete your voice channel."""
-        await ctx.author.voice.channel.delete(reason=f"VoiceMeister: {ctx.author} deleted their voice channel")
-        await ctx.send("Your **voice channel** has been deleted")
+    @voicemeister.command(name="reject")
+    async def reject(self, ctx: commands.Context, member: discord.Member):
+        """Remove a user's permission to join your voice channel."""
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
+            return
 
-    @commands.command(name="create_text")
-    async def create_text_channel(self, ctx: commands.Context):
-        """Create a text channel linked to your voice channel."""
-        category = ctx.author.voice.channel.category
-        text_channel = await category.create_text_channel(f"{ctx.author.display_name}-text")
-        await ctx.send(f"Text channel {text_channel.mention} created for your voice channel")
+        channel = self.bot.get_channel(channel_id)
+        await channel.set_permissions(member, connect=False)
+        await ctx.send(f'{ctx.author.mention} You have rejected {member.name} from accessing the channel.')
 
-    @commands.command(name="reset")
-    @commands.admin_or_permissions(administrator=True)
-    async def reset_configurations(self, ctx: commands.Context):
-        """Reset all VoiceMeister configurations."""
-        await self.config.guild(ctx.guild).clear()
-        await ctx.send("All **VoiceMeister** configurations have been reset")
+    @voicemeister.command(name="limit")
+    async def limit(self, ctx: commands.Context, limit: int):
+        """Set the user limit for your voice channel."""
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
+            return
+
+        channel = self.bot.get_channel(channel_id)
+        await channel.edit(user_limit=limit)
+        await ctx.send(f'{ctx.author.mention} You have set the channel limit to {limit}!')
+
+    @voicemeister.command(name="name")
+    async def name(self, ctx: commands.Context, *, name: str):
+        """Change the name of your voice channel."""
+        channel_id = await self.config.member(ctx.author).get_raw("channel_id", default=None)
+        if channel_id is None:
+            await ctx.send(f"{ctx.author.mention} You don't own a channel.")
+            return
+
+        channel = self.bot.get_channel(channel_id)
+        await channel.edit(name=name)
+        await ctx.send(f'{ctx.author.mention} You have changed the channel name to {name}!')
+
+    @voicemeister.command(name="claim")
+    async def claim(self, ctx: commands.Context):
+        """Claim ownership of a voice channel if the owner has left."""
+        channel = ctx.author.voice.channel
+        if channel is None:
+            await ctx.send(f"{ctx.author.mention} you're not in a voice channel.")
+            return
+
+        owner_id = await self.config.member_from_ids(ctx.guild.id, channel.id).get_raw("user_id", default=None)
+        if owner_id is None or ctx.guild.get_member(owner_id) is not None:
+            await ctx.send(f"{ctx.author.mention} This channel is already owned by someone!")
+            return
+
+        await self.config.member(ctx.author).set_raw("channel_id", value=channel.id)
+        await ctx.send(f"{ctx.author.mention} You are now the owner of the channel!")
