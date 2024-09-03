@@ -22,10 +22,10 @@ class AutoConfigCleaner(commands.Cog):
     async def schedule_deletion(self, guild: discord.Guild):
         """Schedules the deletion of the server's configurations after 15 minutes."""
         await self.config.guild(guild).deletion_scheduled.set(True)
-        purge_time = datetime.utcnow() + timedelta(minutes=15)
+        purge_time = datetime.utcnow() + timedelta(minutes=120)
         log_message = await self.log_deletion_notice(guild, purge_time)
         await self.config.guild(guild).log_message_id.set(log_message.id)
-        await asyncio.sleep(900)  # 15 minutes in seconds
+        await asyncio.sleep(7200)  # 15 minutes in seconds
 
         # Check if the deletion is still scheduled
         if await self.config.guild(guild).deletion_scheduled():
@@ -54,14 +54,13 @@ class AutoConfigCleaner(commands.Cog):
         await ctx.send(f"Log channel set to {channel.mention}")
 
     async def purge_stale_configs(self):
-        """Purges configurations for guilds that the bot is not currently in."""
         await self.bot.wait_until_ready()
         all_guild_ids = set(guild.id for guild in self.bot.guilds)
-        async with self.config.all_guilds() as all_guilds:
-            stale_guild_ids = [guild_id for guild_id in all_guilds if guild_id not in all_guild_ids]
-            for guild_id in stale_guild_ids:
-                await self.config.guild_from_id(guild_id).clear()
-                await self.log(f"Purged stale configuration for guild ID: {guild_id}")
+        all_guilds = await self.config.all_guilds()
+        stale_guild_ids = [guild_id for guild_id in all_guilds if guild_id not in all_guild_ids]
+        for guild_id in stale_guild_ids:
+            await self.config.guild_from_id(guild_id).clear()
+            await self.log(f"Purged stale configuration for guild ID: {guild_id}")
 
     async def log_deletion_notice(self, guild: discord.Guild, purge_time: datetime):
         """Logs a deletion notice to the configured log channel."""
