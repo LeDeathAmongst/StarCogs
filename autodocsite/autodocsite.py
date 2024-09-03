@@ -46,7 +46,7 @@ class AutoDocs(Cog):
         super().__init__(bot)
         self.bot = bot
         self.config = {
-            "repo_dir": "/root/Star-Cogs",
+            "repo_dir": "/root/StarCogs",
             "custom_domain": "docs.prismbot.icu"
         }
         self.cog_description = "This is a helpful description of the cog."  # Use a different attribute
