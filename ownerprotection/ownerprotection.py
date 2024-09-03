@@ -3,11 +3,9 @@ import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord.utils import utcnow
-from redbot.core.i18n import Translator, cog_i18n  # Ensure i18n is used
+from redbot.core.i18n import cog_i18n  # Ensure i18n is used
 
-_ = Translator("OwnerProtection", __file__)
-
-@cog_i18n(_)
+@cog_i18n()
 class OwnerProtection(Cog):  # Inherit from Cog in Star_Utils
     """A cog to protect the bot owner(s) from being muted, timed out, kicked, or banned."""
 
