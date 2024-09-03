@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import os
 
 import aiohttp
 import rich
@@ -81,6 +82,7 @@ class DevOutput(dev_commands.DevOutput):
         self.exc: typing.Optional[Exception] = None
         persistence_data = load_persistence()
         self.bot._bypass_cooldowns = persistence_data.get("bypass_cooldowns", False)
+        self.bot = bot
         super().__init__(*args, **kwargs)
 
     def __str__(self, output_mode: typing.Literal["repr", "repr_or_str", "str"] = "repr") -> str:
