@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import os
 
 import aiohttp
 import rich
@@ -74,9 +75,10 @@ def save_persistence(data):
         json.dump(data, file)
 
 class DevOutput(dev_commands.DevOutput):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, ctx, bot, *args, **kwargs) -> None:
         self._locals: typing.Dict[str, typing.Any] = kwargs.pop("_locals", {})
         self.prints: str = ""
+        self.bot = bot  # Initialize the bot attribute
         self.rich_tracebacks: bool = kwargs.pop("rich_tracebacks", False)
         self.exc: typing.Optional[Exception] = None
         persistence_data = load_persistence()
