@@ -159,7 +159,7 @@ class AutoDocs(Cog):
         df = pd.DataFrame(rows, columns=columns)
         return docs, df
 
-    @commands.command(name="makedocs")
+    @commands.hybrid_command(name="makedocs", description=_("Create docs for a cog"))
     @app_commands.describe(
         cog_name=_("The name of the cog you want to make docs for (Case Sensitive)"),
         replace_prefix=_("Replace all occurrences of [p] with the bots prefix"),
