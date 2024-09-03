@@ -1,9 +1,9 @@
 {
     "author": ["Star"],
     "name": "AutoDocSite",
-    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. This cog can only be ran by you, the bot owner. If you want to help translate, go to my [crowdin](<https://crowdin.com/project/Star-Cogs>)",
+    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. This cog can only be ran by you, the bot owner. If you want to help translate, go to my [crowdin](<https://crowdin.com/project/Star-Cogs>)\n\nThere's a few steps for setup. ```md\n1. Set your RepoDir (with [p]setsite repo_dir) as your repo path on your host (if applicable). The repo is where the docs will go to in a branch.\n2. Generate a GitHub Person Access Token (Go to account settings > developer settings > Personal Access Token > Tokens (Classic). Only permissions needed is: full access to 'Repo'.\n3. Inside your vps/local repo, run `mkdocs build` once all of your `set site` settings are good. After you run `mkdocs build`, run `mkdocs gh-deploy`, it will ask for your username and 'password', here's where you need the PAT\n4.Laugh in easy documentation generation.",
     "short": "Automatically generates documentation site",
-    "description": "There's a few steps for setup. ```md\n1. Set your RepoDir (with [p]setsite repo_dir) as your repo path on your host (if applicable). The repo is where the docs will go to in a branch.\n2. Generate a GitHub Person Access Token (Go to account settings > developer settings > Personal Access Token > Tokens (Classic). Only permissions needed is: full access to 'Repo'.\n3. Inside your vps/local repo where docs will go, install mkdocs and run 'mkdocs new .' ***WILL FINISH LATER***",
+    "description": "Automatic generations of documentations using GH-Pages and MKDocs"
     "tags": [
         "auto_doc_gen"
     ],
