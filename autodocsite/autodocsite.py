@@ -1,4 +1,5 @@
 import os
+from Star_Utils import Cog, command
 import shutil
 import logging
 from io import BytesIO
@@ -11,7 +12,6 @@ import discord
 import pandas as pd
 from aiocache import cached
 from discord import app_commands
-from discord.ext.commands import Command, Cog, Group
 from redbot.core import commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n, set_contextual_locales_from_guild
@@ -19,13 +19,13 @@ from redbot.core.utils.mod import is_admin_or_superior, is_mod_or_superior
 
 from .formatter import IGNORE, CustomCmdFmt
 
-log = logging.getLogger("red.vrt.autodocs")
+log = logging.getLogger("red.star.autodocsite")
 _ = Translator("AutoDocs", __file__)
 
 PRIVILEGE_LEVELS = ["user", "mod", "admin", "guildowner", "botowner"]
 
 @cog_i18n(_)
-class AutoDocs(commands.Cog):
+class AutoDocs(Cog):
     """
     Document your cogs with ease!
 
@@ -33,8 +33,6 @@ class AutoDocs(commands.Cog):
 
     Credits to Vrt and Vertyco for making this entire code possible.
     """
-    __author__ = "[Rosie](https://github.com/PBOwner/PBCogs)"
-    __version__ = "1.0.0"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)
@@ -48,7 +46,7 @@ class AutoDocs(commands.Cog):
         super().__init__(*args, **kwargs)
         self.bot = bot
         self.config = {
-            "repo_dir": "/root/PBCogs",
+            "repo_dir": "/root/Star-Cogs",
             "custom_domain": "docs.prismbot.icu"
         }
         self.cog_description = "This is a helpful description of the cog."  # Use a different attribute
@@ -342,7 +340,7 @@ class AutoDocs(commands.Cog):
 
 # Now, integrating the documentation generation into the AutoDocSite class
 
-class AutoDocSite(commands.Cog):
+class AutoDocSite(Cog):
     """
     Automatically generate a documentation site for every cog in the bot.
     """
