@@ -1,0 +1,22 @@
+{
+    "author": ["Star"],
+    "name": "AutoDocSite",
+    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. This cog can only be ran by you, the bot owner. If you want to help support my translations, go to my [crowdin](https://crowdin.com/project/Star-Cogs)",
+    "short": "Automatically generates documentation site",
+    "description": "There's a few steps for setup. ```md\n1. Set your RepoDir (with [p]setsite repo_dir) as your repo path on your host (if applicable). The repo is where the docs will go to in a branch.\n2. Generate a GitHub Person Access Token (Go to account settings > developer settings > Personal Access Token > Tokens (Classic). Only permissions needed is: full access to 'Repo'.\n3. Inside your vps/local repo where docs will go, install mkdocs and run 'mkdocs new .' ***WILL FINISH LATER***",
+    "tags": [
+        "auto_doc_gen"
+    ],
+    "requirements": [
+        "git+https://github.com/LeDeathAmongst/Star_Utils.git",
+        "mkdocs",
+        "mkdocs-dracula-theme",
+        "discord.py",
+        "pandas",
+        "aiocache",
+        "pyyaml"
+    ],
+    "min_bot_version": "3.5.11",
+    "end_user_data_statement": "",
+    "hidden": false
+}
