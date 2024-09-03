@@ -467,7 +467,7 @@ class AutoDocSite(Cog):
         self.config["custom_footer"] = value
         await ctx.send(f"Custom footer set to: {value}")
 
-    @commands.command(name="gendocs")
+    @commands.hybrid_command(name="gendocs", description="Generate a doc file for all the cogs you have!")
     @commands.is_owner()
     async def gendocs(self, ctx: commands.Context):
         """
