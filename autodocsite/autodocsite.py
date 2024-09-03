@@ -344,8 +344,6 @@ class AutoDocSite(Cog):
     """
     Automatically generate a documentation site for every cog in the bot.
     """
-    __version__ = "0.0.2"  # Define the version of the cog
-    __author__ = "Rosie Val"  # Define the author of the cog
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)
