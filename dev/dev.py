@@ -466,8 +466,6 @@ class DevOutput(dev_commands.DevOutput):
 class Dev(Cog, dev_commands.Dev):
     """Various development focused utilities!"""
 
-    __authors__: typing.List[str] = ["Cog-Creators", "Zephyrkul (Zephyrkul#1089)", "AAA3A"]
-
     def __init__(self, bot: Red) -> None:
         super().__init__(bot=bot)
 
