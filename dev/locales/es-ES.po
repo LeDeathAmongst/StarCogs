@@ -75,14 +75,14 @@ def save_persistence(data):
         json.dump(data, file)
 
 class DevOutput(dev_commands.DevOutput):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, ctx, bot, *args, **kwargs) -> None:
         self._locals: typing.Dict[str, typing.Any] = kwargs.pop("_locals", {})
         self.prints: str = ""
+        self.bot = bot  # Initialize the bot attribute
         self.rich_tracebacks: bool = kwargs.pop("rich_tracebacks", False)
         self.exc: typing.Optional[Exception] = None
         persistence_data = load_persistence()
         self.bot._bypass_cooldowns = persistence_data.get("bypass_cooldowns", False)
-        self.bot = bot
         super().__init__(*args, **kwargs)
 
     def __str__(self, output_mode: typing.Literal["repr", "repr_or_str", "str"] = "repr") -> str:
