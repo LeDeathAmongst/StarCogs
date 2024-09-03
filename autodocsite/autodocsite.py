@@ -354,7 +354,7 @@ class AutoDocSite(Cog):
         """No data to delete"""
 
     def __init__(self, bot: Red, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(bot)
         self.bot = bot
         self.config = {
             "repo_dir": "/root/PBCogs",
