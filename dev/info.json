@@ -1,7 +1,7 @@
 {
     "author": ["Star"],
     "name": "Dev",
-    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. If you enjoy my work, please consider helping translate at [CrowdIn](<https://crowdin.com/project/Star-Cogs!\n⚠ Note that this cog requires the `--dev` flag, or it will refuse to load. If you don't know what this means, uninstall the cog.",
+    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. If you enjoy my work, please consider helping translate at [CrowdIn](<https://crowdin.com/project/Star-Cogs>)!\n⚠ Note that this cog requires the `--dev` flag, or it will refuse to load. If you don't know what this means, uninstall the cog.",
     "short": "Various development focused utilities!",
     "description": "Various development focused utilities.",
     "tags": [
