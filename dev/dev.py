@@ -61,6 +61,17 @@ def redirect(**kwargs):
         if file:
             file.close()
 
+PERSISTENCE_FILE = 'bypasscooldowns.json'
+
+def load_persistence():
+    if os.path.exists(PERSISTENCE_FILE):
+        with open(PERSISTENCE_FILE, 'r') as file:
+            return json.load(file)
+    return {"bypass_cooldowns": False}
+
+def save_persistence(data):
+    with open(PERSISTENCE_FILE, 'w') as file:
+        json.dump(data, file)
 
 class DevOutput(dev_commands.DevOutput):
     def __init__(self, *args, **kwargs) -> None:
@@ -68,6 +79,8 @@ class DevOutput(dev_commands.DevOutput):
         self.prints: str = ""
         self.rich_tracebacks: bool = kwargs.pop("rich_tracebacks", False)
         self.exc: typing.Optional[Exception] = None
+        persistence_data = load_persistence()
+        self.bot._bypass_cooldowns = persistence_data.get("bypass_cooldowns", False)
         super().__init__(*args, **kwargs)
 
     def __str__(self, output_mode: typing.Literal["repr", "repr_or_str", "str"] = "repr") -> str:
@@ -465,8 +478,6 @@ class DevOutput(dev_commands.DevOutput):
 @cog_i18n(_)
 class Dev(Cog, dev_commands.Dev):
     """Various development focused utilities!"""
-
-    __authors__: typing.List[str] = ["Cog-Creators", "Zephyrkul (Zephyrkul#1089)", "AAA3A"]
 
     def __init__(self, bot: Red) -> None:
         super().__init__(bot=bot)
@@ -950,17 +961,26 @@ class Dev(Cog, dev_commands.Dev):
         ctx: commands.Context,
         toggle: typing.Optional[bool] = None,
         *,
-        time: TimeConverter = None,
+        time: typing.Optional[int] = None,
+        persist: bool = False
     ) -> None:
         """Give bot owners the ability to bypass cooldowns.
 
-        Does not persist through restarts.
+        Can persist through restarts if specified.
         """
         if toggle is None:
             toggle = not ctx.bot._bypass_cooldowns
+
+        # Cancel any existing task
         if self._bypass_cooldowns_task is not None:
             self._bypass_cooldowns_task.cancel()
+
         ctx.bot._bypass_cooldowns = toggle
+
+        # Save the state if persistence is enabled
+        if persist:
+            save_persistence({"bypass_cooldowns": toggle})
+
         if toggle:
             await ctx.send(
                 _(
@@ -968,7 +988,7 @@ class Dev(Cog, dev_commands.Dev):
                 ).format(
                     optional_duration=""
                     if time is None
-                    else f" for {CogsUtils.get_interval_string(time)}"
+                    else f" for {time} seconds"
                 )
             )
         else:
@@ -978,12 +998,13 @@ class Dev(Cog, dev_commands.Dev):
                 ).format(
                     optional_duration=""
                     if time is None
-                    else f" for {CogsUtils.get_interval_string(time)}"
+                    else f" for {time} seconds"
                 )
             )
+
         if time is not None:
-            task = asyncio.create_task(asyncio.sleep(time.total_seconds()))
-            self._bypass_cooldowns_task: asyncio.Task = task
+            task = asyncio.create_task(asyncio.sleep(time))
+            self._bypass_cooldowns_task = task
             try:
                 await task
             except asyncio.CancelledError:
