@@ -1,5 +1,5 @@
 import os
-from Star_Utils import Cog, command
+from Star_Utils import Cog
 import shutil
 import logging
 from io import BytesIO
