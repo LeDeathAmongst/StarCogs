@@ -34,11 +34,6 @@ class AutoDocs(Cog):
     Credits to Vrt and Vertyco for making this entire code possible.
     """
 
-    def format_help_for_context(self, ctx):
-        helpcmd = super().format_help_for_context(ctx)
-        txt = _("{}\nCog Version: {}\nAuthor: {}").format(helpcmd, self.__version__, self.__author__)
-        return txt
-
     async def red_delete_data_for_user(self, *, requester, user_id: int):
         """No data to delete"""
 
@@ -344,11 +339,6 @@ class AutoDocSite(Cog):
     """
     Automatically generate a documentation site for every cog in the bot.
     """
-
-    def format_help_for_context(self, ctx):
-        helpcmd = super().format_help_for_context(ctx)
-        txt = _("{}\nCog Version: {}\nAuthor: {}").format(helpcmd, self.__version__, self.__author__)
-        return txt
 
     async def red_delete_data_for_user(self, *, requester, user_id: int):
         """No data to delete"""
