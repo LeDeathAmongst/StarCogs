@@ -1,11 +1,12 @@
 import discord
+from Star_Utils import Cog
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from datetime import timedelta, datetime
 import re
 import uuid
 import asyncio
-class AdWarn(commands.Cog):
+class AdWarn(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)  # Replace with a unique identifier
@@ -536,67 +537,3 @@ class AdWarn(commands.Cog):
         for rank, (user, count) in enumerate(sorted_results, start=1):
             embed.add_field(name=f"{rank}. {user}", value=f"Warnings: {count}", inline=False)
         await race_message.edit(embed=embed)
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def weeklystats(self, ctx):
-        """Send an embed with the weekly AdWarn stats sorted by per-issuer."""
-        weekly_stats = await self.config.guild(ctx.guild).weekly_stats()
-        sorted_stats = sorted(weekly_stats.items(), key=lambda item: item[1], reverse=True)
-        embed = discord.Embed(
-            title="Weekly AdWarn Stats",
-            color=discord.Color.blue()
-        )
-        if sorted_stats:
-            for rank, (user_id, count) in enumerate(sorted_stats, start=1):
-                user = self.bot.get_user(int(user_id))
-                embed.add_field(
-                    name=f"{rank}. {user} (ID: {user_id})",
-                    value=f"Warnings Issued: {count}",
-                    inline=False
-                )
-        else:
-            embed.add_field(name="No data available", value="No warnings have been issued this week.", inline=False)
-        await ctx.send(embed=embed)
-        # Reset weekly stats
-        await self.config.guild(ctx.guild).weekly_stats.set({})
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def monthlystats(self, ctx):
-        """Send an embed with the monthly AdWarn stats sorted by per-issuer."""
-        monthly_stats = await self.config.guild(ctx.guild).monthly_stats()
-        sorted_stats = sorted(monthly_stats.items(), key=lambda item: item[1], reverse=True)
-        embed = discord.Embed(
-            title="Monthly AdWarn Stats",
-            color=discord.Color.blue()
-        )
-        if sorted_stats:
-            for rank, (user_id, count) in enumerate(sorted_stats, start=1):
-                user = self.bot.get_user(int(user_id))
-                embed.add_field(
-                    name=f"{rank}. {user} (ID: {user_id})",
-                    value=f"Warnings Issued: {count}",
-                    inline=False
-                )
-        else:
-            embed.add_field(name="No data available", value="No warnings have been issued this month.", inline=False)
-        await ctx.send(embed=embed)
-        # Reset monthly stats
-        await self.config.guild(ctx.guild).monthly_stats.set({})
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        """Listener to update weekly and monthly stats."""
-        if message.author.bot:
-            return
-        if message.content.startswith("!adwarn"):
-            author_id = str(message.author.id)
-            weekly_stats = await self.config.guild(message.guild).weekly_stats()
-            monthly_stats = await self.config.guild(message.guild).monthly_stats()
-            if author_id not in weekly_stats:
-                weekly_stats[author_id] = 0
-            if author_id not in monthly_stats:
-                monthly_stats[author_id] = 0
-            weekly_stats[author_id] += 1
-            monthly_stats[author_id] += 1
-
-            await self.config.guild(message.guild).weekly_stats.set(weekly_stats)
-            await self.config.guild(message.guild).monthly_stats.set(monthly_stats)
