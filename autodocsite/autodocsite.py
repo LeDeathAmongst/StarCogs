@@ -159,7 +159,7 @@ class AutoDocs(Cog):
         df = pd.DataFrame(rows, columns=columns)
         return docs, df
 
-    @commands.command(name="makedocs")
+    @commands.hybrid_command(name="makedocs", description=_("Create docs for a cog"))
     @app_commands.describe(
         cog_name=_("The name of the cog you want to make docs for (Case Sensitive)"),
         replace_prefix=_("Replace all occurrences of [p] with the bots prefix"),
@@ -467,7 +467,7 @@ class AutoDocSite(Cog):
         self.config["custom_footer"] = value
         await ctx.send(f"Custom footer set to: {value}")
 
-    @commands.hybrid_command(name="gendocs", description="Generate a doc file for all the cogs you have!")
+    @commands.command(name="gendocs")
     @commands.is_owner()
     async def gendocs(self, ctx: commands.Context):
         """
