@@ -7,7 +7,7 @@ from redbot.core.i18n import cog_i18n  # Ensure i18n is used
 
 @cog_i18n()
 class OwnerProtection(Cog):  # Inherit from Cog in Star_Utils
-    """A cog to protect the bot owner(s) from being muted, timed out, kicked, or banned."""
+    """A cog to protect the bot owner/trusted owners from being muted, timed out, kicked, or banned."""
 
     def __init__(self, bot: Red):
         super().__init__(bot=bot)  # Initialize using the parent class constructor
