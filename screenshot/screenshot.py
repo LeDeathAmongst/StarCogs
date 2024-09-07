@@ -56,7 +56,7 @@ class Screenshot(Cog, CogsUtils):
                 self.bot.remove_command("screenshot")
             except Exception as e:
                 log.error(f"Error removing screenshot command: {e}")
-            self.bot.add_command(self.old_screenshot)
+            self.bot.add_command(self.old_browse)
 
     def ensure_chrome_installed(self):
         os_name = platform.system()
@@ -96,30 +96,66 @@ class Screenshot(Cog, CogsUtils):
         view.add_item(discord.ui.Button(label="Scroll Down", style=discord.ButtonStyle.secondary, custom_id="scroll_down"))
         view.add_item(discord.ui.Button(label="Scroll Up", style=discord.ButtonStyle.secondary, custom_id="scroll_up"))
         view.add_item(discord.ui.Button(label="Click Element", style=discord.ButtonStyle.success, custom_id="click_element"))
-        view.add_item(discord.ui.Button(label="Screenshot", style=discord.ButtonStyle.danger, custom_id="screenshot"))
+
+        # Restrict interaction to the command invoker
+        async def interaction_check(interaction: discord.Interaction) -> bool:
+            if interaction.user.id != ctx.author.id:
+                await interaction.response.send_message("You are not allowed to use this interaction.", ephemeral=True)
+                return False
+            return True
+
+        view.interaction_check = interaction_check
 
         async def button_callback(interaction: discord.Interaction):
             await interaction.response.defer()
             if interaction.data['custom_id'] == 'refresh':
-                await self.refresh_page(ctx, url)
+                await self.update_embed_with_view(ctx, url, interaction.message)
             elif interaction.data['custom_id'] == 'scroll_down':
-                await self.scroll_page(ctx, url, "down")
+                await self.scroll_page(ctx, url, "down", interaction.message)
             elif interaction.data['custom_id'] == 'scroll_up':
-                await self.scroll_page(ctx, url, "up")
+                await self.scroll_page(ctx, url, "up", interaction.message)
             elif interaction.data['custom_id'] == 'click_element':
-                await self.click_element(ctx, url)
-            elif interaction.data['custom_id'] == 'screenshot':
-                await self.take_screenshot_and_send(ctx, url)
+                await self.click_element(ctx, url, interaction.message)
 
         for button in view.children:
             button.callback = button_callback
 
-        await ctx.send(f"Interactive browsing session started for {url}. Use the buttons below to interact.", view=view)
+        # Initial embed with a placeholder image
+        embed = discord.Embed(
+            description=f"Interactive browsing session started for [*{url}*]({url}). Use the buttons below to interact.",
+            color=discord.Color.blue()
+        )
+        embed.set_image(url="attachment://placeholder.png")
 
-    async def refresh_page(self, ctx, url):
-        await self.take_screenshot_and_send(ctx, url)
+        # Send the initial message with the embed and view
+        placeholder = discord.File(io.BytesIO(), filename="placeholder.png")
+        message = await ctx.send(embed=embed, view=view, file=placeholder)
 
-    async def scroll_page(self, ctx, url, direction):
+        # Update the embed with the actual view
+        await self.update_embed_with_view(ctx, url, message)
+
+    async def update_embed_with_view(self, ctx, url, message):
+        async with ctx.typing():
+            loop = asyncio.get_event_loop()
+            site_name, screenshot = await loop.run_in_executor(None, self.take_screenshot, url)
+
+            if screenshot is None:
+                await ctx.send("An error occurred while updating the view.")
+                return
+
+            file_ = io.BytesIO(screenshot)
+            file_.seek(0)
+            file = discord.File(file_, "screenshot.png")
+            file_.close()
+
+            embed = discord.Embed(
+                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
+            )
+            embed.set_image(url="attachment://screenshot.png")
+
+            await message.edit(embed=embed, attachments=[file])
+
+    async def scroll_page(self, ctx, url, direction, message):
         async with ctx.typing():
             loop = asyncio.get_event_loop()
             screenshot = await loop.run_in_executor(None, self.scroll_and_screenshot, url, direction)
@@ -138,31 +174,10 @@ class Screenshot(Cog, CogsUtils):
             )
             embed.set_image(url="attachment://screenshot.png")
 
-            await ctx.send(embed=embed, file=file)
+            await message.edit(embed=embed, attachments=[file])
 
-    async def click_element(self, ctx, url):
+    async def click_element(self, ctx, url, message):
         await ctx.send("Please specify the element to click (e.g., by CSS selector).")
-
-    async def take_screenshot_and_send(self, ctx, url):
-        async with ctx.typing():
-            loop = asyncio.get_event_loop()
-            site_name, screenshot = await loop.run_in_executor(None, self.take_screenshot, url)
-
-            if screenshot is None:
-                await ctx.send("An error occurred while taking the screenshot.")
-                return
-
-            file_ = io.BytesIO(screenshot)
-            file_.seek(0)
-            file = discord.File(file_, "screenshot.png")
-            file_.close()
-
-            embed = discord.Embed(
-                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
-            )
-            embed.set_image(url="attachment://screenshot.png")
-
-            await ctx.send(embed=embed, file=file)
 
     def take_screenshot(self, url: str):
         chrome_options = Options()
