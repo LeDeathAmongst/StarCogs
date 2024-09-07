@@ -1,42 +1,35 @@
-import discord
-from redbot.core import commands
-from selenium import webdriver
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-import os
-import tempfile
+from redbot.core import errors  # isort:skip
+import importlib
+import sys
 
-class Screenshot(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+try:
+    import Star_Utils  # Attempt to import Star_Utils
+except ModuleNotFoundError:
+    raise errors.CogLoadError(
+        "The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary."
+    )
 
-    @commands.hybrid_command(name="screenshot", with_app_command=True, description="Takes a screenshot of the provided website URL.")
-    async def screenshot(self, ctx: commands.Context, url: str):
-        await ctx.send("Taking screenshot...")
+# Reload Star_Utils modules if they are already loaded
+modules = sorted(
+    [module for module in sys.modules if module.split(".")[0] == "Star_Utils"], reverse=True
+)
+for module in modules:
+    try:
+        importlib.reload(sys.modules[module])
+    except ModuleNotFoundError:
+        pass
+del Star_Utils
 
-        # Set up Selenium WebDriver
-        options = webdriver.FirefoxOptions()
-        options.add_argument("--headless")  # Run in headless mode
+# Import Red and get_end_user_data_statement
+from redbot.core.bot import Red  # isort:skip
+from redbot.core.utils import get_end_user_data_statement
 
-        # Specify the path to the GeckoDriver executable
-        gecko_driver_path = "/usr/local/bin/geckodriver"
+from .autodocsite import Screenshot  # Import your cog
 
-        driver = webdriver.Firefox(service=FirefoxService(executable_path=gecko_driver_path), options=options)
+__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
-        try:
-            driver.get(url)
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
-            screenshot_path = os.path.join(tempfile.gettempdir(), "screenshot.png")
-            driver.save_screenshot(screenshot_path)
-            await ctx.send(file=discord.File(screenshot_path))
-        except TimeoutException:
-            await ctx.send("Failed to load the website within the timeout period.")
-        except Exception as e:
-            await ctx.send(f"An error occurred: {e}")
-        finally:
-            driver.quit()
+async def setup(bot: Red) -> None:
+    cog = Screenshot(bot)
+
+    await bot.add_cog(cog)
+    await bot.remove_command(screenshot)
