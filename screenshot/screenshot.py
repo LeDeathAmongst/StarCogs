@@ -6,7 +6,6 @@ import asyncio
 import discord
 from redbot.core import commands
 from selenium import webdriver
-from Star_Utils import Cog
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -14,27 +13,50 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-log = logging.getLogger("star.screenshot")
+from Star_Utils.menus import Menu
+from Star_Utils.settings import Settings
+from Star_Utils.cogsutils import CogsUtils
 
-class Screenshot(Cog):
+log = logging.getLogger("star.interactive_browser")
+
+class InteractiveBrowser(CogsUtils):
     """
-    A cog for taking detailed screenshots of websites.
+    A cog for interactive browsing of websites through Discord.
     """
 
     def __init__(self, bot):
+        super().__init__(bot=bot, cog=self)
         self.bot = bot
         self.ensure_chrome_installed()
-        self.old_screenshot = self.bot.get_command("screenshot")
-        if self.old_screenshot:
-            self.bot.remove_command("screenshot")
+        self.old_browse = self.bot.get_command("browse")
+        if self.old_browse:
+            self.bot.remove_command("browse")
+
+        # Initialize settings
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        self.settings = Settings(
+            bot=self.bot,
+            cog=self,
+            config=self.config,
+            group=Config.GUILD,
+            settings={
+                "enabled": {
+                    "path": ["enabled"],
+                    "converter": bool,
+                    "description": "Enable or disable the interactive browsing functionality.",
+                    "usage": "enabled",
+                }
+            },
+        )
+        asyncio.create_task(self.settings.add_commands())
 
     def cog_unload(self):
-        if self.old_screenshot:
+        if self.old_browse:
             try:
-                self.bot.remove_command("screenshot")
+                self.bot.remove_command("browse")
             except Exception as e:
-                log.error(f"Error removing screenshot command: {e}")
-            self.bot.add_command(self.old_screenshot)
+                log.error(f"Error removing browse command: {e}")
+            self.bot.add_command(self.old_browse)
 
     def ensure_chrome_installed(self):
         os_name = platform.system()
@@ -63,11 +85,65 @@ class Screenshot(Cog):
                 log.info("Google Chrome not found. Please install it manually from https://www.google.com/chrome/")
 
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
-    @commands.command(name="screenshot", aliases=["ss"])
-    async def screenshot(self, ctx: commands.Context, url: str):
+    @commands.command(name="browse", aliases=["webbrowse"])
+    async def browse(self, ctx: commands.Context, url: str):
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
+        # Create buttons for navigation and interaction
+        view = discord.ui.View(timeout=180)
+        view.add_item(discord.ui.Button(label="Refresh", style=discord.ButtonStyle.primary, custom_id="refresh"))
+        view.add_item(discord.ui.Button(label="Scroll Down", style=discord.ButtonStyle.secondary, custom_id="scroll_down"))
+        view.add_item(discord.ui.Button(label="Scroll Up", style=discord.ButtonStyle.secondary, custom_id="scroll_up"))
+        view.add_item(discord.ui.Button(label="Click Element", style=discord.ButtonStyle.success, custom_id="click_element"))
+        view.add_item(discord.ui.Button(label="Screenshot", style=discord.ButtonStyle.danger, custom_id="screenshot"))
+
+        async def button_callback(interaction: discord.Interaction):
+            await interaction.response.defer()
+            if interaction.data['custom_id'] == 'refresh':
+                await self.refresh_page(ctx, url)
+            elif interaction.data['custom_id'] == 'scroll_down':
+                await self.scroll_page(ctx, url, "down")
+            elif interaction.data['custom_id'] == 'scroll_up':
+                await self.scroll_page(ctx, url, "up")
+            elif interaction.data['custom_id'] == 'click_element':
+                await self.click_element(ctx, url)
+            elif interaction.data['custom_id'] == 'screenshot':
+                await self.take_screenshot_and_send(ctx, url)
+
+        for button in view.children:
+            button.callback = button_callback
+
+        await ctx.send(f"Interactive browsing session started for {url}. Use the buttons below to interact.", view=view)
+
+    async def refresh_page(self, ctx, url):
+        await self.take_screenshot_and_send(ctx, url)
+
+    async def scroll_page(self, ctx, url, direction):
+        async with ctx.typing():
+            loop = asyncio.get_event_loop()
+            screenshot = await loop.run_in_executor(None, self.scroll_and_screenshot, url, direction)
+
+            if screenshot is None:
+                await ctx.send("An error occurred during scrolling.")
+                return
+
+            file_ = io.BytesIO(screenshot)
+            file_.seek(0)
+            file = discord.File(file_, "screenshot.png")
+            file_.close()
+
+            embed = discord.Embed(
+                description=f"Scrolled {direction} on [*{url}*]({url})", color=discord.Color.blue()
+            )
+            embed.set_image(url="attachment://screenshot.png")
+
+            await ctx.send(embed=embed, file=file)
+
+    async def click_element(self, ctx, url):
+        await ctx.send("Please specify the element to click (e.g., by CSS selector).")
+
+    async def take_screenshot_and_send(self, ctx, url):
         async with ctx.typing():
             loop = asyncio.get_event_loop()
             site_name, screenshot = await loop.run_in_executor(None, self.take_screenshot, url)
@@ -82,7 +158,7 @@ class Screenshot(Cog):
             file_.close()
 
             embed = discord.Embed(
-                description=f"[*{site_name}*]({url})", color=discord.Color.blue()
+                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
             )
             embed.set_image(url="attachment://screenshot.png")
 
@@ -108,7 +184,6 @@ class Screenshot(Cog):
         try:
             driver.get(url)
             self.handle_cookies(driver)
-            self.wait_for_dynamic_content(driver)
             site_name = driver.title
             screenshot = driver.get_screenshot_as_png()
             return site_name, screenshot
@@ -117,23 +192,52 @@ class Screenshot(Cog):
             return None, None
         finally:
             driver.quit()
-    
+
+    def scroll_and_screenshot(self, url, direction):
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.add_argument("--disable-popup-blocking")
+        chrome_options.add_argument("--ignore-certificate-errors")
+        chrome_options.add_argument("--disable-software-rasterizer")
+
+        driver = webdriver.Chrome(
+            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
+        )
+
+        try:
+            driver.get(url)
+            self.handle_cookies(driver)
+            if direction == "down":
+                driver.execute_script("window.scrollBy(0, window.innerHeight);")
+            elif direction == "up":
+                driver.execute_script("window.scrollBy(0, -window.innerHeight);")
+            screenshot = driver.get_screenshot_as_png()
+            return screenshot
+        except Exception as e:
+            log.error(f"Error during scrolling: {e}")
+            return None
+        finally:
+            driver.quit()
+
     def handle_cookies(self, driver):
         """
         Attempts to handle cookie consent prompts by clicking common "Accept All" buttons.
         """
         try:
-            # JavaScript to set cookies directly (for some sites)
             driver.execute_script("""
                 document.cookie = 'cookieconsent_status=allow; path=/; domain=' + document.domain;
                 localStorage.setItem('cookieconsent_status', 'allow');
             """)
 
-            # Common selectors for cookie consent buttons
             cookie_selectors = [
-                # Google-specific
                 "button[aria-label='Accept all']",
-                "button[aria-label='Zustimmen']",  # German for "Accept"
+                "button[aria-label='Zustimmen']",
                 "button[title='Accept all']",
                 "button:contains('Accept all')",
                 "button:contains('I agree')",
@@ -163,7 +267,7 @@ class Screenshot(Cog):
                 "[data-testid='cookie-accept']",
                 "#cookie-accept-button",
                 ".cookie-consent-accept",
-                "div.cookie-banner button",  # Generic cookie banner button
+                "div.cookie-banner button",
                 "div.consent-banner button",
             ]
 
@@ -178,27 +282,11 @@ class Screenshot(Cog):
                     log.debug(f"Selector {selector} not found or clickable: {e}")
         except Exception as e:
             log.error(f"Error handling cookies: {e}")
-    
-    def wait_for_dynamic_content(self, driver):
-        try:
-            dynamic_content_selectors = [
-                "body",
-                "img",
-                "div",
-            ]
-
-            for selector in dynamic_content_selectors:
-                WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, selector))
-                )
-                log.info(f"Dynamic content loaded for selector: {selector}")
-        except Exception as e:
-            log.warning(f"Dynamic content may not be fully loaded: {e}")
 
 async def setup(bot):
-    old_screenshot = bot.get_command("screenshot")
-    if old_screenshot:
-        bot.remove_command(old_screenshot.name)
+    old_browse = bot.get_command("browse")
+    if old_browse:
+        bot.remove_command(old_browse.name)
 
-    cog = Screenshot(bot)
+    cog = InteractiveBrowser(bot)
     await bot.add_cog(cog)
