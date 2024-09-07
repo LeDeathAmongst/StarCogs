@@ -4,7 +4,7 @@ import platform
 import subprocess
 import asyncio
 import discord
-from redbot.core import commands
+from redbot.core import commands, Config
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
