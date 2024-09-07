@@ -25,7 +25,6 @@ class Screenshot(CogsUtils):
     """
 
     def __init__(self, bot):
-        super().__init__(bot=bot, cog=self)
         self.bot = bot
         self.ensure_chrome_installed()
         self.old_browse = self.bot.get_command("screenshot")
