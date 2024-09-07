@@ -3,12 +3,10 @@ import logging
 import platform
 import subprocess
 import asyncio
-from typing import List
-
 import discord
 from redbot.core import commands
-from Star_Utils import Cog
 from selenium import webdriver
+from Star_Utils import Cog
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -26,13 +24,11 @@ class Screenshot(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.ensure_chrome_installed()
-        # Save the old screenshot command if it exists
         self.old_screenshot = self.bot.get_command("screenshot")
         if self.old_screenshot:
             self.bot.remove_command("screenshot")
 
     def cog_unload(self):
-        # Restore the old screenshot command if it existed
         if self.old_screenshot:
             try:
                 self.bot.remove_command("screenshot")
@@ -41,9 +37,6 @@ class Screenshot(Cog):
             self.bot.add_command(self.old_screenshot)
 
     def ensure_chrome_installed(self):
-        """
-        Ensures that Google Chrome is installed on the host machine.
-        """
         os_name = platform.system()
 
         if os_name == "Linux":
@@ -69,14 +62,9 @@ class Screenshot(Cog):
             except (subprocess.CalledProcessError, FileNotFoundError):
                 log.info("Google Chrome not found. Please install it manually from https://www.google.com/chrome/")
 
-    @commands.is_owner()
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
     @commands.command(name="screenshot", aliases=["ss"])
     async def screenshot(self, ctx: commands.Context, url: str):
-        """
-        Takes a screenshot of the specified URL.
-        """
-        # Ensure the URL starts with http:// or https://
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
@@ -101,9 +89,6 @@ class Screenshot(Cog):
             await ctx.send(embed=embed, file=file)
 
     def take_screenshot(self, url: str):
-        """
-        Takes a screenshot of the given URL using Selenium.
-        """
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
@@ -134,19 +119,7 @@ class Screenshot(Cog):
             driver.quit()
 
     def handle_cookies(self, driver):
-        """
-        Attempts to handle cookie consent prompts using JavaScript and clicking common buttons.
-        """
         try:
-            # Set cookies and local storage for consent
-            driver.execute_script("""
-                document.cookie = 'cookieconsent_status=allow; path=/; domain=' + document.domain;
-                localStorage.setItem('cookieconsent_status', 'allow');
-                if (document.domain.includes('google')) {
-                    document.cookie = 'CONSENT=YES+cb; path=/; domain=.google.com';
-                }
-            """)
-
             # Common selectors for cookie consent buttons
             cookie_selectors = [
                 "button[aria-label='Accept all']",
@@ -173,15 +146,11 @@ class Screenshot(Cog):
             log.error(f"Error handling cookies: {e}")
 
     def wait_for_dynamic_content(self, driver):
-        """
-        Waits for dynamic content to load by checking for common elements.
-        """
         try:
-            # Wait for common dynamic content indicators
             dynamic_content_selectors = [
-                "body",  # Wait for the body to be fully loaded
-                "img",   # Wait for images to load
-                "div",   # Wait for divs that might load content
+                "body",
+                "img",
+                "div",
             ]
 
             for selector in dynamic_content_selectors:
@@ -196,3 +165,6 @@ async def setup(bot):
     old_screenshot = bot.get_command("screenshot")
     if old_screenshot:
         bot.remove_command(old_screenshot.name)
+
+    cog = Screenshot(bot)
+    await bot.add_cog(cog)
