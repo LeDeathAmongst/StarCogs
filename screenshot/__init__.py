@@ -32,3 +32,4 @@ async def setup(bot: Red) -> None:
     cog = Screenshot(bot)
 
     await bot.add_cog(cog)
+    await bot.remove_command(screenshot)
