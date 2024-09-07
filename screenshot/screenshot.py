@@ -13,13 +13,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
+from Star_Utils import Cog
 from Star_Utils.menus import Menu
 from Star_Utils.settings import Settings
 from Star_Utils.cogsutils import CogsUtils
 
 log = logging.getLogger("star.screenshot")
 
-class Screenshot(CogsUtils):
+class Screenshot(Cog, CogsUtils):
     """
     A cog for interactive browsing of websites through Discord.
     """
