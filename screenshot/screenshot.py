@@ -17,7 +17,7 @@ from Star_Utils.menus import Menu
 from Star_Utils.settings import Settings
 from Star_Utils.cogsutils import CogsUtils
 
-log = logging.getLogger("star.interactive_browser")
+log = logging.getLogger("star.screenshot")
 
 class Screenshot(CogsUtils):
     """
@@ -28,9 +28,9 @@ class Screenshot(CogsUtils):
         super().__init__(bot=bot, cog=self)
         self.bot = bot
         self.ensure_chrome_installed()
-        self.old_browse = self.bot.get_command("browse")
+        self.old_browse = self.bot.get_command("screenshot")
         if self.old_browse:
-            self.bot.remove_command("browse")
+            self.bot.remove_command("screenshot")
 
         # Initialize settings
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
@@ -53,10 +53,10 @@ class Screenshot(CogsUtils):
     def cog_unload(self):
         if self.old_browse:
             try:
-                self.bot.remove_command("browse")
+                self.bot.remove_command("screenshot")
             except Exception as e:
-                log.error(f"Error removing browse command: {e}")
-            self.bot.add_command(self.old_browse)
+                log.error(f"Error removing screenshot command: {e}")
+            self.bot.add_command(self.old_screenshot)
 
     def ensure_chrome_installed(self):
         os_name = platform.system()
@@ -85,8 +85,8 @@ class Screenshot(CogsUtils):
                 log.info("Google Chrome not found. Please install it manually from https://www.google.com/chrome/")
 
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
-    @commands.command(name="browse", aliases=["webbrowse"])
-    async def browse(self, ctx: commands.Context, url: str):
+    @commands.command(name="screenshot", aliases=["ss"])
+    async def _screenshot(self, ctx: commands.Context, url: str):
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
@@ -284,9 +284,9 @@ class Screenshot(CogsUtils):
             log.error(f"Error handling cookies: {e}")
 
 async def setup(bot):
-    old_browse = bot.get_command("browse")
-    if old_browse:
-        bot.remove_command(old_browse.name)
+    old_screenshot = bot.get_command("screenshot")
+    if old_screenshot:
+        bot.remove_command(old_screenshot.name)
 
     cog = Screenshot(bot)
     await bot.add_cog(cog)
