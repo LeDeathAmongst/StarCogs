@@ -19,7 +19,7 @@ from Star_Utils.cogsutils import CogsUtils
 
 log = logging.getLogger("star.interactive_browser")
 
-class InteractiveBrowser(CogsUtils):
+class Screenshot(CogsUtils):
     """
     A cog for interactive browsing of websites through Discord.
     """
@@ -288,5 +288,5 @@ async def setup(bot):
     if old_browse:
         bot.remove_command(old_browse.name)
 
-    cog = InteractiveBrowser(bot)
+    cog = Screenshot(bot)
     await bot.add_cog(cog)
