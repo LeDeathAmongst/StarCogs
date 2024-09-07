@@ -117,20 +117,54 @@ class Screenshot(Cog):
             return None, None
         finally:
             driver.quit()
-
+    
     def handle_cookies(self, driver):
+        """
+        Attempts to handle cookie consent prompts by clicking common "Accept All" buttons.
+        """
         try:
+            # JavaScript to set cookies directly (for some sites)
+            driver.execute_script("""
+                document.cookie = 'cookieconsent_status=allow; path=/; domain=' + document.domain;
+                localStorage.setItem('cookieconsent_status', 'allow');
+            """)
+
             # Common selectors for cookie consent buttons
             cookie_selectors = [
+                # Google-specific
                 "button[aria-label='Accept all']",
+                "button[aria-label='Zustimmen']",  # German for "Accept"
                 "button[title='Accept all']",
-                "#cookie-accept-button",
-                ".cookie-consent-accept",
-                "[data-testid='cookie-accept']",
+                "button:contains('Accept all')",
+                "button:contains('I agree')",
+                "button:contains('Allow all')",
+                "button:contains('Accept & continue')",
+                "button:contains('Agree')",
+                "button:contains('OK')",
+                "button:contains('Got it')",
+                "button:contains('Accept cookies')",
+                "button:contains('Yes, I agree')",
+                "button:contains('Continue')",
+                "button:contains('Consent')",
+                "button:contains('Accept and close')",
+                "button:contains('Allow cookies')",
+                "button:contains('Accept')",
+                "button:contains('Acknowledge')",
+                "button[aria-label='Agree to all']",
+                "button[title='Agree']",
+                "button[title='Accept']",
                 "[id^='accept']",
                 "[class*='accept']",
-                "button:contains('Accept')",
-                "button:contains('I agree')",
+                "[class*='consent']",
+                "[class*='agree']",
+                "[class*='cookie']",
+                "[id^='consent']",
+                "[id^='agree']",
+                "[data-testid='cookie-accept']",
+                "#cookie-accept-button",
+                ".cookie-consent-accept",
+                "div.cookie-banner button",  # Generic cookie banner button
+                "div.consent-banner button",
             ]
 
             for selector in cookie_selectors:
@@ -144,7 +178,7 @@ class Screenshot(Cog):
                     log.debug(f"Selector {selector} not found or clickable: {e}")
         except Exception as e:
             log.error(f"Error handling cookies: {e}")
-
+    
     def wait_for_dynamic_content(self, driver):
         try:
             dynamic_content_selectors = [
