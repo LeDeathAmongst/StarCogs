@@ -523,6 +523,10 @@ class AutoDocSite(Cog):
                 "   - Go to your GitHub repository settings and ensure GitHub Pages is enabled.\n"
                 "   - Your documentation site should now be live!\n\n"
                 "For further assistance, refer to the documentation or use `[p]help AutoDocSite`."
+            ),
+            color=discord.Color.blue()
+        )
+        await ctx.send(embed=embed)
 
     @commands.group()
     @commands.is_owner()
