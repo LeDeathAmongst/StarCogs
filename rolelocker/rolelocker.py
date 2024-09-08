@@ -112,11 +112,13 @@ class RoleLocker(Cog):
         locked_cogs = await self.config.locked_cogs()
         locked_commands = await self.config.locked_commands()
 
+        # Check if the entire cog is locked
         if command.cog and command.cog.qualified_name in locked_cogs:
             required_tiers = locked_cogs[command.cog.qualified_name]
             if not any(tier in user_tiers for tier in required_tiers):
                 return False
 
+        # Check if the specific command is locked
         if command.qualified_name in locked_commands:
             required_tiers = locked_commands[command.qualified_name]
             if not any(tier in user_tiers for tier in required_tiers):
@@ -205,7 +207,7 @@ class RoleLocker(Cog):
 
     @rolelock.command()
     async def usertiers(self, ctx: commands.Context):
-        """Display the user's tiers and accessible cogs/commands."""
+        """Display the user's tiers and locked cogs/commands."""
         user_roles = {role.id for role in ctx.author.roles}
         role_tiers = await self.config.role_tiers()
         user_tiers = self.get_user_tiers(user_roles, role_tiers)
@@ -213,22 +215,22 @@ class RoleLocker(Cog):
         locked_cogs = await self.config.locked_cogs()
         locked_commands = await self.config.locked_commands()
 
-        accessible_cogs = [cog for cog, tiers in locked_cogs.items() if any(tier in user_tiers for tier in tiers)]
-        accessible_commands = [command for command, tiers in locked_commands.items() if any(tier in user_tiers for tier in tiers)]
+        user_locked_cogs = [cog for cog, tiers in locked_cogs.items() if not any(tier in user_tiers for tier in tiers)]
+        user_locked_commands = [command for command, tiers in locked_commands.items() if not any(tier in user_tiers for tier in tiers)]
 
         embed = discord.Embed(
-            title=f"{ctx.author.display_name}'s Tiers and Access",
+            title=f"{ctx.author.display_name}'s Tiers and Locked Access",
             color=await ctx.embed_color()
         )
         embed.add_field(name="Tiers", value=", ".join(user_tiers) if user_tiers else "None", inline=False)
-        embed.add_field(name="Accessible Cogs", value=", ".join(accessible_cogs) if accessible_cogs else "None", inline=False)
-        embed.add_field(name="Accessible Commands", value=", ".join(accessible_commands) if accessible_commands else "None", inline=False)
+        embed.add_field(name="Locked Cogs", value=", ".join(user_locked_cogs) if user_locked_cogs else "None", inline=False)
+        embed.add_field(name="Locked Commands", value=", ".join(user_locked_commands) if user_locked_commands else "None", inline=False)
 
         await ctx.send(embed=embed)
 
     @rolelock.command()
     async def tierinfo(self, ctx: commands.Context, tier_name: str):
-        """Display the commands, roles, and cogs accessible in a specific tier."""
+        """Display the commands, roles, and cogs locked in a specific tier."""
         role_tiers = await self.config.role_tiers()
         if tier_name not in role_tiers:
             await ctx.send(f"Tier `{tier_name}` does not exist.")
@@ -239,16 +241,16 @@ class RoleLocker(Cog):
 
         locked_cogs = await self.config.locked_cogs()
         locked_commands = await self.config.locked_commands()
-        accessible_cogs = [cog for cog, tiers in locked_cogs.items() if tier_name in tiers]
-        accessible_commands = [command for command, tiers in locked_commands.items() if tier_name in tiers]
+        tier_locked_cogs = [cog for cog, tiers in locked_cogs.items() if tier_name in tiers]
+        tier_locked_commands = [command for command, tiers in locked_commands.items() if tier_name in tiers]
 
         embed = discord.Embed(
             title=f"Tier `{tier_name}` Information",
             color=await ctx.embed_color()
         )
         embed.add_field(name="Roles", value=", ".join(role_names) if role_names else "None", inline=False)
-        embed.add_field(name="Accessible Cogs", value=", ".join(accessible_cogs) if accessible_cogs else "None", inline=False)
-        embed.add_field(name="Accessible Commands", value=", ".join(accessible_commands) if accessible_commands else "None", inline=False)
+        embed.add_field(name="Locked Cogs", value=", ".join(tier_locked_cogs) if tier_locked_cogs else "None", inline=False)
+        embed.add_field(name="Locked Commands", value=", ".join(tier_locked_commands) if tier_locked_commands else "None", inline=False)
 
         await ctx.send(embed=embed)
 
@@ -272,6 +274,12 @@ class RoleLocker(Cog):
                 required_tiers = locked_cogs[command_or_cog.qualified_name]
                 if not any(tier in user_tiers for tier in required_tiers):
                     return None
+                # Hide commands within locked cogs
+                for command in command_or_cog.get_commands():
+                    if command.qualified_name in locked_commands:
+                        required_tiers = locked_commands[command.qualified_name]
+                        if not any(tier in user_tiers for tier in required_tiers):
+                            command.hidden = True
         elif isinstance(command_or_cog, commands.Command):
             if command_or_cog.qualified_name in locked_commands:
                 required_tiers = locked_commands[command_or_cog.qualified_name]
