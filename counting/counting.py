@@ -199,34 +199,12 @@ class Counting(Cog):
                 leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
                 await self.config.leaderboard.set(leaderboard)
 
-                success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
-                await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
-
                 self.log_action("info", f"{message.author.display_name} counted correctly to {next_number}.")
 
             else:
                 wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
                 if isinstance(wrong_emote, str):
                     await message.add_reaction(wrong_emote)
-
-                failure_message = guild_config.get("failure_message", "Oops, {display_name}! You messed up. The number was {expected_number}.")
-                await message.channel.send(failure_message.format(display_name=message.author.display_name, expected_number=guild_config["current_number"] + 1))
-
-                if guild_config["shame_role"]:
-                    shame_role = message.guild.get_role(guild_config["shame_role"])
-                    if shame_role:
-                        await message.author.add_roles(shame_role, reason="Wrong count or double counting")
-                        await message.channel.set_permissions(shame_role, send_messages=False)
-
-                    roasts = guild_config.get("default_roasts", [
-                        f"{message.author.display_name} couldn't even count to {guild_config['current_number'] + 1}! Maybe try using your fingers next time?",
-                        f"Looks like {message.author.display_name} skipped a few math classes... Back to square one!",
-                        f"{message.author.display_name}, is that your final answer? Because it's definitely wrong!",
-                        f"{message.author.display_name}'s counting skills are as impressive as their ability to divide by zero.",
-                        f"{message.author.display_name}, are you sure you're not a calculator in disguise? Because your math is off!",
-                    ])
-                    roast = random.choice(roasts)
-                    await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
                 await self.config.current_number.set(0)
                 await self.config.last_counter_id.set(None)
@@ -246,7 +224,11 @@ class Counting(Cog):
             if next_number == global_current_number + 1 and message.author.id != global_last_counter_id:
                 await self.config.global_current_number.set(next_number)
                 await self.config.global_last_counter_id.set(message.author.id)
-                await message.add_reaction("")
+
+                # Use the default correct emoji
+                correct_emote = self.default_correct_emoji
+                if isinstance(correct_emote, str):
+                    await message.add_reaction(correct_emote)
 
                 # Update global leaderboard
                 global_leaderboard = await self.config.global_leaderboard()
@@ -254,7 +236,20 @@ class Counting(Cog):
                 global_leaderboard[user_key] = global_leaderboard.get(user_key, 0) + 1
                 await self.config.global_leaderboard.set(global_leaderboard)
 
+                # Relay the message to all linked channels
+                linked_channels = await self.config.linked_channels()
+                for channel_id in linked_channels:
+                    if channel_id != message.channel.id:
+                        channel = self.bot.get_channel(channel_id)
+                        if channel:
+                            await channel.send(f"{message.author.display_name}: {next_number}")
+
             else:
+                # Use the default wrong emoji
+                wrong_emote = self.default_wrong_emoji
+                if isinstance(wrong_emote, str):
+                    await message.add_reaction(wrong_emote)
+
                 await message.delete()
 
         except ValueError:
