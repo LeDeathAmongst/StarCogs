@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import Optional, Dict
 from redbot.core import commands
 from redbot.core.bot import Red
 import discord
@@ -72,6 +72,9 @@ class Counting(Cog):
         # Initialize a list to store loops
         self.loops = []
 
+        # Initialize logs dictionary
+        self.logs = {}
+
         # Start any loops needed by the cog
         self.start_loops()
 
@@ -92,6 +95,19 @@ class Counting(Cog):
         for guild_id, data in guilds.items():
             data["leaderboard"] = {}
             await self.config.guild_from_id(guild_id).leaderboard.set({})
+            # Log the reset action
+            self.log_action("info", f"Leaderboard reset for guild {guild_id}.")
+
+    def log_action(self, level: str, message: str):
+        """Log an action in the logs dictionary."""
+        if level not in self.logs:
+            self.logs[level] = []
+        self.logs[level].append({
+            "time": datetime.utcnow(),
+            "levelname": level.upper(),
+            "message": message,
+            "exc_info": None
+        })
 
     async def cog_unload(self):
         """Ensure all loops are stopped when the cog is unloaded."""
@@ -114,11 +130,17 @@ class Counting(Cog):
         self.config.settings["leaderboard"]["converter"] = {}
         self.config.settings["last_counter_id"]["converter"] = None
 
+        # Log the channel setup
+        self.log_action("info", f"Counting channel set to {channel.id} in guild {guild.id}.")
+
     @commands.command()
     async def countingsetshamerole(self, ctx, shame_role: discord.Role):
         """Sets the shame role for incorrect counting (optional)."""
         self.config.settings["shame_role"]["converter"] = shame_role.id
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
+
+        # Log the shame role setup
+        self.log_action("info", f"Shame role set to {shame_role.id} in guild {ctx.guild.id}.")
 
     @commands.command()
     async def countingsetemotes(self, ctx, correct_emote: str, wrong_emote: str):
@@ -126,6 +148,9 @@ class Counting(Cog):
         self.config.settings["correct_emote"]["converter"] = correct_emote
         self.config.settings["wrong_emote"]["converter"] = wrong_emote
         await ctx.send("Emotes updated successfully.")
+
+        # Log the emote setup
+        self.log_action("info", f"Correct emote set to {correct_emote}, wrong emote set to {wrong_emote} in guild {ctx.guild.id}.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -154,6 +179,9 @@ class Counting(Cog):
                     success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
                     await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
 
+                    # Log the successful count
+                    self.log_action("info", f"{message.author.display_name} counted correctly to {next_number} in guild {message.guild.id}.")
+
                 else:
                     # Use the wrong emoji
                     wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
@@ -180,6 +208,9 @@ class Counting(Cog):
 
                     self.config.settings["current_number"]["converter"] = 0  # Reset to 0
                     self.config.settings["last_counter_id"]["converter"] = None
+
+                    # Log the incorrect count
+                    self.log_action("warning", f"{message.author.display_name} counted incorrectly in guild {message.guild.id}.")
 
             except ValueError:
                 pass  # Ignore non-numeric messages
@@ -224,3 +255,6 @@ class Counting(Cog):
             self.config.settings["last_counter_id"]["converter"] = None
 
         await ctx.send(f"The counting game{' for ' + mode if mode else ''} has been reset.")
+
+        # Log the reset action
+        self.log_action("info", f"Counting game reset in guild {ctx.guild.id}.")
