@@ -50,6 +50,9 @@ class Screenshot(Cog, CogsUtils):
         )
         asyncio.create_task(self.settings.add_commands())
 
+        # Initialize the WebDriver
+        self.driver = None
+
     def cog_unload(self):
         if self.old_browse:
             try:
@@ -57,6 +60,10 @@ class Screenshot(Cog, CogsUtils):
             except Exception as e:
                 log.error(f"Error removing screenshot command: {e}")
             self.bot.add_command(self.old_browse)
+
+        # Quit the WebDriver
+        if self.driver:
+            self.driver.quit()
 
     def ensure_chrome_installed(self):
         os_name = platform.system()
@@ -83,6 +90,25 @@ class Screenshot(Cog, CogsUtils):
                 subprocess.run(["chrome", "--version"], check=True)
             except (subprocess.CalledProcessError, FileNotFoundError):
                 log.info("Google Chrome not found. Please install it manually from https://www.google.com/chrome/")
+
+    def get_driver(self):
+        if self.driver is None:
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-infobars")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--disable-popup-blocking")
+            chrome_options.add_argument("--ignore-certificate-errors")
+            chrome_options.add_argument("--disable-software-rasterizer")
+
+            self.driver = webdriver.Chrome(
+                service=ChromeService(ChromeDriverManager().install()), options=chrome_options
+            )
+        return self.driver
 
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
     @commands.command(name="screenshot", aliases=["ss"])
@@ -141,7 +167,7 @@ class Screenshot(Cog, CogsUtils):
             file_.close()
 
             embed = discord.Embed(
-                description=f"# [{site_name}]({url})", color=discord.Color.blue()
+                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
             )
             embed.set_image(url="attachment://screenshot.png")
 
@@ -231,22 +257,7 @@ class Screenshot(Cog, CogsUtils):
             await ctx.send(embed=embed, file=file)
 
     def take_screenshot(self, url: str):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -256,26 +267,9 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error during screenshot: {e}")
             return None, None
-        finally:
-            driver.quit()
 
     def scroll_and_screenshot(self, url, direction):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -288,26 +282,9 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error during scrolling: {e}")
             return None
-        finally:
-            driver.quit()
 
     def get_clickable_elements(self, url):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -317,26 +294,9 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error finding clickable elements: {e}")
             return []
-        finally:
-            driver.quit()
 
     def click_and_screenshot(self, url, selector):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -347,8 +307,6 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error clicking element: {e}")
             return None
-        finally:
-            driver.quit()
 
     def handle_cookies(self, driver):
         """
