@@ -115,7 +115,7 @@ class Counting(Cog):
         """Reset the leaderboard daily."""
         all_guilds = self.bot.guilds
         for guild in all_guilds:
-            await self.settings.set_raw("leaderboard", value={}, _object=guild)
+            await self.settings.set_raw("leaderboard", value={}, _object=guild.id)
             # Log the reset action
             self.log_action("info", f"Leaderboard reset for guild {guild.id}.")
 
@@ -146,10 +146,10 @@ class Counting(Cog):
         else:
             await ctx.send(f"Counting game channel set to {channel.mention}. Please set the shame role (optional) using `countingsetshamerole`.")
 
-        await self.settings.set_raw("channel_id", value=channel.id, _object=guild)
-        await self.settings.set_raw("current_number", value=0, _object=guild)  # Start at 0
-        await self.settings.set_raw("leaderboard", value={}, _object=guild)
-        await self.settings.set_raw("last_counter_id", value=None, _object=guild)
+        await self.settings.set_raw("channel_id", value=channel.id, _object=guild.id)
+        await self.settings.set_raw("current_number", value=0, _object=guild.id)  # Start at 0
+        await self.settings.set_raw("leaderboard", value={}, _object=guild.id)
+        await self.settings.set_raw("last_counter_id", value=None, _object=guild.id)
 
         # Log the channel setup
         self.log_action("info", f"Counting channel set to {channel.id} in guild {guild.id}.")
@@ -157,7 +157,7 @@ class Counting(Cog):
     @commands.command()
     async def countingsetshamerole(self, ctx, shame_role: discord.Role):
         """Sets the shame role for incorrect counting (optional)."""
-        await self.settings.set_raw("shame_role", value=shame_role.id, _object=ctx.guild)
+        await self.settings.set_raw("shame_role", value=shame_role.id, _object=ctx.guild.id)
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
 
         # Log the shame role setup
@@ -166,8 +166,8 @@ class Counting(Cog):
     @commands.command()
     async def countingsetemotes(self, ctx, correct_emote: str, wrong_emote: str):
         """Sets the emotes for correct and wrong counts."""
-        await self.settings.set_raw("correct_emote", value=correct_emote, _object=ctx.guild)
-        await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=ctx.guild)
+        await self.settings.set_raw("correct_emote", value=correct_emote, _object=ctx.guild.id)
+        await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=ctx.guild.id)
         await ctx.send("Emotes updated successfully.")
 
         # Log the emote setup
@@ -180,14 +180,14 @@ class Counting(Cog):
             return
 
         guild = message.guild
-        guild_config = await self.settings.get_values(_object=guild)
+        guild_config = await self.settings.get_values(_object=guild.id)
         if guild_config["channel_id"] == message.channel.id:
             try:
                 next_number = int(message.content)
                 last_counter_id = guild_config["last_counter_id"]
                 if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
-                    await self.settings.set_raw("current_number", value=next_number, _object=guild)
-                    await self.settings.set_raw("last_counter_id", value=message.author.id, _object=guild)
+                    await self.settings.set_raw("current_number", value=next_number, _object=guild.id)
+                    await self.settings.set_raw("last_counter_id", value=message.author.id, _object=guild.id)
 
                     # Use the correct emoji
                     correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
@@ -197,7 +197,7 @@ class Counting(Cog):
                     leaderboard = guild_config["leaderboard"]
                     user_id = str(message.author.id)
                     leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
-                    await self.settings.set_raw("leaderboard", value=leaderboard, _object=guild)
+                    await self.settings.set_raw("leaderboard", value=leaderboard, _object=guild.id)
 
                     success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
                     await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
@@ -230,8 +230,8 @@ class Counting(Cog):
                         roast = random.choice(roasts)
                         await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
-                    await self.settings.set_raw("current_number", value=0, _object=guild)
-                    await self.settings.set_raw("last_counter_id", value=None, _object=guild)
+                    await self.settings.set_raw("current_number", value=0, _object=guild.id)
+                    await self.settings.set_raw("last_counter_id", value=None, _object=guild.id)
 
                     # Log the incorrect count
                     self.log_action("warning", f"{message.author.display_name} counted incorrectly in guild {guild.id}.")
@@ -242,13 +242,13 @@ class Counting(Cog):
     @commands.command()
     async def currentnumber(self, ctx):
         """Displays the current number in the counting game."""
-        current_number = await self.settings.get_raw("current_number", _object=ctx.guild)
+        current_number = await self.settings.get_raw("current_number", _object=ctx.guild.id)
         await ctx.send(f"The current number is: {current_number}")
 
     @commands.command(aliases=["countingboard", "countingleaderboard"])
     async def countinglb(self, ctx):
         """Displays the leaderboard in an embed."""
-        leaderboard = await self.settings.get_raw("leaderboard", _object=ctx.guild)
+        leaderboard = await self.settings.get_raw("leaderboard", _object=ctx.guild.id)
         if leaderboard:
             sorted_leaderboard = sorted(leaderboard.items(), key=lambda item: item[1], reverse=True)
             embed = discord.Embed(title="Counting Game Leaderboard", color=discord.Color.blue())
@@ -269,14 +269,14 @@ class Counting(Cog):
             return
 
         if mode in ["sequential", None]:
-            await self.settings.set_raw("current_number", value=0, _object=ctx.guild)
-            await self.settings.set_raw("leaderboard", value={}, _object=ctx.guild)
-            await self.settings.set_raw("last_counter_id", value=None, _object=ctx.guild)
+            await self.settings.set_raw("current_number", value=0, _object=ctx.guild.id)
+            await self.settings.set_raw("leaderboard", value={}, _object=ctx.guild.id)
+            await self.settings.set_raw("last_counter_id", value=None, _object=ctx.guild.id)
 
         if mode in ["reverse", None]:
-            await self.settings.set_raw("current_number", value=100000, _object=ctx.guild)
-            await self.settings.set_raw("leaderboard", value={}, _object=ctx.guild)
-            await self.settings.set_raw("last_counter_id", value=None, _object=ctx.guild)
+            await self.settings.set_raw("current_number", value=100000, _object=ctx.guild.id)
+            await self.settings.set_raw("leaderboard", value={}, _object=ctx.guild.id)
+            await self.settings.set_raw("last_counter_id", value=None, _object=ctx.guild.id)
 
         await ctx.send(f"The counting game{' for ' + mode if mode else ''} has been reset.")
 
