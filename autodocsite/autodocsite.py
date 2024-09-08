@@ -6,6 +6,7 @@ from typing import List, Literal, Optional, Tuple
 from zipfile import ZIP_DEFLATED, ZipFile
 import yaml
 import random
+import sys  # Import sys to get the Python executable path
 
 import discord
 from tabulate import tabulate
@@ -752,14 +753,15 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
             # Change to the repository directory
             os.chdir(self.config.get("repo_dir"))
 
-            mkdocs_path = "/root/innova/bin/mkdocs"  # Replace with the actual path to mkdocs if needed
+            # Use sys.executable to run mkdocs
+            python_executable = sys.executable
 
             # Pull the latest changes before pushing
             os.system("git pull origin gh-pages")
 
             # Build and deploy the documentation site
-            os.system(f"{mkdocs_path} build")
-            os.system(f"{mkdocs_path} gh-deploy")
+            os.system(f"{python_executable} -m mkdocs build")
+            os.system(f"{python_executable} -m mkdocs gh-deploy")
 
             await ctx.send(f"Documentation site has been generated and deployed to GitHub Pages.\nYou can view it here: {site_url}")
 
