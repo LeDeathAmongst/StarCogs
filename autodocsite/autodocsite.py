@@ -650,13 +650,14 @@ class AutoDocSite(Cog):
     async def gendocs(self, ctx: commands.Context):
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
 
-        site_url = self.config.get("site_url")
+        # Access the site_url setting correctly
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else None
         if site_url is None:
-            site_url = f"https://{self.config.get('custom_domain')}/"
+            site_url = f"https://{self.config.settings['custom_domain']['converter']}"
 
         async with ctx.typing():
-            docs_dir = os.path.join(self.config.get("repo_dir"), "docs")
-            mkdocs_config_path = os.path.join(self.config.get("repo_dir"), "mkdocs.yml")
+            docs_dir = os.path.join(self.config.settings["repo_dir"]["converter"], "docs")
+            mkdocs_config_path = os.path.join(self.config.settings["repo_dir"]["converter"], "mkdocs.yml")
 
             if os.path.exists(docs_dir):
                 shutil.rmtree(docs_dir)
@@ -664,7 +665,7 @@ class AutoDocSite(Cog):
 
             # Create CNAME file for custom domain
             with open(os.path.join(docs_dir, "CNAME"), "w") as f:
-                f.write(self.config.get("custom_domain"))
+                f.write(self.config.settings["custom_domain"]["converter"])
 
             # Get the bot's name and prefix
             bot_name = self.bot.user.name
