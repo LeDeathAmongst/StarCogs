@@ -1,6 +1,6 @@
 import random
 from typing import Optional, Dict
-from redbot.core import commands
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
 from datetime import datetime  # Correct import
