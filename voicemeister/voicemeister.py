@@ -2,7 +2,7 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
 from typing import Optional, Dict, Any
-from star_utils import Buttons, Dropdown, Cog, Settings
+from Star_Utils import Buttons, Dropdown, Cog, Settings
 
 MAX_CHANNEL_NAME_LENGTH = 100
 MAX_BITRATE = 96  # Maximum bitrate in kbps
