@@ -17,23 +17,23 @@ class RoleLocker(Cog):
 
         # Define global settings schema
         self.config.register_global(
-            locked_cogs=[],
-            locked_commands=[],
+            allowed_cogs=[],  # Changed from locked_cogs to allowed_cogs
+            allowed_commands=[],  # Changed from locked_commands to allowed_commands
             role_tiers={},
             role_limits={}
         )
 
-        self.cache: typing.Dict[str, typing.List[str]] = {"locked_cogs": [], "locked_commands": []}
+        self.cache: typing.Dict[str, typing.List[str]] = {"allowed_cogs": [], "allowed_commands": []}
 
         # Use Star_Utils.settings
         _settings: typing.Dict[str, typing.Dict[str, typing.Any]] = {
-            "locked_cogs": {
+            "allowed_cogs": {
                 "converter": list,
                 "description": "List of globally allowed cogs.",
                 "hidden": True,
                 "no_slash": True,
             },
-            "locked_commands": {
+            "allowed_commands": {
                 "converter": list,
                 "description": "List of globally allowed commands.",
                 "hidden": True,
@@ -68,7 +68,7 @@ class RoleLocker(Cog):
     async def cog_load(self) -> None:
         await super().cog_load()
         data = await self.config.all()
-        if data["locked_cogs"] or data["locked_commands"]:
+        if data["allowed_cogs"] or data["allowed_commands"]:
             self.cache = data
         self.bot.add_check(self.bot_check)
 
@@ -108,10 +108,10 @@ class RoleLocker(Cog):
             or (
                 (
                     command.cog is not None
-                    and command.cog.qualified_name in self.cache["locked_cogs"]
+                    and command.cog.qualified_name in self.cache["allowed_cogs"]
                 ) or any(
                     command.qualified_name.split(" ")[:len(allowed_command.split(" "))] == allowed_command.split(" ")
-                    for allowed_command in self.cache["locked_commands"]
+                    for allowed_command in self.cache["allowed_commands"]
                 )
             )
         )
@@ -125,51 +125,51 @@ class RoleLocker(Cog):
     @setrolelocker.command()
     async def addcog(self, ctx: commands.Context, *, cog: commands.converter.CogConverter) -> None:
         """Add a cog to the allowed cogs list globally."""
-        async with self.config.locked_cogs() as locked_cogs:
-            if cog.qualified_name in locked_cogs:
+        async with self.config.allowed_cogs() as allowed_cogs:
+            if cog.qualified_name in allowed_cogs:
                 raise commands.BadArgument("This cog is already in the allowed cogs list.")
-            locked_cogs.append(cog.qualified_name)
-        self.cache["locked_cogs"] = locked_cogs
+            allowed_cogs.append(cog.qualified_name)
+        self.cache["allowed_cogs"] = allowed_cogs
 
     @setrolelocker.command()
     async def addcommand(self, ctx: commands.Context, *, command: commands.converter.CommandConverter) -> None:
         """Add a command to the allowed commands list globally."""
-        async with self.config.locked_commands() as locked_commands:
-            if command.qualified_name in locked_commands:
+        async with self.config.allowed_commands() as allowed_commands:
+            if command.qualified_name in allowed_commands:
                 raise commands.BadArgument("This command is already in the allowed commands list.")
-            locked_commands.append(command.qualified_name)
-        self.cache["locked_commands"] = locked_commands
+            allowed_commands.append(command.qualified_name)
+        self.cache["allowed_commands"] = allowed_commands
 
     @setrolelocker.command()
     async def removecog(self, ctx: commands.Context, *, cog: commands.converter.CogConverter) -> None:
         """Remove a cog from the allowed cogs list globally."""
-        async with self.config.locked_cogs() as locked_cogs:
-            if cog.qualified_name not in locked_cogs:
-                raise commands.BadArgument("This cog isn't in the locked cogs list.")
-            locked_cogs.remove(cog.qualified_name)
-        self.cache["locked_cogs"] = locked_cogs
+        async with self.config.allowed_cogs() as allowed_cogs:
+            if cog.qualified_name not in allowed_cogs:
+                raise commands.BadArgument("This cog isn't in the allowed cogs list.")
+            allowed_cogs.remove(cog.qualified_name)
+        self.cache["allowed_cogs"] = allowed_cogs
 
     @setrolelocker.command()
     async def removecommand(self, ctx: commands.Context, *, command: commands.converter.CommandConverter) -> None:
         """Remove a command from the allowed commands list globally."""
-        async with self.config.locked_commands() as locked_commands:
-            if command.qualified_name not in locked_commands:
-                raise commands.BadArgument("This command isn't in the locked commands list.")
-            locked_commands.remove(command.qualified_name)
-        self.cache["locked_commands"] = locked_commands
+        async with self.config.allowed_commands() as allowed_commands:
+            if command.qualified_name not in allowed_commands:
+                raise commands.BadArgument("This command isn't in the allowed commands list.")
+            allowed_commands.remove(command.qualified_name)
+        self.cache["allowed_commands"] = allowed_commands
 
     @setrolelocker.command()
     async def clear(self, ctx: commands.Context) -> None:
-        """Clear the locked cogs and commands list globally."""
+        """Clear the allowed cogs and commands list globally."""
         await self.config.clear()
-        self.cache = {"locked_cogs": [], "locked_commands": []}
+        self.cache = {"allowed_cogs": [], "allowed_commands": []}
 
     async def red_get_help_for(self, ctx: commands.Context, command_or_cog):
         """Override help menu to hide locked commands and cogs."""
         if isinstance(command_or_cog, commands.Cog):
-            if command_or_cog.qualified_name not in self.cache["locked_cogs"]:
+            if command_or_cog.qualified_name not in self.cache["allowed_cogs"]:
                 return None
         elif isinstance(command_or_cog, commands.Command):
-            if command_or_cog.qualified_name not in self.cache["locked_commands"]:
+            if command_or_cog.qualified_name not in self.cache["allowed_commands"]:
                 return None
         return await super().red_get_help_for(ctx, command_or_cog)
