@@ -1,8 +1,12 @@
+<<<<<<< HEAD
+from Star_Utils import Cog
+=======
 import io
 import logging
 import platform
 import subprocess
 import asyncio
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 import discord
 from redbot.core import commands, Config
 from selenium import webdriver
@@ -25,6 +29,12 @@ class Screenshot(Cog, CogsUtils):
     A cog for interactive browsing of websites through Discord.
     """
 
+<<<<<<< HEAD
+
+class Screenshot(Cog):
+
+=======
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
     def __init__(self, bot):
         self.bot = bot
         self.ensure_chrome_installed()
@@ -32,6 +42,32 @@ class Screenshot(Cog, CogsUtils):
         if self.old_browse:
             self.bot.remove_command("screenshot")
 
+<<<<<<< HEAD
+    @commands.hybrid_command(name='screenshot', with_app_command=True,
+        description='Takes a screenshot of the provided website URL.')
+    async def screenshot(self, ctx: commands.Context, url: str):
+        await ctx.send('Taking screenshot...')
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        gecko_driver_path = '/usr/local/bin/geckodriver'
+        driver = webdriver.Firefox(service=FirefoxService(executable_path=
+            gecko_driver_path), options=options)
+        try:
+            driver.get(url)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+                (By.TAG_NAME, 'body')))
+            screenshot_path = os.path.join(tempfile.gettempdir(),
+                'screenshot.png')
+            driver.save_screenshot(screenshot_path)
+            await ctx.send(file=discord.File(screenshot_path))
+        except TimeoutException:
+            await ctx.send(
+                'Failed to load the website within the timeout period.')
+        except Exception as e:
+            await ctx.send(f'An error occurred: {e}')
+        finally:
+            driver.quit()
+=======
         # Initialize settings
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         self.settings = Settings(
@@ -373,3 +409,4 @@ async def setup(bot):
 
     cog = Screenshot(bot)
     await bot.add_cog(cog)
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
