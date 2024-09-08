@@ -1,4 +1,4 @@
-from Star_Utils import Cog, Settings, Menu, Views
+from Star_Utils import Cog, Settings, Menu, views
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role, Embed
@@ -239,7 +239,25 @@ class RoleLocker(Cog):
             )
             pages.append(embed)
 
-        await Menu(pages=pages, timeout=60, clear_reactions_after=True, view=View()).start(ctx)
+        buttons = [
+            {"label": "Previous", "style": discord.ButtonStyle.primary, "custom_id": "prev"},
+            {"label": "Next", "style": discord.ButtonStyle.primary, "custom_id": "next"}
+        ]
+
+        view = views.Buttons(
+            buttons=buttons,
+            function=self.paginate,
+            function_kwargs={"pages": pages, "ctx": ctx}
+        )
+        await ctx.send(embed=pages[0], view=view)
+
+    async def paginate(self, view: views.Buttons, interaction: discord.Interaction, pages, ctx):
+        current_page = pages.index(interaction.message.embeds[0])
+        if interaction.data["custom_id"] == "next":
+            next_page = (current_page + 1) % len(pages)
+        else:
+            next_page = (current_page - 1) % len(pages)
+        await interaction.response.edit_message(embed=pages[next_page])
 
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
