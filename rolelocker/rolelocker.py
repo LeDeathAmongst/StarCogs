@@ -17,8 +17,8 @@ class RoleLocker(Cog):
 
         # Define global settings schema
         self.config.register_global(
-            allowed_cogs=[],  # Changed from locked_cogs to allowed_cogs
-            allowed_commands=[],  # Changed from locked_commands to allowed_commands
+            allowed_cogs=[],
+            allowed_commands=[],
             role_tiers={},
             role_limits={}
         )
@@ -77,6 +77,9 @@ class RoleLocker(Cog):
         await super().cog_unload()
 
     async def bot_check(self, ctx: commands.Context) -> bool:
+        # Allow rolelock commands for admins or users with manage_guild permission
+        if ctx.command.root_parent and ctx.command.root_parent.name == "rolelock":
+            return True
         if not await self.check_command(ctx):
             raise commands.CheckFailure(
                 "Only specific cogs and commands are allowed globally. Ask a bot owner in the support server for access, or buy premium if applicable."
@@ -95,6 +98,21 @@ class RoleLocker(Cog):
                 view.index = previous
                 if invoked_subcommand is not None or not command.invoke_without_command:
                     return True
+
+        # Check if the user has the required roles
+        user_roles = {role.id for role in ctx.author.roles}
+        role_tiers = await self.config.role_tiers()
+        user_tiers = self.get_user_tiers(user_roles, role_tiers)
+
+        # Check role limits
+        role_limits = await self.config.role_limits()
+        for role in ctx.author.roles:
+            if role.id in role_limits and len(role.members) < role_limits[role.id]:
+                await ctx.send(f"Role `{role.name}` requires at least `{role_limits[role.id]}` members to access this command.")
+                ctx.command.reset_cooldown(ctx)
+                raise commands.CheckFailure()
+
+        # Global access control
         return (
             ctx.author.id in ctx.bot.owner_ids
             or ctx.guild is None
@@ -114,55 +132,82 @@ class RoleLocker(Cog):
                     for allowed_command in self.cache["allowed_commands"]
                 )
             )
+            or any(tier in user_tiers for tier in self.cache["allowed_cogs"] + self.cache["allowed_commands"])
         )
 
-    @commands.is_owner()
+    def get_user_tiers(self, user_roles: typing.Set[int], role_tiers: typing.Dict[str, typing.List[int]]) -> typing.Set[str]:
+        """Get the tiers a user belongs to based on their roles."""
+        user_tiers = set()
+        for tier, role_ids in role_tiers.items():
+            if any(role_id in user_roles for role_id in role_ids):
+                user_tiers.add(tier)
+        return user_tiers
+
     @commands.group()
-    async def setrolelocker(self, ctx: commands.Context) -> None:
-        """Configure RoleLocker settings globally."""
+    @commands.admin_or_permissions(manage_guild=True)
+    async def rolelock(self, ctx: commands.Context):
+        """Base command for locking commands or cogs."""
         pass
 
-    @setrolelocker.command()
-    async def addcog(self, ctx: commands.Context, *, cog: commands.converter.CogConverter) -> None:
-        """Add a cog to the allowed cogs list globally."""
-        async with self.config.allowed_cogs() as allowed_cogs:
-            if cog.qualified_name in allowed_cogs:
-                raise commands.BadArgument("This cog is already in the allowed cogs list.")
-            allowed_cogs.append(cog.qualified_name)
-        self.cache["allowed_cogs"] = allowed_cogs
+    @rolelock.command()
+    async def command(self, ctx: commands.Context, command_name: str, *tiers: str):
+        """Lock a specific command behind tiers."""
+        async with self.config.locked_commands() as locked_commands:
+            locked_commands[command_name] = tiers
+        await ctx.send(f"Command `{command_name}` is now locked for tiers: {', '.join(tiers)}")
 
-    @setrolelocker.command()
-    async def addcommand(self, ctx: commands.Context, *, command: commands.converter.CommandConverter) -> None:
-        """Add a command to the allowed commands list globally."""
-        async with self.config.allowed_commands() as allowed_commands:
-            if command.qualified_name in allowed_commands:
-                raise commands.BadArgument("This command is already in the allowed commands list.")
-            allowed_commands.append(command.qualified_name)
-        self.cache["allowed_commands"] = allowed_commands
+    @rolelock.command()
+    async def removecommand(self, ctx: commands.Context, command_name: str):
+        """Remove a command from being locked."""
+        async with self.config.locked_commands() as locked_commands:
+            if command_name in locked_commands:
+                del locked_commands[command_name]
+                await ctx.send(f"Command `{command_name}` is no longer locked.")
+            else:
+                await ctx.send(f"Command `{command_name}` was not locked.")
 
-    @setrolelocker.command()
-    async def removecog(self, ctx: commands.Context, *, cog: commands.converter.CogConverter) -> None:
-        """Remove a cog from the allowed cogs list globally."""
-        async with self.config.allowed_cogs() as allowed_cogs:
-            if cog.qualified_name not in allowed_cogs:
-                raise commands.BadArgument("This cog isn't in the allowed cogs list.")
-            allowed_cogs.remove(cog.qualified_name)
-        self.cache["allowed_cogs"] = allowed_cogs
+    @rolelock.command()
+    async def cog(self, ctx: commands.Context, cog_name: str, *tiers: str):
+        """Lock an entire cog behind tiers."""
+        qualified_name = self.get_cog_qualified_name(cog_name)
+        if not qualified_name:
+            await ctx.send(f"Cog `{cog_name}` not found.")
+            return
 
-    @setrolelocker.command()
-    async def removecommand(self, ctx: commands.Context, *, command: commands.converter.CommandConverter) -> None:
-        """Remove a command from the allowed commands list globally."""
-        async with self.config.allowed_commands() as allowed_commands:
-            if command.qualified_name not in allowed_commands:
-                raise commands.BadArgument("This command isn't in the allowed commands list.")
-            allowed_commands.remove(command.qualified_name)
-        self.cache["allowed_commands"] = allowed_commands
+        async with self.config.locked_cogs() as locked_cogs:
+            locked_cogs[qualified_name] = tiers
+        await ctx.send(f"Cog `{qualified_name}` is now locked for tiers: {', '.join(tiers)}")
 
-    @setrolelocker.command()
-    async def clear(self, ctx: commands.Context) -> None:
-        """Clear the allowed cogs and commands list globally."""
-        await self.config.clear()
-        self.cache = {"allowed_cogs": [], "allowed_commands": []}
+    @rolelock.command()
+    async def removecog(self, ctx: commands.Context, cog_name: str):
+        """Remove a cog from being locked."""
+        qualified_name = self.get_cog_qualified_name(cog_name)
+        if not qualified_name:
+            await ctx.send(f"Cog `{cog_name}` not found.")
+            return
+
+        async with self.config.locked_cogs() as locked_cogs:
+            if qualified_name in locked_cogs:
+                del locked_cogs[qualified_name]
+                await ctx.send(f"Cog `{qualified_name}` is no longer locked.")
+            else:
+                await ctx.send(f"Cog `{qualified_name}` was not locked.")
+
+    @rolelock.command()
+    async def setrolelimit(self, ctx: commands.Context, role: Role, member_count: int):
+        """Set a member count limit for a role to access commands or cogs."""
+        async with self.config.role_limits() as role_limits:
+            role_limits[role.id] = member_count
+        await ctx.send(f"Role `{role.name}` now requires at least `{member_count}` members to access locked commands or cogs.")
+
+    def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
+        """Get the qualified name of a cog."""
+        cog = self.bot.get_cog(cog_name)
+        if cog:
+            print(f"Found cog: {cog.qualified_name}")  # Debugging line
+            return cog.qualified_name
+        print(f"Cog not found: {cog_name}")  # Debugging line
+        return None
 
     async def red_get_help_for(self, ctx: commands.Context, command_or_cog):
         """Override help menu to hide locked commands and cogs."""
