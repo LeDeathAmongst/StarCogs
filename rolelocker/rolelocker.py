@@ -1,4 +1,4 @@
-from Star_Utils import Cog, Settings, Menu
+from Star_Utils import Cog, Settings, Menu, View
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role, Embed
@@ -237,9 +237,9 @@ class RoleLocker(Cog):
                 description="\n".join(role_names) if role_names else "None",
                 color=await ctx.embed_color()
             )
-            pages.append({"embed": embed})
+            pages.append(embed)
 
-        await Menu(pages=pages).start(ctx)
+        await Menu(pages=pages, timeout=60, clear_reactions_after=True, view=View()).start(ctx)
 
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
@@ -262,7 +262,6 @@ class RoleLocker(Cog):
                 required_roles = locked_cogs[command_or_cog.qualified_name]
                 if not any(role in user_roles for role in required_roles):
                     return None
-                # Hide commands within locked cogs
                 for command in command_or_cog.get_commands():
                     if command.qualified_name in locked_commands:
                         required_roles = locked_commands[command.qualified_name]
