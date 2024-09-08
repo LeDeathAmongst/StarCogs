@@ -1,9 +1,9 @@
-import datetime
 import random
-from typing import Optional, Dict
+from typing import Optional
 from redbot.core import commands
 from redbot.core.bot import Red
 import discord
+from datetime import datetime  # Correct import
 
 from Star_Utils import Cog, Settings, Loop
 
@@ -104,7 +104,7 @@ class Counting(Cog):
         if level not in self.logs:
             self.logs[level] = []
         self.logs[level].append({
-            "time": datetime.utcnow(),
+            "time": datetime.utcnow(),  # Correct usage of utcnow()
             "levelname": level.upper(),
             "message": message,
             "exc_info": None
