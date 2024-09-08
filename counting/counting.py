@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Dict
+from typing import Optional
 from redbot.core import commands
 from redbot.core.bot import Red
 import discord
@@ -110,7 +110,7 @@ class Counting(Cog):
             await ctx.send(f"Counting game channel set to {channel.mention}. Please set the shame role (optional) using `countingsetshamerole`.")
 
         self.config.settings["channel_id"]["converter"] = channel.id
-        self.config.settings["current_number"]["converter"] = 1
+        self.config.settings["current_number"]["converter"] = 0  # Start at 0
         self.config.settings["leaderboard"]["converter"] = {}
         self.config.settings["last_counter_id"]["converter"] = None
 
@@ -178,7 +178,7 @@ class Counting(Cog):
                         roast = random.choice(roasts)
                         await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
-                    self.config.settings["current_number"]["converter"] = 1
+                    self.config.settings["current_number"]["converter"] = 0  # Reset to 0
                     self.config.settings["last_counter_id"]["converter"] = None
 
             except ValueError:
