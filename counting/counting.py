@@ -158,6 +158,7 @@ class Counting(Cog):
         linked_channels = await self.config.linked_channels()
         if message.channel.id in linked_channels:
             await self.handle_counting(message, local=False)
+            await self.relay_message(message)
 
     async def handle_counting(self, message: discord.Message, local: bool):
         """Handle the counting logic for both local and global."""
@@ -212,6 +213,43 @@ class Counting(Cog):
 
         except ValueError:
             pass  # Ignore non-numeric messages
+
+    async def relay_message(self, message: discord.Message):
+        """Relay the message across linked channels."""
+        linked_channels = await self.config.linked_channels()
+        content = message.content
+
+        # Remove @everyone and @here mentions
+        content = content.replace("@everyone", "").replace("@here", "")
+
+        # Handle mentions
+        mentioned_users = message.mentions
+        mentioned_roles = message.role_mentions
+
+        for user in mentioned_users:
+            content = content.replace(f"<@{user.id}>", '')  # Remove the mention
+        for role in mentioned_roles:
+            content = content.replace(f"<@&{role.id}>", '')  # Remove the role mention
+
+        if not content.strip() and not message.attachments:  # If the message is now empty and has no attachments, delete it
+            await message.delete()
+            return
+
+        display_name = message.author.display_name if message.author.display_name else message.author.name
+
+        for channel_id in linked_channels:
+            if channel_id != message.channel.id:
+                channel = self.bot.get_channel(channel_id)
+                if channel:
+                    if message.attachments:
+                        for attachment in message.attachments:
+                            relay_message = await channel.send(f"**{message.guild.name} - {display_name}:** {content}")
+                            await attachment.save(f"temp_{attachment.filename}")
+                            with open(f"temp_{attachment.filename}", "rb") as file:
+                                await channel.send(file=discord.File(file))
+                            os.remove(f"temp_{attachment.filename}")
+                    else:
+                        await channel.send(f"**{message.guild.name} - {display_name}:** {content}")
 
     @commands.command()
     async def currentnumber(self, ctx):
