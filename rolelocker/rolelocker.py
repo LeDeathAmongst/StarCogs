@@ -19,6 +19,7 @@ class RoleLocker(Cog):
         self.config.register_global(locked_commands={})
         self.config.register_global(locked_cogs={})
         self.config.register_global(role_tiers={})
+        self.config.register_global(role_limits={})
 
         # Use Star_Utils.settings
         _settings: typing.Dict[str, typing.Dict[str, typing.Any]] = {
@@ -37,6 +38,12 @@ class RoleLocker(Cog):
             "role_tiers": {
                 "converter": dict,
                 "description": "Dictionary of role tiers.",
+                "hidden": True,
+                "no_slash": True,
+            },
+            "role_limits": {
+                "converter": dict,
+                "description": "Dictionary of role limits with required member count.",
                 "hidden": True,
                 "no_slash": True,
             },
@@ -80,35 +87,44 @@ class RoleLocker(Cog):
     @rolelock.command()
     async def cog(self, ctx: commands.Context, cog_name: str, *tiers: str):
         """Lock an entire cog behind tiers."""
-        cog_name = self.get_cog_qualified_name(cog_name)
-        if not cog_name:
+        qualified_name = self.get_cog_qualified_name(cog_name)
+        if not qualified_name:
             await ctx.send(f"Cog `{cog_name}` not found.")
             return
 
         async with self.config.locked_cogs() as locked_cogs:
-            locked_cogs[cog_name] = tiers
-        await ctx.send(f"Cog `{cog_name}` is now locked for tiers: {', '.join(tiers)}")
+            locked_cogs[qualified_name] = tiers
+        await ctx.send(f"Cog `{qualified_name}` is now locked for tiers: {', '.join(tiers)}")
 
     @rolelock.command()
     async def removecog(self, ctx: commands.Context, cog_name: str):
         """Remove a cog from being locked."""
-        cog_name = self.get_cog_qualified_name(cog_name)
-        if not cog_name:
+        qualified_name = self.get_cog_qualified_name(cog_name)
+        if not qualified_name:
             await ctx.send(f"Cog `{cog_name}` not found.")
             return
 
         async with self.config.locked_cogs() as locked_cogs:
-            if cog_name in locked_cogs:
-                del locked_cogs[cog_name]
-                await ctx.send(f"Cog `{cog_name}` is no longer locked.")
+            if qualified_name in locked_cogs:
+                del locked_cogs[qualified_name]
+                await ctx.send(f"Cog `{qualified_name}` is no longer locked.")
             else:
-                await ctx.send(f"Cog `{cog_name}` was not locked.")
+                await ctx.send(f"Cog `{qualified_name}` was not locked.")
+
+    @rolelock.command()
+    async def setrolelimit(self, ctx: commands.Context, role: Role, member_count: int):
+        """Set a member count limit for a role to access commands or cogs."""
+        async with self.config.role_limits() as role_limits:
+            role_limits[role.id] = member_count
+        await ctx.send(f"Role `{role.name}` now requires at least `{member_count}` members to access locked commands or cogs.")
 
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
         cog = self.bot.get_cog(cog_name)
         if cog:
+            print(f"Found cog: {cog.qualified_name}")  # Debugging line
             return cog.qualified_name
+        print(f"Cog not found: {cog_name}")  # Debugging line
         return None
 
     @commands.Cog.listener()
@@ -117,8 +133,16 @@ class RoleLocker(Cog):
         locked_commands = await self.config.locked_commands()
         locked_cogs = await self.config.locked_cogs()
         role_tiers = await self.config.role_tiers()
+        role_limits = await self.config.role_limits()
 
         user_tiers = self.get_user_tiers(ctx.author.roles, role_tiers)
+
+        # Check role limits
+        for role in ctx.author.roles:
+            if role.id in role_limits and len(role.members) < role_limits[role.id]:
+                await ctx.send(f"Role `{role.name}` requires at least `{role_limits[role.id]}` members to access this command.")
+                ctx.command.reset_cooldown(ctx)
+                raise commands.CheckFailure()
 
         # Check if the entire cog is locked
         if ctx.cog.qualified_name in locked_cogs:
