@@ -1,4 +1,5 @@
 import os
+import functools
 import shutil
 import logging
 from io import BytesIO
