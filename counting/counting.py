@@ -43,7 +43,7 @@ class Counting(Cog):
             bot=self.bot,
             cog=self,
             config=self.config,  # Pass the Config object here
-            group="counting",
+            group="guild",  # Ensure this matches the registered group
             settings={
                 "current_number": {
                     "converter": int,
