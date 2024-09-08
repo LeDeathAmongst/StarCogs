@@ -100,7 +100,6 @@ class AutoDocs(Cog):
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
-            commands_group=self.setautodocs,
         )
 
         self.cog_description = "This is a helpful description of the cog."  # Use a different attribute
