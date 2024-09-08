@@ -1,5 +1,5 @@
-import os
 import functools
+import os
 import shutil
 import logging
 from io import BytesIO
@@ -7,11 +7,11 @@ from typing import List, Literal, Optional, Tuple
 from zipfile import ZIP_DEFLATED, ZipFile
 import yaml
 import random
-import sys  # Import sys to get the Python executable path
+import sys
+import subprocess
 
 import discord
-from tabulate import tabulate
-from Star_Utils import Cog, Settings  # Assuming Settings and Cog are available here
+import pandas as pd
 from aiocache import cached
 from discord import app_commands
 from redbot.core import commands
@@ -19,21 +19,14 @@ from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n, set_contextual_locales_from_guild
 from redbot.core.utils.mod import is_admin_or_superior, is_mod_or_superior
 
-from .formatter import IGNORE, CustomCmdFmt  # Ensure these are correctly imported
+from Star_Utils import Cog, Settings
 
-log = logging.getLogger("red.vrt.autodocs")
+from .formatter import IGNORE, CustomCmdFmt
+
+log = logging.getLogger("red.star.autodocsite")
 _ = Translator("AutoDocs", __file__)
 
 PRIVILEGE_LEVELS = ["user", "mod", "admin", "guildowner", "botowner"]
-
-# Add a get method to the Settings class
-class Settings:
-    def __init__(self, bot, cog, config, group, settings, global_path, use_profiles_system, can_edit, commands_group=None):
-        self._config = config
-        self.settings = settings
-
-    def get(self, key, default=None):
-        return self.settings.get(key, {}).get("converter", default)
 
 @cog_i18n(_)
 class AutoDocs(Cog):
@@ -49,10 +42,10 @@ class AutoDocs(Cog):
         """No data to delete"""
 
     def __init__(self, bot: Red, *args, **kwargs):
-        super().__init__(bot, *args, **kwargs)
+        super().__init__(bot)
         self.bot = bot
 
-        # Initialize settings
+        # Initialize settings using the Settings class from Star_Utils
         self.config = Settings(
             bot=self.bot,
             cog=self,
@@ -107,13 +100,25 @@ class AutoDocs(Cog):
                     "converter": bool,
                     "description": "Use embedding style in documentation.",
                 },
+                "invite_link": {
+                    "converter": str,
+                    "description": "Invite link for the bot.",
+                },
+                "support_server": {
+                    "converter": str,
+                    "description": "Support server link.",
+                },
+                "custom_footer": {
+                    "converter": str,
+                    "description": "Custom footer for the documentation site.",
+                },
             },
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
         )
 
-        self.cog_description = "This is a helpful description of the cog."  # Use a different attribute
+        self.cog_description = "This is a helpful description of the cog."
         self.bot.add_listener(self.on_cog_load, "on_cog_load")
         self.bot.add_listener(self.on_cog_unload, "on_cog_unload")
 
@@ -151,14 +156,14 @@ class AutoDocs(Cog):
         max_privilege_level: str,
         min_privilege_level: str = "user",
         embedding_style: bool = False,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, pd.DataFrame]:
         columns = [_("name"), _("text")]
         rows = []
         cog_name = cog.qualified_name
         if include_help:
             helptxt = _("Help")
             docs = f"# {cog_name} {helptxt}\n\n"
-            cog_help = getattr(cog, 'cog_description', None)  # Use cog_description instead
+            cog_help = getattr(cog, 'cog_description', None)
             if not embedding_style and cog_help:
                 cog_help = cog_help.replace("\n", "<br/>")
             if cog_help:
@@ -225,10 +230,8 @@ class AutoDocs(Cog):
             docs += doc
             csv_name = f"{cmd.name} command for {cog_name} cog"
             rows.append([csv_name, f"{csv_name}\n{doc}"])
-
-        # Use tabulate to create a markdown table
-        table_str = tabulate(rows, headers=columns, tablefmt="pipe")
-        return docs, table_str
+        df = pd.DataFrame(rows, columns=columns)
+        return docs, df
 
     @commands.hybrid_command(name="makedocs", description=_("Create docs for a cog"))
     @app_commands.describe(
@@ -256,24 +259,6 @@ class AutoDocs(Cog):
         min_privilege_level: Literal["user", "mod", "admin", "guildowner", "botowner"] = "user",
         csv_export: Optional[bool] = False,
     ):
-        """
-        Create a Markdown docs page for a cog and send to discord
-
-        **Arguments**
-        `cog_name:            `(str) The name of the cog you want to make docs for (Case Sensitive)
-        `replace_prefix:      `(bool) If True, replaces the `prefix` placeholder with the bots prefix
-        `replace_botname:     `(bool) If True, replaces the `botname` placeholder with the bots name
-        `extended_info:       `(bool) If True, include extra info like converters and their docstrings
-        `include_hidden:      `(bool) If True, includes hidden commands
-        `include_help:        `(bool) If True, includes the cog help text at the top of the docs
-        `max_privilege_level: `(str) Hide commands above specified privilege level
-        `min_privilege_level: `(str) Hide commands below specified privilege level
-        - (user, mod, admin, guildowner, botowner)
-        `csv_export:          `(bool) Include a csv with each command isolated per row for use as embeddings
-
-        **Note** If `all` is specified for cog_name, all currently loaded non-core cogs will have docs generated for
-        them and sent in a zip file
-        """
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
         prefix = (await self.bot.get_valid_prefixes(ctx.guild))[0].strip() if replace_prefix else ""
         async with ctx.typing():
@@ -301,20 +286,22 @@ class AutoDocs(Cog):
                             min_privilege_level,
                             csv_export,
                         )
-                        docs, table_str = await self.bot.loop.run_in_executor(None, partial_func)
+                        docs, df = await self.bot.loop.run_in_executor(None, partial_func)
                         filename = f"{folder_name}/{cog.qualified_name}.md"
 
                         if csv_export:
+                            tmp = BytesIO()
+                            df.to_csv(tmp, index=False)
                             arc.writestr(
                                 filename.replace(".md", ".csv"),
-                                table_str,
+                                tmp.getvalue(),
                                 compress_type=ZIP_DEFLATED,
                                 compresslevel=9,
                             )
                         else:
                             arc.writestr(
                                 filename,
-                                docs + "\n\n" + table_str,
+                                docs,
                                 compress_type=ZIP_DEFLATED,
                                 compresslevel=9,
                             )
@@ -339,13 +326,14 @@ class AutoDocs(Cog):
                     min_privilege_level,
                     csv_export,
                 )
-                docs, table_str = await self.bot.loop.run_in_executor(None, partial_func)
+                docs, df = await self.bot.loop.run_in_executor(None, partial_func)
                 if csv_export:
-                    buffer = BytesIO(table_str.encode())
+                    buffer = BytesIO()
+                    df.to_csv(buffer, index=False)
                     buffer.name = f"{cog.qualified_name}.csv"
                     buffer.seek(0)
                 else:
-                    buffer = BytesIO((docs + "\n\n" + table_str).encode())
+                    buffer = BytesIO(docs.encode())
                     buffer.name = f"{cog.qualified_name}.md"
                     buffer.seek(0)
                 file = discord.File(buffer)
@@ -368,12 +356,6 @@ class AutoDocs(Cog):
 
     @commands.command(name="searchcmd", description="Search for a specific command and get its documentation.")
     async def search_command(self, ctx: commands.Context, *, command_name: str):
-        """
-        Search for a specific command and get its documentation.
-
-        **Arguments**
-        `command_name: `(str) The name of the command you want to search for.
-        """
         command = self.bot.get_command(command_name)
         if not command:
             return await ctx.send("Command not found. Please check the command name and try again.")
@@ -398,20 +380,97 @@ class AutoDocs(Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(name="setupdocs")
+    async def setup_docs(self, ctx: commands.Context):
+        """
+        Provide detailed setup instructions for AutoDocs.
+        """
+        embed = discord.Embed(
+            title="AutoDocs Setup Instructions",
+            description="Follow these steps to set up AutoDocs, including backend and frontend configurations, and Docker setup.",
+            color=random.randint(0, 0xFFFFFF)
+        )
+
+        embed.add_field(
+            name="Backend Setup",
+            value=(
+                "1. **Clone the Repository**: Clone the AutoDocs repository from GitHub.\n"
+                "   ```bash\n"
+                "   git clone <repository-url>\n"
+                "   cd <repository-directory>\n"
+                "   ```\n"
+                "2. **Install Dependencies**: Ensure you have Python 3.8+ and install necessary packages.\n"
+                "   ```bash\n"
+                "   pip install -r requirements.txt\n"
+                "   ```\n"
+                "3. **Configure Settings**: Use the bot commands to set configuration variables.\n"
+                "   ```\n"
+                "   !setsite repo_dir /path/to/repo\n"
+                "   !setsite custom_domain yourdomain.com\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="Frontend Setup",
+            value=(
+                "1. **Install MkDocs**: Ensure MkDocs is installed in your Python environment.\n"
+                "   ```bash\n"
+                "   pip install mkdocs\n"
+                "   ```\n"
+                "2. **Build the Documentation Site**: Use the `gendocs` command to generate the site.\n"
+                "   ```\n"
+                "   !gendocs\n"
+                "   ```\n"
+                "3. **Deploy the Site**: Use MkDocs to deploy the site to GitHub Pages.\n"
+                "   ```bash\n"
+                "   mkdocs gh-deploy\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="Docker Setup",
+            value=(
+                "1. **Create a Dockerfile**: Define a Dockerfile to containerize your application.\n"
+                "   ```Dockerfile\n"
+                "   FROM python:3.8-slim\n"
+                "   WORKDIR /app\n"
+                "   COPY . .\n"
+                "   RUN pip install -r requirements.txt\n"
+                "   CMD [\"python\", \"bot.py\"]\n"
+                "   ```\n"
+                "2. **Build the Docker Image**: Build the Docker image from your Dockerfile.\n"
+                "   ```bash\n"
+                "   docker build -t autodocs-bot .\n"
+                "   ```\n"
+                "3. **Run the Docker Container**: Run the container with necessary environment variables.\n"
+                "   ```bash\n"
+                "   docker run -d --name autodocs -e DISCORD_TOKEN=<your-token> autodocs-bot\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.set_footer(text="For more detailed instructions, visit the official documentation.")
+
+        await ctx.send(embed=embed)
+
 class AutoDocSite(Cog):
     """
     Automatically generate a documentation site for every cog in the bot.
     """
 
-
     async def red_delete_data_for_user(self, *, requester, user_id: int):
         """No data to delete"""
 
     def __init__(self, bot: Red, *args, **kwargs):
-        super().__init__(bot, *args, **kwargs)
+        super().__init__(bot)
         self.bot = bot
 
-        # Initialize settings
+        # Initialize settings using the Settings class from Star_Utils
         self.config = Settings(
             bot=self.bot,
             cog=self,
@@ -482,52 +541,7 @@ class AutoDocSite(Cog):
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
-            commands_group=self.setsite,
         )
-
-    @commands.group()
-    @commands.is_owner()
-    async def autodocsite(self, ctx: commands.Context):
-        """Group command for AutoDocSite operations."""
-        pass
-
-    @autodocsite.command()
-    async def setup(self, ctx: commands.Context):
-        """Provides detailed setup instructions for AutoDocSite."""
-        embed = discord.Embed(
-            title="AutoDocSite Setup Instructions",
-            description=(
-                "Follow these detailed steps to set up the AutoDocSite cog:\n\n"
-                "1. **Set Repository Directory**\n"
-                "   - Use the command `[p]setsite repo_dir <path>`.\n"
-                "   - Replace `<path>` with the directory path where you want to store your documentation files.\n"
-                "   - This directory should be within your local or server's file system and linked to a GitHub repository.\n\n"
-                "2. **Configure GitHub Personal Access Token (PAT)**\n"
-                "   - Go to GitHub > Settings > Developer settings > Personal Access Tokens.\n"
-                "   - Click 'Generate new token', and give it a name.\n"
-                "   - Ensure you select 'Repo' access to allow pushing changes to your GitHub repository.\n"
-                "   - Save this token securely; you'll need it for deploying your site.\n\n"
-                "3. **Install MkDocs and Theme**\n"
-                "   - Open your command line or terminal.\n"
-                "   - Run `pip install mkdocs mkdocs-dracula-theme` to install MkDocs and the Dracula theme.\n"
-                "   - This will allow you to build and style your documentation site.\n\n"
-                "4. **Set Site Configuration**\n"
-                "   - Use `[p]setsite` commands to configure site settings.\n"
-                "   - Example: `[p]setsite site_name MyBotDocs` to set the site name.\n"
-                "   - Configure other settings like `custom_domain`, `theme_name`, etc., to customize your site.\n\n"
-                "5. **Build and Deploy Documentation**\n"
-                "   - Navigate to your documentation repository directory in the terminal.\n"
-                "   - Run `mkdocs build` to generate the static site files.\n"
-                "   - Run `mkdocs gh-deploy` to deploy your site to GitHub Pages.\n"
-                "   - When prompted, enter your GitHub username and use the PAT as your password.\n\n"
-                "6. **Verify Deployment**\n"
-                "   - Go to your GitHub repository settings and ensure GitHub Pages is enabled.\n"
-                "   - Your documentation site should now be live!\n\n"
-                "For further assistance, refer to the documentation or use `[p]help AutoDocSite`."
-            ),
-            color=discord.Color.blue()
-        )
-        await ctx.send(embed=embed)
 
     @commands.group()
     @commands.is_owner()
@@ -631,25 +645,18 @@ class AutoDocSite(Cog):
         self.config.settings["custom_footer"]["converter"] = value
         await ctx.send(f"Custom footer set to: {value}")
 
-    @commands.hybrid_command(name="gendocs", description=_("Generate documentation site for every cog"))
+    @commands.command(name="gendocs")
     @commands.is_owner()
     async def gendocs(self, ctx: commands.Context):
-        """
-        Generate a documentation site for every cog in the bot.
-        """
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
 
-        # Get the repo_dir from the configuration
-        repo_dir = self.config.get("repo_dir")
-        if not repo_dir:
-            await ctx.send("The repository directory is not set. Please configure it using the setsite command.")
-            return
-
-        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}/")
+        site_url = self.config.get("site_url")
+        if site_url is None:
+            site_url = f"https://{self.config.get('custom_domain')}/"
 
         async with ctx.typing():
-            docs_dir = os.path.join(repo_dir, "docs")
-            mkdocs_config_path = os.path.join(repo_dir, "mkdocs.yml")
+            docs_dir = os.path.join(self.config.get("repo_dir"), "docs")
+            mkdocs_config_path = os.path.join(self.config.get("repo_dir"), "mkdocs.yml")
 
             if os.path.exists(docs_dir):
                 shutil.rmtree(docs_dir)
@@ -781,31 +788,29 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
                 f.write(yaml.dump(meta_config, default_flow_style=False))
 
             # Change to the repository directory
-            os.chdir(repo_dir)
+            os.chdir(self.config.get("repo_dir"))
 
-            # Use sys.executable to run mkdocs
+            # Use sys.executable to run mkdocs dynamically
             python_executable = sys.executable
 
             # Pull the latest changes before pushing
-            os.system("git pull origin gh-pages")
+            subprocess.run(["git", "pull", "origin", "gh-pages"], check=True)
 
             # Build and deploy the documentation site
-            os.system(f"{python_executable} -m mkdocs build")
-            os.system(f"{python_executable} -m mkdocs gh-deploy")
+            subprocess.run([python_executable, "-m", "mkdocs", "build"], check=True)
+            subprocess.run([python_executable, "-m", "mkdocs", "gh-deploy"], check=True)
 
             await ctx.send(f"Documentation site has been generated and deployed to GitHub Pages.\nYou can view it here: {site_url}")
 
     @commands.command()
     @commands.is_owner()
     async def docs(self, ctx: commands.Context):
-        """
-        Send the link to the documentation site.
-        """
-        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}/")
+        site_url = self.config.get("site_url")
+        if site_url is None:
+            site_url = f"https://{self.config.get('custom_domain')}/"
         await ctx.send(f"Here is the link to the documentation site: {site_url}")
 
     def generate_command_docs(self, cmd: commands.Command, prefix: str, extended_info: bool) -> str:
-        """Generate detailed documentation for a command."""
         doc = f"### {prefix}{cmd.qualified_name}\n\n"
         if cmd.help:
             doc += f"**Description:** {cmd.help}\n\n"
@@ -842,14 +847,14 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
         max_privilege_level: str,
         min_privilege_level: str = "user",
         embedding_style: bool = False,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, pd.DataFrame]:
         columns = [_("name"), _("text")]
         rows = []
         cog_name = cog.qualified_name
         if include_help:
             helptxt = _("Help")
             docs = f"# {cog_name} {helptxt}\n\n"
-            cog_help = getattr(cog, 'cog_description', None)  # Use cog_description instead
+            cog_help = getattr(cog, 'cog_description', None)
             if not embedding_style and cog_help:
                 cog_help = cog_help.replace("\n", "<br/>")
             if cog_help:
@@ -916,7 +921,5 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
             docs += doc
             csv_name = f"{cmd.name} command for {cog_name} cog"
             rows.append([csv_name, f"{csv_name}\n{doc}"])
-
-        # Use tabulate to create a markdown table
-        table_str = tabulate(rows, headers=columns, tablefmt="pipe")
-        return docs, table_str
+        df = pd.DataFrame(rows, columns=columns)
+        return docs, df
