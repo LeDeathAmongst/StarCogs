@@ -594,11 +594,17 @@ class AutoDocSite(Cog):
         """
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
 
+        # Get the repo_dir from the configuration
+        repo_dir = self.config.get("repo_dir")
+        if not repo_dir:
+            await ctx.send("The repository directory is not set. Please configure it using the setsite command.")
+            return
+
         site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}/")
 
         async with ctx.typing():
-            docs_dir = os.path.join(self.config.get("repo_dir"), "docs")
-            mkdocs_config_path = os.path.join(self.config.get("repo_dir"), "mkdocs.yml")
+            docs_dir = os.path.join(repo_dir, "docs")
+            mkdocs_config_path = os.path.join(repo_dir, "mkdocs.yml")
 
             if os.path.exists(docs_dir):
                 shutil.rmtree(docs_dir)
@@ -725,33 +731,12 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
                     continue
                 meta_config["nav"][1]["Cogs"].append({cog_name: f"{cog_name}.md"})
 
-                # Create individual mkdocs.yml for each cog
-                cog_config = {
-                    "site_name": f"{cog_name}'s Documentation",
-                    "site_url": f"{site_url}{cog_name}/",
-                    "theme": {
-                        "name": self.config.get("theme_name")
-                    },
-                    "use_directory_urls": self.config.get("use_directory_urls"),
-                    "nav": [
-                        {"Home": "index.md"},
-                        {cog_name: f"{cog_name}.md"}
-                    ],
-                    "extra": {
-                        "footer": self.config.get("custom_footer")}
-                }
-
-                cog_config_path = os.path.join(docs_dir, cog_name, "mkdocs.yml")
-                os.makedirs(os.path.dirname(cog_config_path), exist_ok=True)
-                with open(cog_config_path, "w", encoding="utf-8") as f:
-                    f.write(yaml.dump(cog_config, default_flow_style=False))
-
             # Write main mkdocs.yml configuration
             with open(mkdocs_config_path, "w", encoding="utf-8") as f:
                 f.write(yaml.dump(meta_config, default_flow_style=False))
 
             # Change to the repository directory
-            os.chdir(self.config.get("repo_dir"))
+            os.chdir(repo_dir)
 
             # Use sys.executable to run mkdocs
             python_executable = sys.executable
