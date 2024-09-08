@@ -2,7 +2,7 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
 from typing import Optional, Dict
-from star_utils import Buttons, Dropdown, Cog, Settings
+from Star_Utils import Buttons, Dropdown, Cog, Settings
 
 class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
