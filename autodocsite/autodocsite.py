@@ -142,7 +142,7 @@ class AutoDocs(Cog):
             embedding_style=False,
         )
         filename = f"{cog.qualified_name}.md"
-        with open(os.path.join(self.config.get("repo_dir"), "docs", filename), "w", encoding="utf-8") as f:
+        with open(os.path.join(self.config.settings["repo_dir"]["converter"], "docs", filename), "w", encoding="utf-8") as f:
             f.write(docs)
 
     def generate_readme(
@@ -375,7 +375,7 @@ class AutoDocs(Cog):
         )
 
         cog_name = command.cog.qualified_name
-        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}")
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
         embed.add_field(name="More Info", value=f"[Documentation]({site_url}/{cog_name}.html#{command_name.replace(' ', '-')})")
 
         await ctx.send(embed=embed)
@@ -650,10 +650,7 @@ class AutoDocSite(Cog):
     async def gendocs(self, ctx: commands.Context):
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
 
-        # Access the site_url setting correctly
-        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else None
-        if site_url is None:
-            site_url = f"https://{self.config.settings['custom_domain']['converter']}"
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
 
         async with ctx.typing():
             docs_dir = os.path.join(self.config.settings["repo_dir"]["converter"], "docs")
@@ -675,15 +672,15 @@ class AutoDocSite(Cog):
             index_content = f"""
 # Welcome to the Docs
 
-Welcome to the official documentation site for **{self.config.get('site_name')}**! This site provides comprehensive information on how to use and configure the various features and commands available in the bot.
+Welcome to the official documentation site for **{self.config.settings['site_name']['converter']}**! This site provides comprehensive information on how to use and configure the various features and commands available in the bot.
 
 ## Introduction
 
-**{self.config.get('site_name')}** is a powerful and versatile bot designed to enhance your Discord server experience. With a wide range of features, including moderation tools, fun commands, and utility functions, **{bot_name}** is the perfect addition to any server.
+**{self.config.settings['site_name']['converter']}** is a powerful and versatile bot designed to enhance your Discord server experience. With a wide range of features, including moderation tools, fun commands, and utility functions, **{bot_name}** is the perfect addition to any server.
 
 ## Getting Started
 
-To get started with **{self.config.get('site_name')}**, follow these simple steps:
+To get started with **{self.config.settings['site_name']['converter']}**, follow these simple steps:
 
 1. **Invite the Bot**: Use the invite link to add the bot to your Discord server.
 2. **Set Up Permissions**: Ensure the bot has the necessary permissions to function correctly.
@@ -693,7 +690,7 @@ To get started with **{self.config.get('site_name')}**, follow these simple step
 
 ### General Commands
 
-**{self.config.get('site_name')}** offers a variety of general commands to enhance your server experience. These commands include:
+**{self.config.settings['site_name']['converter']}** offers a variety of general commands to enhance your server experience. These commands include:
 
 - `{prefix}help`: Displays a list of available commands.
 - `{prefix}info bot`: Provides information about the bot.
@@ -719,7 +716,7 @@ Add some fun to your server with these entertaining commands:
 
 ## Configuration
 
-To configure **{self.config.get('site_name')}**, use the following commands:
+To configure **{self.config.settings['site_name']['converter']}**, use the following commands:
 
 - `{prefix}prefix [prefix]`: Changes the command prefix.
 
@@ -727,7 +724,7 @@ To configure **{self.config.get('site_name')}**, use the following commands:
 
 ### How do I invite the bot to my server?
 
-Use the invite link provided [here]({self.config.get('invite_link')}) to add the bot to your server.
+Use the invite link provided [here]({self.config.settings['invite_link']['converter']}) to add the bot to your server.
 
 ### How do I report a bug or request a feature?
 
@@ -735,9 +732,9 @@ To report a bug, please join the support server and create a ticket. To request 
 
 ## Support
 
-If you need assistance or have any questions, please join our [Support Server]({self.config.get('support_server')}).
+If you need assistance or have any questions, please join our [Support Server]({self.config.settings['support_server']['converter']}).
 
-Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all the features and functionality it has to offer.
+Thank you for using **{self.config.settings['site_name']['converter']}**! We hope you enjoy all the features and functionality it has to offer.
 """
             with open(os.path.join(docs_dir, "index.md"), "w") as f:
                 f.write(index_content)
@@ -749,13 +746,13 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
                 docs, _ = self.generate_readme(
                     cog,
                     prefix=prefix,
-                    replace_botname=self.config.get("replace_botname"),
-                    extended_info=self.config.get("extended_info"),
-                    include_hidden=self.config.get("include_hidden"),
-                    include_help=self.config.get("include_help"),
-                    max_privilege_level=self.config.get("max_privilege_level"),
-                    min_privilege_level=self.config.get("min_privilege_level"),
-                    embedding_style=self.config.get("embedding_style"),
+                    replace_botname=self.config.settings["replace_botname"]["converter"],
+                    extended_info=self.config.settings["extended_info"]["converter"],
+                    include_hidden=self.config.settings["include_hidden"]["converter"],
+                    include_help=self.config.settings["include_help"]["converter"],
+                    max_privilege_level=self.config.settings["max_privilege_level"]["converter"],
+                    min_privilege_level=self.config.settings["min_privilege_level"]["converter"],
+                    embedding_style=self.config.settings["embedding_style"]["converter"],
                 )
                 filename = os.path.join(docs_dir, f"{cog_name}.md")
                 with open(filename, "w", encoding="utf-8") as f:
@@ -766,15 +763,15 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
                 "site_name": f"{self.bot.user.name}'s Documentation",
                 "site_url": site_url,
                 "theme": {
-                    "name": self.config.get("theme_name")
+                    "name": self.config.settings["theme_name"]["converter"]
                 },
-                "use_directory_urls": self.config.get("use_directory_urls"),
+                "use_directory_urls": self.config.settings["use_directory_urls"]["converter"],
                 "nav": [
                     {"Home": "index.md"},
                     {"Cogs": []}
                 ],
                 "extra": {
-                    "footer": self.config.get("custom_footer")
+                    "footer": self.config.settings["custom_footer"]["converter"]
                 }
             }
 
@@ -789,7 +786,7 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
                 f.write(yaml.dump(meta_config, default_flow_style=False))
 
             # Change to the repository directory
-            os.chdir(self.config.get("repo_dir"))
+            os.chdir(self.config.settings["repo_dir"]["converter"])
 
             # Use sys.executable to run mkdocs dynamically
             python_executable = sys.executable
@@ -806,9 +803,7 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
     @commands.command()
     @commands.is_owner()
     async def docs(self, ctx: commands.Context):
-        site_url = self.config.get("site_url")
-        if site_url is None:
-            site_url = f"https://{self.config.get('custom_domain')}/"
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
         await ctx.send(f"Here is the link to the documentation site: {site_url}")
 
     def generate_command_docs(self, cmd: commands.Command, prefix: str, extended_info: bool) -> str:
