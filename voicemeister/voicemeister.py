@@ -2,30 +2,29 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
 from typing import Optional, Dict, Any
-from Star_Utils import Buttons, Dropdown, Cog, Settings
+from star_utils import Buttons, Dropdown, Cog, Settings
 
 MAX_CHANNEL_NAME_LENGTH = 100
 MAX_BITRATE = 96  # Maximum bitrate in kbps
 DEFAULT_CHANNEL_NAME = "New Voice Channel"
 
 DEFAULT_EMOJIS = {
-    "lock": "<:Locked:1279848927587467447>",
-    "unlock": "<:Unlocked:1279848944570073109>", 
-    "limit": "<:People:1279848931043573790>",  
-    "hide": "<:Crossed_Eye:1279848957475819723>",
-    "unhide": "<:Eye:1279848986299076728>",
-    "invite": "<:Invite:1279857570634272818>",
-    "ban": "<:Hammer:1279848987922530365>",
-    "permit": "<:Check_Mark:1279848948491747411>",
-    "rename": "<:Pensil:1279848929126645879>", 
-    "bitrate": "<:Headphones:1279848994327232584>",
-    "region": "<:Servers:1279848940786810891>",
-    "claim": "<:Crown:1279848977658810451>", 
-    "transfer": "<:Person_With_Rotation:1279848936752021504>",
-    "info": "<:Information:1279848926383702056>", 
-    "delete": "<:TrashCan:1279875131136806993>", 
-    "create_text": "<:SpeachBubble:1279890650535428198>", 
-    "reset": "<:reset:1280057459146362880>" 
+    "lock": "🔒",
+    "unlock": "🔓",
+    "limit": "🔊",
+    "hide": "👁 ️",
+    "unhide": "👥",
+    "invite": "📨",
+    "ban": "🔨",
+    "permit": "✅",
+    "rename": "✏️",
+    "bitrate": "🎧",
+    "region": "🌍",
+    "claim": "👑",
+    "transfer": "🔄",
+    "info": "ℹ️",
+    "delete": "🗑 ️",
+    "create_text": "💬",
 }
 
 REGION_OPTIONS = [
@@ -107,7 +106,6 @@ class VoiceMeister(Cog):
                 f"{DEFAULT_EMOJIS['info']} Info",
                 f"{DEFAULT_EMOJIS['delete']} Delete Channel",
                 f"{DEFAULT_EMOJIS['create_text']} Create Text Channel",
-                f"{DEFAULT_EMOJIS['reset']} Reset Configurations"
             ]),
             color=discord.Color.blue()
         )
@@ -215,8 +213,8 @@ class VoiceMeister(Cog):
         """Delete the voice channel and linked text channel."""
         try:
             await interaction.response.defer(ephemeral=True)
-            view = DeleteConfirmationView(self, interaction, channel)
-            await interaction.followup.send(content="Are you sure you want to delete the channel?", view=view, ephemeral=True)
+            await channel.delete()
+            await interaction.followup.send(content="The channel has been deleted.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -264,11 +262,6 @@ class VoiceMeister(Cog):
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, view_channel=True)
                 await interaction.followup.send(content="The AutoRoom is now public.", ephemeral=True)
-            elif action == "delete":
-                await channel.delete()
-                if text_channel:
-                    await text_channel.delete()
-                await interaction.followup.send(content="The channel has been deleted.", ephemeral=True)
             else:
                 await interaction.followup.send(content="Invalid action.", ephemeral=True)
         except Exception as e:
@@ -321,16 +314,6 @@ class VoiceMeister(Cog):
             await interaction.response.defer(ephemeral=True)
             view = RegionSelectView(self, channel)
             await interaction.followup.send("Select a region for the voice channel:", view=view, ephemeral=True)
-        except Exception as e:
-            await self.handle_error(interaction, e)
-
-    async def reset_configurations(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Reset all configurations for the channel."""
-        try:
-            await interaction.response.defer(ephemeral=True)
-            # Reset logic here (e.g., reset permissions, name, etc.)
-            await channel.edit(name=DEFAULT_CHANNEL_NAME, user_limit=None, rtc_region=None)
-            await interaction.followup.send("All configurations have been reset to default.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -408,7 +391,6 @@ class VoiceMeisterView(Buttons):
             {"emoji": DEFAULT_EMOJIS["info"], "custom_id": "info"},
             {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete"},
             {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text"},
-            {"emoji": DEFAULT_EMOJIS["reset"], "custom_id": "reset"},
         ]
         super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click)
         self.bot = bot
@@ -432,7 +414,6 @@ class VoiceMeisterView(Buttons):
             "info": self.handle_info,
             "delete": self.handle_delete,
             "create_text": self.handle_create_text,
-            "reset": self.handle_reset,
         }
         handler = handlers.get(interaction.data["custom_id"])
         if handler:
@@ -488,9 +469,6 @@ class VoiceMeisterView(Buttons):
 
     async def handle_create_text(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").create_text_channel(interaction, channel)
-
-    async def handle_reset(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").reset_configurations(interaction, channel)
 
 # Select Menus
 
