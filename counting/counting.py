@@ -5,7 +5,7 @@ from redbot.core.bot import Red
 import discord
 from datetime import datetime
 
-from Star_Utils import Cog, Settings, Loop  # Assuming these are custom utilities
+from Star_Utils import Cog, Settings, Loop
 
 class Counting(Cog):
     """An advanced counting game cog with multiple features and extensive customization."""
@@ -13,11 +13,9 @@ class Counting(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
 
-        # Define default animated emojis as strings
         self.default_correct_emoji = "<a:Tick:1279795666507272225>"
         self.default_wrong_emoji = "<a:Wrong:1279795741300097025>"
 
-        # Initialize the Config object for global configuration
         self.config = Config.get_conf(self, identifier=271828, force_registration=True)
         self.config.register_global(
             current_number=0,
@@ -36,18 +34,17 @@ class Counting(Cog):
             ],
             success_message="Great job, {display_name}! The next number is {next_number}.",
             failure_message="Oops, {display_name}! You messed up. The number was {expected_number}.",
-            linked_channels=[],  # For global counting
+            linked_channels=[],
             global_current_number=0,
             global_last_counter_id=None,
-            global_leaderboard={},  # Global leaderboard
+            global_leaderboard={},
         )
 
-        # Initialize settings using the Settings class from Star_Utils
         self.settings = Settings(
             bot=self.bot,
             cog=self,
             config=self.config,
-            group="global",  # Use global configurations
+            group="global",
             settings={
                 "current_number": {
                     "converter": int,
@@ -117,7 +114,6 @@ class Counting(Cog):
     async def reset_leaderboard_daily(self):
         """Reset the leaderboard daily."""
         # Reset leaderboard globally
-        await self.settings.set_raw("leaderboard", value={}, _object=None)
         await self.config.global_leaderboard.set({})
         self.log_action("info", "Global leaderboard reset.")
 
@@ -146,25 +142,25 @@ class Counting(Cog):
         else:
             await ctx.send(f"Counting game channel set to {channel.mention}. Please set the shame role (optional) using `countingsetshamerole`.")
 
-        await self.settings.set_raw("channel_id", value=channel.id, _object=None)
-        await self.settings.set_raw("current_number", value=0, _object=None)
-        await self.settings.set_raw("leaderboard", value={}, _object=None)
-        await self.settings.set_raw("last_counter_id", value=None, _object=None)
+        await self.config.channel_id.set(channel.id)
+        await self.config.current_number.set(0)
+        await self.config.leaderboard.set({})
+        await self.config.last_counter_id.set(None)
 
         self.log_action("info", f"Counting channel set to {channel.id}.")
 
     @commands.command()
     async def countingsetshamerole(self, ctx, shame_role: discord.Role):
         """Sets the shame role for incorrect counting (optional)."""
-        await self.settings.set_raw("shame_role", value=shame_role.id, _object=None)
+        await self.config.shame_role.set(shame_role.id)
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
         self.log_action("info", f"Shame role set to {shame_role.id}.")
 
     @commands.command()
     async def countingsetemotes(self, ctx, correct_emote: str, wrong_emote: str):
         """Sets the emotes for correct and wrong counts."""
-        await self.settings.set_raw("correct_emote", value=correct_emote, _object=None)
-        await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=None)
+        await self.config.correct_emote.set(correct_emote)
+        await self.config.wrong_emote.set(wrong_emote)
         await ctx.send("Emotes updated successfully.")
         self.log_action("info", f"Correct emote set to {correct_emote}, wrong emote set to {wrong_emote}.")
 
@@ -175,7 +171,7 @@ class Counting(Cog):
             return
 
         # Handle local counting
-        local_channel_id = await self.settings.get_raw("channel_id", _object=None)
+        local_channel_id = await self.config.channel_id()
         if message.channel.id == local_channel_id:
             await self.handle_local_counting(message)
 
@@ -186,13 +182,13 @@ class Counting(Cog):
 
     async def handle_local_counting(self, message: discord.Message):
         """Handle the local counting logic."""
-        guild_config = await self.settings.get_values(_object=None)
+        guild_config = await self.config.all()
         try:
             next_number = int(message.content)
             last_counter_id = guild_config["last_counter_id"]
             if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
-                await self.settings.set_raw("current_number", value=next_number, _object=None)
-                await self.settings.set_raw("last_counter_id", value=message.author.id, _object=None)
+                await self.config.current_number.set(next_number)
+                await self.config.last_counter_id.set(message.author.id)
 
                 correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
                 if isinstance(correct_emote, str):
@@ -201,7 +197,7 @@ class Counting(Cog):
                 leaderboard = guild_config["leaderboard"]
                 user_id = str(message.author.id)
                 leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
-                await self.settings.set_raw("leaderboard", value=leaderboard, _object=None)
+                await self.config.leaderboard.set(leaderboard)
 
                 success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
                 await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
@@ -232,8 +228,8 @@ class Counting(Cog):
                     roast = random.choice(roasts)
                     await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
-                await self.settings.set_raw("current_number", value=0, _object=None)
-                await self.settings.set_raw("last_counter_id", value=None, _object=None)
+                await self.config.current_number.set(0)
+                await self.config.last_counter_id.set(None)
 
                 self.log_action("warning", f"{message.author.display_name} counted incorrectly.")
 
@@ -250,7 +246,7 @@ class Counting(Cog):
             if next_number == global_current_number + 1 and message.author.id != global_last_counter_id:
                 await self.config.global_current_number.set(next_number)
                 await self.config.global_last_counter_id.set(message.author.id)
-                await message.add_reaction("✅")
+                await message.add_reaction("")
 
                 # Update global leaderboard
                 global_leaderboard = await self.config.global_leaderboard()
@@ -267,13 +263,13 @@ class Counting(Cog):
     @commands.command()
     async def currentnumber(self, ctx):
         """Displays the current number in the local counting game."""
-        current_number = await self.settings.get_raw("current_number", _object=None)
+        current_number = await self.config.current_number()
         await ctx.send(f"The current local number is: {current_number}")
 
     @commands.command()
     async def countinglb(self, ctx):
         """Displays the local leaderboard in an embed."""
-        leaderboard = await self.settings.get_raw("leaderboard", _object=None)
+        leaderboard = await self.config.leaderboard()
         if leaderboard:
             sorted_leaderboard = sorted(leaderboard.items(), key=lambda item: item[1], reverse=True)
             embed = discord.Embed(title="Local Counting Game Leaderboard", color=discord.Color.blue())
@@ -294,14 +290,14 @@ class Counting(Cog):
             return
 
         if mode in ["sequential", None]:
-            await self.settings.set_raw("current_number", value=0, _object=None)
-            await self.settings.set_raw("leaderboard", value={}, _object=None)
-            await self.settings.set_raw("last_counter_id", value=None, _object=None)
+            await self.config.current_number.set(0)
+            await self.config.leaderboard.set({})
+            await self.config.last_counter_id.set(None)
 
         if mode in ["reverse", None]:
-            await self.settings.set_raw("current_number", value=100000, _object=None)
-            await self.settings.set_raw("leaderboard", value={}, _object=None)
-            await self.settings.set_raw("last_counter_id", value=None, _object=None)
+            await self.config.current_number.set(100000)
+            await self.config.leaderboard.set({})
+            await self.config.last_counter_id.set(None)
 
         await ctx.send(f"The local counting game{' for ' + mode if mode else ''} has been reset.")
         self.log_action("info", "Local counting game reset.")
