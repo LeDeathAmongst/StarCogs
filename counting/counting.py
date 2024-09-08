@@ -3,7 +3,6 @@ from typing import Optional, Dict
 from redbot.core import commands
 from redbot.core.bot import Red
 import discord
-from discord import PartialEmoji
 
 from Star_Utils import Cog, Settings, Loop
 
@@ -13,8 +12,9 @@ class Counting(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
 
-        self.default_correct_emoji = PartialEmoji(name="Tick", id=1279795666507272225, animated=True)
-        self.default_wrong_emoji = PartialEmoji(name="Wrong", id=1279795741300097025, animated=True)
+        # Define default animated emojis as strings
+        self.default_correct_emoji = "<a:Tick:1279795666507272225>"
+        self.default_wrong_emoji = "<a:Wrong:1279795741300097025>"
 
         # Initialize settings using the Settings class from Star_Utils
         self.config = Settings(
@@ -120,6 +120,13 @@ class Counting(Cog):
         self.config.settings["shame_role"]["converter"] = shame_role.id
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
 
+    @commands.command()
+    async def countingsetemotes(self, ctx, correct_emote: str, wrong_emote: str):
+        """Sets the emotes for correct and wrong counts."""
+        self.config.settings["correct_emote"]["converter"] = correct_emote
+        self.config.settings["wrong_emote"]["converter"] = wrong_emote
+        await ctx.send("Emotes updated successfully.")
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """Handles messages in the counting game channel."""
@@ -134,7 +141,10 @@ class Counting(Cog):
                 if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
                     self.config.settings["current_number"]["converter"] = next_number
                     self.config.settings["last_counter_id"]["converter"] = message.author.id
-                    await message.add_reaction(guild_config["correct_emote"] or self.default_correct_emoji)
+
+                    # Use the correct emoji
+                    correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
+                    await message.add_reaction(correct_emote)
 
                     leaderboard = guild_config["leaderboard"]
                     user_id = str(message.author.id)
@@ -145,7 +155,9 @@ class Counting(Cog):
                     await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
 
                 else:
-                    await message.add_reaction(guild_config["wrong_emote"] or self.default_wrong_emoji)
+                    # Use the wrong emoji
+                    wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
+                    await message.add_reaction(wrong_emote)
 
                     failure_message = guild_config.get("failure_message", "Oops, {display_name}! You messed up. The number was {expected_number}.")
                     await message.channel.send(failure_message.format(display_name=message.author.display_name, expected_number=guild_config["current_number"] + 1))
