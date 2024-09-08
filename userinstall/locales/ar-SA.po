@@ -1,141 +1,74 @@
-import subprocess
-import socket
 import os
-from redbot.core import commands, Config
-from redbot.core.bot import Red
+import sys
+import asyncio
+from flask import Flask, redirect, request, session
+import requests
+from redbot.core import Config
+import logging
 
-class UserInstall(commands.Cog):
-    """A cog to manage user installations and count how many users have the bot installed."""
+# Set up logging
+logging.basicConfig(level=logging.DEBUG, filename='webserver.log', filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
-    def __init__(self, bot: Red):
-        self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567892)
-        self.config.register_global(
-            client_id=None,
-            client_secret=None,
-            redirect_uri=None,
-            bot_token=None,
-            venv_python_path=None,
-            webserver_pid=None
-        )
+app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
-    @commands.group()
-    @commands.is_owner()
-    async def oauth(self, ctx):
-        """Group of commands to configure OAuth2 credentials."""
-        pass
+config = Config.get_conf(None, identifier=1234567892)
+config.register_user(installed=False)
 
-    @oauth.command()
-    async def setclientid(self, ctx, client_id: str):
-        """Set the OAuth2 Client ID.
+@app.route('/')
+def home():
+    return 'Hello, this is the home page.'
 
-        Example:
-        !oauth setclientid 123456789012345678
-        """
-        await self.config.client_id.set(client_id)
-        confirmation = await ctx.send("OAuth2 Client ID has been set.")
-        await ctx.message.delete()
-        await confirmation.delete()
+@app.route('/login')
+def login():
+    client_id = asyncio.run(config.client_id())
+    redirect_uri = asyncio.run(config.redirect_uri())
+    scope = 'identify'
+    discord_login_url = f'https://discord.com/api/oauth2/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope={scope}'
+    return redirect(discord_login_url)
 
-    @oauth.command()
-    async def setclientsecret(self, ctx, client_secret: str):
-        """Set the OAuth2 Client Secret.
+@app.route('/callback')
+def callback():
+    client_id = asyncio.run(config.client_id())
+    client_secret = asyncio.run(config.client_secret())
+    redirect_uri = asyncio.run(config.redirect_uri())
+    code = request.args.get('code')
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'scope': 'identify'
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    response = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
+    response_data = response.json()
+    access_token = response_data['access_token']
 
-        Example:
-        !oauth setclientsecret your_client_secret_here
-        """
-        await self.config.client_secret.set(client_secret)
-        confirmation = await ctx.send("OAuth2 Client Secret has been set.")
-        await ctx.message.delete()
-        await confirmation.delete()
+    user_info = requests.get('https://discord.com/api/users/@me', headers={'Authorization': f'Bearer {access_token}'})
+    user_info_data = user_info.json()
 
-    @oauth.command()
-    async def setredirecturi(self, ctx, redirect_uri: str):
-        """Set the OAuth2 Redirect URI.
+    user_id = user_info_data['id']
+    session['user_id'] = user_id
 
-        Example:
-        !oauth setredirecturi https://yourdomain.com/callback
-        """
-        await self.config.redirect_uri.set(redirect_uri)
-        confirmation = await ctx.send("OAuth2 Redirect URI has been set.")
-        await ctx.message.delete()
-        await confirmation.delete()
+    # Mark the user as having installed the bot
+    asyncio.run(config.user_from_id(user_id).installed.set(True))
 
-    @oauth.command()
-    async def setbottoken(self, ctx, bot_token: str):
-        """Set the bot token.
+    return 'You have successfully logged in and the bot is installed to your profile.'
 
-        Example:
-        !oauth setbottoken your_bot_token_here
-        """
-        await self.config.bot_token.set(bot_token)
-        confirmation = await ctx.send("Bot token has been set.")
-        await ctx.message.delete()
-        await confirmation.delete()
+@app.route('/usercount')
+def usercount():
+    all_users = asyncio.run(config.all_users())
+    installed_users = [user_id for user_id, data in all_users.items() if data['installed']]
+    total_installed_users = len(installed_users)
+    return f'The total number of users who have installed the bot is: {total_installed_users}'
 
-    @oauth.command()
-    async def setvenvpythonpath(self, ctx, venv_python_path: str):
-        """Set the path to the Python interpreter in the virtual environment.
-
-        Example:
-        !oauth setvenvpythonpath /path/to/your/venv/bin/python
-        """
-        await self.config.venv_python_path.set(venv_python_path)
-        confirmation = await ctx.send("Path to the Python interpreter in the virtual environment has been set.")
-        await ctx.message.delete()
-        await confirmation.delete()
-
-    @commands.command()
-    async def usercount(self, ctx):
-        """Get the total count of users who have installed the bot."""
-        all_users = await self.config.all_users()
-        installed_users = [user_id for user_id, data in all_users.items() if data['installed']]
-        total_installed_users = len(installed_users)
-        await ctx.send(f"The total number of users who have installed the bot is: {total_installed_users}")
-
-    @commands.command()
-    @commands.is_owner()
-    async def startwebserver(self, ctx):
-        """Start the Flask web server."""
-        venv_python_path = await self.config.venv_python_path()
-        if not venv_python_path:
-            await ctx.send("The path to the Python interpreter in the virtual environment is not set. Please set it using the command `!oauth setvenvpythonpath`.")
-            return
-
-        # Get the host machine's IP address
-        host_ip = socket.gethostbyname(socket.gethostname())
-
-        await ctx.send("Starting the web server...")
-        log_file = open('webserver.log', 'w')
-        try:
-            process = subprocess.Popen([venv_python_path, "cogs/userinstall/webserver.py", host_ip], stdout=log_file, stderr=log_file)
-            await self.config.webserver_pid.set(process.pid)
-            await ctx.send(f"Web server started on {host_ip} with PID {process.pid}.")
-        except Exception as e:
-            await ctx.send(f"Failed to start web server: {e}")
-
-    @commands.command()
-    @commands.is_owner()
-    async def stopwebserver(self, ctx):
-        """Stop the Flask web server."""
-        webserver_pid = await self.config.webserver_pid()
-        if not webserver_pid:
-            await ctx.send("Web server is not running.")
-            return
-
-        try:
-            subprocess.Popen(['kill', str(webserver_pid)])
-            await self.config.webserver_pid.set(None)
-            await ctx.send(f"Web server with PID {webserver_pid} has been stopped.")
-        except Exception as e:
-            await ctx.send(f"Failed to stop web server: {e}")
-
-    @commands.command()
-    @commands.is_owner()
-    async def restartwebserver(self, ctx):
-        """Restart the Flask web server."""
-        await self.stopwebserver(ctx)
-        await self.startwebserver(ctx)
-
-def setup(bot: Red):
-    bot.add_cog(UserInstall(bot))
+if __name__ == '__main__':
+    try:
+        host_ip = sys.argv[1] if len(sys.argv) > 1 else '0.0.0.0'
+        app.run(debug=True, host=host_ip, port=5000)
+    except Exception as e:
+        logging.error(f"Failed to start web server: {e}")
