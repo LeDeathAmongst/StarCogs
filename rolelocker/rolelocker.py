@@ -12,33 +12,29 @@ class RoleLocker(Cog):
         # Initialize settings
         self.config: Config = Config.get_conf(
             self,
-            identifier=159096775493115543881107426517572342387,  # Unique identifier for your cog
+            identifier=159096775493115543881107426517572342387,
             force_registration=True,
         )
 
         # Define global settings schema
         self.config.register_global(
-            allowed_cogs=[],
-            allowed_commands=[],
-            role_tiers={},
-            role_limits={},
             locked_cogs={},
-            locked_commands={}
+            locked_commands={},
+            role_tiers={},
+            role_limits={}
         )
-
-        self.cache: typing.Dict[str, typing.List[str]] = {"allowed_cogs": [], "allowed_commands": []}
 
         # Use Star_Utils.settings
         _settings: typing.Dict[str, typing.Dict[str, typing.Any]] = {
-            "allowed_cogs": {
-                "converter": list,
-                "description": "List of globally allowed cogs.",
+            "locked_cogs": {
+                "converter": dict,
+                "description": "Dictionary of locked cogs with tiers.",
                 "hidden": True,
                 "no_slash": True,
             },
-            "allowed_commands": {
-                "converter": list,
-                "description": "List of globally allowed commands.",
+            "locked_commands": {
+                "converter": dict,
+                "description": "Dictionary of locked commands with tiers.",
                 "hidden": True,
                 "no_slash": True,
             },
@@ -51,18 +47,6 @@ class RoleLocker(Cog):
             "role_limits": {
                 "converter": dict,
                 "description": "Dictionary of role limits with maximum member count.",
-                "hidden": True,
-                "no_slash": True,
-            },
-            "locked_cogs": {
-                "converter": dict,
-                "description": "Dictionary of locked cogs with tiers.",
-                "hidden": True,
-                "no_slash": True,
-            },
-            "locked_commands": {
-                "converter": dict,
-                "description": "Dictionary of locked commands with tiers.",
                 "hidden": True,
                 "no_slash": True,
             },
@@ -82,9 +66,6 @@ class RoleLocker(Cog):
 
     async def cog_load(self) -> None:
         await super().cog_load()
-        data = await self.config.all()
-        if data["allowed_cogs"] or data["allowed_commands"]:
-            self.cache = data
         self.bot.add_check(self.bot_check)
 
     async def cog_unload(self) -> None:
@@ -97,7 +78,7 @@ class RoleLocker(Cog):
             return True
         if not await self.check_command(ctx):
             raise commands.CheckFailure(
-                "Only specific cogs and commands are allowed globally. Ask a bot owner in the support server for access, or buy premium if applicable."
+                "You do not have permission to use this command."
             )
         return True
 
@@ -127,28 +108,21 @@ class RoleLocker(Cog):
                 ctx.command.reset_cooldown(ctx)
                 raise commands.CheckFailure()
 
-        # Global access control
-        return (
-            ctx.author.id in ctx.bot.owner_ids
-            or ctx.guild is None
-            or (
-                command is None
-                or command.cog is None
-                or isinstance(command, commands.commands._AlwaysAvailableCommand)
-                or command.qualified_name == "help"
-                or (command.cog is not None and command.cog.qualified_name in ("Core", self.qualified_name))
-            )
-            or (
-                (
-                    command.cog is not None
-                    and command.cog.qualified_name in self.cache["allowed_cogs"]
-                ) or any(
-                    command.qualified_name.split(" ")[:len(allowed_command.split(" "))] == allowed_command.split(" ")
-                    for allowed_command in self.cache["allowed_commands"]
-                )
-            )
-            or any(tier in user_tiers for tier in self.cache["allowed_cogs"] + self.cache["allowed_commands"])
-        )
+        # Access control based on locked cogs and commands
+        locked_cogs = await self.config.locked_cogs()
+        locked_commands = await self.config.locked_commands()
+
+        if command.cog and command.cog.qualified_name in locked_cogs:
+            required_tiers = locked_cogs[command.cog.qualified_name]
+            if not any(tier in user_tiers for tier in required_tiers):
+                return False
+
+        if command.qualified_name in locked_commands:
+            required_tiers = locked_commands[command.qualified_name]
+            if not any(tier in user_tiers for tier in required_tiers):
+                return False
+
+        return True
 
     def get_user_tiers(self, user_roles: typing.Set[int], role_tiers: typing.Dict[str, typing.List[int]]) -> typing.Set[str]:
         """Get the tiers a user belongs to based on their roles."""
@@ -236,8 +210,11 @@ class RoleLocker(Cog):
         role_tiers = await self.config.role_tiers()
         user_tiers = self.get_user_tiers(user_roles, role_tiers)
 
-        accessible_cogs = [cog for cog in self.cache["allowed_cogs"] if any(tier in user_tiers for tier in self.cache["allowed_cogs"])]
-        accessible_commands = [command for command in self.cache["allowed_commands"] if any(tier in user_tiers for tier in self.cache["allowed_commands"])]
+        locked_cogs = await self.config.locked_cogs()
+        locked_commands = await self.config.locked_commands()
+
+        accessible_cogs = [cog for cog, tiers in locked_cogs.items() if any(tier in user_tiers for tier in tiers)]
+        accessible_commands = [command for command, tiers in locked_commands.items() if any(tier in user_tiers for tier in tiers)]
 
         embed = discord.Embed(
             title=f"{ctx.author.display_name}'s Tiers and Access",
@@ -279,19 +256,28 @@ class RoleLocker(Cog):
         """Get the qualified name of a cog."""
         cog = self.bot.get_cog(cog_name)
         if cog:
-            print(f"Found cog: {cog.qualified_name}")  # Debugging line
             return cog.qualified_name
-        print(f"Cog not found: {cog_name}")  # Debugging line
         return None
 
     async def red_get_help_for(self, ctx: commands.Context, command_or_cog):
         """Override help menu to hide locked commands and cogs."""
+        locked_cogs = await self.config.locked_cogs()
+        locked_commands = await self.config.locked_commands()
+        user_roles = {role.id for role in ctx.author.roles}
+        role_tiers = await self.config.role_tiers()
+        user_tiers = self.get_user_tiers(user_roles, role_tiers)
+
         if isinstance(command_or_cog, commands.Cog):
-            if command_or_cog.qualified_name not in self.cache["allowed_cogs"]:
-                return None
+            if command_or_cog.qualified_name in locked_cogs:
+                required_tiers = locked_cogs[command_or_cog.qualified_name]
+                if not any(tier in user_tiers for tier in required_tiers):
+                    return None
         elif isinstance(command_or_cog, commands.Command):
-            if command_or_cog.qualified_name not in self.cache["allowed_commands"]:
-                return None
+            if command_or_cog.qualified_name in locked_commands:
+                required_tiers = locked_commands[command_or_cog.qualified_name]
+                if not any(tier in user_tiers for tier in required_tiers):
+                    return None
+
         return await super().red_get_help_for(ctx, command_or_cog)
 
     @commands.is_owner()
