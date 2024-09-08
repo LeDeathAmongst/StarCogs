@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+from Star_Utils import Cog
+from redbot.core.bot import Red
+from .screenshot import Screenshot
+
+
+async def setup(bot: Red):
+    await bot.add_cog(Screenshot(bot))
+=======
 from redbot.core import errors  # isort:skip
 import importlib
 import sys
@@ -33,3 +42,4 @@ async def setup(bot: Red) -> None:
 
     await bot.add_cog(cog)
     bot.remove_command(screenshot)
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
