@@ -50,13 +50,20 @@ class Screenshot(Cog, CogsUtils):
         )
         asyncio.create_task(self.settings.add_commands())
 
+        # Initialize the WebDriver
+        self.driver = None
+
     def cog_unload(self):
         if self.old_browse:
             try:
                 self.bot.remove_command("screenshot")
             except Exception as e:
                 log.error(f"Error removing screenshot command: {e}")
-            self.bot.add_command(self.old_screenshot)
+            self.bot.add_command(self.old_browse)
+
+        # Quit the WebDriver
+        if self.driver:
+            self.driver.quit()
 
     def ensure_chrome_installed(self):
         os_name = platform.system()
@@ -84,6 +91,25 @@ class Screenshot(Cog, CogsUtils):
             except (subprocess.CalledProcessError, FileNotFoundError):
                 log.info("Google Chrome not found. Please install it manually from https://www.google.com/chrome/")
 
+    def get_driver(self):
+        if self.driver is None:
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-infobars")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--disable-popup-blocking")
+            chrome_options.add_argument("--ignore-certificate-errors")
+            chrome_options.add_argument("--disable-software-rasterizer")
+
+            self.driver = webdriver.Chrome(
+                service=ChromeService(ChromeDriverManager().install()), options=chrome_options
+            )
+        return self.driver
+
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
     @commands.command(name="screenshot", aliases=["ss"])
     async def _screenshot(self, ctx: commands.Context, url: str):
@@ -98,28 +124,59 @@ class Screenshot(Cog, CogsUtils):
         view.add_item(discord.ui.Button(label="Click Element", style=discord.ButtonStyle.success, custom_id="click_element"))
         view.add_item(discord.ui.Button(label="Screenshot", style=discord.ButtonStyle.danger, custom_id="screenshot"))
 
+        # Restrict interaction to the command invoker
+        async def interaction_check(interaction: discord.Interaction) -> bool:
+            if interaction.user.id != ctx.author.id:
+                await interaction.response.send_message("You are not allowed to use this interaction.", ephemeral=True)
+                return False
+            return True
+
+        view.interaction_check = interaction_check
+
         async def button_callback(interaction: discord.Interaction):
             await interaction.response.defer()
             if interaction.data['custom_id'] == 'refresh':
-                await self.refresh_page(ctx, url)
+                await self.update_embed_with_view(ctx, url, interaction.message)
             elif interaction.data['custom_id'] == 'scroll_down':
-                await self.scroll_page(ctx, url, "down")
+                await self.scroll_page(ctx, url, "down", interaction.message)
             elif interaction.data['custom_id'] == 'scroll_up':
-                await self.scroll_page(ctx, url, "up")
+                await self.scroll_page(ctx, url, "up", interaction.message)
             elif interaction.data['custom_id'] == 'click_element':
-                await self.click_element(ctx, url)
+                await self.list_clickable_elements(ctx, url, interaction.message)
             elif interaction.data['custom_id'] == 'screenshot':
-                await self.take_screenshot_and_send(ctx, url)
+                await self.send_screenshot(ctx, url)
 
         for button in view.children:
             button.callback = button_callback
 
-        await ctx.send(f"Interactive browsing session started for {url}. Use the buttons below to interact.", view=view)
+        # Initial embed with the first view of the website
+        await self.update_embed_with_view(ctx, url, None, view)
 
-    async def refresh_page(self, ctx, url):
-        await self.take_screenshot_and_send(ctx, url)
+    async def update_embed_with_view(self, ctx, url, message=None, view=None):
+        async with ctx.typing():
+            loop = asyncio.get_event_loop()
+            site_name, screenshot = await loop.run_in_executor(None, self.take_screenshot, url)
 
-    async def scroll_page(self, ctx, url, direction):
+            if screenshot is None:
+                await ctx.send("An error occurred while updating the view.")
+                return
+
+            file_ = io.BytesIO(screenshot)
+            file_.seek(0)
+            file = discord.File(file_, "screenshot.png")
+            file_.close()
+
+            embed = discord.Embed(
+                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
+            )
+            embed.set_image(url="attachment://screenshot.png")
+
+            if message:
+                await message.edit(embed=embed, attachments=[file], view=view)
+            else:
+                await ctx.send(embed=embed, file=file, view=view)
+
+    async def scroll_page(self, ctx, url, direction, message):
         async with ctx.typing():
             loop = asyncio.get_event_loop()
             screenshot = await loop.run_in_executor(None, self.scroll_and_screenshot, url, direction)
@@ -138,12 +195,47 @@ class Screenshot(Cog, CogsUtils):
             )
             embed.set_image(url="attachment://screenshot.png")
 
-            await ctx.send(embed=embed, file=file)
+            await message.edit(embed=embed, attachments=[file])
 
-    async def click_element(self, ctx, url):
-        await ctx.send("Please specify the element to click (e.g., by CSS selector).")
+    async def list_clickable_elements(self, ctx, url, message):
+        async with ctx.typing():
+            loop = asyncio.get_event_loop()
+            elements = await loop.run_in_executor(None, self.get_clickable_elements, url)
 
-    async def take_screenshot_and_send(self, ctx, url):
+            if not elements:
+                await ctx.send("No clickable elements found.")
+                return
+
+            view = discord.ui.View(timeout=180)
+            for element in elements:
+                button = discord.ui.Button(label=element['text'], style=discord.ButtonStyle.secondary, custom_id=element['selector'])
+                button.callback = lambda inter: self.click_element(ctx, url, inter.custom_id, message)
+                view.add_item(button)
+
+            await ctx.send("Which Element?", view=view)
+
+    async def click_element(self, ctx, url, selector, message):
+        async with ctx.typing():
+            loop = asyncio.get_event_loop()
+            screenshot = await loop.run_in_executor(None, self.click_and_screenshot, url, selector)
+
+            if screenshot is None:
+                await ctx.send("An error occurred while clicking the element.")
+                return
+
+            file_ = io.BytesIO(screenshot)
+            file_.seek(0)
+            file = discord.File(file_, "screenshot.png")
+            file_.close()
+
+            embed = discord.Embed(
+                description=f"Clicked element on [*{url}*]({url})", color=discord.Color.blue()
+            )
+            embed.set_image(url="attachment://screenshot.png")
+
+            await message.edit(embed=embed, attachments=[file])
+
+    async def send_screenshot(self, ctx, url):
         async with ctx.typing():
             loop = asyncio.get_event_loop()
             site_name, screenshot = await loop.run_in_executor(None, self.take_screenshot, url)
@@ -165,22 +257,7 @@ class Screenshot(Cog, CogsUtils):
             await ctx.send(embed=embed, file=file)
 
     def take_screenshot(self, url: str):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -190,26 +267,9 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error during screenshot: {e}")
             return None, None
-        finally:
-            driver.quit()
 
     def scroll_and_screenshot(self, url, direction):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--ignore-certificate-errors")
-        chrome_options.add_argument("--disable-software-rasterizer")
-
-        driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()), options=chrome_options
-        )
-
+        driver = self.get_driver()
         try:
             driver.get(url)
             self.handle_cookies(driver)
@@ -222,8 +282,31 @@ class Screenshot(Cog, CogsUtils):
         except Exception as e:
             log.error(f"Error during scrolling: {e}")
             return None
-        finally:
-            driver.quit()
+
+    def get_clickable_elements(self, url):
+        driver = self.get_driver()
+        try:
+            driver.get(url)
+            self.handle_cookies(driver)
+            elements = driver.find_elements(By.CSS_SELECTOR, "a, button")
+            clickable_elements = [{"text": e.text or e.get_attribute("href") or "Unnamed", "selector": e.get_attribute("outerHTML")} for e in elements]
+            return clickable_elements
+        except Exception as e:
+            log.error(f"Error finding clickable elements: {e}")
+            return []
+
+    def click_and_screenshot(self, url, selector):
+        driver = self.get_driver()
+        try:
+            driver.get(url)
+            self.handle_cookies(driver)
+            element = driver.find_element(By.CSS_SELECTOR, selector)
+            element.click()
+            screenshot = driver.get_screenshot_as_png()
+            return screenshot
+        except Exception as e:
+            log.error(f"Error clicking element: {e}")
+            return None
 
     def handle_cookies(self, driver):
         """
