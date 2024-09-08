@@ -1,11 +1,11 @@
 import random
-from typing import Optional, Dict
+from typing import Optional
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
 from datetime import datetime
 
-from Star_Utils import Cog, Settings, Loop
+from Star_Utils import Cog, Settings, Loop  # Assuming these are custom utilities
 
 class Counting(Cog):
     """An advanced counting game cog with multiple features and extensive customization."""
@@ -23,8 +23,8 @@ class Counting(Cog):
             current_number=0,
             channel_id=None,
             leaderboard={},
-            correct_emote="<a:Tick:1279795666507272225>",
-            wrong_emote="<a:Wrong:1279795741300097025>",
+            correct_emote=self.default_correct_emoji,
+            wrong_emote=self.default_wrong_emoji,
             shame_role=None,
             last_counter_id=None,
             default_roasts=[
@@ -41,8 +41,8 @@ class Counting(Cog):
             current_number=0,
             channel_id=None,
             leaderboard={},
-            correct_emote="<a:Tick:1279795666507272225>",
-            wrong_emote="<a:Wrong:1279795741300097025>",
+            correct_emote=self.default_correct_emoji,
+            wrong_emote=self.default_wrong_emoji,
             shame_role=None,
             last_counter_id=None,
             default_roasts=[
@@ -61,7 +61,7 @@ class Counting(Cog):
             bot=self.bot,
             cog=self,
             config=self.config,
-            group="guild",  # Default to guild, can switch to global as needed
+            group="guild",
             settings={
                 "current_number": {
                     "converter": int,
@@ -133,7 +133,6 @@ class Counting(Cog):
         all_guilds = self.bot.guilds
         for guild in all_guilds:
             await self.settings.set_raw("leaderboard", value={}, _object=guild)
-            # Log the reset action
             self.log_action("info", f"Leaderboard reset for guild {guild.id}.")
 
     def log_action(self, level: str, message: str):
@@ -154,10 +153,7 @@ class Counting(Cog):
 
     def get_data_object(self, ctx: commands.Context):
         """Determine whether to use guild or global settings."""
-        if ctx.guild:
-            return ctx.guild
-        else:
-            return None
+        return ctx.guild if ctx.guild else None
 
     @commands.command()
     async def countingsetchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
@@ -175,7 +171,6 @@ class Counting(Cog):
         await self.settings.set_raw("leaderboard", value={}, _object=data_object)
         await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
 
-        # Log the channel setup
         self.log_action("info", f"Counting channel set to {channel.id} in guild {ctx.guild.id if ctx.guild else 'global'}.")
 
     @commands.command()
@@ -184,8 +179,6 @@ class Counting(Cog):
         data_object = self.get_data_object(ctx)
         await self.settings.set_raw("shame_role", value=shame_role.id, _object=data_object)
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
-
-        # Log the shame role setup
         self.log_action("info", f"Shame role set to {shame_role.id} in guild {ctx.guild.id if ctx.guild else 'global'}.")
 
     @commands.command()
@@ -195,8 +188,6 @@ class Counting(Cog):
         await self.settings.set_raw("correct_emote", value=correct_emote, _object=data_object)
         await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=data_object)
         await ctx.send("Emotes updated successfully.")
-
-        # Log the emote setup
         self.log_action("info", f"Correct emote set to {correct_emote}, wrong emote set to {wrong_emote} in guild {ctx.guild.id if ctx.guild else 'global'}.")
 
     @commands.Cog.listener()
@@ -215,7 +206,6 @@ class Counting(Cog):
                     await self.settings.set_raw("current_number", value=next_number, _object=data_object)
                     await self.settings.set_raw("last_counter_id", value=message.author.id, _object=data_object)
 
-                    # Use the correct emoji
                     correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
                     if isinstance(correct_emote, str):
                         await message.add_reaction(correct_emote)
@@ -228,11 +218,9 @@ class Counting(Cog):
                     success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
                     await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
 
-                    # Log the successful count
                     self.log_action("info", f"{message.author.display_name} counted correctly to {next_number} in guild {message.guild.id if message.guild else 'global'}.")
 
                 else:
-                    # Use the wrong emoji
                     wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
                     if isinstance(wrong_emote, str):
                         await message.add_reaction(wrong_emote)
@@ -259,7 +247,6 @@ class Counting(Cog):
                     await self.settings.set_raw("current_number", value=0, _object=data_object)
                     await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
 
-                    # Log the incorrect count
                     self.log_action("warning", f"{message.author.display_name} counted incorrectly in guild {message.guild.id if message.guild else 'global'}.")
 
             except ValueError:
@@ -308,6 +295,4 @@ class Counting(Cog):
             await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
 
         await ctx.send(f"The counting game{' for ' + mode if mode else ''} has been reset.")
-
-        # Log the reset action
         self.log_action("info", f"Counting game reset in guild {ctx.guild.id if ctx.guild else 'global'}.")
