@@ -486,6 +486,46 @@ class AutoDocSite(Cog):
 
     @commands.group()
     @commands.is_owner()
+    async def autodocsite(self, ctx: commands.Context):
+        """Group command for AutoDocSite operations."""
+        pass
+
+    @autodocsite.command()
+    async def setup(self, ctx: commands.Context):
+        """Provides detailed setup instructions for AutoDocSite."""
+        embed = discord.Embed(
+            title="AutoDocSite Setup Instructions",
+            description=(
+                "Follow these detailed steps to set up the AutoDocSite cog:\n\n"
+                "1. **Set Repository Directory**\n"
+                "   - Use the command `[p]setsite repo_dir <path>`.\n"
+                "   - Replace `<path>` with the directory path where you want to store your documentation files.\n"
+                "   - This directory should be within your local or server's file system and linked to a GitHub repository.\n\n"
+                "2. **Configure GitHub Personal Access Token (PAT)**\n"
+                "   - Go to GitHub > Settings > Developer settings > Personal Access Tokens.\n"
+                "   - Click 'Generate new token', and give it a name.\n"
+                "   - Ensure you select 'Repo' access to allow pushing changes to your GitHub repository.\n"
+                "   - Save this token securely; you'll need it for deploying your site.\n\n"
+                "3. **Install MkDocs and Theme**\n"
+                "   - Open your command line or terminal.\n"
+                "   - Run `pip install mkdocs mkdocs-dracula-theme` to install MkDocs and the Dracula theme.\n"
+                "   - This will allow you to build and style your documentation site.\n\n"
+                "4. **Set Site Configuration**\n"
+                "   - Use `[p]setsite` commands to configure site settings.\n"
+                "   - Example: `[p]setsite site_name MyBotDocs` to set the site name.\n"
+                "   - Configure other settings like `custom_domain`, `theme_name`, etc., to customize your site.\n\n"
+                "5. **Build and Deploy Documentation**\n"
+                "   - Navigate to your documentation repository directory in the terminal.\n"
+                "   - Run `mkdocs build` to generate the static site files.\n"
+                "   - Run `mkdocs gh-deploy` to deploy your site to GitHub Pages.\n"
+                "   - When prompted, enter your GitHub username and use the PAT as your password.\n\n"
+                "6. **Verify Deployment**\n"
+                "   - Go to your GitHub repository settings and ensure GitHub Pages is enabled.\n"
+                "   - Your documentation site should now be live!\n\n"
+                "For further assistance, refer to the documentation or use `[p]help AutoDocSite`."
+
+    @commands.group()
+    @commands.is_owner()
     async def setsite(self, ctx: commands.Context):
         """Group command to set site configuration variables."""
         pass
