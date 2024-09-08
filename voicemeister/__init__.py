@@ -32,4 +32,3 @@ async def setup(bot: Red) -> None:
     cog = VoiceMeister(bot)
 
     await bot.add_cog(cog)
-    bot.remove_command(screenshot)
