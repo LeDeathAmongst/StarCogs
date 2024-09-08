@@ -24,6 +24,15 @@ _ = Translator("AutoDocs", __file__)
 
 PRIVILEGE_LEVELS = ["user", "mod", "admin", "guildowner", "botowner"]
 
+# Add a get method to the Settings class
+class Settings:
+    def __init__(self, bot, cog, config, group, settings, global_path, use_profiles_system, can_edit, commands_group=None):
+        self._config = config
+        self.settings = settings
+
+    def get(self, key, default=None):
+        return self.settings.get(key, {}).get("converter", default)
+
 @cog_i18n(_)
 class AutoDocs(Cog):
     """
@@ -382,7 +391,7 @@ class AutoDocs(Cog):
         )
 
         cog_name = command.cog.qualified_name
-        site_url = self.config.get("site_url", f"https://{self.config['custom_domain']}")
+        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}")
         embed.add_field(name="More Info", value=f"[Documentation]({site_url}/{cog_name}.html#{command_name.replace(' ', '-')})")
 
         await ctx.send(embed=embed)
@@ -483,97 +492,97 @@ class AutoDocSite(Cog):
     @setsite.command()
     async def repo_dir(self, ctx: commands.Context, *, value: str):
         """Set the repository directory."""
-        self.config["repo_dir"] = value
+        self.config.settings["repo_dir"]["converter"] = value
         await ctx.send(f"Repository directory set to: {value}")
 
     @setsite.command()
     async def custom_domain(self, ctx: commands.Context, *, value: str):
         """Set the custom domain."""
-        self.config["custom_domain"] = value
+        self.config.settings["custom_domain"]["converter"] = value
         await ctx.send(f"Custom domain set to: {value}")
 
     @setsite.command()
     async def site_name(self, ctx: commands.Context, *, value: str):
         """Set the site name."""
-        self.config["site_name"] = value
+        self.config.settings["site_name"]["converter"] = value
         await ctx.send(f"Site name set to: {value}")
 
     @setsite.command()
     async def site_url(self, ctx: commands.Context, *, value: str = None):
         """Set the site URL."""
-        self.config["site_url"] = value
+        self.config.settings["site_url"]["converter"] = value
         await ctx.send(f"Site URL set to: {value}")
 
     @setsite.command()
     async def theme_name(self, ctx: commands.Context, *, value: str):
         """Set the theme name."""
-        self.config["theme_name"] = value
+        self.config.settings["theme_name"]["converter"] = value
         await ctx.send(f"Theme name set to: {value}")
 
     @setsite.command()
     async def use_directory_urls(self, ctx: commands.Context, value: bool):
         """Set the use_directory_urls flag."""
-        self.config["use_directory_urls"] = value
+        self.config.settings["use_directory_urls"]["converter"] = value
         await ctx.send(f"use_directory_urls set to: {value}")
 
     @setsite.command()
     async def include_hidden(self, ctx: commands.Context, value: bool):
         """Set the include_hidden flag."""
-        self.config["include_hidden"] = value
+        self.config.settings["include_hidden"]["converter"] = value
         await ctx.send(f"include_hidden set to: {value}")
 
     @setsite.command()
     async def include_help(self, ctx: commands.Context, value: bool):
         """Set the include_help flag."""
-        self.config["include_help"] = value
+        self.config.settings["include_help"]["converter"] = value
         await ctx.send(f"include_help set to: {value}")
 
     @setsite.command()
     async def max_privilege_level(self, ctx: commands.Context, *, value: str):
         """Set the max_privilege_level."""
-        self.config["max_privilege_level"] = value
+        self.config.settings["max_privilege_level"]["converter"] = value
         await ctx.send(f"max_privilege_level set to: {value}")
 
     @setsite.command()
     async def min_privilege_level(self, ctx: commands.Context, *, value: str):
         """Set the min_privilege_level."""
-        self.config["min_privilege_level"] = value
+        self.config.settings["min_privilege_level"]["converter"] = value
         await ctx.send(f"min_privilege_level set to: {value}")
 
     @setsite.command()
     async def replace_botname(self, ctx: commands.Context, value: bool):
         """Set the replace_botname flag."""
-        self.config["replace_botname"] = value
+        self.config.settings["replace_botname"]["converter"] = value
         await ctx.send(f"replace_botname set to: {value}")
 
     @setsite.command()
     async def extended_info(self, ctx: commands.Context, value: bool):
         """Set the extended_info flag."""
-        self.config["extended_info"] = value
+        self.config.settings["extended_info"]["converter"] = value
         await ctx.send(f"extended_info set to: {value}")
 
     @setsite.command()
     async def embedding_style(self, ctx: commands.Context, value: bool):
         """Set the embedding_style flag."""
-        self.config["embedding_style"] = value
+        self.config.settings["embedding_style"]["converter"] = value
         await ctx.send(f"embedding_style set to: {value}")
 
     @setsite.command()
     async def invite_link(self, ctx: commands.Context, *, value: str):
         """Set the invite link."""
-        self.config["invite_link"] = value
+        self.config.settings["invite_link"]["converter"] = value
         await ctx.send(f"Invite link set to: {value}")
 
     @setsite.command()
     async def support_server(self, ctx: commands.Context, *, value: str):
         """Set the support server link."""
-        self.config["support_server"] = value
+        self.config.settings["support_server"]["converter"] = value
         await ctx.send(f"Support server link set to: {value}")
 
     @setsite.command()
     async def custom_footer(self, ctx: commands.Context, *, value: str):
         """Set the custom footer."""
-        self.config["custom_footer"] = value
+        self.config.settings["custom_footer"]["converter"] = value
         await ctx.send(f"Custom footer set to: {value}")
 
     @commands.hybrid_command(name="gendocs", description=_("Generate documentation site for every cog"))
@@ -584,9 +593,7 @@ class AutoDocSite(Cog):
         """
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
 
-        site_url = self.config.get("site_url")
-        if site_url is None:
-            site_url = f"https://{self.config['custom_domain']}/"
+        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}/")
 
         async with ctx.typing():
             docs_dir = os.path.join(self.config.get("repo_dir"), "docs")
@@ -762,9 +769,7 @@ Thank you for using **{self.config.get('site_name')}**! We hope you enjoy all th
         """
         Send the link to the documentation site.
         """
-        site_url = self.config.get("site_url")
-        if site_url is None:
-            site_url = f"https://{self.config.get('custom_domain')}/"
+        site_url = self.config.get("site_url", f"https://{self.config.get('custom_domain')}/")
         await ctx.send(f"Here is the link to the documentation site: {site_url}")
 
     def generate_command_docs(self, cmd: commands.Command, prefix: str, extended_info: bool) -> str:
