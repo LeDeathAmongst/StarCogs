@@ -1,4 +1,4 @@
-from Star_Utils import Cog, Settings, Menu, views
+from Star_Utils import Cog, Settings, views
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role, Embed
@@ -36,19 +36,16 @@ class RoleLocker(Cog):
                 "converter": dict,
                 "description": "Dictionary of locked commands with required roles.",
                 "hidden": True,
-                "no_slash": True,
             },
             "role_limits": {
                 "converter": dict,
                 "description": "Dictionary of role limits with maximum member count.",
                 "hidden": True,
-                "no_slash": True,
             },
             "role_tiers": {
                 "converter": dict,
                 "description": "Dictionary of roles organized into tiers.",
                 "hidden": True,
-                "no_slash": True,
             },
         }
 
@@ -76,9 +73,7 @@ class RoleLocker(Cog):
         if ctx.command.root_parent and ctx.command.root_parent.name == "rolelock":
             return True
         if not await self.check_command(ctx):
-            raise commands.CheckFailure(
-                "You do not have permission to use this command."
-            )
+            raise commands.CheckFailure("You do not have permission to use this command.")
         return True
 
     async def check_command(self, ctx: commands.Context, command: typing.Optional[commands.Command] = None) -> bool:
@@ -172,30 +167,8 @@ class RoleLocker(Cog):
                 await ctx.send(f"Cog `{qualified_name}` was not locked.")
 
     @rolelock.command()
-    async def rolelist(self, ctx: commands.Context):
-        """List all roles and the commands/cogs they unlock."""
-        locked_cogs = await self.config.locked_cogs()
-        locked_commands = await self.config.locked_commands()
-
-        description = []
-        for cog, roles in locked_cogs.items():
-            role_names = [ctx.guild.get_role(role_id).name for role_id in roles if ctx.guild.get_role(role_id)]
-            description.append(f"**{cog}**: {', '.join(role_names)}")
-
-        for command, roles in locked_commands.items():
-            role_names = [ctx.guild.get_role(role_id).name for role_id in roles if ctx.guild.get_role(role_id)]
-            description.append(f"**{command}**: {', '.join(role_names)}")
-
-        embed = discord.Embed(
-            title="Locked Roles",
-            description="\n".join(description) if description else "No roles are currently locked.",
-            color=await ctx.embed_color()
-        )
-        await ctx.send(embed=embed)
-
-    @rolelock.command()
     async def tierinfo(self, ctx: commands.Context, tier_name: str):
-        """Display the roles in a specific tier."""
+        """Display detailed information about a specific tier."""
         role_tiers = await self.config.role_tiers()
         if tier_name not in role_tiers:
             await ctx.send(f"Tier `{tier_name}` does not exist.")
@@ -211,12 +184,20 @@ class RoleLocker(Cog):
 
         member_names = [member.display_name for member in members]
 
+        locked_cogs = await self.config.locked_cogs()
+        locked_commands = await self.config.locked_commands()
+
+        accessible_cogs = [cog for cog, required_roles in locked_cogs.items() if any(role.id in required_roles for role in roles)]
+        accessible_commands = [command for command, required_roles in locked_commands.items() if any(role.id in required_roles for role in roles)]
+
         embed = discord.Embed(
             title=f"Tier `{tier_name}` Information",
             color=await ctx.embed_color()
         )
         embed.add_field(name="Roles", value=", ".join(role_names) if role_names else "None", inline=False)
         embed.add_field(name="Members", value=", ".join(member_names) if member_names else "None", inline=False)
+        embed.add_field(name="Accessible Cogs", value=", ".join(accessible_cogs) if accessible_cogs else "None", inline=False)
+        embed.add_field(name="Accessible Commands", value=", ".join(accessible_commands) if accessible_commands else "None", inline=False)
 
         await ctx.send(embed=embed)
 
