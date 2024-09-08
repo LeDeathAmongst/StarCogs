@@ -1,4 +1,4 @@
-from Star_Utils import Cog, Settings, Menu, View
+from Star_Utils import Cog, Settings, Menu, Views
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role, Embed
