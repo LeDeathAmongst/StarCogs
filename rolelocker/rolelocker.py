@@ -2,6 +2,7 @@ from Star_Utils import Cog, Settings
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role
+import discord
 import typing
 
 class RoleLocker(Cog):
@@ -47,7 +48,7 @@ class RoleLocker(Cog):
             },
             "role_limits": {
                 "converter": dict,
-                "description": "Dictionary of role limits with required member count.",
+                "description": "Dictionary of role limits with maximum member count.",
                 "hidden": True,
                 "no_slash": True,
             },
@@ -107,8 +108,8 @@ class RoleLocker(Cog):
         # Check role limits
         role_limits = await self.config.role_limits()
         for role in ctx.author.roles:
-            if role.id in role_limits and len(role.members) < role_limits[role.id]:
-                await ctx.send(f"Role `{role.name}` requires at least `{role_limits[role.id]}` members to access this command.")
+            if role.id in role_limits and len(role.members) > role_limits[role.id]:
+                await ctx.send(f"Role `{role.name}` cannot have more than `{role_limits[role.id]}` members.")
                 ctx.command.reset_cooldown(ctx)
                 raise commands.CheckFailure()
 
@@ -193,13 +194,6 @@ class RoleLocker(Cog):
             else:
                 await ctx.send(f"Cog `{qualified_name}` was not locked.")
 
-    @rolelock.command()
-    async def setrolelimit(self, ctx: commands.Context, role: Role, member_count: int):
-        """Set a member count limit for a role to access commands or cogs."""
-        async with self.config.role_limits() as role_limits:
-            role_limits[role.id] = member_count
-        await ctx.send(f"Role `{role.name}` now requires at least `{member_count}` members to access locked commands or cogs.")
-
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
         cog = self.bot.get_cog(cog_name)
@@ -218,3 +212,54 @@ class RoleLocker(Cog):
             if command_or_cog.qualified_name not in self.cache["allowed_commands"]:
                 return None
         return await super().red_get_help_for(ctx, command_or_cog)
+
+    @commands.is_owner()
+    @commands.group()
+    async def setrolelocker(self, ctx: commands.Context) -> None:
+        """Configure RoleLocker settings globally."""
+        pass
+
+    @setrolelocker.command()
+    async def addtier(self, ctx: commands.Context, tier_name: str, *roles: Role):
+        """Add roles to a specific tier."""
+        async with self.config.role_tiers() as role_tiers:
+            role_tiers[tier_name] = [role.id for role in roles]
+        await ctx.send(f"Tier `{tier_name}` now includes roles: {', '.join(role.name for role in roles)}")
+
+    @setrolelocker.command()
+    async def removetier(self, ctx: commands.Context, tier_name: str, *roles: Role):
+        """Remove roles from a specific tier."""
+        async with self.config.role_tiers() as role_tiers:
+            if tier_name in role_tiers:
+                role_tiers[tier_name] = [role_id for role_id in role_tiers[tier_name] if role_id not in [role.id for role in roles]]
+                await ctx.send(f"Roles removed from tier `{tier_name}`: {', '.join(role.name for role in roles)}")
+            else:
+                await ctx.send(f"Tier `{tier_name}` does not exist.")
+
+    @setrolelocker.command()
+    async def setrolelimit(self, ctx: commands.Context, role: Role, max_members: int):
+        """Set a maximum member count limit for a role."""
+        async with self.config.role_limits() as role_limits:
+            role_limits[role.id] = max_members
+        await ctx.send(f"Role `{role.name}` cannot have more than `{max_members}` members.")
+
+    @rolelock.command()
+    async def tierlist(self, ctx: commands.Context):
+        """List all tiers and the roles in them."""
+        role_tiers = await self.config.role_tiers()
+        if not role_tiers:
+            await ctx.send("There are no tiers set up.")
+            return
+
+        description = []
+        for tier_name, role_ids in role_tiers.items():
+            roles = [ctx.guild.get_role(role_id) for role_id in role_ids]
+            role_names = [role.name for role in roles if role is not None]
+            description.append(f"**{tier_name}**: {', '.join(role_names)}")
+
+        embed = discord.Embed(
+            title="Role Tiers",
+            description="\n".join(description),
+            color=await ctx.embed_color()
+        )
+        await ctx.send(embed=embed)
