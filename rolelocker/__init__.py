@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-from Star_Utils import Cog
-from redbot.core.bot import Red
-from .screenshot import Screenshot
-
-
-async def setup(bot: Red):
-    await bot.add_cog(Screenshot(bot))
-=======
 from redbot.core import errors  # isort:skip
 import importlib
 import sys
@@ -33,13 +24,10 @@ del Star_Utils
 from redbot.core.bot import Red  # isort:skip
 from redbot.core.utils import get_end_user_data_statement
 
-from .screenshot import Screenshot  # Import your cog
+from .rolelocker import RoleLocker  # Import your cog
 
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 async def setup(bot: Red) -> None:
-    cog = Screenshot(bot)
-
-    await bot.add_cog(cog)
-    bot.remove_command(screenshot)
->>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
+    cog = RoleLocker(bot)  # Instantiate your cog
+    await bot.add_cog(cog)  # Add the cog to the bot

@@ -1,8 +1,9 @@
 import discord
 from redbot.core import commands, Config
 import uuid
+from Star_Utils import Cog
 
-class AffiliatedServers(commands.Cog):
+class AffiliatedServers(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)

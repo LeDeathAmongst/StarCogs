@@ -1,5 +1,5 @@
+import functools
 import os
-from Star_Utils import Cog
 import shutil
 import logging
 from io import BytesIO
@@ -7,6 +7,12 @@ from typing import List, Literal, Optional, Tuple
 from zipfile import ZIP_DEFLATED, ZipFile
 import yaml
 import random
+<<<<<<< HEAD
+=======
+import sys
+import subprocess
+
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 import discord
 import pandas as pd
 from aiocache import cached
@@ -15,6 +21,12 @@ from redbot.core import commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n, set_contextual_locales_from_guild
 from redbot.core.utils.mod import is_admin_or_superior, is_mod_or_superior
+<<<<<<< HEAD
+=======
+
+from Star_Utils import Cog, Settings
+
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 from .formatter import IGNORE, CustomCmdFmt
 log = logging.getLogger('red.star.autodocsite')
 _ = Translator('AutoDocs', __file__)
@@ -37,11 +49,91 @@ class AutoDocs(Cog):
     def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(bot)
         self.bot = bot
+<<<<<<< HEAD
         self.config = {'repo_dir': '/root/StarCogs', 'custom_domain':
             'docs.prismbot.icu'}
         self.cog_description = 'This is a helpful description of the cog.'
         self.bot.add_listener(self.on_cog_load, 'on_cog_load')
         self.bot.add_listener(self.on_cog_unload, 'on_cog_unload')
+=======
+
+        # Initialize settings using the Settings class from Star_Utils
+        self.config = Settings(
+            bot=self.bot,
+            cog=self,
+            config=None,
+            group="autodocs",
+            settings={
+                "repo_dir": {
+                    "converter": str,
+                    "description": "Repository directory for documentation.",
+                },
+                "custom_domain": {
+                    "converter": str,
+                    "description": "Custom domain for documentation site.",
+                },
+                "site_name": {
+                    "converter": str,
+                    "description": "The name of the documentation site.",
+                },
+                "theme_name": {
+                    "converter": str,
+                    "description": "The theme name for the documentation site.",
+                },
+                "use_directory_urls": {
+                    "converter": bool,
+                    "description": "Whether to use directory URLs.",
+                },
+                "include_hidden": {
+                    "converter": bool,
+                    "description": "Include hidden commands in the documentation.",
+                },
+                "include_help": {
+                    "converter": bool,
+                    "description": "Include help text in the documentation.",
+                },
+                "max_privilege_level": {
+                    "converter": str,
+                    "description": "Maximum privilege level for commands.",
+                },
+                "min_privilege_level": {
+                    "converter": str,
+                    "description": "Minimum privilege level for commands.",
+                },
+                "replace_botname": {
+                    "converter": bool,
+                    "description": "Replace bot name placeholders in documentation.",
+                },
+                "extended_info": {
+                    "converter": bool,
+                    "description": "Include extended information in documentation.",
+                },
+                "embedding_style": {
+                    "converter": bool,
+                    "description": "Use embedding style in documentation.",
+                },
+                "invite_link": {
+                    "converter": str,
+                    "description": "Invite link for the bot.",
+                },
+                "support_server": {
+                    "converter": str,
+                    "description": "Support server link.",
+                },
+                "custom_footer": {
+                    "converter": str,
+                    "description": "Custom footer for the documentation site.",
+                },
+            },
+            global_path=[],
+            use_profiles_system=False,
+            can_edit=True,
+        )
+
+        self.cog_description = "This is a helpful description of the cog."
+        self.bot.add_listener(self.on_cog_load, "on_cog_load")
+        self.bot.add_listener(self.on_cog_unload, "on_cog_unload")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     async def on_cog_load(self, cog: Cog):
         await self.generate_docs_for_cog(cog)
@@ -51,6 +143,7 @@ class AutoDocs(Cog):
 
     async def generate_docs_for_cog(self, cog: Cog):
         prefix = (await self.bot.get_valid_prefixes())[0].strip()
+<<<<<<< HEAD
         docs, _ = self.generate_readme(cog, prefix, replace_botname=True,
             extended_info=True, include_hidden=False, include_help=True,
             max_privilege_level='botowner', min_privilege_level='user',
@@ -58,6 +151,21 @@ class AutoDocs(Cog):
         filename = f'{cog.qualified_name}.md'
         with open(os.path.join(self.config['repo_dir'], 'docs', filename),
             'w', encoding='utf-8') as f:
+=======
+        docs, _ = self.generate_readme(
+            cog,
+            prefix,
+            replace_botname=True,
+            extended_info=True,
+            include_hidden=False,
+            include_help=True,
+            max_privilege_level="botowner",
+            min_privilege_level="user",
+            embedding_style=False,
+        )
+        filename = f"{cog.qualified_name}.md"
+        with open(os.path.join(self.config.settings["repo_dir"]["converter"], "docs", filename), "w", encoding="utf-8") as f:
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
             f.write(docs)
 
     def generate_readme(self, cog: Cog, prefix: str, replace_botname: bool,
@@ -68,8 +176,13 @@ class AutoDocs(Cog):
         rows = []
         cog_name = cog.qualified_name
         if include_help:
+<<<<<<< HEAD
             helptxt = _('Help')
             docs = f'# {cog_name} {helptxt}\n\n'
+=======
+            helptxt = _("Help")
+            docs = f"# {cog_name} {helptxt}\n\n"
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
             cog_help = getattr(cog, 'cog_description', None)
             if not embedding_style and cog_help:
                 cog_help = cog_help.replace('\n', '<br/>')
@@ -144,6 +257,7 @@ class AutoDocs(Cog):
         ), csv_export=_('Include a csv with each command isolated per row'))
     @commands.is_owner()
     @commands.bot_has_permissions(attach_files=True)
+<<<<<<< HEAD
     async def makedocs(self, ctx: commands.Context, cog_name: str,
         replace_prefix: Optional[bool]=False, replace_botname: Optional[
         bool]=False, extended_info: Optional[bool]=False, include_hidden:
@@ -170,6 +284,21 @@ class AutoDocs(Cog):
         **Note** If `all` is specified for cog_name, all currently loaded non-core cogs will have docs generated for
         them and sent in a zip file
         """
+=======
+    async def makedocs(
+        self,
+        ctx: commands.Context,
+        cog_name: str,
+        replace_prefix: Optional[bool] = False,
+        replace_botname: Optional[bool] = False,
+        extended_info: Optional[bool] = False,
+        include_hidden: Optional[bool] = False,
+        include_help: Optional[bool] = True,
+        max_privilege_level: Literal["user", "mod", "admin", "guildowner", "botowner"] = "botowner",
+        min_privilege_level: Literal["user", "mod", "admin", "guildowner", "botowner"] = "user",
+        csv_export: Optional[bool] = False,
+    ):
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
         prefix = (await self.bot.get_valid_prefixes(ctx.guild))[0].strip(
             ) if replace_prefix else ''
@@ -249,6 +378,7 @@ class AutoDocs(Cog):
     async def get_cog_names(self, inter: discord.Interaction, current: str):
         return await self.get_coglist(current)
 
+<<<<<<< HEAD
     @commands.command(name='searchcmd', description=
         'Search for a specific command and get its documentation.')
     async def search_command(self, ctx: commands.Context, *, command_name: str
@@ -259,6 +389,10 @@ class AutoDocs(Cog):
         **Arguments**
         `command_name: `(str) The name of the command you want to search for.
         """
+=======
+    @commands.command(name="searchcmd", description="Search for a specific command and get its documentation.")
+    async def search_command(self, ctx: commands.Context, *, command_name: str):
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
         command = self.bot.get_command(command_name)
         if not command:
             return await ctx.send(
@@ -270,6 +404,7 @@ class AutoDocs(Cog):
             True, 'user')
         doc = c.get_doc()
         if not doc:
+<<<<<<< HEAD
             return await ctx.send('No documentation found for this command.')
         embed = discord.Embed(title=f'Documentation for `{command_name}`',
             description=doc, color=random.randint(0, 16777215))
@@ -281,6 +416,99 @@ class AutoDocs(Cog):
             )
         await ctx.send(embed=embed)
 
+=======
+            return await ctx.send("No documentation found for this command.")
+
+        embed = discord.Embed(
+            title=f"Documentation for `{command_name}`",
+            description=doc,
+            color=random.randint(0, 0xFFFFFF)
+        )
+
+        cog_name = command.cog.qualified_name
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
+        embed.add_field(name="More Info", value=f"[Documentation]({site_url}/{cog_name}.html#{command_name.replace(' ', '-')})")
+
+        await ctx.send(embed=embed)
+
+    @commands.command(name="setupdocs")
+    async def setup_docs(self, ctx: commands.Context):
+        """
+        Provide detailed setup instructions for AutoDocs.
+        """
+        embed = discord.Embed(
+            title="AutoDocs Setup Instructions",
+            description="Follow these steps to set up AutoDocs, including backend and frontend configurations, and Docker setup.",
+            color=random.randint(0, 0xFFFFFF)
+        )
+
+        embed.add_field(
+            name="Backend Setup",
+            value=(
+                "1. **Clone the Repository**: Clone the AutoDocs repository from GitHub.\n"
+                "   ```bash\n"
+                "   git clone <repository-url>\n"
+                "   cd <repository-directory>\n"
+                "   ```\n"
+                "2. **Install Dependencies**: Ensure you have Python 3.8+ and install necessary packages.\n"
+                "   ```bash\n"
+                "   pip install -r requirements.txt\n"
+                "   ```\n"
+                "3. **Configure Settings**: Use the bot commands to set configuration variables.\n"
+                "   ```\n"
+                "   !setsite repo_dir /path/to/repo\n"
+                "   !setsite custom_domain yourdomain.com\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="Frontend Setup",
+            value=(
+                "1. **Install MkDocs**: Ensure MkDocs is installed in your Python environment.\n"
+                "   ```bash\n"
+                "   pip install mkdocs\n"
+                "   ```\n"
+                "2. **Build the Documentation Site**: Use the `gendocs` command to generate the site.\n"
+                "   ```\n"
+                "   !gendocs\n"
+                "   ```\n"
+                "3. **Deploy the Site**: Use MkDocs to deploy the site to GitHub Pages.\n"
+                "   ```bash\n"
+                "   mkdocs gh-deploy\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="Docker Setup",
+            value=(
+                "1. **Create a Dockerfile**: Define a Dockerfile to containerize your application.\n"
+                "   ```Dockerfile\n"
+                "   FROM python:3.8-slim\n"
+                "   WORKDIR /app\n"
+                "   COPY . .\n"
+                "   RUN pip install -r requirements.txt\n"
+                "   CMD [\"python\", \"bot.py\"]\n"
+                "   ```\n"
+                "2. **Build the Docker Image**: Build the Docker image from your Dockerfile.\n"
+                "   ```bash\n"
+                "   docker build -t autodocs-bot .\n"
+                "   ```\n"
+                "3. **Run the Docker Container**: Run the container with necessary environment variables.\n"
+                "   ```bash\n"
+                "   docker run -d --name autodocs -e DISCORD_TOKEN=<your-token> autodocs-bot\n"
+                "   ```"
+            ),
+            inline=False
+        )
+
+        embed.set_footer(text="For more detailed instructions, visit the official documentation.")
+
+        await ctx.send(embed=embed)
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
 class AutoDocSite(Cog):
     """
@@ -293,6 +521,7 @@ class AutoDocSite(Cog):
     def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(bot)
         self.bot = bot
+<<<<<<< HEAD
         self.config = {'repo_dir': '/root/PBCogs', 'custom_domain':
             'docs.prismbot.icu', 'site_name': 'FuturoBot Documentation',
             'site_url': None, 'theme_name': 'dracula', 'use_directory_urls':
@@ -304,6 +533,81 @@ class AutoDocSite(Cog):
             , 'support_server': 'https://discord.gg/9f7WV6V8ud',
             'custom_footer':
             'Created by [Rosie](https://github.com/PBOwner) with <3'}
+=======
+
+        # Initialize settings using the Settings class from Star_Utils
+        self.config = Settings(
+            bot=self.bot,
+            cog=self,
+            config=None,
+            group="autodocsite",
+            settings={
+                "repo_dir": {
+                    "converter": str,
+                    "description": "Repository directory for documentation.",
+                },
+                "custom_domain": {
+                    "converter": str,
+                    "description": "Custom domain for documentation site.",
+                },
+                "site_name": {
+                    "converter": str,
+                    "description": "The name of the documentation site.",
+                },
+                "theme_name": {
+                    "converter": str,
+                    "description": "The theme name for the documentation site.",
+                },
+                "use_directory_urls": {
+                    "converter": bool,
+                    "description": "Whether to use directory URLs.",
+                },
+                "include_hidden": {
+                    "converter": bool,
+                    "description": "Include hidden commands in the documentation.",
+                },
+                "include_help": {
+                    "converter": bool,
+                    "description": "Include help text in the documentation.",
+                },
+                "max_privilege_level": {
+                    "converter": str,
+                    "description": "Maximum privilege level for commands.",
+                },
+                "min_privilege_level": {
+                    "converter": str,
+                    "description": "Minimum privilege level for commands.",
+                },
+                "replace_botname": {
+                    "converter": bool,
+                    "description": "Replace bot name placeholders in documentation.",
+                },
+                "extended_info": {
+                    "converter": bool,
+                    "description": "Include extended information in documentation.",
+                },
+                "embedding_style": {
+                    "converter": bool,
+                    "description": "Use embedding style in documentation.",
+                },
+                "invite_link": {
+                    "converter": str,
+                    "description": "Invite link for the bot.",
+                },
+                "support_server": {
+                    "converter": str,
+                    "description": "Support server link.",
+                },
+                "custom_footer": {
+                    "converter": str,
+                    "description": "Custom footer for the documentation site.",
+                },
+            },
+            global_path=[],
+            use_profiles_system=False,
+            can_edit=True,
+        )
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @commands.group()
     @commands.is_owner()
@@ -314,106 +618,184 @@ class AutoDocSite(Cog):
     @setsite.command()
     async def repo_dir(self, ctx: commands.Context, *, value: str):
         """Set the repository directory."""
+<<<<<<< HEAD
         self.config['repo_dir'] = value
         await ctx.send(f'Repository directory set to: {value}')
+=======
+        self.config.settings["repo_dir"]["converter"] = value
+        await ctx.send(f"Repository directory set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def custom_domain(self, ctx: commands.Context, *, value: str):
         """Set the custom domain."""
+<<<<<<< HEAD
         self.config['custom_domain'] = value
         await ctx.send(f'Custom domain set to: {value}')
+=======
+        self.config.settings["custom_domain"]["converter"] = value
+        await ctx.send(f"Custom domain set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def site_name(self, ctx: commands.Context, *, value: str):
         """Set the site name."""
+<<<<<<< HEAD
         self.config['site_name'] = value
         await ctx.send(f'Site name set to: {value}')
+=======
+        self.config.settings["site_name"]["converter"] = value
+        await ctx.send(f"Site name set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def site_url(self, ctx: commands.Context, *, value: str=None):
         """Set the site URL."""
+<<<<<<< HEAD
         self.config['site_url'] = value
         await ctx.send(f'Site URL set to: {value}')
+=======
+        self.config.settings["site_url"]["converter"] = value
+        await ctx.send(f"Site URL set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def theme_name(self, ctx: commands.Context, *, value: str):
         """Set the theme name."""
+<<<<<<< HEAD
         self.config['theme_name'] = value
         await ctx.send(f'Theme name set to: {value}')
+=======
+        self.config.settings["theme_name"]["converter"] = value
+        await ctx.send(f"Theme name set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def use_directory_urls(self, ctx: commands.Context, value: bool):
         """Set the use_directory_urls flag."""
+<<<<<<< HEAD
         self.config['use_directory_urls'] = value
         await ctx.send(f'use_directory_urls set to: {value}')
+=======
+        self.config.settings["use_directory_urls"]["converter"] = value
+        await ctx.send(f"use_directory_urls set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def include_hidden(self, ctx: commands.Context, value: bool):
         """Set the include_hidden flag."""
+<<<<<<< HEAD
         self.config['include_hidden'] = value
         await ctx.send(f'include_hidden set to: {value}')
+=======
+        self.config.settings["include_hidden"]["converter"] = value
+        await ctx.send(f"include_hidden set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def include_help(self, ctx: commands.Context, value: bool):
         """Set the include_help flag."""
+<<<<<<< HEAD
         self.config['include_help'] = value
         await ctx.send(f'include_help set to: {value}')
+=======
+        self.config.settings["include_help"]["converter"] = value
+        await ctx.send(f"include_help set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def max_privilege_level(self, ctx: commands.Context, *, value: str):
         """Set the max_privilege_level."""
+<<<<<<< HEAD
         self.config['max_privilege_level'] = value
         await ctx.send(f'max_privilege_level set to: {value}')
+=======
+        self.config.settings["max_privilege_level"]["converter"] = value
+        await ctx.send(f"max_privilege_level set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def min_privilege_level(self, ctx: commands.Context, *, value: str):
         """Set the min_privilege_level."""
+<<<<<<< HEAD
         self.config['min_privilege_level'] = value
         await ctx.send(f'min_privilege_level set to: {value}')
+=======
+        self.config.settings["min_privilege_level"]["converter"] = value
+        await ctx.send(f"min_privilege_level set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def replace_botname(self, ctx: commands.Context, value: bool):
         """Set the replace_botname flag."""
+<<<<<<< HEAD
         self.config['replace_botname'] = value
         await ctx.send(f'replace_botname set to: {value}')
+=======
+        self.config.settings["replace_botname"]["converter"] = value
+        await ctx.send(f"replace_botname set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def extended_info(self, ctx: commands.Context, value: bool):
         """Set the extended_info flag."""
+<<<<<<< HEAD
         self.config['extended_info'] = value
         await ctx.send(f'extended_info set to: {value}')
+=======
+        self.config.settings["extended_info"]["converter"] = value
+        await ctx.send(f"extended_info set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def embedding_style(self, ctx: commands.Context, value: bool):
         """Set the embedding_style flag."""
+<<<<<<< HEAD
         self.config['embedding_style'] = value
         await ctx.send(f'embedding_style set to: {value}')
+=======
+        self.config.settings["embedding_style"]["converter"] = value
+        await ctx.send(f"embedding_style set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def invite_link(self, ctx: commands.Context, *, value: str):
         """Set the invite link."""
+<<<<<<< HEAD
         self.config['invite_link'] = value
         await ctx.send(f'Invite link set to: {value}')
+=======
+        self.config.settings["invite_link"]["converter"] = value
+        await ctx.send(f"Invite link set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def support_server(self, ctx: commands.Context, *, value: str):
         """Set the support server link."""
+<<<<<<< HEAD
         self.config['support_server'] = value
         await ctx.send(f'Support server link set to: {value}')
+=======
+        self.config.settings["support_server"]["converter"] = value
+        await ctx.send(f"Support server link set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @setsite.command()
     async def custom_footer(self, ctx: commands.Context, *, value: str):
         """Set the custom footer."""
+<<<<<<< HEAD
         self.config['custom_footer'] = value
         await ctx.send(f'Custom footer set to: {value}')
+=======
+        self.config.settings["custom_footer"]["converter"] = value
+        await ctx.send(f"Custom footer set to: {value}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @commands.command(name='gendocs')
     @commands.is_owner()
     async def gendocs(self, ctx: commands.Context):
-        """
-        Generate a documentation site for every cog in the bot.
-        """
         await set_contextual_locales_from_guild(self.bot, ctx.guild)
+<<<<<<< HEAD
         site_url = self.config['site_url']
         if site_url is None:
             site_url = f"https://{self.config['custom_domain']}/"
@@ -426,20 +808,38 @@ class AutoDocSite(Cog):
             os.makedirs(docs_dir)
             with open(os.path.join(docs_dir, 'CNAME'), 'w') as f:
                 f.write(self.config['custom_domain'])
+=======
+
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
+
+        async with ctx.typing():
+            docs_dir = os.path.join(self.config.settings["repo_dir"]["converter"], "docs")
+            mkdocs_config_path = os.path.join(self.config.settings["repo_dir"]["converter"], "mkdocs.yml")
+
+            if os.path.exists(docs_dir):
+                shutil.rmtree(docs_dir)
+            os.makedirs(docs_dir)
+
+            # Create CNAME file for custom domain
+            with open(os.path.join(docs_dir, "CNAME"), "w") as f:
+                f.write(self.config.settings["custom_domain"]["converter"])
+
+            # Get the bot's name and prefix
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
             bot_name = self.bot.user.name
             prefix = (await self.bot.get_valid_prefixes(ctx.guild))[0].strip()
             index_content = f"""
 # Welcome to the Docs
 
-Welcome to the official documentation site for **{self.config['site_name']}**! This site provides comprehensive information on how to use and configure the various features and commands available in the bot.
+Welcome to the official documentation site for **{self.config.settings['site_name']['converter']}**! This site provides comprehensive information on how to use and configure the various features and commands available in the bot.
 
 ## Introduction
 
-**{self.config['site_name']}** is a powerful and versatile bot designed to enhance your Discord server experience. With a wide range of features, including moderation tools, fun commands, and utility functions, **{bot_name}** is the perfect addition to any server.
+**{self.config.settings['site_name']['converter']}** is a powerful and versatile bot designed to enhance your Discord server experience. With a wide range of features, including moderation tools, fun commands, and utility functions, **{bot_name}** is the perfect addition to any server.
 
 ## Getting Started
 
-To get started with **{self.config['site_name']}**, follow these simple steps:
+To get started with **{self.config.settings['site_name']['converter']}**, follow these simple steps:
 
 1. **Invite the Bot**: Use the invite link to add the bot to your Discord server.
 2. **Set Up Permissions**: Ensure the bot has the necessary permissions to function correctly.
@@ -449,7 +849,7 @@ To get started with **{self.config['site_name']}**, follow these simple steps:
 
 ### General Commands
 
-**{self.config['site_name']}** offers a variety of general commands to enhance your server experience. These commands include:
+**{self.config.settings['site_name']['converter']}** offers a variety of general commands to enhance your server experience. These commands include:
 
 - `{prefix}help`: Displays a list of available commands.
 - `{prefix}info bot`: Provides information about the bot.
@@ -475,7 +875,7 @@ Add some fun to your server with these entertaining commands:
 
 ## Configuration
 
-To configure **{self.config['site_name']}**, use the following commands:
+To configure **{self.config.settings['site_name']['converter']}**, use the following commands:
 
 - `{prefix}prefix [prefix]`: Changes the command prefix.
 
@@ -483,7 +883,7 @@ To configure **{self.config['site_name']}**, use the following commands:
 
 ### How do I invite the bot to my server?
 
-Use the invite link provided [here]({self.config['invite_link']}) to add the bot to your server.
+Use the invite link provided [here]({self.config.settings['invite_link']['converter']}) to add the bot to your server.
 
 ### How do I report a bug or request a feature?
 
@@ -491,9 +891,9 @@ To report a bug, please join the support server and create a ticket. To request 
 
 ## Support
 
-If you need assistance or have any questions, please join our [Support Server]({self.config['support_server']}).
+If you need assistance or have any questions, please join our [Support Server]({self.config.settings['support_server']['converter']}).
 
-Thank you for using **{self.config['site_name']}**! We hope you enjoy all the features and functionality it has to offer.
+Thank you for using **{self.config.settings['site_name']['converter']}**! We hope you enjoy all the features and functionality it has to offer.
 """
             with open(os.path.join(docs_dir, 'index.md'), 'w') as f:
                 f.write(index_content)
@@ -501,6 +901,7 @@ Thank you for using **{self.config['site_name']}**! We hope you enjoy all the fe
                 item: item[0].lower()):
                 if cog_name in IGNORE:
                     continue
+<<<<<<< HEAD
                 docs, _ = self.generate_readme(cog, prefix=prefix,
                     replace_botname=self.config['replace_botname'],
                     extended_info=self.config['extended_info'],
@@ -546,10 +947,69 @@ Thank you for using **{self.config['site_name']}**! We hope you enjoy all the fe
                 f"""Documentation site has been generated and deployed to GitHub Pages.
 You can view it here: {site_url}"""
                 )
+=======
+                docs, _ = self.generate_readme(
+                    cog,
+                    prefix=prefix,
+                    replace_botname=self.config.settings["replace_botname"]["converter"],
+                    extended_info=self.config.settings["extended_info"]["converter"],
+                    include_hidden=self.config.settings["include_hidden"]["converter"],
+                    include_help=self.config.settings["include_help"]["converter"],
+                    max_privilege_level=self.config.settings["max_privilege_level"]["converter"],
+                    min_privilege_level=self.config.settings["min_privilege_level"]["converter"],
+                    embedding_style=self.config.settings["embedding_style"]["converter"],
+                )
+                filename = os.path.join(docs_dir, f"{cog_name}.md")
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(docs)
+
+            # Create meta site data for each cog
+            meta_config = {
+                "site_name": f"{self.bot.user.name}'s Documentation",
+                "site_url": site_url,
+                "theme": {
+                    "name": self.config.settings["theme_name"]["converter"]
+                },
+                "use_directory_urls": self.config.settings["use_directory_urls"]["converter"],
+                "nav": [
+                    {"Home": "index.md"},
+                    {"Cogs": []}
+                ],
+                "extra": {
+                    "footer": self.config.settings["custom_footer"]["converter"]
+                }
+            }
+
+            # Add cogs to the Cogs category in the navigation
+            for cog_name, cog in sorted(self.bot.cogs.items(), key=lambda item: item[0].lower()):
+                if cog_name in IGNORE:
+                    continue
+                meta_config["nav"][1]["Cogs"].append({cog_name: f"{cog_name}.md"})
+
+            # Write main mkdocs.yml configuration
+            with open(mkdocs_config_path, "w", encoding="utf-8") as f:
+                f.write(yaml.dump(meta_config, default_flow_style=False))
+
+            # Change to the repository directory
+            os.chdir(self.config.settings["repo_dir"]["converter"])
+
+            # Use sys.executable to run mkdocs dynamically
+            python_executable = sys.executable
+
+            # Pull the latest changes before pushing
+            subprocess.run(["git", "pull", "origin", "gh-pages"], check=True)
+
+            # Build and deploy the documentation site
+            subprocess.run([python_executable, "-m", "mkdocs", "build"], check=True)
+            subprocess.run([python_executable, "-m", "mkdocs", "gh-deploy"], check=True)
+
+            await ctx.send(f"Documentation site has been generated and deployed to GitHub Pages.\nYou can view it here: {site_url}")
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
 
     @commands.command()
     @commands.is_owner()
     async def docs(self, ctx: commands.Context):
+<<<<<<< HEAD
         """
         Send the link to the documentation site.
         """
@@ -563,6 +1023,13 @@ You can view it here: {site_url}"""
         extended_info: bool) ->str:
         """Generate detailed documentation for a command."""
         doc = f'### {prefix}{cmd.qualified_name}\n\n'
+=======
+        site_url = self.config.settings["site_url"]["converter"] if "site_url" in self.config.settings else f"https://{self.config.settings['custom_domain']['converter']}"
+        await ctx.send(f"Here is the link to the documentation site: {site_url}")
+
+    def generate_command_docs(self, cmd: commands.Command, prefix: str, extended_info: bool) -> str:
+        doc = f"### {prefix}{cmd.qualified_name}\n\n"
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
         if cmd.help:
             doc += f'**Description:** {cmd.help}\n\n'
         if cmd.aliases:
@@ -596,8 +1063,13 @@ You can view it here: {site_url}"""
         rows = []
         cog_name = cog.qualified_name
         if include_help:
+<<<<<<< HEAD
             helptxt = _('Help')
             docs = f'# {cog_name} {helptxt}\n\n'
+=======
+            helptxt = _("Help")
+            docs = f"# {cog_name} {helptxt}\n\n"
+>>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
             cog_help = getattr(cog, 'cog_description', None)
             if not embedding_style and cog_help:
                 cog_help = cog_help.replace('\n', '<br/>')

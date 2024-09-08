@@ -1,9 +1,9 @@
 {
     "author": ["Star"],
     "name": "AutoDocSite",
-    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. This cog can only be ran by you, the bot owner. If you want to help translate, go to my [crowdin](<https://crowdin.com/project/Star-Cogs>)\n\nThere's a few steps for setup. ```md\n1. Set your RepoDir (with [p]setsite repo_dir) as your repo path on your host (if applicable). The repo is where the docs will go to in a branch.\n2. Generate a GitHub Person Access Token (Go to account settings > developer settings > Personal Access Token > Tokens (Classic). Only permissions needed is: full access to 'Repo'.\n3. Inside your vps/local repo, run `mkdocs build` once all of your `set site` settings are good. After you run `mkdocs build`, run `mkdocs gh-deploy`, it will ask for your username and 'password', here's where you need the PAT\n4.Laugh in easy documentation generation.",
+    "install_msg": "Thank you for installing the AutoDocSite cog!\n\nThis cog automatically generates a documentation site for your bot's cogs using GitHub Pages and MkDocs. If you want to help translate, go to my [crowdin](<https://crowdin.com/project/Star-Cogs>)\nIf you like my work, [donate me!](<https://ko-fi.com/starcogs>)\n\n```txt\nUse `[p]autodocsite setup` for detailed setup instructions.```",
     "short": "Automatically generates documentation site",
-    "description": "Automatic generations of documentations using GH-Pages and MKDocs",
+    "description": "Automatic generation of documentation using GH-Pages and MkDocs.",
     "tags": [
         "auto_doc_gen"
     ],
@@ -11,10 +11,10 @@
         "git+https://github.com/LeDeathAmongst/Star_Utils.git",
         "mkdocs",
         "mkdocs-dracula-theme",
-        "discord.py",
         "pandas",
         "aiocache",
-        "pyyaml"
+        "pyyaml",
+        "numpy==2.0.0"
     ],
     "min_bot_version": "3.5.11",
     "end_user_data_statement": "",
