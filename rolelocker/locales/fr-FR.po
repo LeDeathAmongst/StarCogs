@@ -240,6 +240,16 @@ class RoleLocker(Cog):
             next_page = (current_page - 1) % len(pages)
         await interaction.response.edit_message(embed=pages[next_page])
 
+    @rolelock.command()
+    async def cleartier(self, ctx: commands.Context, tier_name: str):
+        """Clear all roles from the specified tier."""
+        async with self.config.role_tiers() as role_tiers:
+            if tier_name in role_tiers:
+                role_tiers[tier_name] = []
+                await ctx.send(f"Tier `{tier_name}` has been cleared of all roles.")
+            else:
+                await ctx.send(f"Tier `{tier_name}` does not exist.")
+
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
         cog = self.bot.get_cog(cog_name)
