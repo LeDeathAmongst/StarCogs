@@ -1,7 +1,11 @@
-IGNORE = [""]  # Add cogs you want to ignore here
+from Star_Utils import Cog
+IGNORE = ['']
+
 
 class CustomCmdFmt:
-    def __init__(self, bot, cmd, prefix, replace_botname, extended_info, max_privilege_level, embedding_style, min_privilage_level):
+
+    def __init__(self, bot, cmd, prefix, replace_botname, extended_info,
+        max_privilege_level, embedding_style, min_privilage_level):
         self.bot = bot
         self.cmd = cmd
         self.prefix = prefix
@@ -12,10 +16,10 @@ class CustomCmdFmt:
         self.min_privilage_level = min_privilage_level
 
     def get_doc(self):
-        doc = f"### {self.cmd.qualified_name}\n\n"
+        doc = f'### {self.cmd.qualified_name}\n\n'
         if hasattr(self.cmd, 'help') and self.cmd.help:
-            doc += f"**Description:** {self.cmd.help}\n\n"
+            doc += f'**Description:** {self.cmd.help}\n\n'
         else:
-            doc += "**Description:** No description provided.\n\n"
-        doc += f"**Usage:** `{self.prefix}{self.cmd.qualified_name}`\n\n"
+            doc += '**Description:** No description provided.\n\n'
+        doc += f'**Usage:** `{self.prefix}{self.cmd.qualified_name}`\n\n'
         return doc
