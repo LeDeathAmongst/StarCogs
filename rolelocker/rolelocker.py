@@ -21,7 +21,9 @@ class RoleLocker(Cog):
             allowed_cogs=[],
             allowed_commands=[],
             role_tiers={},
-            role_limits={}
+            role_limits={},
+            locked_cogs={},
+            locked_commands={}
         )
 
         self.cache: typing.Dict[str, typing.List[str]] = {"allowed_cogs": [], "allowed_commands": []}
@@ -49,6 +51,18 @@ class RoleLocker(Cog):
             "role_limits": {
                 "converter": dict,
                 "description": "Dictionary of role limits with maximum member count.",
+                "hidden": True,
+                "no_slash": True,
+            },
+            "locked_cogs": {
+                "converter": dict,
+                "description": "Dictionary of locked cogs with tiers.",
+                "hidden": True,
+                "no_slash": True,
+            },
+            "locked_commands": {
+                "converter": dict,
+                "description": "Dictionary of locked commands with tiers.",
                 "hidden": True,
                 "no_slash": True,
             },
@@ -246,8 +260,10 @@ class RoleLocker(Cog):
         roles = [ctx.guild.get_role(role_id) for role_id in role_tiers[tier_name]]
         role_names = [f"<:dot:1279793197165314059> {role.name}" for role in roles if role is not None]
 
-        accessible_cogs = [cog for cog, tiers in self.cache["allowed_cogs"].items() if tier_name in tiers]
-        accessible_commands = [command for command, tiers in self.cache["allowed_commands"].items() if tier_name in tiers]
+        locked_cogs = await self.config.locked_cogs()
+        locked_commands = await self.config.locked_commands()
+        accessible_cogs = [cog for cog, tiers in locked_cogs.items() if tier_name in tiers]
+        accessible_commands = [command for command, tiers in locked_commands.items() if tier_name in tiers]
 
         embed = discord.Embed(
             title=f"Tier `{tier_name}` Information",
