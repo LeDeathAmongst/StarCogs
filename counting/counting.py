@@ -97,12 +97,41 @@ class Counting(Cog):
             can_edit=True,
         )
 
+        # Initialize a list to store loops
+        self.loops = []
+
+        # Start any loops needed by the cog
+        self.start_loops()
+
+    def start_loops(self):
+        """Start any loops needed by the cog."""
+        # Example: Start a loop that checks and resets the leaderboard every day
+        loop = Loop(
+            cog=self,
+            name="DailyLeaderboardReset",
+            function=self.reset_leaderboard_daily,
+            days=1
+        )
+        self.loops.append(loop)
+
+    async def reset_leaderboard_daily(self):
+        """Reset the leaderboard daily."""
+        guilds = await self.config.all_guilds()
+        for guild_id, data in guilds.items():
+            data["leaderboard"] = {}
+            await self.config.guild_from_id(guild_id).leaderboard.set({})
+
+    async def cog_unload(self):
+        """Ensure all loops are stopped when the cog is unloaded."""
+        for loop in self.loops:
+            loop.stop_all()
+
     @commands.guild_only()
     @commands.group(name="counting", invoke_without_command=True)
     async def counting(self, ctx: commands.Context):
         """Base command for the counting game."""
         await ctx.send_help(ctx.command)
-    
+
     @commands.admin()
     @counting.command(name="setchannel")
     async def set_channel(self, ctx: commands.Context, channel: discord.TextChannel, mode: str):
@@ -114,11 +143,12 @@ class Counting(Cog):
         if mode == "sequential":
             self.config.settings["sequential_channel_id"]["converter"] = channel.id
             await ctx.send(f"Sequential counting channel set to {channel.mention}.")
+            self.config.settings["current_number"]["converter"] = 1
         elif mode == "reverse":
             self.config.settings["reverse_channel_id"]["converter"] = channel.id
             await ctx.send(f"Reverse counting channel set to {channel.mention}.")
+            self.config.settings["current_number"]["converter"] = 100000
 
-        self.config.settings["current_number"]["converter"] = 1 if mode == "sequential" else 100
         self.config.settings["leaderboard"]["converter"] = {}
         self.config.settings["last_counter_id"]["converter"] = None
 
@@ -188,7 +218,7 @@ class Counting(Cog):
                 if next_number == expected_number and message.author.id != last_counter_id:
                     self.config.settings["current_number"]["converter"] = next_number
                     self.config.settings["last_counter_id"]["converter"] = message.author.id
-                    await message.add_reaction(guild_config["correct_emote"] or self.config.settings["default_correct_emote"]["converter"])
+                    await message.add_reaction(guild_config["correct_emote"] or self.default_correct_emoji)
 
                     leaderboard = guild_config["leaderboard"]
                     user_id = str(message.author.id)
@@ -206,7 +236,7 @@ class Counting(Cog):
                         await message.add_reaction(joke_emote)
 
                 else:
-                    await message.add_reaction(guild_config["wrong_emote"] or self.config.settings["default_wrong_emote"]["converter"])
+                    await message.add_reaction(guild_config["wrong_emote"] or self.default_wrong_emoji)
 
                     failure_message = guild_config["failure_message"].format(
                         display_name=message.author.display_name, expected_number=expected_number
@@ -223,7 +253,7 @@ class Counting(Cog):
                         )
                         await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
-                    reset_number = 1 if message.channel.id == guild_config["sequential_channel_id"] else 100
+                    reset_number = 1 if message.channel.id == guild_config["sequential_channel_id"] else 100000
                     self.config.settings["current_number"]["converter"] = reset_number
                     self.config.settings["last_counter_id"]["converter"] = None
 
