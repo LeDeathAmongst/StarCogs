@@ -3,6 +3,7 @@ from typing import Optional, Dict
 from redbot.core import commands
 from redbot.core.bot import Red
 import discord
+from discord import PartialEmoji
 
 from Star_Utils import Cog, Settings  # Import Settings from Star_Utils
 
@@ -11,6 +12,9 @@ class Counting(Cog):
 
     def __init__(self, bot: Red):
         self.bot = bot
+
+        self.default_correct_emoji = PartialEmoji(name="Tick", id=1279795666507272225, animated=True)
+        self.default_wrong_emoji = PartialEmoji(name="Wrong", id=1279795741300097025, animated=True)
 
         # Initialize settings using the Settings class from Star_Utils
         self.config = Settings(
