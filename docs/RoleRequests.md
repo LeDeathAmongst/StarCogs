@@ -6,11 +6,41 @@
 
 **Usage:** `<@1275521742961508432>request`
 
+### request remrole
+
+**Description:** Removes a role from being requestable.
+
+**Usage:** `<@1275521742961508432>request remrole`
+
+### request clear
+
+**Description:** Clears all requestable roles.
+
+**Usage:** `<@1275521742961508432>request clear`
+
+### request add
+
+**Description:** Gives you a requestable role.
+
+**Usage:** `<@1275521742961508432>request add`
+
+### request list
+
+**Description:** Lists the roles that can be requested.
+
+**Usage:** `<@1275521742961508432>request list`
+
 ### request massadd
 
 **Description:** Adds roles to all users who have participated in a channel within the last X messages.
 
 **Usage:** `<@1275521742961508432>request massadd`
+
+### request addrole
+
+**Description:** Adds a role to be requestable.
+
+**Usage:** `<@1275521742961508432>request addrole`
 
 ### request rem
 
@@ -24,47 +54,19 @@
 
 **Usage:** `<@1275521742961508432>request postlist`
 
-### request list
-
-**Description:** Lists the roles that can be requested.
-
-**Usage:** `<@1275521742961508432>request list`
-
-### request remrole
-
-**Description:** Removes a role from being requestable.
-
-**Usage:** `<@1275521742961508432>request remrole`
-
-### request add
-
-**Description:** Gives you a requestable role.
-
-**Usage:** `<@1275521742961508432>request add`
-
-### request addrole
-
-**Description:** Adds a role to be requestable.
-
-**Usage:** `<@1275521742961508432>request addrole`
-
-### request clear
-
-**Description:** Clears all requestable roles.
-
-**Usage:** `<@1275521742961508432>request clear`
-
 ### reqset
 
 **Description:** Adjust [p]request command settings.
 
 **Usage:** `<@1275521742961508432>reqset`
 
-### reqset request_channel
+### reqset max_requestable
 
-**Description:** Where `[p]request list` commands say to use the `[p]request` command. Use the command without a channel argument to set to no channel.
+**Description:** Maximum number of roles that users can request.
 
-**Usage:** `<@1275521742961508432>reqset request_channel`
+If set to -1, there is no limit.
+
+**Usage:** `<@1275521742961508432>reqset max_requestable`
 
 ### reqset auto_post_list
 
@@ -85,11 +87,9 @@ Using the aliases with "hide" at the start inverts the value passed in.
 
 **Usage:** `<@1275521742961508432>reqset show_member_count`
 
-### reqset max_requestable
+### reqset request_channel
 
-**Description:** Maximum number of roles that users can request.
+**Description:** Where `[p]request list` commands say to use the `[p]request` command. Use the command without a channel argument to set to no channel.
 
-If set to -1, there is no limit.
-
-**Usage:** `<@1275521742961508432>reqset max_requestable`
+**Usage:** `<@1275521742961508432>reqset request_channel`
 

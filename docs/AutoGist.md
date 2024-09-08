@@ -27,15 +27,6 @@ that makes the bot listen to other bots.
 
 **Usage:** `<@1275521742961508432>autogistset listentoself`
 
-### autogistset listentobots
-
-**Description:** Make AutoGist listen to messages from other bots in this server.
-
-NOTE: To make bot listen to messages from itself,
-you need to use `[p]autogistset listentoself` command.
-
-**Usage:** `<@1275521742961508432>autogistset listentobots`
-
 ### autogistset channeldefault
 
 **Description:** Set whether AutoGist should by default listen to channels.
@@ -51,6 +42,15 @@ By default, guilds will not listen to any channel.
 Use `[p]autogist channeldefault` without a setting to see current mode.
 
 **Usage:** `<@1275521742961508432>autogistset channeldefault`
+
+### autogistset listentobots
+
+**Description:** Make AutoGist listen to messages from other bots in this server.
+
+NOTE: To make bot listen to messages from itself,
+you need to use `[p]autogistset listentoself` command.
+
+**Usage:** `<@1275521742961508432>autogistset listentobots`
 
 ### autogistset token
 
@@ -79,6 +79,15 @@ By default AutoGist will look for files with `.txt` and `.log` extensions.
 
 **Usage:** `<@1275521742961508432>autogistset extensions`
 
+### autogistset extensions remove
+
+**Description:** Remove file extensions from the list.
+
+Example:
+`[p]autogist extensions remove txt .log` - removes `.txt` and `.log` extensions.
+
+**Usage:** `<@1275521742961508432>autogistset extensions remove`
+
 ### autogistset extensions list
 
 **Description:** List file extensions that are required for AutoGist to upload file to Gist.
@@ -93,13 +102,4 @@ Example:
 `[p]autogist extensions add txt .log` - adds `.txt` and `.log` extensions.
 
 **Usage:** `<@1275521742961508432>autogistset extensions add`
-
-### autogistset extensions remove
-
-**Description:** Remove file extensions from the list.
-
-Example:
-`[p]autogist extensions remove txt .log` - removes `.txt` and `.log` extensions.
-
-**Usage:** `<@1275521742961508432>autogistset extensions remove`
 

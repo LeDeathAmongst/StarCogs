@@ -6,12 +6,6 @@
 
 **Usage:** `<@1275521742961508432>discordmodals`
 
-### discordmodals remove
-
-**Description:** Remove a Modal for a message.
-
-**Usage:** `<@1275521742961508432>discordmodals remove`
-
 ### discordmodals list
 
 **Description:** List all Modals of this server or display the settings for a specific one.
@@ -54,4 +48,10 @@ assign_roles: role5, role6
 The `emoji`, `style`, `required`, `default`, `placeholder`, `min_length`, `max_length`, `channel`, `anonymous`, `unique_answer`, `messages`, `pings`, `whitelist_roles`, `blacklist_roles` and `assign_roles` are not required.
 
 **Usage:** `<@1275521742961508432>discordmodals add`
+
+### discordmodals remove
+
+**Description:** Remove a Modal for a message.
+
+**Usage:** `<@1275521742961508432>discordmodals remove`
 

@@ -6,17 +6,21 @@
 
 **Usage:** `<@1275521742961508432>webhook`
 
-### webhook reverse
+### webhook say
 
-**Description:** No description provided.
+**Description:** Sends a message in a channel as a webhook using your display name and your avatar.
 
-**Usage:** `<@1275521742961508432>webhook reverse`
+You can attach files to the command.
 
-### webhook reversed
+**Usage:** `<@1275521742961508432>webhook say`
 
-**Description:** No description provided.
+### webhook custom
 
-**Usage:** `<@1275521742961508432>webhook reversed`
+**Description:** Sends a message a channel as a webhook using a specified display name and a specified avatar url.
+
+You can attach files to the command.
+
+**Usage:** `<@1275521742961508432>webhook custom`
 
 ### webhook permissions
 
@@ -32,23 +36,17 @@ You can attach files to the command.
 
 **Usage:** `<@1275521742961508432>webhook edit`
 
-### webhook clear
-
-**Description:** Delete all webhooks in this server.
-
-**Usage:** `<@1275521742961508432>webhook clear`
-
-### webhook send
-
-**Description:** Sends a message to the specified webhook using your display name and you avatar.
-
-**Usage:** `<@1275521742961508432>webhook send`
-
 ### webhook session
 
 **Description:** Initiate a session within this channel sending messages to a specified webhook link.
 
 **Usage:** `<@1275521742961508432>webhook session`
+
+### webhook reversed
+
+**Description:** No description provided.
+
+**Usage:** `<@1275521742961508432>webhook reversed`
 
 ### webhook closesession
 
@@ -56,21 +54,11 @@ You can attach files to the command.
 
 **Usage:** `<@1275521742961508432>webhook closesession`
 
-### webhook say
+### webhook reverse
 
-**Description:** Sends a message in a channel as a webhook using your display name and your avatar.
+**Description:** No description provided.
 
-You can attach files to the command.
-
-**Usage:** `<@1275521742961508432>webhook say`
-
-### webhook sudo
-
-**Description:** Sends a message in a channel as a webhook using the display name and the avatar of a specified member.
-
-You can attach files to the command.
-
-**Usage:** `<@1275521742961508432>webhook sudo`
+**Usage:** `<@1275521742961508432>webhook reverse`
 
 ### webhook create
 
@@ -80,11 +68,23 @@ If no channel is specified then it will default to the current channel.
 
 **Usage:** `<@1275521742961508432>webhook create`
 
-### webhook custom
+### webhook send
 
-**Description:** Sends a message a channel as a webhook using a specified display name and a specified avatar url.
+**Description:** Sends a message to the specified webhook using your display name and you avatar.
+
+**Usage:** `<@1275521742961508432>webhook send`
+
+### webhook sudo
+
+**Description:** Sends a message in a channel as a webhook using the display name and the avatar of a specified member.
 
 You can attach files to the command.
 
-**Usage:** `<@1275521742961508432>webhook custom`
+**Usage:** `<@1275521742961508432>webhook sudo`
+
+### webhook clear
+
+**Description:** Delete all webhooks in this server.
+
+**Usage:** `<@1275521742961508432>webhook clear`
 

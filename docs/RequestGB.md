@@ -6,11 +6,11 @@
 
 **Usage:** `<@1275521742961508432>requestgb`
 
-### requestgb approve
+### requestgb setreq
 
-**Description:** Approve a global ban request.
+**Description:** Set the channel for global ban notifications.
 
-**Usage:** `<@1275521742961508432>requestgb approve`
+**Usage:** `<@1275521742961508432>requestgb setreq`
 
 ### requestgb optin
 
@@ -24,23 +24,23 @@
 
 **Usage:** `<@1275521742961508432>requestgb addtrusted`
 
-### requestgb setreq
+### requestgb approve
 
-**Description:** Set the channel for global ban notifications.
+**Description:** Approve a global ban request.
 
-**Usage:** `<@1275521742961508432>requestgb setreq`
-
-### requestgb setlog
-
-**Description:** Set the log channel for global ban approvals.
-
-**Usage:** `<@1275521742961508432>requestgb setlog`
+**Usage:** `<@1275521742961508432>requestgb approve`
 
 ### requestgb deny
 
 **Description:** Deny a global ban request.
 
 **Usage:** `<@1275521742961508432>requestgb deny`
+
+### requestgb setlog
+
+**Description:** Set the log channel for global ban approvals.
+
+**Usage:** `<@1275521742961508432>requestgb setlog`
 
 ### requestgb optout
 

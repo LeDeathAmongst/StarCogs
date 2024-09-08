@@ -24,6 +24,24 @@
 
 **Usage:** `<@1275521742961508432>streamalert`
 
+### streamalert twitch
+
+**Description:** Manage Twitch stream notifications.
+
+**Usage:** `<@1275521742961508432>streamalert twitch`
+
+### streamalert twitch channel
+
+**Description:** Toggle alerts in this or the given channel for a Twitch stream.
+
+**Usage:** `<@1275521742961508432>streamalert twitch channel`
+
+### streamalert picarto
+
+**Description:** Toggle alerts in this channel for a Picarto stream.
+
+**Usage:** `<@1275521742961508432>streamalert picarto`
+
 ### streamalert list
 
 **Description:** List all active stream alerts in this server.
@@ -48,77 +66,11 @@ this server.
 
 **Usage:** `<@1275521742961508432>streamalert stop`
 
-### streamalert twitch
-
-**Description:** Manage Twitch stream notifications.
-
-**Usage:** `<@1275521742961508432>streamalert twitch`
-
-### streamalert twitch channel
-
-**Description:** Toggle alerts in this or the given channel for a Twitch stream.
-
-**Usage:** `<@1275521742961508432>streamalert twitch channel`
-
-### streamalert picarto
-
-**Description:** Toggle alerts in this channel for a Picarto stream.
-
-**Usage:** `<@1275521742961508432>streamalert picarto`
-
 ### streamset
 
 **Description:** Manage stream alert settings.
 
 **Usage:** `<@1275521742961508432>streamset`
-
-### streamset usebuttons
-
-**Description:** Toggle whether to use buttons for stream alerts.
-
-**Usage:** `<@1275521742961508432>streamset usebuttons`
-
-### streamset twitchtoken
-
-**Description:** Explain how to set the twitch token.
-
-**Usage:** `<@1275521742961508432>streamset twitchtoken`
-
-### streamset youtubekey
-
-**Description:** Explain how to set the YouTube token.
-
-**Usage:** `<@1275521742961508432>streamset youtubekey`
-
-### streamset mention
-
-**Description:** Manage mention settings for stream alerts.
-
-**Usage:** `<@1275521742961508432>streamset mention`
-
-### streamset mention all
-
-**Description:** Toggle the `@​everyone` mention.
-
-**Usage:** `<@1275521742961508432>streamset mention all`
-
-### streamset mention role
-
-**Description:** Toggle a role mention.
-
-**Usage:** `<@1275521742961508432>streamset mention role`
-
-### streamset mention online
-
-**Description:** Toggle the `@​here` mention.
-
-**Usage:** `<@1275521742961508432>streamset mention online`
-
-### streamset ignoreschedule
-
-**Description:** Toggle excluding YouTube streams schedules from alerts.
-
-**Usage:** `<@1275521742961508432>streamset ignoreschedule`
 
 ### streamset ignorereruns
 
@@ -131,17 +83,6 @@ this server.
 **Description:** Manage custom messages for stream alerts.
 
 **Usage:** `<@1275521742961508432>streamset message`
-
-### streamset message nomention
-
-**Description:** Set stream alert message when mentions are disabled.
-
-Use `{stream}` in the message to insert the channel or username.
-Use `{stream.display_name}` in the message to insert the channel's display name (on Twitch, this may be different from `{stream}`).
-
-For example: `[p]streamset message nomention {stream.display_name} is live!`
-
-**Usage:** `<@1275521742961508432>streamset message nomention`
 
 ### streamset message clear
 
@@ -161,15 +102,74 @@ For example: `[p]streamset message mention {mention}, {stream.display_name} is l
 
 **Usage:** `<@1275521742961508432>streamset message mention`
 
-### streamset autodelete
+### streamset message nomention
 
-**Description:** Toggle alert deletion for when streams go offline.
+**Description:** Set stream alert message when mentions are disabled.
 
-**Usage:** `<@1275521742961508432>streamset autodelete`
+Use `{stream}` in the message to insert the channel or username.
+Use `{stream.display_name}` in the message to insert the channel's display name (on Twitch, this may be different from `{stream}`).
+
+For example: `[p]streamset message nomention {stream.display_name} is live!`
+
+**Usage:** `<@1275521742961508432>streamset message nomention`
 
 ### streamset timer
 
 **Description:** Set stream check refresh time.
 
 **Usage:** `<@1275521742961508432>streamset timer`
+
+### streamset autodelete
+
+**Description:** Toggle alert deletion for when streams go offline.
+
+**Usage:** `<@1275521742961508432>streamset autodelete`
+
+### streamset twitchtoken
+
+**Description:** Explain how to set the twitch token.
+
+**Usage:** `<@1275521742961508432>streamset twitchtoken`
+
+### streamset usebuttons
+
+**Description:** Toggle whether to use buttons for stream alerts.
+
+**Usage:** `<@1275521742961508432>streamset usebuttons`
+
+### streamset youtubekey
+
+**Description:** Explain how to set the YouTube token.
+
+**Usage:** `<@1275521742961508432>streamset youtubekey`
+
+### streamset ignoreschedule
+
+**Description:** Toggle excluding YouTube streams schedules from alerts.
+
+**Usage:** `<@1275521742961508432>streamset ignoreschedule`
+
+### streamset mention
+
+**Description:** Manage mention settings for stream alerts.
+
+**Usage:** `<@1275521742961508432>streamset mention`
+
+### streamset mention online
+
+**Description:** Toggle the `@​here` mention.
+
+**Usage:** `<@1275521742961508432>streamset mention online`
+
+### streamset mention role
+
+**Description:** Toggle a role mention.
+
+**Usage:** `<@1275521742961508432>streamset mention role`
+
+### streamset mention all
+
+**Description:** Toggle the `@​everyone` mention.
+
+**Usage:** `<@1275521742961508432>streamset mention all`
 

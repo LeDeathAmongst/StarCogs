@@ -15,15 +15,6 @@ Remember that transfering other users' messages does not respect the TOS.
 
 **Usage:** `<@1275521742961508432>transferchannel`
 
-### transferchannel messages
-
-**Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
-
-Specify the number of messages since the end of the channel.
-Remember that transfering other users' messages does not respect the TOS.
-
-**Usage:** `<@1275521742961508432>transferchannel messages`
-
 ### transferchannel between
 
 **Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
@@ -32,6 +23,15 @@ Specify the between messages (id or link) or a valid snowflake.
 Remember that transfering other users' messages does not respect the TOS.
 
 **Usage:** `<@1275521742961508432>transferchannel between`
+
+### transferchannel messages
+
+**Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
+
+Specify the number of messages since the end of the channel.
+Remember that transfering other users' messages does not respect the TOS.
+
+**Usage:** `<@1275521742961508432>transferchannel messages`
 
 ### transferchannel bot
 
@@ -42,6 +42,15 @@ Remember that transfering other users' messages does not respect the TOS.
 
 **Usage:** `<@1275521742961508432>transferchannel bot`
 
+### transferchannel user
+
+**Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
+
+Specify the user/member (id, name or mention).
+Remember that transfering other users' messages does not respect the TOS.
+
+**Usage:** `<@1275521742961508432>transferchannel user`
+
 ### transferchannel before
 
 **Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
@@ -51,15 +60,6 @@ Remember that transfering other users' messages does not respect the TOS.
 
 **Usage:** `<@1275521742961508432>transferchannel before`
 
-### transferchannel message
-
-**Description:** Transfer a specific message to another channel. This might take a long time.
-
-Specify the message to transfer, with its ID or its link.
-Remember that transfering other users' messages does not respect the TOS.
-
-**Usage:** `<@1275521742961508432>transferchannel message`
-
 ### transferchannel all
 
 **Description:** Transfer all messages from a channel to another channel. This might take a long time.
@@ -68,14 +68,14 @@ Remember that transfering other users' messages does not respect the TOS.
 
 **Usage:** `<@1275521742961508432>transferchannel all`
 
-### transferchannel user
+### transferchannel message
 
-**Description:** Transfer a part of the messages from a channel to another channel. This might take a long time.
+**Description:** Transfer a specific message to another channel. This might take a long time.
 
-Specify the user/member (id, name or mention).
+Specify the message to transfer, with its ID or its link.
 Remember that transfering other users' messages does not respect the TOS.
 
-**Usage:** `<@1275521742961508432>transferchannel user`
+**Usage:** `<@1275521742961508432>transferchannel message`
 
 ### transferchannel after
 

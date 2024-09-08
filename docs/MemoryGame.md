@@ -18,12 +18,6 @@
 
 **Usage:** `<@1275521742961508432>setmemorygame`
 
-### setmemorygame modalconfig
-
-**Description:** Set all settings for the cog with a Discord Modal.
-
-**Usage:** `<@1275521742961508432>setmemorygame modalconfig`
-
 ### setmemorygame maxprize
 
 **Description:** Set the max prize for Red bank system and cog leaderboard. Default is 5000.
@@ -38,6 +32,12 @@ Dev: `Range[int, 1000, 50000]`
 **Description:** Reset a setting.
 
 **Usage:** `<@1275521742961508432>setmemorygame resetsetting`
+
+### setmemorygame resetleaderboard
+
+**Description:** Reset leaderboard in the guild.
+
+**Usage:** `<@1275521742961508432>setmemorygame resetleaderboard`
 
 ### setmemorygame redeconomy
 
@@ -57,6 +57,12 @@ Dev: `Range[int, 0, 30]`
 
 **Usage:** `<@1275521742961508432>setmemorygame reductionperwrongmatch`
 
+### setmemorygame modalconfig
+
+**Description:** Set all settings for the cog with a Discord Modal.
+
+**Usage:** `<@1275521742961508432>setmemorygame modalconfig`
+
 ### setmemorygame reductionpersecond
 
 **Description:** Set the reduction per second of prize for Red bank system and cog leaderboard. Default is 5.
@@ -65,12 +71,6 @@ Default value: `5`
 Dev: `Range[int, 0, 30]`
 
 **Usage:** `<@1275521742961508432>setmemorygame reductionpersecond`
-
-### setmemorygame resetleaderboard
-
-**Description:** Reset leaderboard in the guild.
-
-**Usage:** `<@1275521742961508432>setmemorygame resetleaderboard`
 
 ### setmemorygame maxwrongmatches
 

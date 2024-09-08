@@ -38,29 +38,54 @@ Examples:
 
 **Usage:** `<@1275521742961508432>reminder`
 
-### reminder edit
+### reminder fifo
 
-**Description:** Edit an existing Reminder from its ID.
+**Description:** Create a FIFO/command reminder. The chosen command will be executed with you as invoker. Don't provide the prefix.
+
+The specified time can be fuzzy parsed or use the kwargs `in`, `on` and `every` to find a repeat rule and your text.
+You don't have to put quotes around the `time` argument. For more precise parsing, you can place quotation marks around the text. Put quotation marks around the time too, if it contains spaces.
+Use `[p]reminder timetips` to display tips for time parsing.
+
+Examples:
+- `[p]reminder fifo #destination "at 10h every day" ping
+
+**Usage:** `<@1275521742961508432>reminder fifo`
+
+### reminder list
+
+**Description:** List your existing reminders.
+
+Sort options:
+- `expire`: Display them in order of next triggering.
+- `created`: Display them in order of creating.
+- `id`: Display them in order of their ID.
+
+**Usage:** `<@1275521742961508432>reminder list`
+
+### reminder text
+
+**Description:** Edit the text of an existing Reminder from its ID.
 
 - Use `last` to edit your last created reminder.
 - Use `next` to edit your next triggered reminder.
 
-**Usage:** `<@1275521742961508432>reminder edit`
+**Usage:** `<@1275521742961508432>reminder text`
 
-### reminder timetips
+### reminder expires
 
-**Description:** Show time parsing tips.
+**Description:** Edit the expires time of an existing Reminder from its ID.
 
-**Usage:** `<@1275521742961508432>reminder timetips`
+- Use `last` to edit your last created reminder.
+- Use `next` to edit your next triggered reminder.
+It's the same converter as for creation, but without the option of repetition.
 
-### reminder remove
+**Usage:** `<@1275521742961508432>reminder expires`
 
-**Description:** Remove existing Reminder(s) from their IDs.
+### reminder clear
 
-- Use `last` to remove your last created reminder.
-- Use `next` to remove your next triggered reminder.
+**Description:** Clear all your existing reminders.
 
-**Usage:** `<@1275521742961508432>reminder remove`
+**Usage:** `<@1275521742961508432>reminder clear`
 
 ### reminder repeat
 
@@ -92,32 +117,6 @@ Use `[p]reminder timetips` to display tips for time parsing.
 
 **Usage:** `<@1275521742961508432>reminder timestamps`
 
-### reminder clear
-
-**Description:** Clear all your existing reminders.
-
-**Usage:** `<@1275521742961508432>reminder clear`
-
-### reminder list
-
-**Description:** List your existing reminders.
-
-Sort options:
-- `expire`: Display them in order of next triggering.
-- `created`: Display them in order of creating.
-- `id`: Display them in order of their ID.
-
-**Usage:** `<@1275521742961508432>reminder list`
-
-### reminder text
-
-**Description:** Edit the text of an existing Reminder from its ID.
-
-- Use `last` to edit your last created reminder.
-- Use `next` to edit your next triggered reminder.
-
-**Usage:** `<@1275521742961508432>reminder text`
-
 ### reminder say
 
 **Description:** Create a reminder who will say/send text.
@@ -131,15 +130,20 @@ Examples:
 
 **Usage:** `<@1275521742961508432>reminder say`
 
-### reminder expires
+### reminder timetips
 
-**Description:** Edit the expires time of an existing Reminder from its ID.
+**Description:** Show time parsing tips.
+
+**Usage:** `<@1275521742961508432>reminder timetips`
+
+### reminder edit
+
+**Description:** Edit an existing Reminder from its ID.
 
 - Use `last` to edit your last created reminder.
 - Use `next` to edit your next triggered reminder.
-It's the same converter as for creation, but without the option of repetition.
 
-**Usage:** `<@1275521742961508432>reminder expires`
+**Usage:** `<@1275521742961508432>reminder edit`
 
 ### reminder timezone
 
@@ -151,18 +155,14 @@ You can find a list of valid timezones at: https://timezonedb.com/time-zones.
 
 **Usage:** `<@1275521742961508432>reminder timezone`
 
-### reminder fifo
+### reminder remove
 
-**Description:** Create a FIFO/command reminder. The chosen command will be executed with you as invoker. Don't provide the prefix.
+**Description:** Remove existing Reminder(s) from their IDs.
 
-The specified time can be fuzzy parsed or use the kwargs `in`, `on` and `every` to find a repeat rule and your text.
-You don't have to put quotes around the `time` argument. For more precise parsing, you can place quotation marks around the text. Put quotation marks around the time too, if it contains spaces.
-Use `[p]reminder timetips` to display tips for time parsing.
+- Use `last` to remove your last created reminder.
+- Use `next` to remove your next triggered reminder.
 
-Examples:
-- `[p]reminder fifo #destination "at 10h every day" ping
-
-**Usage:** `<@1275521742961508432>reminder fifo`
+**Usage:** `<@1275521742961508432>reminder remove`
 
 ### setreminders
 
@@ -170,17 +170,95 @@ Examples:
 
 **Usage:** `<@1275521742961508432>setreminders`
 
+### setreminders secondsallowed
+
+**Description:** Check reminders every 30 seconds instead of every 1 minute, to allow reminders with precise duration.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setreminders secondsallowed`
+
+### setreminders maximumuserreminders
+
+**Description:** Change the reminders limit for each user (except bot owners).
+
+Default value: `20`
+Dev: `Range[int, 1, 125]`
+
+**Usage:** `<@1275521742961508432>setreminders maximumuserreminders`
+
+### setreminders metoo
+
+**Description:** Show a `Me too` button in reminders.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setreminders metoo`
+
+### setreminders clearuserreminders
+
+**Description:** Clear all existing reminders for a user.
+
+**Usage:** `<@1275521742961508432>setreminders clearuserreminders`
+
+### setreminders showsettings
+
+**Description:** Show all settings for the cog with defaults and values.
+
+**Usage:** `<@1275521742961508432>setreminders showsettings`
+
+### setreminders minimumrepeat
+
+**Description:** Change the minimum minutes number for a repeat time.
+
+Default value: `60`
+Dev: `Range[int, 10, None]`
+
+**Usage:** `<@1275521742961508432>setreminders minimumrepeat`
+
+### setreminders snoozeview
+
+**Description:** Send Snooze view/buttons when reminders sending.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setreminders snoozeview`
+
 ### setreminders migratefromremindme
 
 **Description:** Migrate Reminders from RemindMe by PhasecoreX.
 
 **Usage:** `<@1275521742961508432>setreminders migratefromremindme`
 
+### setreminders migratefromfifo
+
+**Description:** Migrate Reminders from FIFO by Fox.
+
+**Usage:** `<@1275521742961508432>setreminders migratefromfifo`
+
 ### setreminders modalconfig
 
 **Description:** Set all settings for the cog with a Discord Modal.
 
 **Usage:** `<@1275521742961508432>setreminders modalconfig`
+
+### setreminders repeatallowed
+
+**Description:** Enable or disabled repeat option for users (except bot owners).
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setreminders repeatallowed`
+
+### setreminders resetsetting
+
+**Description:** Reset a setting.
+
+**Usage:** `<@1275521742961508432>setreminders resetsetting`
 
 ### setreminders fifoallowed
 
@@ -199,82 +277,4 @@ Default value: `True`
 Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setreminders creationview`
-
-### setreminders resetsetting
-
-**Description:** Reset a setting.
-
-**Usage:** `<@1275521742961508432>setreminders resetsetting`
-
-### setreminders showsettings
-
-**Description:** Show all settings for the cog with defaults and values.
-
-**Usage:** `<@1275521742961508432>setreminders showsettings`
-
-### setreminders minimumrepeat
-
-**Description:** Change the minimum minutes number for a repeat time.
-
-Default value: `60`
-Dev: `Range[int, 10, None]`
-
-**Usage:** `<@1275521742961508432>setreminders minimumrepeat`
-
-### setreminders clearuserreminders
-
-**Description:** Clear all existing reminders for a user.
-
-**Usage:** `<@1275521742961508432>setreminders clearuserreminders`
-
-### setreminders maximumuserreminders
-
-**Description:** Change the reminders limit for each user (except bot owners).
-
-Default value: `20`
-Dev: `Range[int, 1, 125]`
-
-**Usage:** `<@1275521742961508432>setreminders maximumuserreminders`
-
-### setreminders repeatallowed
-
-**Description:** Enable or disabled repeat option for users (except bot owners).
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setreminders repeatallowed`
-
-### setreminders secondsallowed
-
-**Description:** Check reminders every 30 seconds instead of every 1 minute, to allow reminders with precise duration.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setreminders secondsallowed`
-
-### setreminders metoo
-
-**Description:** Show a `Me too` button in reminders.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setreminders metoo`
-
-### setreminders snoozeview
-
-**Description:** Send Snooze view/buttons when reminders sending.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setreminders snoozeview`
-
-### setreminders migratefromfifo
-
-**Description:** Migrate Reminders from FIFO by Fox.
-
-**Usage:** `<@1275521742961508432>setreminders migratefromfifo`
 

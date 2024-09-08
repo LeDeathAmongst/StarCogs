@@ -9,103 +9,39 @@ Or can be sent to separate channels with `[p]modlog channel #channel event_name`
 
 **Usage:** `<@1275521742961508432>modlog`
 
-### modlog delete
+### modlog bot
 
-**Description:** Delete logging settings.
+**Description:** Bot filter settings.
 
-**Usage:** `<@1275521742961508432>modlog delete`
+**Usage:** `<@1275521742961508432>modlog bot`
 
-### modlog delete ignorecommands
+### modlog bot change
 
-**Description:** Toggle message delete notifications for valid bot command messages.
+**Description:** Toggle bots from being logged in user updates.
 
-**Usage:** `<@1275521742961508432>modlog delete ignorecommands`
+This includes roles and nickname.
 
-### modlog delete cachedonly
+**Usage:** `<@1275521742961508432>modlog bot change`
 
-**Description:** Toggle message delete notifications for non-cached messages.
+### modlog bot edits
 
-Delete notifications for non-cached messages
-will only show channel info without content of deleted message or its author.
+**Description:** Toggle message edit notifications for bot users.
 
-**Usage:** `<@1275521742961508432>modlog delete cachedonly`
+**Usage:** `<@1275521742961508432>modlog bot edits`
 
-### modlog delete bulkdelete
+### modlog bot voice
 
-**Description:** Toggle bulk message delete notifications.
+**Description:** Toggle bots from being logged in voice state updates.
 
-**Usage:** `<@1275521742961508432>modlog delete bulkdelete`
+**Usage:** `<@1275521742961508432>modlog bot voice`
 
-### modlog delete individual
+### modlog bot deletes
 
-**Description:** Toggle individual message delete notifications for bulk message delete.
+**Description:** Toggle message delete notifications for bot users.
 
-**Usage:** `<@1275521742961508432>modlog delete individual`
+This will not affect delete notifications for messages that aren't in bot's cache.
 
-### modlog member
-
-**Description:** Toggle individual member update settings.
-
-**Usage:** `<@1275521742961508432>modlog member`
-
-### modlog member roles
-
-**Description:** Toggle role updates for members.
-
-**Usage:** `<@1275521742961508432>modlog member roles`
-
-### modlog member all
-
-**Description:** Set all member update settings.
-
-- `<set_to>` True or False what to set all the member update settings to.
-
-**Usage:** `<@1275521742961508432>modlog member all`
-
-### modlog member avatar
-
-**Description:** Toggle avatar updates for member changes.
-
-**Usage:** `<@1275521742961508432>modlog member avatar`
-
-### modlog member flags
-
-**Description:** Toggle flags updates for members.
-
-This includes things like:
-- `did_rejoin`
-- `completed_onboarding`
-- `bypasses_verification`
-- `started_onboarding`
-
-**Usage:** `<@1275521742961508432>modlog member flags`
-
-### modlog member timeout
-
-**Description:** Toggle timeout updates for members.
-
-Note: Due to a discord limitation this will not update when a members
-timeout has expired and may display a before timeout in the past.
-
-**Usage:** `<@1275521742961508432>modlog member timeout`
-
-### modlog member nickname
-
-**Description:** Toggle nickname updates for member changes.
-
-**Usage:** `<@1275521742961508432>modlog member nickname`
-
-### modlog member settings
-
-**Description:** Show the current settings on member updates.
-
-**Usage:** `<@1275521742961508432>modlog member settings`
-
-### modlog member pending
-
-**Description:** Toggle pending updates for members.
-
-**Usage:** `<@1275521742961508432>modlog member pending`
+**Usage:** `<@1275521742961508432>modlog bot deletes`
 
 ### modlog resetchannel
 
@@ -136,19 +72,36 @@ timeout has expired and may display a before timeout in the past.
 
 **Usage:** `<@1275521742961508432>modlog resetchannel`
 
-### modlog all
+### modlog commandlevel
 
-**Description:** Turn all logging options on or off.
+**Description:** Set the level of commands to be logged.
 
-- `<true_or_false>` True of False, what to set all loggable settings to.
+- `[level...]` must include all levels you want from:
+ - `NONE`
+ - `MOD`
+ - `ADMIN`
+ - `GUILD_OWNER`
+ - `BOT_OWNER`
 
-**Usage:** `<@1275521742961508432>modlog all`
+These are the basic levels commands check for in permissions.
+`NONE` is a command anyone has permission to use, where as `MOD`
+can be `mod or permissions`
 
-### modlog channel
+**Usage:** `<@1275521742961508432>modlog commandlevel`
 
-**Description:**     Set the channel for modlogs.
+### modlog unignore
 
-    - `<channel>` The text channel to send the events to.
+**Description:** Unignore a channel from message delete/edit events and bot commands.
+
+- `<channel>` the channel to unignore message delete/edit events.
+
+**Usage:** `<@1275521742961508432>modlog unignore`
+
+### modlog toggle
+
+**Description:**     Turn on and off specific modlog actions
+
+    - `<true_or_false>` Either on or off.
     
 - `[events...]` must be any of the following options (more than one event can be provided at once):
  - `channel_change` - Updates to channel name, etc.
@@ -173,7 +126,40 @@ timeout has expired and may display a before timeout in the past.
  - `thread_change`
  - `stickers_change`
 
-**Usage:** `<@1275521742961508432>modlog channel`
+**Usage:** `<@1275521742961508432>modlog toggle`
+
+### modlog delete
+
+**Description:** Delete logging settings.
+
+**Usage:** `<@1275521742961508432>modlog delete`
+
+### modlog delete individual
+
+**Description:** Toggle individual message delete notifications for bulk message delete.
+
+**Usage:** `<@1275521742961508432>modlog delete individual`
+
+### modlog delete ignorecommands
+
+**Description:** Toggle message delete notifications for valid bot command messages.
+
+**Usage:** `<@1275521742961508432>modlog delete ignorecommands`
+
+### modlog delete cachedonly
+
+**Description:** Toggle message delete notifications for non-cached messages.
+
+Delete notifications for non-cached messages
+will only show channel info without content of deleted message or its author.
+
+**Usage:** `<@1275521742961508432>modlog delete cachedonly`
+
+### modlog delete bulkdelete
+
+**Description:** Toggle bulk message delete notifications.
+
+**Usage:** `<@1275521742961508432>modlog delete bulkdelete`
 
 ### modlog ignore
 
@@ -182,20 +168,6 @@ timeout has expired and may display a before timeout in the past.
 - `<channel>` the channel or category to ignore events in
 
 **Usage:** `<@1275521742961508432>modlog ignore`
-
-### modlog unignore
-
-**Description:** Unignore a channel from message delete/edit events and bot commands.
-
-- `<channel>` the channel to unignore message delete/edit events.
-
-**Usage:** `<@1275521742961508432>modlog unignore`
-
-### modlog settings
-
-**Description:** Show the servers current ExtendedModlog settings
-
-**Usage:** `<@1275521742961508432>modlog settings`
 
 ### modlog emojiset
 
@@ -228,56 +200,13 @@ timeout has expired and may display a before timeout in the past.
 
 **Usage:** `<@1275521742961508432>modlog emojiset`
 
-### modlog commandlevel
+### modlog all
 
-**Description:** Set the level of commands to be logged.
+**Description:** Turn all logging options on or off.
 
-- `[level...]` must include all levels you want from:
- - `NONE`
- - `MOD`
- - `ADMIN`
- - `GUILD_OWNER`
- - `BOT_OWNER`
+- `<true_or_false>` True of False, what to set all loggable settings to.
 
-These are the basic levels commands check for in permissions.
-`NONE` is a command anyone has permission to use, where as `MOD`
-can be `mod or permissions`
-
-**Usage:** `<@1275521742961508432>modlog commandlevel`
-
-### modlog bot
-
-**Description:** Bot filter settings.
-
-**Usage:** `<@1275521742961508432>modlog bot`
-
-### modlog bot deletes
-
-**Description:** Toggle message delete notifications for bot users.
-
-This will not affect delete notifications for messages that aren't in bot's cache.
-
-**Usage:** `<@1275521742961508432>modlog bot deletes`
-
-### modlog bot change
-
-**Description:** Toggle bots from being logged in user updates.
-
-This includes roles and nickname.
-
-**Usage:** `<@1275521742961508432>modlog bot change`
-
-### modlog bot edits
-
-**Description:** Toggle message edit notifications for bot users.
-
-**Usage:** `<@1275521742961508432>modlog bot edits`
-
-### modlog bot voice
-
-**Description:** Toggle bots from being logged in voice state updates.
-
-**Usage:** `<@1275521742961508432>modlog bot voice`
+**Usage:** `<@1275521742961508432>modlog all`
 
 ### modlog colour
 
@@ -310,11 +239,11 @@ This includes roles and nickname.
 
 **Usage:** `<@1275521742961508432>modlog colour`
 
-### modlog toggle
+### modlog channel
 
-**Description:**     Turn on and off specific modlog actions
+**Description:**     Set the channel for modlogs.
 
-    - `<true_or_false>` Either on or off.
+    - `<channel>` The text channel to send the events to.
     
 - `[events...]` must be any of the following options (more than one event can be provided at once):
  - `channel_change` - Updates to channel name, etc.
@@ -339,7 +268,78 @@ This includes roles and nickname.
  - `thread_change`
  - `stickers_change`
 
-**Usage:** `<@1275521742961508432>modlog toggle`
+**Usage:** `<@1275521742961508432>modlog channel`
+
+### modlog settings
+
+**Description:** Show the servers current ExtendedModlog settings
+
+**Usage:** `<@1275521742961508432>modlog settings`
+
+### modlog member
+
+**Description:** Toggle individual member update settings.
+
+**Usage:** `<@1275521742961508432>modlog member`
+
+### modlog member avatar
+
+**Description:** Toggle avatar updates for member changes.
+
+**Usage:** `<@1275521742961508432>modlog member avatar`
+
+### modlog member pending
+
+**Description:** Toggle pending updates for members.
+
+**Usage:** `<@1275521742961508432>modlog member pending`
+
+### modlog member timeout
+
+**Description:** Toggle timeout updates for members.
+
+Note: Due to a discord limitation this will not update when a members
+timeout has expired and may display a before timeout in the past.
+
+**Usage:** `<@1275521742961508432>modlog member timeout`
+
+### modlog member all
+
+**Description:** Set all member update settings.
+
+- `<set_to>` True or False what to set all the member update settings to.
+
+**Usage:** `<@1275521742961508432>modlog member all`
+
+### modlog member nickname
+
+**Description:** Toggle nickname updates for member changes.
+
+**Usage:** `<@1275521742961508432>modlog member nickname`
+
+### modlog member flags
+
+**Description:** Toggle flags updates for members.
+
+This includes things like:
+- `did_rejoin`
+- `completed_onboarding`
+- `bypasses_verification`
+- `started_onboarding`
+
+**Usage:** `<@1275521742961508432>modlog member flags`
+
+### modlog member roles
+
+**Description:** Toggle role updates for members.
+
+**Usage:** `<@1275521742961508432>modlog member roles`
+
+### modlog member settings
+
+**Description:** Show the current settings on member updates.
+
+**Usage:** `<@1275521742961508432>modlog member settings`
 
 ### modlog embeds
 

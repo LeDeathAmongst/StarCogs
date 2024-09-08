@@ -9,6 +9,12 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 **Usage:** `<@1275521742961508432>cah`
 
+### cah list
+
+**Description:** List all the available set names.
+
+**Usage:** `<@1275521742961508432>cah list`
+
 ### cah start
 
 **Description:** Start a game of Cards Against Humanity®️
@@ -20,10 +26,4 @@ by `|` separating card sets.
 e.g. `[p]cah start 10 CAH Base Set|2012 Holiday Pack`
 
 **Usage:** `<@1275521742961508432>cah start`
-
-### cah list
-
-**Description:** List all the available set names.
-
-**Usage:** `<@1275521742961508432>cah list`
 

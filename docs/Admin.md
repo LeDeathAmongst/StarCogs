@@ -24,6 +24,17 @@ If user is left blank it defaults to the author of the command.
 
 **Usage:** `<@1275521742961508432>editrole`
 
+### editrole name
+
+**Description:** Edit a role's name.
+
+Use double quotes if the role or the name contain spaces.
+
+Example:
+    `[p]editrole name "The Transistor" Test`
+
+**Usage:** `<@1275521742961508432>editrole name`
+
 ### editrole colour
 
 **Description:** Edit a role's colour.
@@ -37,17 +48,6 @@ Examples:
     `[p]editrole colour Test #ff9900`
 
 **Usage:** `<@1275521742961508432>editrole colour`
-
-### editrole name
-
-**Description:** Edit a role's name.
-
-Use double quotes if the role or the name contain spaces.
-
-Example:
-    `[p]editrole name "The Transistor" Test`
-
-**Usage:** `<@1275521742961508432>editrole name`
 
 ### announce
 
@@ -100,14 +100,6 @@ NOTE: The role is case sensitive!
 
 **Usage:** `<@1275521742961508432>selfroleset`
 
-### selfroleset add
-
-**Description:** Add a role, or a selection of roles, to the list of available selfroles.
-
-NOTE: The role is case sensitive!
-
-**Usage:** `<@1275521742961508432>selfroleset add`
-
 ### selfroleset clear
 
 **Description:** Clear the list of available selfroles for this server.
@@ -121,6 +113,14 @@ NOTE: The role is case sensitive!
 NOTE: The role is case sensitive!
 
 **Usage:** `<@1275521742961508432>selfroleset remove`
+
+### selfroleset add
+
+**Description:** Add a role, or a selection of roles, to the list of available selfroles.
+
+NOTE: The role is case sensitive!
+
+**Usage:** `<@1275521742961508432>selfroleset add`
 
 ### serverlock
 

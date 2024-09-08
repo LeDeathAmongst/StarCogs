@@ -6,23 +6,11 @@
 
 **Usage:** `<@1275521742961508432>snipe`
 
-### snipe index
-
-**Description:** Snipe a deleted message.
-
-**Usage:** `<@1275521742961508432>snipe index`
-
 ### snipe mentions
 
 **Description:** Bulk snipe deleted messages with roles/users mentions.
 
 **Usage:** `<@1275521742961508432>snipe mentions`
-
-### snipe embeds
-
-**Description:** Bulk snipe deleted messages with embeds.
-
-**Usage:** `<@1275521742961508432>snipe embeds`
 
 ### snipe member
 
@@ -30,17 +18,11 @@
 
 **Usage:** `<@1275521742961508432>snipe member`
 
-### snipe membersmentions
+### snipe embeds
 
-**Description:** Bulk snipe deleted messages with members mentions.
+**Description:** Bulk snipe deleted messages with embeds.
 
-**Usage:** `<@1275521742961508432>snipe membersmentions`
-
-### snipe bulk
-
-**Description:** Bulk snipe deleted messages.
-
-**Usage:** `<@1275521742961508432>snipe bulk`
+**Usage:** `<@1275521742961508432>snipe embeds`
 
 ### snipe rolesmentions
 
@@ -54,17 +36,35 @@
 
 **Usage:** `<@1275521742961508432>snipe list`
 
+### snipe membersmentions
+
+**Description:** Bulk snipe deleted messages with members mentions.
+
+**Usage:** `<@1275521742961508432>snipe membersmentions`
+
+### snipe bulk
+
+**Description:** Bulk snipe deleted messages.
+
+**Usage:** `<@1275521742961508432>snipe bulk`
+
+### snipe index
+
+**Description:** Snipe a deleted message.
+
+**Usage:** `<@1275521742961508432>snipe index`
+
 ### esnipe
 
 **Description:** Bulk snipe edited messages.
 
 **Usage:** `<@1275521742961508432>esnipe`
 
-### esnipe list
+### esnipe bulk
 
-**Description:** List edited messages.
+**Description:** Bulk snipe edited messages.
 
-**Usage:** `<@1275521742961508432>esnipe list`
+**Usage:** `<@1275521742961508432>esnipe bulk`
 
 ### esnipe mentions
 
@@ -78,23 +78,23 @@
 
 **Usage:** `<@1275521742961508432>esnipe index`
 
+### esnipe membersmentions
+
+**Description:** Bulk snipe edited messages with members mentions.
+
+**Usage:** `<@1275521742961508432>esnipe membersmentions`
+
 ### esnipe embeds
 
 **Description:** Bulk snipe edited messages with embeds.
 
 **Usage:** `<@1275521742961508432>esnipe embeds`
 
-### esnipe bulk
+### esnipe list
 
-**Description:** Bulk snipe edited messages.
+**Description:** List edited messages.
 
-**Usage:** `<@1275521742961508432>esnipe bulk`
-
-### esnipe membersmentions
-
-**Description:** Bulk snipe edited messages with members mentions.
-
-**Usage:** `<@1275521742961508432>esnipe membersmentions`
+**Usage:** `<@1275521742961508432>esnipe list`
 
 ### esnipe rolesmentions
 
@@ -114,6 +114,24 @@
 
 **Usage:** `<@1275521742961508432>setsnipe`
 
+### setsnipe stats
+
+**Description:** Show stats about Snipe cache.
+
+**Usage:** `<@1275521742961508432>setsnipe stats`
+
+### setsnipe resetsetting
+
+**Description:** Reset a setting.
+
+**Usage:** `<@1275521742961508432>setsnipe resetsetting`
+
+### setsnipe showsettings
+
+**Description:** Show all settings for the cog with defaults and values.
+
+**Usage:** `<@1275521742961508432>setsnipe showsettings`
+
 ### setsnipe ignoredchannels
 
 **Description:** Set the channels in which deleted and edited messages will be ignored.
@@ -123,11 +141,11 @@ Dev: `Greedy[GuildChannel]`
 
 **Usage:** `<@1275521742961508432>setsnipe ignoredchannels`
 
-### setsnipe resetsetting
+### setsnipe modalconfig
 
-**Description:** Reset a setting.
+**Description:** Set all settings for the cog with a Discord Modal.
 
-**Usage:** `<@1275521742961508432>setsnipe resetsetting`
+**Usage:** `<@1275521742961508432>setsnipe modalconfig`
 
 ### setsnipe ignored
 
@@ -137,22 +155,4 @@ Default value: `False`
 Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setsnipe ignored`
-
-### setsnipe showsettings
-
-**Description:** Show all settings for the cog with defaults and values.
-
-**Usage:** `<@1275521742961508432>setsnipe showsettings`
-
-### setsnipe stats
-
-**Description:** Show stats about Snipe cache.
-
-**Usage:** `<@1275521742961508432>setsnipe stats`
-
-### setsnipe modalconfig
-
-**Description:** Set all settings for the cog with a Discord Modal.
-
-**Usage:** `<@1275521742961508432>setsnipe modalconfig`
 

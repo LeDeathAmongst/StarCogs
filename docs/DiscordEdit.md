@@ -6,22 +6,25 @@
 
 **Usage:** `<@1275521742961508432>editvoicechannel`
 
-### editvoicechannel invite
+### editvoicechannel userlimit
 
-**Description:** Create an invite for a voice channel.
+**Description:** Edit voice channel user limit.
 
-`max_age`: How long the invite should last in days. If it's 0 then the invite doesn't expire.
-`max_uses`: How many uses the invite could be used for. If it's 0 then there are unlimited uses.
-`temporary`: Denotes that the invite grants temporary membership (i.e. they get kicked after they disconnect).
-`unique`: Indicates if a unique invite URL should be created. Defaults to True. If this is set to False then it will return a previously created invite.
+It must be a number between 0 and 99.
 
-**Usage:** `<@1275521742961508432>editvoicechannel invite`
+**Usage:** `<@1275521742961508432>editvoicechannel userlimit`
 
-### editvoicechannel category
+### editvoicechannel create
 
-**Description:** Edit voice channel category.
+**Description:** Create a voice channel.
 
-**Usage:** `<@1275521742961508432>editvoicechannel category`
+**Usage:** `<@1275521742961508432>editvoicechannel create`
+
+### editvoicechannel syncpermissions
+
+**Description:** Edit voice channel sync permissions.
+
+**Usage:** `<@1275521742961508432>editvoicechannel syncpermissions`
 
 ### editvoicechannel overwrites
 
@@ -62,65 +65,6 @@ You must possess the permissions you wish to modify.
 
 **Usage:** `<@1275521742961508432>editvoicechannel overwrites`
 
-### editvoicechannel clone
-
-**Description:** Clone a voice channel.
-
-**Usage:** `<@1275521742961508432>editvoicechannel clone`
-
-### editvoicechannel userlimit
-
-**Description:** Edit voice channel user limit.
-
-It must be a number between 0 and 99.
-
-**Usage:** `<@1275521742961508432>editvoicechannel userlimit`
-
-### editvoicechannel syncpermissions
-
-**Description:** Edit voice channel sync permissions.
-
-**Usage:** `<@1275521742961508432>editvoicechannel syncpermissions`
-
-### editvoicechannel name
-
-**Description:** Edit voice channel name.
-
-**Usage:** `<@1275521742961508432>editvoicechannel name`
-
-### editvoicechannel nsfw
-
-**Description:** Edit voice channel nsfw.
-
-**Usage:** `<@1275521742961508432>editvoicechannel nsfw`
-
-### editvoicechannel videoqualitymode
-
-**Description:** Edit voice channel video quality mode.
-
-auto = 1
-full = 2
-
-**Usage:** `<@1275521742961508432>editvoicechannel videoqualitymode`
-
-### editvoicechannel delete
-
-**Description:** Delete voice channel.
-
-**Usage:** `<@1275521742961508432>editvoicechannel delete`
-
-### editvoicechannel list
-
-**Description:** List all voice channels in the current guild.
-
-**Usage:** `<@1275521742961508432>editvoicechannel list`
-
-### editvoicechannel create
-
-**Description:** Create a voice channel.
-
-**Usage:** `<@1275521742961508432>editvoicechannel create`
-
 ### editvoicechannel bitrate
 
 **Description:** Edit voice channel bitrate.
@@ -132,11 +76,63 @@ Level 3: 384000
 
 **Usage:** `<@1275521742961508432>editvoicechannel bitrate`
 
+### editvoicechannel name
+
+**Description:** Edit voice channel name.
+
+**Usage:** `<@1275521742961508432>editvoicechannel name`
+
+### editvoicechannel slowmodedelay
+
+**Description:** Edit voice channel slowmode delay.
+
+Specifies the slowmode rate limit for user in this channel. A value of 0s disables slowmode. The maximum value possible is 21600s.
+
+**Usage:** `<@1275521742961508432>editvoicechannel slowmodedelay`
+
 ### editvoicechannel view
 
 **Description:** View and edit voice channel.
 
 **Usage:** `<@1275521742961508432>editvoicechannel view`
+
+### editvoicechannel delete
+
+**Description:** Delete voice channel.
+
+**Usage:** `<@1275521742961508432>editvoicechannel delete`
+
+### editvoicechannel videoqualitymode
+
+**Description:** Edit voice channel video quality mode.
+
+auto = 1
+full = 2
+
+**Usage:** `<@1275521742961508432>editvoicechannel videoqualitymode`
+
+### editvoicechannel clone
+
+**Description:** Clone a voice channel.
+
+**Usage:** `<@1275521742961508432>editvoicechannel clone`
+
+### editvoicechannel list
+
+**Description:** List all voice channels in the current guild.
+
+**Usage:** `<@1275521742961508432>editvoicechannel list`
+
+### editvoicechannel invite
+
+**Description:** Create an invite for a voice channel.
+
+`max_age`: How long the invite should last in days. If it's 0 then the invite doesn't expire.
+`max_uses`: How many uses the invite could be used for. If it's 0 then there are unlimited uses.
+`temporary`: Denotes that the invite grants temporary membership (i.e. they get kicked after they disconnect).
+`unique`: Indicates if a unique invite URL should be created. Defaults to True. If this is set to False then it will return a previously created invite.
+
+**Usage:** `<@1275521742961508432>editvoicechannel invite`
 
 ### editvoicechannel position
 
@@ -147,13 +143,17 @@ Channels cannot be moved to a position that takes them out of their current cate
 
 **Usage:** `<@1275521742961508432>editvoicechannel position`
 
-### editvoicechannel slowmodedelay
+### editvoicechannel nsfw
 
-**Description:** Edit voice channel slowmode delay.
+**Description:** Edit voice channel nsfw.
 
-Specifies the slowmode rate limit for user in this channel. A value of 0s disables slowmode. The maximum value possible is 21600s.
+**Usage:** `<@1275521742961508432>editvoicechannel nsfw`
 
-**Usage:** `<@1275521742961508432>editvoicechannel slowmodedelay`
+### editvoicechannel category
+
+**Description:** Edit voice channel category.
+
+**Usage:** `<@1275521742961508432>editvoicechannel category`
 
 ### editthread
 
@@ -161,29 +161,11 @@ Specifies the slowmode rate limit for user in this channel. A value of 0s disabl
 
 **Usage:** `<@1275521742961508432>editthread`
 
-### editthread archived
+### editthread pinned
 
-**Description:** Edit thread archived.
+**Description:** Edit thread pinned.
 
-**Usage:** `<@1275521742961508432>editthread archived`
-
-### editthread locked
-
-**Description:** Edit thread locked.
-
-**Usage:** `<@1275521742961508432>editthread locked`
-
-### editthread autoarchiveduration
-
-**Description:** Edit thread auto archive duration.
-
-**Usage:** `<@1275521742961508432>editthread autoarchiveduration`
-
-### editthread removeuser
-
-**Description:** Remove member from thread.
-
-**Usage:** `<@1275521742961508432>editthread removeuser`
+**Usage:** `<@1275521742961508432>editthread pinned`
 
 ### editthread list
 
@@ -191,25 +173,17 @@ Specifies the slowmode rate limit for user in this channel. A value of 0s disabl
 
 **Usage:** `<@1275521742961508432>editthread list`
 
-### editthread view
+### editthread removeuser
 
-**Description:** View and edit thread.
+**Description:** Remove member from thread.
 
-**Usage:** `<@1275521742961508432>editthread view`
+**Usage:** `<@1275521742961508432>editthread removeuser`
 
-### editthread create
+### editthread name
 
-**Description:** Create a thread.
+**Description:** Edit thread name.
 
-You'll join it automatically.
-
-**Usage:** `<@1275521742961508432>editthread create`
-
-### editthread pinned
-
-**Description:** Edit thread pinned.
-
-**Usage:** `<@1275521742961508432>editthread pinned`
+**Usage:** `<@1275521742961508432>editthread name`
 
 ### editthread appliedtags
 
@@ -228,23 +202,23 @@ You'll join it automatically.
 
 **Usage:** `<@1275521742961508432>editthread delete`
 
+### editthread view
+
+**Description:** View and edit thread.
+
+**Usage:** `<@1275521742961508432>editthread view`
+
 ### editthread adduser
 
 **Description:** Add member to thread.
 
 **Usage:** `<@1275521742961508432>editthread adduser`
 
-### editthread name
+### editthread archived
 
-**Description:** Edit thread name.
+**Description:** Edit thread archived.
 
-**Usage:** `<@1275521742961508432>editthread name`
-
-### editthread slowmodedelay
-
-**Description:** Edit thread slowmode delay.
-
-**Usage:** `<@1275521742961508432>editthread slowmodedelay`
+**Usage:** `<@1275521742961508432>editthread archived`
 
 ### editthread invitable
 
@@ -252,11 +226,43 @@ You'll join it automatically.
 
 **Usage:** `<@1275521742961508432>editthread invitable`
 
+### editthread slowmodedelay
+
+**Description:** Edit thread slowmode delay.
+
+**Usage:** `<@1275521742961508432>editthread slowmodedelay`
+
+### editthread create
+
+**Description:** Create a thread.
+
+You'll join it automatically.
+
+**Usage:** `<@1275521742961508432>editthread create`
+
+### editthread locked
+
+**Description:** Edit thread locked.
+
+**Usage:** `<@1275521742961508432>editthread locked`
+
+### editthread autoarchiveduration
+
+**Description:** Edit thread auto archive duration.
+
+**Usage:** `<@1275521742961508432>editthread autoarchiveduration`
+
 ### edittextchannel
 
 **Description:** Commands for edit a text channel.
 
 **Usage:** `<@1275521742961508432>edittextchannel`
+
+### edittextchannel clone
+
+**Description:** Clone a text channel.
+
+**Usage:** `<@1275521742961508432>edittextchannel clone`
 
 ### edittextchannel invite
 
@@ -269,49 +275,11 @@ You'll join it automatically.
 
 **Usage:** `<@1275521742961508432>edittextchannel invite`
 
-### edittextchannel topic
+### edittextchannel name
 
-**Description:** Edit text channel topic.
+**Description:** Edit text channel name.
 
-**Usage:** `<@1275521742961508432>edittextchannel topic`
-
-### edittextchannel delete
-
-**Description:** Delete a text channel.
-
-**Usage:** `<@1275521742961508432>edittextchannel delete`
-
-### edittextchannel syncpermissions
-
-**Description:** Edit text channel syncpermissions with category.
-
-**Usage:** `<@1275521742961508432>edittextchannel syncpermissions`
-
-### edittextchannel clone
-
-**Description:** Clone a text channel.
-
-**Usage:** `<@1275521742961508432>edittextchannel clone`
-
-### edittextchannel slowmodedelay
-
-**Description:** Edit text channel slowmode delay.
-
-Specifies the slowmode rate limit for user in this channel. A value of 0s disables slowmode. The maximum value possible is 21600s.
-
-**Usage:** `<@1275521742961508432>edittextchannel slowmodedelay`
-
-### edittextchannel list
-
-**Description:** List all text channels in the current guild.
-
-**Usage:** `<@1275521742961508432>edittextchannel list`
-
-### edittextchannel nsfw
-
-**Description:** Edit text channel nsfw.
-
-**Usage:** `<@1275521742961508432>edittextchannel nsfw`
+**Usage:** `<@1275521742961508432>edittextchannel name`
 
 ### edittextchannel defaultautoarchiveduration
 
@@ -321,17 +289,44 @@ The new default auto archive duration in minutes for threads created in this cha
 
 **Usage:** `<@1275521742961508432>edittextchannel defaultautoarchiveduration`
 
+### edittextchannel syncpermissions
+
+**Description:** Edit text channel syncpermissions with category.
+
+**Usage:** `<@1275521742961508432>edittextchannel syncpermissions`
+
+### edittextchannel category
+
+**Description:** Edit text channel category.
+
+**Usage:** `<@1275521742961508432>edittextchannel category`
+
 ### edittextchannel view
 
 **Description:** View and edit text channel.
 
 **Usage:** `<@1275521742961508432>edittextchannel view`
 
-### edittextchannel name
+### edittextchannel nsfw
 
-**Description:** Edit text channel name.
+**Description:** Edit text channel nsfw.
 
-**Usage:** `<@1275521742961508432>edittextchannel name`
+**Usage:** `<@1275521742961508432>edittextchannel nsfw`
+
+### edittextchannel list
+
+**Description:** List all text channels in the current guild.
+
+**Usage:** `<@1275521742961508432>edittextchannel list`
+
+### edittextchannel position
+
+**Description:** Edit text channel position.
+
+Warning: Only text channels are taken into account. Channel 1 is the highest positioned text channel.
+Channels cannot be moved to a position that takes them out of their current category.
+
+**Usage:** `<@1275521742961508432>edittextchannel position`
 
 ### edittextchannel defaultthreadslowmodedelay
 
@@ -380,6 +375,14 @@ You must possess the permissions you wish to modify.
 
 **Usage:** `<@1275521742961508432>edittextchannel overwrites`
 
+### edittextchannel slowmodedelay
+
+**Description:** Edit text channel slowmode delay.
+
+Specifies the slowmode rate limit for user in this channel. A value of 0s disables slowmode. The maximum value possible is 21600s.
+
+**Usage:** `<@1275521742961508432>edittextchannel slowmodedelay`
+
 ### edittextchannel type
 
 **Description:** Edit text channel type.
@@ -390,26 +393,23 @@ Currently, only conversion between ChannelType.text and ChannelType.news is supp
 
 **Usage:** `<@1275521742961508432>edittextchannel type`
 
+### edittextchannel delete
+
+**Description:** Delete a text channel.
+
+**Usage:** `<@1275521742961508432>edittextchannel delete`
+
+### edittextchannel topic
+
+**Description:** Edit text channel topic.
+
+**Usage:** `<@1275521742961508432>edittextchannel topic`
+
 ### edittextchannel create
 
 **Description:** Create a text channel.
 
 **Usage:** `<@1275521742961508432>edittextchannel create`
-
-### edittextchannel position
-
-**Description:** Edit text channel position.
-
-Warning: Only text channels are taken into account. Channel 1 is the highest positioned text channel.
-Channels cannot be moved to a position that takes them out of their current category.
-
-**Usage:** `<@1275521742961508432>edittextchannel position`
-
-### edittextchannel category
-
-**Description:** Edit text channel category.
-
-**Usage:** `<@1275521742961508432>edittextchannel category`
 
 ### editrole
 
@@ -417,17 +417,11 @@ Channels cannot be moved to a position that takes them out of their current cate
 
 **Usage:** `<@1275521742961508432>editrole`
 
-### editrole create
+### editrole delete
 
-**Description:** Create a role.
+**Description:** Delete a role.
 
-**Usage:** `<@1275521742961508432>editrole create`
-
-### editrole hoist
-
-**Description:** Edit role hoist.
-
-**Usage:** `<@1275521742961508432>editrole hoist`
+**Usage:** `<@1275521742961508432>editrole delete`
 
 ### editrole displayicon
 
@@ -437,25 +431,17 @@ Channels cannot be moved to a position that takes them out of their current cate
 
 **Usage:** `<@1275521742961508432>editrole displayicon`
 
-### editrole delete
+### editrole mentionable
 
-**Description:** Delete a role.
+**Description:** Edit role mentionable.
 
-**Usage:** `<@1275521742961508432>editrole delete`
+**Usage:** `<@1275521742961508432>editrole mentionable`
 
-### editrole name
+### editrole color
 
-**Description:** Edit role name.
+**Description:** Edit role color.
 
-**Usage:** `<@1275521742961508432>editrole name`
-
-### editrole position
-
-**Description:** Edit role position.
-
-Warning: The role with a position 1 is the highest role in the Discord hierarchy.
-
-**Usage:** `<@1275521742961508432>editrole position`
+**Usage:** `<@1275521742961508432>editrole color`
 
 ### editrole view
 
@@ -463,11 +449,23 @@ Warning: The role with a position 1 is the highest role in the Discord hierarchy
 
 **Usage:** `<@1275521742961508432>editrole view`
 
-### editrole color
+### editrole name
 
-**Description:** Edit role color.
+**Description:** Edit role name.
 
-**Usage:** `<@1275521742961508432>editrole color`
+**Usage:** `<@1275521742961508432>editrole name`
+
+### editrole list
+
+**Description:** List all roles in the current guild.
+
+**Usage:** `<@1275521742961508432>editrole list`
+
+### editrole create
+
+**Description:** Create a role.
+
+**Usage:** `<@1275521742961508432>editrole create`
 
 ### editrole permissions
 
@@ -507,17 +505,19 @@ You must possess the permissions you wish to modify.
 
 **Usage:** `<@1275521742961508432>editrole permissions`
 
-### editrole mentionable
+### editrole position
 
-**Description:** Edit role mentionable.
+**Description:** Edit role position.
 
-**Usage:** `<@1275521742961508432>editrole mentionable`
+Warning: The role with a position 1 is the highest role in the Discord hierarchy.
 
-### editrole list
+**Usage:** `<@1275521742961508432>editrole position`
 
-**Description:** List all roles in the current guild.
+### editrole hoist
 
-**Usage:** `<@1275521742961508432>editrole list`
+**Description:** Edit role hoist.
+
+**Usage:** `<@1275521742961508432>editrole hoist`
 
 ### editguild
 
@@ -525,67 +525,23 @@ You must possess the permissions you wish to modify.
 
 **Usage:** `<@1275521742961508432>editguild`
 
-### editguild icon
-
-**Description:** Edit guild icon.
-
-You can use an URL or upload an attachment.
-
-**Usage:** `<@1275521742961508432>editguild icon`
-
-### editguild widgetenabled
-
-**Description:** Edit guild invites widget enabled state.
-
-**Usage:** `<@1275521742961508432>editguild widgetenabled`
-
-### editguild verificationlevel
-
-**Description:** Edit guild verification level.
-
-**Usage:** `<@1275521742961508432>editguild verificationlevel`
-
 ### editguild name
 
 **Description:** Edit guild name.
 
 **Usage:** `<@1275521742961508432>editguild name`
 
-### editguild description
+### editguild discoverable
 
-**Description:** Edit guild description.
+**Description:** Edit guild discoverable state.
 
-**Usage:** `<@1275521742961508432>editguild description`
+**Usage:** `<@1275521742961508432>editguild discoverable`
 
-### editguild vanitycode
+### editguild create
 
-**Description:** Edit guild vanity code.
+**Description:** Create a guild with the bot as owner.
 
-**Usage:** `<@1275521742961508432>editguild vanitycode`
-
-### editguild explicitcontentfilter
-
-**Description:** Edit guild explicit content filter.
-
-**Usage:** `<@1275521742961508432>editguild explicitcontentfilter`
-
-### editguild afktimeout
-
-**Description:** Edit guild afk timeout.
-
-**Usage:** `<@1275521742961508432>editguild afktimeout`
-
-### editguild delete
-
-**Description:** Delete guild (if the bot is owner).
-
-**Usage:** `<@1275521742961508432>editguild delete`
-
-### editguild view
-
-**Description:** View and edit guild.
-
-**Usage:** `<@1275521742961508432>editguild view`
+**Usage:** `<@1275521742961508432>editguild create`
 
 ### editguild splash
 
@@ -595,17 +551,21 @@ You can use an URL or upload an attachment.
 
 **Usage:** `<@1275521742961508432>editguild splash`
 
-### editguild raidalertsdisabled
+### editguild banner
 
-**Description:** Edit guild invites raid alerts disabled state.
+**Description:** Edit guild banner.
 
-**Usage:** `<@1275521742961508432>editguild raidalertsdisabled`
+You can use an URL or upload an attachment.
 
-### editguild systemchannelflags
+**Usage:** `<@1275521742961508432>editguild banner`
 
-**Description:** Edit guild system channel flags.
+### editguild discoverysplash
 
-**Usage:** `<@1275521742961508432>editguild systemchannelflags`
+**Description:** Edit guild discovery splash.
+
+You can use an URL or upload an attachment.
+
+**Usage:** `<@1275521742961508432>editguild discoverysplash`
 
 ### editguild owner
 
@@ -619,17 +579,23 @@ You can use an URL or upload an attachment.
 
 **Usage:** `<@1275521742961508432>editguild ruleschannel`
 
+### editguild publicupdateschannel
+
+**Description:** Edit guild public updates channel.
+
+**Usage:** `<@1275521742961508432>editguild publicupdateschannel`
+
+### editguild invitesdisabled
+
+**Description:** Edit guild invites disabled state.
+
+**Usage:** `<@1275521742961508432>editguild invitesdisabled`
+
 ### editguild clone
 
 **Description:** Clone a guild.
 
 **Usage:** `<@1275521742961508432>editguild clone`
-
-### editguild premiumprogressbarenabled
-
-**Description:** Edit guild premium progress bar enabled.
-
-**Usage:** `<@1275521742961508432>editguild premiumprogressbarenabled`
 
 ### editguild preferredlocale
 
@@ -668,11 +634,43 @@ vietnamese = 'vi'
 
 **Usage:** `<@1275521742961508432>editguild preferredlocale`
 
-### editguild community
+### editguild view
 
-**Description:** Edit guild community state.
+**Description:** View and edit guild.
 
-**Usage:** `<@1275521742961508432>editguild community`
+**Usage:** `<@1275521742961508432>editguild view`
+
+### editguild description
+
+**Description:** Edit guild description.
+
+**Usage:** `<@1275521742961508432>editguild description`
+
+### editguild icon
+
+**Description:** Edit guild icon.
+
+You can use an URL or upload an attachment.
+
+**Usage:** `<@1275521742961508432>editguild icon`
+
+### editguild afktimeout
+
+**Description:** Edit guild afk timeout.
+
+**Usage:** `<@1275521742961508432>editguild afktimeout`
+
+### editguild defaultnotifications
+
+**Description:** Edit guild notification level.
+
+**Usage:** `<@1275521742961508432>editguild defaultnotifications`
+
+### editguild raidalertsdisabled
+
+**Description:** Edit guild invites raid alerts disabled state.
+
+**Usage:** `<@1275521742961508432>editguild raidalertsdisabled`
 
 ### editguild widgetchannel
 
@@ -686,25 +684,53 @@ vietnamese = 'vi'
 
 **Usage:** `<@1275521742961508432>editguild safetyalertschannel`
 
-### editguild defaultnotifications
+### editguild vanitycode
 
-**Description:** Edit guild notification level.
+**Description:** Edit guild vanity code.
 
-**Usage:** `<@1275521742961508432>editguild defaultnotifications`
+**Usage:** `<@1275521742961508432>editguild vanitycode`
 
-### editguild discoverable
+### editguild explicitcontentfilter
 
-**Description:** Edit guild discoverable state.
+**Description:** Edit guild explicit content filter.
 
-**Usage:** `<@1275521742961508432>editguild discoverable`
+**Usage:** `<@1275521742961508432>editguild explicitcontentfilter`
 
-### editguild discoverysplash
+### editguild widgetenabled
 
-**Description:** Edit guild discovery splash.
+**Description:** Edit guild invites widget enabled state.
 
-You can use an URL or upload an attachment.
+**Usage:** `<@1275521742961508432>editguild widgetenabled`
 
-**Usage:** `<@1275521742961508432>editguild discoverysplash`
+### editguild community
+
+**Description:** Edit guild community state.
+
+**Usage:** `<@1275521742961508432>editguild community`
+
+### editguild systemchannelflags
+
+**Description:** Edit guild system channel flags.
+
+**Usage:** `<@1275521742961508432>editguild systemchannelflags`
+
+### editguild verificationlevel
+
+**Description:** Edit guild verification level.
+
+**Usage:** `<@1275521742961508432>editguild verificationlevel`
+
+### editguild premiumprogressbarenabled
+
+**Description:** Edit guild premium progress bar enabled.
+
+**Usage:** `<@1275521742961508432>editguild premiumprogressbarenabled`
+
+### editguild delete
+
+**Description:** Delete guild (if the bot is owner).
+
+**Usage:** `<@1275521742961508432>editguild delete`
 
 ### editguild afkchannel
 
@@ -712,35 +738,9 @@ You can use an URL or upload an attachment.
 
 **Usage:** `<@1275521742961508432>editguild afkchannel`
 
-### editguild publicupdateschannel
-
-**Description:** Edit guild public updates channel.
-
-**Usage:** `<@1275521742961508432>editguild publicupdateschannel`
-
-### editguild create
-
-**Description:** Create a guild with the bot as owner.
-
-**Usage:** `<@1275521742961508432>editguild create`
-
 ### editguild systemchannel
 
 **Description:** Edit guild system channel.
 
 **Usage:** `<@1275521742961508432>editguild systemchannel`
-
-### editguild banner
-
-**Description:** Edit guild banner.
-
-You can use an URL or upload an attachment.
-
-**Usage:** `<@1275521742961508432>editguild banner`
-
-### editguild invitesdisabled
-
-**Description:** Edit guild invites disabled state.
-
-**Usage:** `<@1275521742961508432>editguild invitesdisabled`
 

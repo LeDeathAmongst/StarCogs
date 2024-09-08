@@ -6,21 +6,11 @@
 
 **Usage:** `<@1275521742961508432>threadopener`
 
-### threadopener archive
+### threadopener allowbots
 
-**Description:** Change the archive duration of threads.
+**Description:** Allow/Disallow bots from auto-creating threads using Thread Opener.
 
-- Use `0` to disable auto archive duration of threads.
-
-**Usage:** `<@1275521742961508432>threadopener archive`
-
-### threadopener slowmode
-
-**Description:** Change the slowmode of threads.
-
-- Use `0` to dsiable slowmode delay in threads.
-
-**Usage:** `<@1275521742961508432>threadopener slowmode`
+**Usage:** `<@1275521742961508432>threadopener allowbots`
 
 ### threadopener toggle
 
@@ -28,47 +18,29 @@
 
 **Usage:** `<@1275521742961508432>threadopener toggle`
 
-### threadopener showsettings
+### threadopener name
 
-**Description:** Show ThreadOpener settings.
+**Description:** Change the default thread name for ThreadOpener.
 
-**Usage:** `<@1275521742961508432>threadopener showsettings`
+(Supports TagScript)
 
-### threadopener channels
-
-**Description:** Add or remove channels for your guild.
-
-**Arguments:**
-- `<add_or_remove>` should be either `add` to add channels or `remove` to remove channels.
-- `<channels>` channels to be added.
+**Attributes:**
+- `{server}`: [Your guild/server.](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#server-block)
+- `{author}`: [Author of the thread.](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#author-block)
+- `{created}`: Formatted time string of when the thread was created.
+- `{counter}`: Counter of how created thread. (Everytime a thread is created using ThreadOpener the counter goes up by 1.)
 
 **Example:**
-- `[p]threadopener channels add #channel`
-- `[p]threadopener channels remove #channel`
+- `[p]threadopener name {author(name)}:{created}:{counter}`
+- `[p]threadopener name {author(name)}-{counter}`
 
-**Note:**
-- You can add or remove multiple channels at once.
-- You can also use channel ID instead of mentioning the channel.
-
-**Usage:** `<@1275521742961508432>threadopener channels`
-
-### threadopener allowbots
-
-**Description:** Allow/Disallow bots from auto-creating threads using Thread Opener.
-
-**Usage:** `<@1275521742961508432>threadopener allowbots`
+**Usage:** `<@1275521742961508432>threadopener name`
 
 ### threadopener message
 
 **Description:** Manage thread opener notifications when they are opened.
 
 **Usage:** `<@1275521742961508432>threadopener message`
-
-### threadopener message toggle
-
-**Description:** Toggle the thread opener notification message.
-
-**Usage:** `<@1275521742961508432>threadopener message toggle`
 
 ### threadopener message buttons
 
@@ -102,23 +74,27 @@
 
 **Usage:** `<@1275521742961508432>threadopener message set`
 
-### threadopener name
+### threadopener message toggle
 
-**Description:** Change the default thread name for ThreadOpener.
+**Description:** Toggle the thread opener notification message.
 
-(Supports TagScript)
+**Usage:** `<@1275521742961508432>threadopener message toggle`
 
-**Attributes:**
-- `{server}`: [Your guild/server.](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#server-block)
-- `{author}`: [Author of the thread.](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#author-block)
-- `{created}`: Formatted time string of when the thread was created.
-- `{counter}`: Counter of how created thread. (Everytime a thread is created using ThreadOpener the counter goes up by 1.)
+### threadopener archive
 
-**Example:**
-- `[p]threadopener name {author(name)}:{created}:{counter}`
-- `[p]threadopener name {author(name)}-{counter}`
+**Description:** Change the archive duration of threads.
 
-**Usage:** `<@1275521742961508432>threadopener name`
+- Use `0` to disable auto archive duration of threads.
+
+**Usage:** `<@1275521742961508432>threadopener archive`
+
+### threadopener slowmode
+
+**Description:** Change the slowmode of threads.
+
+- Use `0` to dsiable slowmode delay in threads.
+
+**Usage:** `<@1275521742961508432>threadopener slowmode`
 
 ### threadopener blacklist
 
@@ -175,4 +151,28 @@
     or `roles` to view the role blacklist.
 
 **Usage:** `<@1275521742961508432>threadopener blacklist list`
+
+### threadopener showsettings
+
+**Description:** Show ThreadOpener settings.
+
+**Usage:** `<@1275521742961508432>threadopener showsettings`
+
+### threadopener channels
+
+**Description:** Add or remove channels for your guild.
+
+**Arguments:**
+- `<add_or_remove>` should be either `add` to add channels or `remove` to remove channels.
+- `<channels>` channels to be added.
+
+**Example:**
+- `[p]threadopener channels add #channel`
+- `[p]threadopener channels remove #channel`
+
+**Note:**
+- You can add or remove multiple channels at once.
+- You can also use channel ID instead of mentioning the channel.
+
+**Usage:** `<@1275521742961508432>threadopener channels`
 

@@ -12,6 +12,20 @@
 
 **Usage:** `<@1275521742961508432>react reload`
 
+### react add
+
+**Description:** Add an auto reaction to a word.
+
+Parameters:
+-----------
+word: str
+    The word you wish to react to.
+emoji: Union[str, discord.Emoji]
+    The emoji you wish to react with, interpreted as the string representation
+    with <:name:id> if it is a custom emoji.
+
+**Usage:** `<@1275521742961508432>react add`
+
 ### react del
 
 **Description:** Delete an auto reaction to a word.
@@ -31,18 +45,4 @@ emoji: Union[str, discord.Emoji]
 **Description:** List the auto reaction emojis and triggers.
 
 **Usage:** `<@1275521742961508432>react list`
-
-### react add
-
-**Description:** Add an auto reaction to a word.
-
-Parameters:
------------
-word: str
-    The word you wish to react to.
-emoji: Union[str, discord.Emoji]
-    The emoji you wish to react with, interpreted as the string representation
-    with <:name:id> if it is a custom emoji.
-
-**Usage:** `<@1275521742961508432>react add`
 

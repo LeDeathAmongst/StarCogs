@@ -14,12 +14,6 @@ Omit [channel] to disable the fake modlog.
 
 **Usage:** `<@1275521742961508432>fakemodlogset modlog`
 
-### fakemodlogset resetcases
-
-**Description:** Reset all fake modlog cases in this server.
-
-**Usage:** `<@1275521742961508432>fakemodlogset resetcases`
-
 ### fakemodlogset emoji
 
 **Description:** Set an emoji for a fake mod action.
@@ -27,6 +21,12 @@ Omit [channel] to disable the fake modlog.
 The `action` should be either `warn`, `mute`, `kick`, or `ban`.
 
 **Usage:** `<@1275521742961508432>fakemodlogset emoji`
+
+### fakemodlogset resetcases
+
+**Description:** Reset all fake modlog cases in this server.
+
+**Usage:** `<@1275521742961508432>fakemodlogset resetcases`
 
 ### worn
 

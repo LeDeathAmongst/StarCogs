@@ -6,6 +6,15 @@
 
 **Usage:** `<@1275521742961508432>tarot`
 
+### tarot reading
+
+**Description:** Unique reading as of this very moment.
+
+`[user]` Optional user you want to view a tarot reading for.
+If no user is provided this will run for the user who is running the command.
+
+**Usage:** `<@1275521742961508432>tarot reading`
+
 ### tarot set
 
 **Description:** Set commands for tarot
@@ -33,14 +42,14 @@ If not provided will revert to the default to the Rider–Waite Tarot Deck.
 
 **Usage:** `<@1275521742961508432>tarot set globaldeck`
 
-### tarot reading
+### tarot life
 
-**Description:** Unique reading as of this very moment.
+**Description:** Unique reading based on your discord user ID. Doesn't change.
 
-`[user]` Optional user you want to view a tarot reading for.
+`[user]` Optional user who you want to see a life tarot reading for.
 If no user is provided this will run for the user who is running the command.
 
-**Usage:** `<@1275521742961508432>tarot reading`
+**Usage:** `<@1275521742961508432>tarot life`
 
 ### tarot card
 
@@ -50,13 +59,4 @@ If no user is provided this will run for the user who is running the command.
 If this doesn't match any cards number or name then a random one will be displayed instead.
 
 **Usage:** `<@1275521742961508432>tarot card`
-
-### tarot life
-
-**Description:** Unique reading based on your discord user ID. Doesn't change.
-
-`[user]` Optional user who you want to see a life tarot reading for.
-If no user is provided this will run for the user who is running the command.
-
-**Usage:** `<@1275521742961508432>tarot life`
 

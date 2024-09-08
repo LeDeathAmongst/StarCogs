@@ -6,17 +6,11 @@
 
 **Usage:** `<@1275521742961508432>color`
 
-### color rgb
+### color name
 
-**Description:** Provides the hexadecimal value and HSL value of the rgb value given.  Each value must have a space between them.  Highest argument must be 1 or 255, indicating the highest value of a single value (r, g, or b).
+**Description:** Provides the hexadecimal value, RGB value and HSL value of a passed color.  For example, pass `red` or `blue` as the name argument.
 
-**Usage:** `<@1275521742961508432>color rgb`
-
-### color hsl
-
-**Description:** Provides the hexadecimal value and the RGB value of the hsl value given.  Each value must have a space between them.
-
-**Usage:** `<@1275521742961508432>color hsl`
+**Usage:** `<@1275521742961508432>color name`
 
 ### color hex
 
@@ -42,9 +36,15 @@ In-message shortcuts can be used by using the hex, rgb or name after a `#` in th
 
 **Usage:** `<@1275521742961508432>color decimal`
 
-### color name
+### color hsl
 
-**Description:** Provides the hexadecimal value, RGB value and HSL value of a passed color.  For example, pass `red` or `blue` as the name argument.
+**Description:** Provides the hexadecimal value and the RGB value of the hsl value given.  Each value must have a space between them.
 
-**Usage:** `<@1275521742961508432>color name`
+**Usage:** `<@1275521742961508432>color hsl`
+
+### color rgb
+
+**Description:** Provides the hexadecimal value and HSL value of the rgb value given.  Each value must have a space between them.  Highest argument must be 1 or 255, indicating the highest value of a single value (r, g, or b).
+
+**Usage:** `<@1275521742961508432>color rgb`
 

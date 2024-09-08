@@ -6,17 +6,17 @@
 
 **Usage:** `<@1275521742961508432>selfassign`
 
-### selfassign give
-
-**Description:** Allows a user to have a role assigned to them by request. Role must be a string, NOT a snowflake (e.g. @Role)
-
-**Usage:** `<@1275521742961508432>selfassign give`
-
 ### selfassign unset
 
 **Description:** Removes a role from the allowed self-assign list. Role must be a string, NOT a snowflake (e.g. @Role)
 
 **Usage:** `<@1275521742961508432>selfassign unset`
+
+### selfassign list
+
+**Description:** Lists roles that can be self-assigned, sorted alphabetically
+
+**Usage:** `<@1275521742961508432>selfassign list`
 
 ### selfassign take
 
@@ -24,11 +24,11 @@
 
 **Usage:** `<@1275521742961508432>selfassign take`
 
-### selfassign list
+### selfassign give
 
-**Description:** Lists roles that can be self-assigned, sorted alphabetically
+**Description:** Allows a user to have a role assigned to them by request. Role must be a string, NOT a snowflake (e.g. @Role)
 
-**Usage:** `<@1275521742961508432>selfassign list`
+**Usage:** `<@1275521742961508432>selfassign give`
 
 ### selfassign set
 

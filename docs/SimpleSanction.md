@@ -6,6 +6,27 @@
 
 **Usage:** `<@1275521742961508432>setsimplesanction`
 
+### setsimplesanction modalconfig
+
+**Description:** Set all settings for the cog with a Discord Modal.
+
+**Usage:** `<@1275521742961508432>setsimplesanction modalconfig`
+
+### setsimplesanction resetsetting
+
+**Description:** Reset a setting.
+
+**Usage:** `<@1275521742961508432>setsimplesanction resetsetting`
+
+### setsimplesanction usewarnsystem
+
+**Description:** Use WarnSystem by Laggron for the sanctions.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setsimplesanction usewarnsystem`
+
 ### setsimplesanction thumbnail
 
 **Description:** Set the embed thumbnail.
@@ -24,11 +45,14 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setsimplesanction finishmessage`
 
-### setsimplesanction resetsetting
+### setsimplesanction showauthor
 
-**Description:** Reset a setting.
+**Description:** Show the command author in embeds.
 
-**Usage:** `<@1275521742961508432>setsimplesanction resetsetting`
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setsimplesanction showauthor`
 
 ### setsimplesanction reasonrequired
 
@@ -39,21 +63,6 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setsimplesanction reasonrequired`
 
-### setsimplesanction usewarnsystem
-
-**Description:** Use WarnSystem by Laggron for the sanctions.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setsimplesanction usewarnsystem`
-
-### setsimplesanction modalconfig
-
-**Description:** Set all settings for the cog with a Discord Modal.
-
-**Usage:** `<@1275521742961508432>setsimplesanction modalconfig`
-
 ### setsimplesanction actionconfirmation
 
 **Description:** Require a confirmation for each sanction (except userinfo).
@@ -62,15 +71,6 @@ Default value: `True`
 Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setsimplesanction actionconfirmation`
-
-### setsimplesanction showauthor
-
-**Description:** Show the command author in embeds.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setsimplesanction showauthor`
 
 ### setsimplesanction showsettings
 
@@ -98,6 +98,32 @@ Long version:  [p]sanction 10 @member true true true true true true 3d Spam.
 
 **Usage:** `<@1275521742961508432>sanction`
 
+### sanction 09
+
+**Description:**  - ⏳ TempMute a member in all channels, including voice channels.
+
+You can set a timed mute by providing a valid time before the reason.
+
+Examples:
+- `[p]sanction 9 @member 30m not`: 30 minutes mute for no reason.
+- `[p]sanction 9 @member 5h Spam`: 5 hours mute for the reason "Spam".
+- `[p]sanction 9 @member 3d Advertising`: 3 days mute for the reason "Advertising".
+
+**Usage:** `<@1275521742961508432>sanction 09`
+
+### sanction 04
+
+**Description:**  - 🔂 SoftBan a member from this server.
+
+This means that the user will be banned and immediately unbanned, so it will purge their messages in a period, in all channels.
+
+Examples:
+- `[p]sanction 4 @member not`: SoftBan for no reason
+- `[p]sanction 4 @member Insults`: SoftBan for the reason "Insults"
+- `[p]sanction 4 012345678987654321 Advertising`: SoftBan the user with the ID provided.
+
+**Usage:** `<@1275521742961508432>sanction 04`
+
 ### sanction 00
 
 **Description:** - Sanction a member quickly and easily.
@@ -108,6 +134,54 @@ Examples:
 - `[p]sanction 0 012345678987654321`
 
 **Usage:** `<@1275521742961508432>sanction 00`
+
+### sanction 06
+
+**Description:**  - 👢 Kick a member from this server.
+
+Examples:
+- `[p]sanction 6 @member not`: Kick for no reason.
+- `[p]sanction 6 @member Insults`: Kick for the reason "Insults".
+- `[p]sanction 6 012345678987654321 Advertising`: Kick the user with the ID provided.
+
+**Usage:** `<@1275521742961508432>sanction 06`
+
+### sanction 08
+
+**Description:**  - 👊 Mute a member in this channel.
+
+Examples:
+- `[p]sanction 8 @member not`: Infinite mute for no reason.
+- `[p]sanction 8 @member Spam`: Infinite mute for the reason "Spam".
+- `[p]sanction 8 @member Advertising`: Infinite mute for the reason "Advertising".
+
+**Usage:** `<@1275521742961508432>sanction 08`
+
+### sanction 10
+
+**Description:**  - ⌛ TempMute a member in this channel.
+
+You can set a timed mute by providing a valid time before the reason.
+
+Examples:
+- `[p]sanction 10 @member 30m not`: 30 minutes mute for no reason.
+- `[p]sanction 10 @member 5h Spam`: 5 hours mute for the reason "Spam".
+- `[p]sanction 10 @member 3d Advertising`: 3 days mute for the reason "Advertising".
+
+**Usage:** `<@1275521742961508432>sanction 10`
+
+### sanction 03
+
+**Description:**  - 🔨 Ban a member from this server.
+
+It won't delete messages by default.
+
+Examples:
+- `[p]sanction 3 @member not`: Ban for no reason.
+- `[p]sanction 3 @member Insults`: Ban for the reason "Insults".
+- `[p]sanction 3 012345678987654321 Advertising`: Ban the user with the ID provided.
+
+**Usage:** `<@1275521742961508432>sanction 03`
 
 ### sanction 05
 
@@ -123,17 +197,6 @@ Examples:
 
 **Usage:** `<@1275521742961508432>sanction 05`
 
-### sanction 08
-
-**Description:**  - 👊 Mute a member in this channel.
-
-Examples:
-- `[p]sanction 8 @member not`: Infinite mute for no reason.
-- `[p]sanction 8 @member Spam`: Infinite mute for the reason "Spam".
-- `[p]sanction 8 @member Advertising`: Infinite mute for the reason "Advertising".
-
-**Usage:** `<@1275521742961508432>sanction 08`
-
 ### sanction 02
 
 **Description:**  - ⚠️ Add a simple warning on a member.
@@ -144,19 +207,6 @@ Examples:
 - `[p]sanction 2 012345678987654321 Advertising`: Warn the user with the ID provided.
 
 **Usage:** `<@1275521742961508432>sanction 02`
-
-### sanction 10
-
-**Description:**  - ⌛ TempMute a member in this channel.
-
-You can set a timed mute by providing a valid time before the reason.
-
-Examples:
-- `[p]sanction 10 @member 30m not`: 30 minutes mute for no reason.
-- `[p]sanction 10 @member 5h Spam`: 5 hours mute for the reason "Spam".
-- `[p]sanction 10 @member 3d Advertising`: 3 days mute for the reason "Advertising".
-
-**Usage:** `<@1275521742961508432>sanction 10`
 
 ### sanction 07
 
@@ -169,19 +219,6 @@ Examples:
 
 **Usage:** `<@1275521742961508432>sanction 07`
 
-### sanction 09
-
-**Description:**  - ⏳ TempMute a member in all channels, including voice channels.
-
-You can set a timed mute by providing a valid time before the reason.
-
-Examples:
-- `[p]sanction 9 @member 30m not`: 30 minutes mute for no reason.
-- `[p]sanction 9 @member 5h Spam`: 5 hours mute for the reason "Spam".
-- `[p]sanction 9 @member 3d Advertising`: 3 days mute for the reason "Advertising".
-
-**Usage:** `<@1275521742961508432>sanction 09`
-
 ### sanction 01
 
 **Description:**  - ℹ️ Show informations about a member.
@@ -192,41 +229,4 @@ Examples:
 - `[p]sanction 1 012345678987654321`: UserInfo with the ID provided.
 
 **Usage:** `<@1275521742961508432>sanction 01`
-
-### sanction 06
-
-**Description:**  - 👢 Kick a member from this server.
-
-Examples:
-- `[p]sanction 6 @member not`: Kick for no reason.
-- `[p]sanction 6 @member Insults`: Kick for the reason "Insults".
-- `[p]sanction 6 012345678987654321 Advertising`: Kick the user with the ID provided.
-
-**Usage:** `<@1275521742961508432>sanction 06`
-
-### sanction 03
-
-**Description:**  - 🔨 Ban a member from this server.
-
-It won't delete messages by default.
-
-Examples:
-- `[p]sanction 3 @member not`: Ban for no reason.
-- `[p]sanction 3 @member Insults`: Ban for the reason "Insults".
-- `[p]sanction 3 012345678987654321 Advertising`: Ban the user with the ID provided.
-
-**Usage:** `<@1275521742961508432>sanction 03`
-
-### sanction 04
-
-**Description:**  - 🔂 SoftBan a member from this server.
-
-This means that the user will be banned and immediately unbanned, so it will purge their messages in a period, in all channels.
-
-Examples:
-- `[p]sanction 4 @member not`: SoftBan for no reason
-- `[p]sanction 4 @member Insults`: SoftBan for the reason "Insults"
-- `[p]sanction 4 012345678987654321 Advertising`: SoftBan the user with the ID provided.
-
-**Usage:** `<@1275521742961508432>sanction 04`
 

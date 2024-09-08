@@ -74,29 +74,6 @@ using this command.
 
 **Usage:** `<@1275521742961508432>modset`
 
-### modset reinvite
-
-**Description:** Toggle whether an invite will be sent to a user when unbanned.
-
-If this is True, the bot will attempt to create and send a single-use invite
-to the newly-unbanned user.
-
-**Usage:** `<@1275521742961508432>modset reinvite`
-
-### modset tracknicknames
-
-**Description:** Toggle whether server nickname changes should be tracked.
-
-This setting will be overridden if trackallnames is disabled.
-
-**Usage:** `<@1275521742961508432>modset tracknicknames`
-
-### modset showsettings
-
-**Description:** Show the current server administration settings.
-
-**Usage:** `<@1275521742961508432>modset showsettings`
-
 ### modset showmessages
 
 **Description:** Show the current messages for moderation commands.
@@ -113,22 +90,13 @@ Set to -1 to disable this feature.
 
 **Usage:** `<@1275521742961508432>modset deleterepeats`
 
-### modset dm
+### modset tracknicknames
 
-**Description:** Toggle whether a message should be sent to a user when they are kicked/banned.
+**Description:** Toggle whether server nickname changes should be tracked.
 
-If this option is enabled, the bot will attempt to DM the user with the guild name
-and reason as to why they were kicked/banned.
+This setting will be overridden if trackallnames is disabled.
 
-**Usage:** `<@1275521742961508432>modset dm`
-
-### modset defaultdays
-
-**Description:** Set the default number of days worth of messages to be deleted when a user is banned.
-
-The number of days must be between 0 and 7.
-
-**Usage:** `<@1275521742961508432>modset defaultdays`
+**Usage:** `<@1275521742961508432>modset tracknicknames`
 
 ### modset kickmessage
 
@@ -145,14 +113,6 @@ The number of days must be between 0 and 7.
 - `{guild}`: [server](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#server-block)
 
 **Usage:** `<@1275521742961508432>modset kickmessage`
-
-### modset trackallnames
-
-**Description:** Toggle whether all name changes should be tracked.
-
-Toggling this off also overrides the tracknicknames setting.
-
-**Usage:** `<@1275521742961508432>modset trackallnames`
 
 ### modset banmessage
 
@@ -186,6 +146,18 @@ Toggling this off also overrides the tracknicknames setting.
 - `{guild}`: [server](https://seina-cogs.readthedocs.io/en/latest/tags/default_variables.html#server-block)
 
 **Usage:** `<@1275521742961508432>modset unbanmessage`
+
+### modset reasons
+
+**Description:** Set whether a reason is required for moderation actions.
+
+**Usage:** `<@1275521742961508432>modset reasons`
+
+### modset showsettings
+
+**Description:** Show the current server administration settings.
+
+**Usage:** `<@1275521742961508432>modset showsettings`
 
 ### modset defaultduration
 
@@ -243,11 +215,30 @@ This is enabled by default.
 
 **Usage:** `<@1275521742961508432>modset hierarchy`
 
-### modset reasons
+### modset dm
 
-**Description:** Set whether a reason is required for moderation actions.
+**Description:** Toggle whether a message should be sent to a user when they are kicked/banned.
 
-**Usage:** `<@1275521742961508432>modset reasons`
+If this option is enabled, the bot will attempt to DM the user with the guild name
+and reason as to why they were kicked/banned.
+
+**Usage:** `<@1275521742961508432>modset dm`
+
+### modset defaultdays
+
+**Description:** Set the default number of days worth of messages to be deleted when a user is banned.
+
+The number of days must be between 0 and 7.
+
+**Usage:** `<@1275521742961508432>modset defaultdays`
+
+### modset trackallnames
+
+**Description:** Toggle whether all name changes should be tracked.
+
+Toggling this off also overrides the tracknicknames setting.
+
+**Usage:** `<@1275521742961508432>modset trackallnames`
 
 ### modset mentionspam
 
@@ -255,27 +246,16 @@ This is enabled by default.
 
 **Usage:** `<@1275521742961508432>modset mentionspam`
 
-### modset mentionspam ban
+### modset mentionspam strict
 
-**Description:** Set the autoban conditions for mention spam.
+**Description:** Setting to account for duplicate mentions.
 
-Users will be banned if they send any message which contains more than
-`<max_mentions>` mentions.
+If enabled all mentions will count including duplicated mentions.
+If disabled only unique mentions will count.
 
-`<max_mentions>` Must be 0 or greater. Set to 0 to disable this feature.
+Use this command without any parameter to see current setting.
 
-**Usage:** `<@1275521742961508432>modset mentionspam ban`
-
-### modset mentionspam kick
-
-**Description:** Sets the autokick conditions for mention spam.
-
-Users will be kicked if they send any messages which contain more than
-`<max_mentions>` mentions.
-
-`<max_mentions>` Must be 0 or greater. Set to 0 to disable this feature.
-
-**Usage:** `<@1275521742961508432>modset mentionspam kick`
+**Usage:** `<@1275521742961508432>modset mentionspam strict`
 
 ### modset mentionspam warn
 
@@ -288,16 +268,36 @@ Users will be warned if they send any messages which contain more than
 
 **Usage:** `<@1275521742961508432>modset mentionspam warn`
 
-### modset mentionspam strict
+### modset mentionspam kick
 
-**Description:** Setting to account for duplicate mentions.
+**Description:** Sets the autokick conditions for mention spam.
 
-If enabled all mentions will count including duplicated mentions.
-If disabled only unique mentions will count.
+Users will be kicked if they send any messages which contain more than
+`<max_mentions>` mentions.
 
-Use this command without any parameter to see current setting.
+`<max_mentions>` Must be 0 or greater. Set to 0 to disable this feature.
 
-**Usage:** `<@1275521742961508432>modset mentionspam strict`
+**Usage:** `<@1275521742961508432>modset mentionspam kick`
+
+### modset mentionspam ban
+
+**Description:** Set the autoban conditions for mention spam.
+
+Users will be banned if they send any message which contains more than
+`<max_mentions>` mentions.
+
+`<max_mentions>` Must be 0 or greater. Set to 0 to disable this feature.
+
+**Usage:** `<@1275521742961508432>modset mentionspam ban`
+
+### modset reinvite
+
+**Description:** Toggle whether an invite will be sent to a user when unbanned.
+
+If this is True, the bot will attempt to create and send a single-use invite
+to the newly-unbanned user.
+
+**Usage:** `<@1275521742961508432>modset reinvite`
 
 ### kick
 

@@ -24,11 +24,11 @@
 
 **Usage:** `<@1275521742961508432>indexset`
 
-### indexset link
+### indexset refresh
 
-**Description:** Set a custom Red-Index link
+**Description:** Manually refresh the Red-Index cache.
 
-**Usage:** `<@1275521742961508432>indexset link`
+**Usage:** `<@1275521742961508432>indexset refresh`
 
 ### indexset maxminutes
 
@@ -38,15 +38,15 @@ Set 0 if you want the cache refresh to be manual only
 
 **Usage:** `<@1275521742961508432>indexset maxminutes`
 
-### indexset refresh
-
-**Description:** Manually refresh the Red-Index cache.
-
-**Usage:** `<@1275521742961508432>indexset refresh`
-
 ### indexset showunapproved
 
 **Description:** Toggle unapproved cogs display
 
 **Usage:** `<@1275521742961508432>indexset showunapproved`
+
+### indexset link
+
+**Description:** Set a custom Red-Index link
+
+**Usage:** `<@1275521742961508432>indexset link`
 

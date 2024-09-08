@@ -18,6 +18,12 @@
 
 **Usage:** `<@1275521742961508432>activity puttparty`
 
+### activity askaway
+
+**Description:** Create an activity invite link for Ask Away.
+
+**Usage:** `<@1275521742961508432>activity askaway`
+
 ### activity chessinthepark
 
 **Description:** Create an activity invite link for Chess In The Park.
@@ -47,12 +53,6 @@
 **Description:** Create an activity invite link for Word Snacks.
 
 **Usage:** `<@1275521742961508432>activity wordsnacks`
-
-### activity askaway
-
-**Description:** Create an activity invite link for Ask Away.
-
-**Usage:** `<@1275521742961508432>activity askaway`
 
 ### activity doodlecrew
 
@@ -84,17 +84,17 @@
 
 **Usage:** `<@1275521742961508432>activity blazing8s`
 
-### activity fishington
-
-**Description:** Create an activity invite link for Fishington.
-
-**Usage:** `<@1275521742961508432>activity fishington`
-
 ### activity landio
 
 **Description:** Create an activity invite link for Land IO.
 
 **Usage:** `<@1275521742961508432>activity landio`
+
+### activity fishington
+
+**Description:** Create an activity invite link for Fishington.
+
+**Usage:** `<@1275521742961508432>activity fishington`
 
 ### activity sketchyartist
 

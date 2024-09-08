@@ -6,23 +6,35 @@
 
 **Usage:** `<@1275521742961508432>githubset`
 
-### githubset forceall
+### githubset color
 
-**Description:** Force a run of the GitHub feed fetching coroutine.
+**Description:** Set the GitHub RSS feed embed color for the server (enter "None" to reset).
 
-**Usage:** `<@1275521742961508432>githubset forceall`
+**Usage:** `<@1275521742961508432>githubset color`
+
+### githubset listall
+
+**Description:** List all GitHub RSS feeds in the server.
+
+**Usage:** `<@1275521742961508432>githubset listall`
+
+### githubset short
+
+**Description:** Set whether the GitHub message content should just include the title.
+
+**Usage:** `<@1275521742961508432>githubset short`
+
+### githubset view
+
+**Description:** View the server settings for GitHub.
+
+**Usage:** `<@1275521742961508432>githubset view`
 
 ### githubset limit
 
 **Description:** Set the GitHub RSS feed limit per user.
 
 **Usage:** `<@1275521742961508432>githubset limit`
-
-### githubset rename
-
-**Description:** Rename a user's GitHub RSS feed.
-
-**Usage:** `<@1275521742961508432>githubset rename`
 
 ### githubset role
 
@@ -33,18 +45,6 @@ This is for you to lock to a speficially role to those with the permission to ad
 Only those who have the role can add / remove feeds, if they dont have the role, they will not be able to use this command.
 
 **Usage:** `<@1275521742961508432>githubset role`
-
-### githubset short
-
-**Description:** Set whether the GitHub message content should just include the title.
-
-**Usage:** `<@1275521742961508432>githubset short`
-
-### githubset force
-
-**Description:** Force a specific GitHub feed to post the last commit.
-
-**Usage:** `<@1275521742961508432>githubset force`
 
 ### githubset timestamp
 
@@ -58,17 +58,23 @@ Only those who have the role can add / remove feeds, if they dont have the role,
 
 **Usage:** `<@1275521742961508432>githubset notify`
 
-### githubset channel
+### githubset forceall
 
-**Description:** Set the default GitHub RSS feed channel.
+**Description:** Force a run of the GitHub feed fetching coroutine.
 
-**Usage:** `<@1275521742961508432>githubset channel`
+**Usage:** `<@1275521742961508432>githubset forceall`
 
-### githubset color
+### githubset force
 
-**Description:** Set the GitHub RSS feed embed color for the server (enter "None" to reset).
+**Description:** Force a specific GitHub feed to post the last commit.
 
-**Usage:** `<@1275521742961508432>githubset color`
+**Usage:** `<@1275521742961508432>githubset force`
+
+### githubset rename
+
+**Description:** Rename a user's GitHub RSS feed.
+
+**Usage:** `<@1275521742961508432>githubset rename`
 
 ### githubset channeloverride
 
@@ -76,17 +82,11 @@ Only those who have the role can add / remove feeds, if they dont have the role,
 
 **Usage:** `<@1275521742961508432>githubset channeloverride`
 
-### githubset listall
+### githubset channel
 
-**Description:** List all GitHub RSS feeds in the server.
+**Description:** Set the default GitHub RSS feed channel.
 
-**Usage:** `<@1275521742961508432>githubset listall`
-
-### githubset view
-
-**Description:** View the server settings for GitHub.
-
-**Usage:** `<@1275521742961508432>githubset view`
+**Usage:** `<@1275521742961508432>githubset channel`
 
 ### github
 
@@ -94,17 +94,29 @@ Only those who have the role can add / remove feeds, if they dont have the role,
 
 **Usage:** `<@1275521742961508432>github`
 
-### github get
+### github remove
 
-**Description:** Test out fetching a GitHub repository url.
+**Description:** Remove a GitHub RSS feed from the server.
 
-**Usage:** `<@1275521742961508432>github get`
+**Usage:** `<@1275521742961508432>github remove`
 
 ### github whatlinks
 
 **Description:** What links can you submit to `[p]github add`?
 
 **Usage:** `<@1275521742961508432>github whatlinks`
+
+### github get
+
+**Description:** Test out fetching a GitHub repository url.
+
+**Usage:** `<@1275521742961508432>github get`
+
+### github list
+
+**Description:** List your GitHub RSS feeds in the server.
+
+**Usage:** `<@1275521742961508432>github list`
 
 ### github add
 
@@ -113,16 +125,4 @@ Only those who have the role can add / remove feeds, if they dont have the role,
 For the accepted link formats, see `[p]github whatlinks`.
 
 **Usage:** `<@1275521742961508432>github add`
-
-### github list
-
-**Description:** List your GitHub RSS feeds in the server.
-
-**Usage:** `<@1275521742961508432>github list`
-
-### github remove
-
-**Description:** Remove a GitHub RSS feed from the server.
-
-**Usage:** `<@1275521742961508432>github remove`
 

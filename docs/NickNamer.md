@@ -37,12 +37,6 @@
 
 **Usage:** `<@1275521742961508432>nickset`
 
-### nickset modlog
-
-**Description:** Set if you would like to create a modlog entry everytime a nickname is being changed.
-
-**Usage:** `<@1275521742961508432>nickset modlog`
-
 ### nickset name
 
 **Description:** Set the default name that will be applied when using ``[p]nick``
@@ -54,6 +48,12 @@
 **Description:** Set if you would like the bot to DM the user who's nickname was changed.
 
 **Usage:** `<@1275521742961508432>nickset dm`
+
+### nickset modlog
+
+**Description:** Set if you would like to create a modlog entry everytime a nickname is being changed.
+
+**Usage:** `<@1275521742961508432>nickset modlog`
 
 ### nickpurge
 

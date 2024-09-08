@@ -54,6 +54,12 @@ This will change the green emoji to :green_heart:.
 
 **Usage:** `<@1275521742961508432>connectset emoji green`
 
+### connectset showsettings
+
+**Description:** Shows the current settings for OnConnect.
+
+**Usage:** `<@1275521742961508432>connectset showsettings`
+
 ### connectset channel
 
 **Description:** Set the channel to log shard events to.
@@ -72,10 +78,4 @@ This will set the event channel to general.
 **Description:** Shows the cog version.
 
 **Usage:** `<@1275521742961508432>connectset version`
-
-### connectset showsettings
-
-**Description:** Shows the current settings for OnConnect.
-
-**Usage:** `<@1275521742961508432>connectset showsettings`
 

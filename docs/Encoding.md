@@ -6,23 +6,17 @@
 
 **Usage:** `<@1275521742961508432>hash`
 
-### hash md5
-
-**Description:** MD5 Hash some Text
-
-**Usage:** `<@1275521742961508432>hash md5`
-
-### hash sha1
-
-**Description:** SHA1 Hash some Text
-
-**Usage:** `<@1275521742961508432>hash sha1`
-
 ### hash sha256
 
 **Description:** SHA256 Hash some Text
 
 **Usage:** `<@1275521742961508432>hash sha256`
+
+### hash md5
+
+**Description:** MD5 Hash some Text
+
+**Usage:** `<@1275521742961508432>hash md5`
 
 ### hash sha512
 
@@ -30,41 +24,17 @@
 
 **Usage:** `<@1275521742961508432>hash sha512`
 
+### hash sha1
+
+**Description:** SHA1 Hash some Text
+
+**Usage:** `<@1275521742961508432>hash sha1`
+
 ### encode
 
 **Description:** Encode a string.
 
 **Usage:** `<@1275521742961508432>encode`
-
-### encode hex
-
-**Description:** Encode text into hexadecimal
-
-**Usage:** `<@1275521742961508432>encode hex`
-
-### encode braille
-
-**Description:** Encode text into braille unicode characters
-
-**Usage:** `<@1275521742961508432>encode braille`
-
-### encode b16
-
-**Description:** Encode text into base 16
-
-**Usage:** `<@1275521742961508432>encode b16`
-
-### encode rot
-
-**Description:** Encode a caeser cipher message with specified key
-
-**Usage:** `<@1275521742961508432>encode rot`
-
-### encode dna
-
-**Description:** Encodes a string into DNA 4 byte ACGT format
-
-**Usage:** `<@1275521742961508432>encode dna`
 
 ### encode b32
 
@@ -78,11 +48,35 @@
 
 **Usage:** `<@1275521742961508432>encode chr`
 
+### encode rot
+
+**Description:** Encode a caeser cipher message with specified key
+
+**Usage:** `<@1275521742961508432>encode rot`
+
 ### encode binary
 
 **Description:** Encode text into binary sequences of 8
 
 **Usage:** `<@1275521742961508432>encode binary`
+
+### encode braille
+
+**Description:** Encode text into braille unicode characters
+
+**Usage:** `<@1275521742961508432>encode braille`
+
+### encode b16
+
+**Description:** Encode text into base 16
+
+**Usage:** `<@1275521742961508432>encode b16`
+
+### encode hex
+
+**Description:** Encode text into hexadecimal
+
+**Usage:** `<@1275521742961508432>encode hex`
 
 ### encode b64
 
@@ -90,29 +84,29 @@
 
 **Usage:** `<@1275521742961508432>encode b64`
 
+### encode dna
+
+**Description:** Encodes a string into DNA 4 byte ACGT format
+
+**Usage:** `<@1275521742961508432>encode dna`
+
 ### decode
 
 **Description:** Decode a string.
 
 **Usage:** `<@1275521742961508432>decode`
 
-### decode b32
+### decode rot
 
-**Description:** Decode base32 text
+**Description:** Decode a caeser cipher message with specified key
 
-**Usage:** `<@1275521742961508432>decode b32`
+**Usage:** `<@1275521742961508432>decode rot`
 
-### decode chr
+### decode hex
 
-**Description:** Decode character numbers to a message
+**Description:** Decode a hexadecimal sequence to text
 
-**Usage:** `<@1275521742961508432>decode chr`
-
-### decode binary
-
-**Description:** Decode binary sequences of 8
-
-**Usage:** `<@1275521742961508432>decode binary`
+**Usage:** `<@1275521742961508432>decode hex`
 
 ### decode b16
 
@@ -126,27 +120,33 @@
 
 **Usage:** `<@1275521742961508432>decode b64`
 
-### decode dna
-
-**Description:** Decodes a string of DNA in 4 byte ACGT format.
-
-**Usage:** `<@1275521742961508432>decode dna`
-
 ### decode braille
 
 **Description:** Decide braille unicode characters to ascii
 
 **Usage:** `<@1275521742961508432>decode braille`
 
-### decode rot
+### decode binary
 
-**Description:** Decode a caeser cipher message with specified key
+**Description:** Decode binary sequences of 8
 
-**Usage:** `<@1275521742961508432>decode rot`
+**Usage:** `<@1275521742961508432>decode binary`
 
-### decode hex
+### decode chr
 
-**Description:** Decode a hexadecimal sequence to text
+**Description:** Decode character numbers to a message
 
-**Usage:** `<@1275521742961508432>decode hex`
+**Usage:** `<@1275521742961508432>decode chr`
+
+### decode b32
+
+**Description:** Decode base32 text
+
+**Usage:** `<@1275521742961508432>decode b32`
+
+### decode dna
+
+**Description:** Decodes a string of DNA in 4 byte ACGT format.
+
+**Usage:** `<@1275521742961508432>decode dna`
 

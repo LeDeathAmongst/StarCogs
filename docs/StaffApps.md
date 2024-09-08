@@ -96,23 +96,11 @@
 
 **Usage:** `<@1275521742961508432>loa`
 
-### loa role
-
-**Description:** Set the role to be assigned during LOA.
-
-**Usage:** `<@1275521742961508432>loa role`
-
 ### loa setchannel
 
 **Description:** Set the channel for LOA request messages.
 
 **Usage:** `<@1275521742961508432>loa setchannel`
-
-### loa end
-
-**Description:** End a leave of absence.
-
-**Usage:** `<@1275521742961508432>loa end`
 
 ### loa request
 
@@ -120,17 +108,23 @@
 
 **Usage:** `<@1275521742961508432>loa request`
 
+### loa end
+
+**Description:** End a leave of absence.
+
+**Usage:** `<@1275521742961508432>loa end`
+
+### loa role
+
+**Description:** Set the role to be assigned during LOA.
+
+**Usage:** `<@1275521742961508432>loa role`
+
 ### resign
 
 **Description:** Group command for managing resignation requests.
 
 **Usage:** `<@1275521742961508432>resign`
-
-### resign setchannel
-
-**Description:** Set the channel for resignation request messages.
-
-**Usage:** `<@1275521742961508432>resign setchannel`
 
 ### resign request
 
@@ -138,11 +132,23 @@
 
 **Usage:** `<@1275521742961508432>resign request`
 
+### resign setchannel
+
+**Description:** Set the channel for resignation request messages.
+
+**Usage:** `<@1275521742961508432>resign setchannel`
+
 ### app
 
 **Description:** Group command for managing applications, LOA, and resignations.
 
 **Usage:** `<@1275521742961508432>app`
+
+### app status
+
+**Description:** Check the status of your application, LOA, or resignation.
+
+**Usage:** `<@1275521742961508432>app status`
 
 ### app accept
 
@@ -155,10 +161,4 @@
 **Description:** Deny an application, LOA, or resignation request.
 
 **Usage:** `<@1275521742961508432>app deny`
-
-### app status
-
-**Description:** Check the status of your application, LOA, or resignation.
-
-**Usage:** `<@1275521742961508432>app status`
 

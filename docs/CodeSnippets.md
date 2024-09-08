@@ -12,12 +12,6 @@
 
 **Usage:** `<@1275521742961508432>setcodesnippets`
 
-### setcodesnippets showsettings
-
-**Description:** Show all settings for the cog with defaults and values.
-
-**Usage:** `<@1275521742961508432>setcodesnippets showsettings`
-
 ### setcodesnippets addchannel
 
 **Description:** Add a channel where the cog have to send automatically code snippets from URLs.
@@ -29,4 +23,10 @@
 **Description:** Remove a channel where the cog have to send automatically code snippets from URLs.
 
 **Usage:** `<@1275521742961508432>setcodesnippets removechannel`
+
+### setcodesnippets showsettings
+
+**Description:** Show all settings for the cog with defaults and values.
+
+**Usage:** `<@1275521742961508432>setcodesnippets showsettings`
 

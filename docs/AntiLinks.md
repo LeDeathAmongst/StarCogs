@@ -6,6 +6,14 @@
 
 **Usage:** `<@1275521742961508432>antilinks`
 
+### antilinks channel
+
+**Description:** Set the message transfer channel.
+
+Leave the channel blank to turn it off.
+
+**Usage:** `<@1275521742961508432>antilinks channel`
+
 ### antilinks whitelist
 
 **Description:** Whitelist options.
@@ -35,14 +43,6 @@
 **Description:** List whitelisted users.
 
 **Usage:** `<@1275521742961508432>antilinks whitelist user list`
-
-### antilinks channel
-
-**Description:** Set the message transfer channel.
-
-Leave the channel blank to turn it off.
-
-**Usage:** `<@1275521742961508432>antilinks channel`
 
 ### antilinks watch
 

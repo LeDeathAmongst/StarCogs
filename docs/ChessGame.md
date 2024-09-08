@@ -6,81 +6,6 @@
 
 **Usage:** `<@1275521742961508432>chess`
 
-### chess move
-
-**Description:** move the next game piece, using Standard Algebraic Notation
-
-**Usage:** `<@1275521742961508432>chess move`
-
-### chess draw
-
-**Description:** draw related commands
-
-**Usage:** `<@1275521742961508432>chess draw`
-
-### chess draw claim
-
-**Description:** if valid claim made to draw the game will end with no victor
-
-**Usage:** `<@1275521742961508432>chess draw claim`
-
-### chess draw byagreement
-
-**Description:** Offer draw by agreement
-
-**Usage:** `<@1275521742961508432>chess draw byagreement`
-
-### chess show
-
-**Description:** reposts the last gameboard state
-
-**Usage:** `<@1275521742961508432>chess show`
-
-### chess scoreboard
-
-**Description:** scoreboard related commands
-
-**Usage:** `<@1275521742961508432>chess scoreboard`
-
-### chess scoreboard increment
-
-**Description:** allows bot owner to increment (decrement if negative value passed) a player's score
-
-**Usage:** `<@1275521742961508432>chess scoreboard increment`
-
-### chess scoreboard find
-
-**Description:** find a player's score. If none is provided this will look for the requester's score
-
-**Usage:** `<@1275521742961508432>chess scoreboard find`
-
-### chess scoreboard list
-
-**Description:** list users scoreboard from highest to lowest
-
-Scoreboard can be sorted by elo, wins, losses, or ties.
-Scoreboard is sorted by wins by default.
-
-**Usage:** `<@1275521742961508432>chess scoreboard list`
-
-### chess scoreboard clear
-
-**Description:** allows bot owner clear the scoreboard
-
-**Usage:** `<@1275521742961508432>chess scoreboard clear`
-
-### chess scoreboard clear all
-
-**Description:** remove **ALL** scores from the scoreboard
-
-**Usage:** `<@1275521742961508432>chess scoreboard clear all`
-
-### chess scoreboard clear player
-
-**Description:** removes a particular player (or nonexistant id) from the scoreboard
-
-**Usage:** `<@1275521742961508432>chess scoreboard clear player`
-
 ### chess start
 
 **Description:** start a new game
@@ -117,15 +42,90 @@ __**10**__: Crazyhouse, Crazy House, House, ZH
 
 **Usage:** `<@1275521742961508432>chess launch`
 
+### chess show
+
+**Description:** reposts the last gameboard state
+
+**Usage:** `<@1275521742961508432>chess show`
+
 ### chess list
 
 **Description:** list all available games
 
 **Usage:** `<@1275521742961508432>chess list`
 
+### chess scoreboard
+
+**Description:** scoreboard related commands
+
+**Usage:** `<@1275521742961508432>chess scoreboard`
+
+### chess scoreboard list
+
+**Description:** list users scoreboard from highest to lowest
+
+Scoreboard can be sorted by elo, wins, losses, or ties.
+Scoreboard is sorted by wins by default.
+
+**Usage:** `<@1275521742961508432>chess scoreboard list`
+
+### chess scoreboard clear
+
+**Description:** allows bot owner clear the scoreboard
+
+**Usage:** `<@1275521742961508432>chess scoreboard clear`
+
+### chess scoreboard clear all
+
+**Description:** remove **ALL** scores from the scoreboard
+
+**Usage:** `<@1275521742961508432>chess scoreboard clear all`
+
+### chess scoreboard clear player
+
+**Description:** removes a particular player (or nonexistant id) from the scoreboard
+
+**Usage:** `<@1275521742961508432>chess scoreboard clear player`
+
+### chess scoreboard find
+
+**Description:** find a player's score. If none is provided this will look for the requester's score
+
+**Usage:** `<@1275521742961508432>chess scoreboard find`
+
+### chess scoreboard increment
+
+**Description:** allows bot owner to increment (decrement if negative value passed) a player's score
+
+**Usage:** `<@1275521742961508432>chess scoreboard increment`
+
 ### chess close
 
 **Description:** sub command to close a game
 
 **Usage:** `<@1275521742961508432>chess close`
+
+### chess draw
+
+**Description:** draw related commands
+
+**Usage:** `<@1275521742961508432>chess draw`
+
+### chess draw byagreement
+
+**Description:** Offer draw by agreement
+
+**Usage:** `<@1275521742961508432>chess draw byagreement`
+
+### chess draw claim
+
+**Description:** if valid claim made to draw the game will end with no victor
+
+**Usage:** `<@1275521742961508432>chess draw claim`
+
+### chess move
+
+**Description:** move the next game piece, using Standard Algebraic Notation
+
+**Usage:** `<@1275521742961508432>chess move`
 

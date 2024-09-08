@@ -18,6 +18,12 @@
 
 **Usage:** `<@1275521742961508432>coc`
 
+### coc channel
+
+**Description:** Set the channel for the dynamically updating embed.
+
+**Usage:** `<@1275521742961508432>coc channel`
+
 ### coc send
 
 **Description:** Send the Chain of Command embed to the set channel.
@@ -29,12 +35,6 @@
 **Description:** Manually update the Chain of Command embed.
 
 **Usage:** `<@1275521742961508432>coc update`
-
-### coc channel
-
-**Description:** Set the channel for the dynamically updating embed.
-
-**Usage:** `<@1275521742961508432>coc channel`
 
 ### resetguild
 

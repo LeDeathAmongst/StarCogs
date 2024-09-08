@@ -12,6 +12,22 @@
 
 **Usage:** `<@1275521742961508432>aiuserowner`
 
+### aiuserowner endpoint
+
+**Description:** Sets the OpenAI endpoint to a custom one (must be OpenAI API compatible)
+
+Reset to official OpenAI endpoint with `[p]aiuseradmin endpoint clear`
+
+**Usage:** `<@1275521742961508432>aiuserowner endpoint`
+
+### aiuserowner maxpromptlength
+
+**Description:** Sets the maximum character length of a prompt that can set by admins in any server.
+
+(Does not apply to already set prompts, only new ones)
+
+**Usage:** `<@1275521742961508432>aiuserowner maxpromptlength`
+
 ### aiuserowner maxtopiclength
 
 **Description:** Sets the maximum character length of a random prompt that can set by any server.
@@ -19,6 +35,14 @@
 (Does not apply to already set prompts, only new ones)
 
 **Usage:** `<@1275521742961508432>aiuserowner maxtopiclength`
+
+### aiuserowner exportconfig
+
+**Description:** Exports the current config to a json file
+
+:warning: JSON backend only
+
+**Usage:** `<@1275521742961508432>aiuserowner exportconfig`
 
 ### aiuserowner prompt
 
@@ -31,20 +55,6 @@ Leave blank to delete the currently set global prompt, and use the build-in defa
 
 **Usage:** `<@1275521742961508432>aiuserowner prompt`
 
-### aiuserowner timeout
-
-**Description:** Sets the request timeout to the OpenAI endpoint 
-
-**Usage:** `<@1275521742961508432>aiuserowner timeout`
-
-### aiuserowner exportconfig
-
-**Description:** Exports the current config to a json file
-
-:warning: JSON backend only
-
-**Usage:** `<@1275521742961508432>aiuserowner exportconfig`
-
 ### aiuserowner importconfig
 
 **Description:** Imports a config from json file (:warning: No checks are done)
@@ -55,193 +65,17 @@ Leave blank to delete the currently set global prompt, and use the build-in defa
 
 **Usage:** `<@1275521742961508432>aiuserowner importconfig`
 
-### aiuserowner maxpromptlength
+### aiuserowner timeout
 
-**Description:** Sets the maximum character length of a prompt that can set by admins in any server.
+**Description:** Sets the request timeout to the OpenAI endpoint 
 
-(Does not apply to already set prompts, only new ones)
-
-**Usage:** `<@1275521742961508432>aiuserowner maxpromptlength`
-
-### aiuserowner endpoint
-
-**Description:** Sets the OpenAI endpoint to a custom one (must be OpenAI API compatible)
-
-Reset to official OpenAI endpoint with `[p]aiuseradmin endpoint clear`
-
-**Usage:** `<@1275521742961508432>aiuserowner endpoint`
+**Usage:** `<@1275521742961508432>aiuserowner timeout`
 
 ### aiuser
 
 **Description:** Utilize OpenAI to reply to messages and images in approved channels and by opt-in users
 
 **Usage:** `<@1275521742961508432>aiuser`
-
-### aiuser trigger
-
-**Description:** Configure trigger settings for the bot to respond to
-
-(All subcommands per server)
-
-**Usage:** `<@1275521742961508432>aiuser trigger`
-
-### aiuser trigger reply_to_mentions
-
-**Description:** Toggles if the bot will always reply to mentions/replies 
-
-**Usage:** `<@1275521742961508432>aiuser trigger reply_to_mentions`
-
-### aiuser trigger conversation_reply_percent
-
-**Description:** Set a different percentage chance of the bot continuing to reply within `conversation_reply_time` time frame
-
-**Usage:** `<@1275521742961508432>aiuser trigger conversation_reply_percent`
-
-### aiuser trigger conversation_reply_time
-
-**Description:** Set the max time frame in seconds for the bot to have a `conversation_reply_percent` chance of replying to a message 
-When `conversation_reply_time` have lapsed for the last bot message, `conversation_reply_percent` will not be used.
-
-**Usage:** `<@1275521742961508432>aiuser trigger conversation_reply_time`
-
-### aiuser trigger ignore
-
-**Description:** Messages matching this regex won't be replied to or seen, by the bot 
-
-**Usage:** `<@1275521742961508432>aiuser trigger ignore`
-
-### aiuser trigger whitelist
-
-**Description:** If configured, only whitelisted roles / users can trigger a response in whitelisted channels
-        
-
-**Usage:** `<@1275521742961508432>aiuser trigger whitelist`
-
-### aiuser trigger whitelist clear
-
-**Description:** Clear the whitelist, allowing anyone to trigger LLM in whitelisted channels 
-
-**Usage:** `<@1275521742961508432>aiuser trigger whitelist clear`
-
-### aiuser trigger whitelist remove
-
-**Description:** Remove a user/role from the whitelist 
-
-**Usage:** `<@1275521742961508432>aiuser trigger whitelist remove`
-
-### aiuser trigger whitelist list
-
-**Description:** Show the whitelist 
-
-**Usage:** `<@1275521742961508432>aiuser trigger whitelist list`
-
-### aiuser trigger whitelist add
-
-**Description:** Add a role/user to the whitelist 
-
-**Usage:** `<@1275521742961508432>aiuser trigger whitelist add`
-
-### aiuser trigger minlength
-
-**Description:** Set the minimum length of messages that the bot will respond to
-
-**Usage:** `<@1275521742961508432>aiuser trigger minlength`
-
-### aiuser trigger public_forget
-
-**Description:** Toggles whether anyone can use the forget command, or only moderators 
-
-**Usage:** `<@1275521742961508432>aiuser trigger public_forget`
-
-### aiuser add
-
-**Description:** Adds a channel to the whitelist
-
-**Arguments**
-    - `channel` A mention of the channel
-
-**Usage:** `<@1275521742961508432>aiuser add`
-
-### aiuser remove
-
-**Description:** Remove a channel from the whitelist
-
-**Arguments**
-    - `channel` A mention of the channel
-
-**Usage:** `<@1275521742961508432>aiuser remove`
-
-### aiuser model
-
-**Description:** Changes chat completion model
-
- To see a list of available models, use `[p]aiuser model list`
- (Setting is per server)
-
-**Arguments**
-    - `model` The model to use eg. `gpt-4`
-
-**Usage:** `<@1275521742961508432>aiuser model`
-
-### aiuser optin
-
-**Description:** Opt in of sending your messages / images to OpenAI or another endpoint (bot-wide)
-
-This will allow the bot to reply to your messages or use your messages.
-
-**Usage:** `<@1275521742961508432>aiuser optin`
-
-### aiuser randommessage
-
-**Description:** Configure the random message event
-**(Must be enabled by bot owner first using `[p]aiuser random toggle`)**
-
-Every 33 minutes, a RNG roll will determine if a random message will be sent using a random prompt from a given list.
-
-Whitelisted channels must have a hour pass without a message sent in it for a random message to be sent. Last message author must not be this bot.
-
-(All subcommands per server)
-
-**Usage:** `<@1275521742961508432>aiuser randommessage`
-
-### aiuser randommessage percent
-
-**Description:** Sets the chance that a random message will be sent every 33 minutes
-
-**Arguments**
-    - `percent` A number between 0 and 100
-
-**Usage:** `<@1275521742961508432>aiuser randommessage percent`
-
-### aiuser randommessage show
-
-**Description:** Lists prompts to used in random messages 
-
-**Usage:** `<@1275521742961508432>aiuser randommessage show`
-
-### aiuser randommessage toggle
-
-**Description:** Toggles random message events 
-
-**Usage:** `<@1275521742961508432>aiuser randommessage toggle`
-
-### aiuser randommessage reset
-
-**Description:** Resets the random prompt list to the default
-
-**Usage:** `<@1275521742961508432>aiuser randommessage reset`
-
-### aiuser randommessage remove
-
-**Description:** Removes a prompt (by number) from the list
-
-**Usage:** `<@1275521742961508432>aiuser randommessage remove`
-
-### aiuser randommessage add
-
-**Description:** Add a new prompt to be used in random messages
-
-**Usage:** `<@1275521742961508432>aiuser randommessage add`
 
 ### aiuser forget
 
@@ -252,103 +86,112 @@ See `[p]aiuser triggers public_forget` to allow non-admins to use this command.
 
 **Usage:** `<@1275521742961508432>aiuser forget`
 
-### aiuser config
+### aiuser response
 
-**Description:** Returns current config
-
-(Current config per server)
-
-**Usage:** `<@1275521742961508432>aiuser config`
-
-### aiuser prompt
-
-**Description:** Change the prompt settings for the current server
+**Description:** Change settings used for generated responses
 
 (All subcommands are per server)
 
-**Usage:** `<@1275521742961508432>aiuser prompt`
+**Usage:** `<@1275521742961508432>aiuser response`
 
-### aiuser prompt preset
+### aiuser response parameters
 
-**Description:** Manage presets for the current server
+**Description:** Set custom parameters for an endpoint using a JSON code block
+
+To reset parameters to default, use `[p]aiuser response parameters reset`
+To show current parameters, use `[p]aiuser response parameters show`
+
+Example command:
+`[p]aiuser response parameters ```{"frequency_penalty": 2.0, "max_tokens": 200}``` `
+
+See [here](https://platform.openai.com/docs/api-reference/chat/create) for possible parameters
+Some parameters are blocked.
+
+**Usage:** `<@1275521742961508432>aiuser response parameters`
+
+### aiuser response toggleoptinembed
+
+**Description:** Toggles warning embed about opt-in on or off
+
+**Usage:** `<@1275521742961508432>aiuser response toggleoptinembed`
+
+### aiuser response removelist
+
+**Description:** Manage the list of regex patterns to remove from responses
         
 
-**Usage:** `<@1275521742961508432>aiuser prompt preset`
+**Usage:** `<@1275521742961508432>aiuser response removelist`
 
-### aiuser prompt preset show
+### aiuser response removelist reset
 
-**Description:** Show all presets for the current server 
+**Description:** Reset the list of regexes to default 
 
-**Usage:** `<@1275521742961508432>aiuser prompt preset show`
+**Usage:** `<@1275521742961508432>aiuser response removelist reset`
 
-### aiuser prompt preset add
+### aiuser response removelist add
 
-**Description:** Add a new preset to the presets list
+**Description:** Add a regex pattern to the list of patterns to remove from responses
+
+**Usage:** `<@1275521742961508432>aiuser response removelist add`
+
+### aiuser response removelist show
+
+**Description:** Show the current regex patterns of strings to removed from responses 
+
+**Usage:** `<@1275521742961508432>aiuser response removelist show`
+
+### aiuser response removelist remove
+
+**Description:** Remove a regex pattern (by number) from the list
+
+**Usage:** `<@1275521742961508432>aiuser response removelist remove`
+
+### aiuser response weights
+
+**Description:** Bias the LLM for/against certain words (tokens)
+
+See [here](https://help.openai.com/en/articles/5247780-using-logit-bias-to-define-token-probability) for additional info.
+
+(All subcommands are per server)
+
+**Usage:** `<@1275521742961508432>aiuser response weights`
+
+### aiuser response weights add
+
+**Description:** Sets weight for a specific word
+
+Will also use all possible tokens for a word when setting weight
+See [https://platform.openai.com/tokenizer](https://platform.openai.com/tokenizer) for detailed text to token conversion.
+
+*Arguments*
+- `word` The word to set weight for
+- `weight` The weight to set (`-100` to `100`)
+
+**Usage:** `<@1275521742961508432>aiuser response weights add`
+
+### aiuser response weights remove
+
+**Description:** Removes weight for a specific word
+
+*Arguments*
+    - `word` The word to remove
+
+**Usage:** `<@1275521742961508432>aiuser response weights remove`
+
+### aiuser response weights list
+
+**Description:** Show weights
+
+**Usage:** `<@1275521742961508432>aiuser response weights list`
+
+### aiuser add
+
+**Description:** Adds a channel to the whitelist
 
 **Arguments**
-    - `prompt` The prompt to set. Use `|` to separate the preset name (no spaces) from the prompt at the start. eg. `preset_name|prompt_text`
+    - `channel` A mention of the channel
 
-**Usage:** `<@1275521742961508432>aiuser prompt preset add`
-
-### aiuser prompt preset remove
-
-**Description:** Remove a preset by its name from the presets list
-
-**Arguments**
-    - `preset` The name of the preset to remove
-
-**Usage:** `<@1275521742961508432>aiuser prompt preset remove`
-
-### aiuser prompt show
-
-**Description:** Show the prompt for the server (or provided user/channel)
-**Arguments**
-    - `mention` *(Optional)* User or channel
-
-**Usage:** `<@1275521742961508432>aiuser prompt show`
-
-### aiuser prompt show roles
-
-**Description:** Show all roles with custom prompts 
-
-**Usage:** `<@1275521742961508432>aiuser prompt show roles`
-
-### aiuser prompt show channels
-
-**Description:** Show all channels with custom prompts 
-
-**Usage:** `<@1275521742961508432>aiuser prompt show channels`
-
-### aiuser prompt show members
-
-**Description:** Show all users with custom prompts 
-
-**Usage:** `<@1275521742961508432>aiuser prompt show members`
-
-### aiuser prompt show server
-
-**Description:** Show the current server prompt 
-
-**Usage:** `<@1275521742961508432>aiuser prompt show server`
-
-### aiuser prompt set
-
-**Description:** Set a custom prompt or preset for the server (or provided channel/role/member)
-
-If multiple prompts can be used, the most specific prompt will be used, eg. it will go for: member > role > channel > server
-
-**Arguments**
-    - `mention` *(Optional)* A specific user or channel
-    - `prompt` *(Optional)* The prompt (or name of a preset) to set. If blank, will remove current prompt.
-    - `<ATTACHMENT>` *(Optional)* An `.txt` file to use as the prompt
-
-**Usage:** `<@1275521742961508432>aiuser prompt set`
-
-### aiuser prompt reset
-
-**Description:** Reset ALL prompts in this guild to default (inc. channels and members) 
-
-**Usage:** `<@1275521742961508432>aiuser prompt reset`
+**Usage:** `<@1275521742961508432>aiuser add`
 
 ### aiuser percent
 
@@ -363,57 +206,6 @@ If multiple percentage can be used, the most specific percentage will be used, e
 
 **Usage:** `<@1275521742961508432>aiuser percent`
 
-### aiuser optout
-
-**Description:** Opt out of sending your messages / images to OpenAI or another endpoint (bot-wide)
-
-This will prevent the bot from replying to your messages or using your messages.
-
-**Usage:** `<@1275521742961508432>aiuser optout`
-
-### aiuser optinbydefault
-
-**Description:** Toggles whether users are opted in by default in this server
-
-This command is disabled for servers with more than 150 members.
-
-**Usage:** `<@1275521742961508432>aiuser optinbydefault`
-
-### aiuser history
-
-**Description:** Change the prompt context settings for the current server
-
-The most recent messages that are within the time gap and message limits are used to create context.
-Context is used to help the LLM generate a response.
-
-**Usage:** `<@1275521742961508432>aiuser history`
-
-### aiuser history customtokenlimit
-
-**Description:** Set a LLM's custom maximum context limit (for local LLMs or those not listed in `aiuser/common/constants.py`.).
-
-If not set, a safe default or saved limit from `aiuser/common/constants.py` is used.
-
-**Usage:** `<@1275521742961508432>aiuser history customtokenlimit`
-
-### aiuser history time
-
-**Description:** Set max time (sec) messages can be apart before no more can be added
-
-eg. if set to 60, once messsages are more than 60 seconds apart, more messages will not be added.
-
-Helpful to prevent the LLM from mixing up context from different conversations.
-
-**Usage:** `<@1275521742961508432>aiuser history time`
-
-### aiuser history backread
-
-**Description:** Set max amount of messages to be used as context
-
-(Increasing the number of messages will increase the cost of the response, messages will be added until the LLM's token limit is reached)
-
-**Usage:** `<@1275521742961508432>aiuser history backread`
-
 ### aiuser imagerequest
 
 **Description:** Generate self-portrait images based on user request (on trigger words / LLM decision)
@@ -424,6 +216,12 @@ See [here](https://github.com/zhaobenny/bz-cogs/tree/main/aiuser#image-requests-
 
 **Usage:** `<@1275521742961508432>aiuser imagerequest`
 
+### aiuser imagerequest toggle
+
+**Description:** Toggle requests to endpoint
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest toggle`
+
 ### aiuser imagerequest subject
 
 **Description:** The subject in Stable Diffusion requests (needed to better hint SD prompt generation by LLM)
@@ -432,6 +230,60 @@ If the subject is well known in the SD model, use it here eg. `katsuragi misato`
 Else use a generic subject eg. `man` or `woman`
 
 **Usage:** `<@1275521742961508432>aiuser imagerequest subject`
+
+### aiuser imagerequest trigger
+
+**Description:** Set trigger words to detect image requests
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger`
+
+### aiuser imagerequest trigger list
+
+**Description:** Show the trigger words list
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger list`
+
+### aiuser imagerequest trigger sclear
+
+**Description:** Clear the second person words list to default
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sclear`
+
+### aiuser imagerequest trigger add
+
+**Description:** Add a word to the trigger words list
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger add`
+
+### aiuser imagerequest trigger slist
+
+**Description:** Show the second person words list
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger slist`
+
+### aiuser imagerequest trigger sadd
+
+**Description:** Add a word to the second person words list (to replace with subject) 
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sadd`
+
+### aiuser imagerequest trigger sremove
+
+**Description:** Remove a word from the second person words list
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sremove`
+
+### aiuser imagerequest trigger clear
+
+**Description:** Clear the trigger words list to default
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger clear`
+
+### aiuser imagerequest trigger remove
+
+**Description:** Remove a word from the trigger words list
+
+**Usage:** `<@1275521742961508432>aiuser imagerequest trigger remove`
 
 ### aiuser imagerequest preprompt
 
@@ -464,60 +316,6 @@ Example command:
 
 **Usage:** `<@1275521742961508432>aiuser imagerequest reduce_calls`
 
-### aiuser imagerequest trigger
-
-**Description:** Set trigger words to detect image requests
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger`
-
-### aiuser imagerequest trigger add
-
-**Description:** Add a word to the trigger words list
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger add`
-
-### aiuser imagerequest trigger slist
-
-**Description:** Show the second person words list
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger slist`
-
-### aiuser imagerequest trigger sadd
-
-**Description:** Add a word to the second person words list (to replace with subject) 
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sadd`
-
-### aiuser imagerequest trigger sclear
-
-**Description:** Clear the second person words list to default
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sclear`
-
-### aiuser imagerequest trigger clear
-
-**Description:** Clear the trigger words list to default
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger clear`
-
-### aiuser imagerequest trigger sremove
-
-**Description:** Remove a word from the second person words list
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger sremove`
-
-### aiuser imagerequest trigger remove
-
-**Description:** Remove a word from the trigger words list
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger remove`
-
-### aiuser imagerequest trigger list
-
-**Description:** Show the trigger words list
-
-**Usage:** `<@1275521742961508432>aiuser imagerequest trigger list`
-
 ### aiuser imagerequest endpoint
 
 **Description:** Set compatible image generation endpoint (eg. for local A1111 include `/sdapi/v1/txt2img`)
@@ -526,11 +324,21 @@ If set to `dall-e-3` or `dall-e-2`, image requests will use OpenAI's DALL·E mod
 
 **Usage:** `<@1275521742961508432>aiuser imagerequest endpoint`
 
-### aiuser imagerequest toggle
+### aiuser optout
 
-**Description:** Toggle requests to endpoint
+**Description:** Opt out of sending your messages / images to OpenAI or another endpoint (bot-wide)
 
-**Usage:** `<@1275521742961508432>aiuser imagerequest toggle`
+This will prevent the bot from replying to your messages or using your messages.
+
+**Usage:** `<@1275521742961508432>aiuser optout`
+
+### aiuser optinbydefault
+
+**Description:** Toggles whether users are opted in by default in this server
+
+This command is disabled for servers with more than 150 members.
+
+**Usage:** `<@1275521742961508432>aiuser optinbydefault`
 
 ### aiuser imagescan
 
@@ -542,12 +350,6 @@ Go [here](https://github.com/zhaobenny/bz-cogs/tree/main/aiuser#image-scanning-%
 
 **Usage:** `<@1275521742961508432>aiuser imagescan`
 
-### aiuser imagescan maxsize
-
-**Description:** Set max download size in Megabytes for image scanning 
-
-**Usage:** `<@1275521742961508432>aiuser imagescan maxsize`
-
 ### aiuser imagescan mode
 
 **Description:** Set method for scanning images
@@ -558,11 +360,11 @@ Go [here](https://github.com/zhaobenny/bz-cogs/tree/main/aiuser#image-scanning-%
 
 **Usage:** `<@1275521742961508432>aiuser imagescan mode`
 
-### aiuser imagescan toggle
+### aiuser imagescan maxsize
 
-**Description:** Toggle image scanning 
+**Description:** Set max download size in Megabytes for image scanning 
 
-**Usage:** `<@1275521742961508432>aiuser imagescan toggle`
+**Usage:** `<@1275521742961508432>aiuser imagescan maxsize`
 
 ### aiuser imagescan model
 
@@ -574,6 +376,96 @@ Go [here](https://github.com/zhaobenny/bz-cogs/tree/main/aiuser#image-scanning-%
 
 **Usage:** `<@1275521742961508432>aiuser imagescan model`
 
+### aiuser imagescan toggle
+
+**Description:** Toggle image scanning 
+
+**Usage:** `<@1275521742961508432>aiuser imagescan toggle`
+
+### aiuser trigger
+
+**Description:** Configure trigger settings for the bot to respond to
+
+(All subcommands per server)
+
+**Usage:** `<@1275521742961508432>aiuser trigger`
+
+### aiuser trigger public_forget
+
+**Description:** Toggles whether anyone can use the forget command, or only moderators 
+
+**Usage:** `<@1275521742961508432>aiuser trigger public_forget`
+
+### aiuser trigger minlength
+
+**Description:** Set the minimum length of messages that the bot will respond to
+
+**Usage:** `<@1275521742961508432>aiuser trigger minlength`
+
+### aiuser trigger reply_to_mentions
+
+**Description:** Toggles if the bot will always reply to mentions/replies 
+
+**Usage:** `<@1275521742961508432>aiuser trigger reply_to_mentions`
+
+### aiuser trigger conversation_reply_percent
+
+**Description:** Set a different percentage chance of the bot continuing to reply within `conversation_reply_time` time frame
+
+**Usage:** `<@1275521742961508432>aiuser trigger conversation_reply_percent`
+
+### aiuser trigger whitelist
+
+**Description:** If configured, only whitelisted roles / users can trigger a response in whitelisted channels
+        
+
+**Usage:** `<@1275521742961508432>aiuser trigger whitelist`
+
+### aiuser trigger whitelist list
+
+**Description:** Show the whitelist 
+
+**Usage:** `<@1275521742961508432>aiuser trigger whitelist list`
+
+### aiuser trigger whitelist clear
+
+**Description:** Clear the whitelist, allowing anyone to trigger LLM in whitelisted channels 
+
+**Usage:** `<@1275521742961508432>aiuser trigger whitelist clear`
+
+### aiuser trigger whitelist add
+
+**Description:** Add a role/user to the whitelist 
+
+**Usage:** `<@1275521742961508432>aiuser trigger whitelist add`
+
+### aiuser trigger whitelist remove
+
+**Description:** Remove a user/role from the whitelist 
+
+**Usage:** `<@1275521742961508432>aiuser trigger whitelist remove`
+
+### aiuser trigger conversation_reply_time
+
+**Description:** Set the max time frame in seconds for the bot to have a `conversation_reply_percent` chance of replying to a message 
+When `conversation_reply_time` have lapsed for the last bot message, `conversation_reply_percent` will not be used.
+
+**Usage:** `<@1275521742961508432>aiuser trigger conversation_reply_time`
+
+### aiuser trigger ignore
+
+**Description:** Messages matching this regex won't be replied to or seen, by the bot 
+
+**Usage:** `<@1275521742961508432>aiuser trigger ignore`
+
+### aiuser config
+
+**Description:** Returns current config
+
+(Current config per server)
+
+**Usage:** `<@1275521742961508432>aiuser config`
+
 ### aiuser functions
 
 **Description:** Settings to manage function calling
@@ -581,6 +473,18 @@ Go [here](https://github.com/zhaobenny/bz-cogs/tree/main/aiuser#image-scanning-%
 (All subcommands are per server)
 
 **Usage:** `<@1275521742961508432>aiuser functions`
+
+### aiuser functions location
+
+**Description:** Set the location where the bot will canonically be in
+
+Used for some functions.
+
+**Arguments**
+- `latitude` decimal latitude
+- `longitude` decimal longitude
+
+**Usage:** `<@1275521742961508432>aiuser functions location`
 
 ### aiuser functions noresponse
 
@@ -622,113 +526,209 @@ This will generate additional API calls and token usage!
 
 **Usage:** `<@1275521742961508432>aiuser functions toggle`
 
-### aiuser functions location
+### aiuser remove
 
-**Description:** Set the location where the bot will canonically be in
-
-Used for some functions.
+**Description:** Remove a channel from the whitelist
 
 **Arguments**
-- `latitude` decimal latitude
-- `longitude` decimal longitude
+    - `channel` A mention of the channel
 
-**Usage:** `<@1275521742961508432>aiuser functions location`
+**Usage:** `<@1275521742961508432>aiuser remove`
 
-### aiuser response
+### aiuser randommessage
 
-**Description:** Change settings used for generated responses
+**Description:** Configure the random message event
+**(Must be enabled by bot owner first using `[p]aiuser random toggle`)**
+
+Every 33 minutes, a RNG roll will determine if a random message will be sent using a random prompt from a given list.
+
+Whitelisted channels must have a hour pass without a message sent in it for a random message to be sent. Last message author must not be this bot.
+
+(All subcommands per server)
+
+**Usage:** `<@1275521742961508432>aiuser randommessage`
+
+### aiuser randommessage remove
+
+**Description:** Removes a prompt (by number) from the list
+
+**Usage:** `<@1275521742961508432>aiuser randommessage remove`
+
+### aiuser randommessage add
+
+**Description:** Add a new prompt to be used in random messages
+
+**Usage:** `<@1275521742961508432>aiuser randommessage add`
+
+### aiuser randommessage percent
+
+**Description:** Sets the chance that a random message will be sent every 33 minutes
+
+**Arguments**
+    - `percent` A number between 0 and 100
+
+**Usage:** `<@1275521742961508432>aiuser randommessage percent`
+
+### aiuser randommessage show
+
+**Description:** Lists prompts to used in random messages 
+
+**Usage:** `<@1275521742961508432>aiuser randommessage show`
+
+### aiuser randommessage toggle
+
+**Description:** Toggles random message events 
+
+**Usage:** `<@1275521742961508432>aiuser randommessage toggle`
+
+### aiuser randommessage reset
+
+**Description:** Resets the random prompt list to the default
+
+**Usage:** `<@1275521742961508432>aiuser randommessage reset`
+
+### aiuser model
+
+**Description:** Changes chat completion model
+
+ To see a list of available models, use `[p]aiuser model list`
+ (Setting is per server)
+
+**Arguments**
+    - `model` The model to use eg. `gpt-4`
+
+**Usage:** `<@1275521742961508432>aiuser model`
+
+### aiuser optin
+
+**Description:** Opt in of sending your messages / images to OpenAI or another endpoint (bot-wide)
+
+This will allow the bot to reply to your messages or use your messages.
+
+**Usage:** `<@1275521742961508432>aiuser optin`
+
+### aiuser prompt
+
+**Description:** Change the prompt settings for the current server
 
 (All subcommands are per server)
 
-**Usage:** `<@1275521742961508432>aiuser response`
+**Usage:** `<@1275521742961508432>aiuser prompt`
 
-### aiuser response weights
+### aiuser prompt show
 
-**Description:** Bias the LLM for/against certain words (tokens)
+**Description:** Show the prompt for the server (or provided user/channel)
+**Arguments**
+    - `mention` *(Optional)* User or channel
 
-See [here](https://help.openai.com/en/articles/5247780-using-logit-bias-to-define-token-probability) for additional info.
+**Usage:** `<@1275521742961508432>aiuser prompt show`
 
-(All subcommands are per server)
+### aiuser prompt show server
 
-**Usage:** `<@1275521742961508432>aiuser response weights`
+**Description:** Show the current server prompt 
 
-### aiuser response weights add
+**Usage:** `<@1275521742961508432>aiuser prompt show server`
 
-**Description:** Sets weight for a specific word
+### aiuser prompt show channels
 
-Will also use all possible tokens for a word when setting weight
-See [https://platform.openai.com/tokenizer](https://platform.openai.com/tokenizer) for detailed text to token conversion.
+**Description:** Show all channels with custom prompts 
 
-*Arguments*
-- `word` The word to set weight for
-- `weight` The weight to set (`-100` to `100`)
+**Usage:** `<@1275521742961508432>aiuser prompt show channels`
 
-**Usage:** `<@1275521742961508432>aiuser response weights add`
+### aiuser prompt show members
 
-### aiuser response weights list
+**Description:** Show all users with custom prompts 
 
-**Description:** Show weights
+**Usage:** `<@1275521742961508432>aiuser prompt show members`
 
-**Usage:** `<@1275521742961508432>aiuser response weights list`
+### aiuser prompt show roles
 
-### aiuser response weights remove
+**Description:** Show all roles with custom prompts 
 
-**Description:** Removes weight for a specific word
+**Usage:** `<@1275521742961508432>aiuser prompt show roles`
 
-*Arguments*
-    - `word` The word to remove
+### aiuser prompt set
 
-**Usage:** `<@1275521742961508432>aiuser response weights remove`
+**Description:** Set a custom prompt or preset for the server (or provided channel/role/member)
 
-### aiuser response removelist
+If multiple prompts can be used, the most specific prompt will be used, eg. it will go for: member > role > channel > server
 
-**Description:** Manage the list of regex patterns to remove from responses
+**Arguments**
+    - `mention` *(Optional)* A specific user or channel
+    - `prompt` *(Optional)* The prompt (or name of a preset) to set. If blank, will remove current prompt.
+    - `<ATTACHMENT>` *(Optional)* An `.txt` file to use as the prompt
+
+**Usage:** `<@1275521742961508432>aiuser prompt set`
+
+### aiuser prompt reset
+
+**Description:** Reset ALL prompts in this guild to default (inc. channels and members) 
+
+**Usage:** `<@1275521742961508432>aiuser prompt reset`
+
+### aiuser prompt preset
+
+**Description:** Manage presets for the current server
         
 
-**Usage:** `<@1275521742961508432>aiuser response removelist`
+**Usage:** `<@1275521742961508432>aiuser prompt preset`
 
-### aiuser response removelist add
+### aiuser prompt preset show
 
-**Description:** Add a regex pattern to the list of patterns to remove from responses
+**Description:** Show all presets for the current server 
 
-**Usage:** `<@1275521742961508432>aiuser response removelist add`
+**Usage:** `<@1275521742961508432>aiuser prompt preset show`
 
-### aiuser response removelist remove
+### aiuser prompt preset add
 
-**Description:** Remove a regex pattern (by number) from the list
+**Description:** Add a new preset to the presets list
 
-**Usage:** `<@1275521742961508432>aiuser response removelist remove`
+**Arguments**
+    - `prompt` The prompt to set. Use `|` to separate the preset name (no spaces) from the prompt at the start. eg. `preset_name|prompt_text`
 
-### aiuser response removelist show
+**Usage:** `<@1275521742961508432>aiuser prompt preset add`
 
-**Description:** Show the current regex patterns of strings to removed from responses 
+### aiuser prompt preset remove
 
-**Usage:** `<@1275521742961508432>aiuser response removelist show`
+**Description:** Remove a preset by its name from the presets list
 
-### aiuser response removelist reset
+**Arguments**
+    - `preset` The name of the preset to remove
 
-**Description:** Reset the list of regexes to default 
+**Usage:** `<@1275521742961508432>aiuser prompt preset remove`
 
-**Usage:** `<@1275521742961508432>aiuser response removelist reset`
+### aiuser history
 
-### aiuser response parameters
+**Description:** Change the prompt context settings for the current server
 
-**Description:** Set custom parameters for an endpoint using a JSON code block
+The most recent messages that are within the time gap and message limits are used to create context.
+Context is used to help the LLM generate a response.
 
-To reset parameters to default, use `[p]aiuser response parameters reset`
-To show current parameters, use `[p]aiuser response parameters show`
+**Usage:** `<@1275521742961508432>aiuser history`
 
-Example command:
-`[p]aiuser response parameters ```{"frequency_penalty": 2.0, "max_tokens": 200}``` `
+### aiuser history backread
 
-See [here](https://platform.openai.com/docs/api-reference/chat/create) for possible parameters
-Some parameters are blocked.
+**Description:** Set max amount of messages to be used as context
 
-**Usage:** `<@1275521742961508432>aiuser response parameters`
+(Increasing the number of messages will increase the cost of the response, messages will be added until the LLM's token limit is reached)
 
-### aiuser response toggleoptinembed
+**Usage:** `<@1275521742961508432>aiuser history backread`
 
-**Description:** Toggles warning embed about opt-in on or off
+### aiuser history time
 
-**Usage:** `<@1275521742961508432>aiuser response toggleoptinembed`
+**Description:** Set max time (sec) messages can be apart before no more can be added
+
+eg. if set to 60, once messsages are more than 60 seconds apart, more messages will not be added.
+
+Helpful to prevent the LLM from mixing up context from different conversations.
+
+**Usage:** `<@1275521742961508432>aiuser history time`
+
+### aiuser history customtokenlimit
+
+**Description:** Set a LLM's custom maximum context limit (for local LLMs or those not listed in `aiuser/common/constants.py`.).
+
+If not set, a safe default or saved limit from `aiuser/common/constants.py` is used.
+
+**Usage:** `<@1275521742961508432>aiuser history customtokenlimit`
 

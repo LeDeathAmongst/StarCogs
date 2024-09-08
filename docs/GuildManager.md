@@ -6,6 +6,26 @@
 
 **Usage:** `<@1275521742961508432>guildmanager`
 
+### guildmanager chunk
+
+**Description:** Chunk unchunked guilds.
+
+**Usage:** `<@1275521742961508432>guildmanager chunk`
+
+### guildmanager minmembers
+
+**Description:** Set how many members a server should have for the bot to stay in it.
+
+Pass 0 to disable.
+
+**Usage:** `<@1275521742961508432>guildmanager minmembers`
+
+### guildmanager settings
+
+**Description:** View guild manager's settings.
+
+**Usage:** `<@1275521742961508432>guildmanager settings`
+
 ### guildmanager leave
 
 **Description:** Leave guilds that (somehow) doesn't fulfill requirements.
@@ -30,11 +50,11 @@
 
 **Usage:** `<@1275521742961508432>guildmanager leave blacklisted`
 
-### guildmanager settings
+### guildmanager serverlock
 
-**Description:** View guild manager's settings.
+**Description:** Locks [botname] to its current servers only.
 
-**Usage:** `<@1275521742961508432>guildmanager settings`
+**Usage:** `<@1275521742961508432>guildmanager serverlock`
 
 ### guildmanager show
 
@@ -60,11 +80,29 @@
 
 **Usage:** `<@1275521742961508432>guildmanager show unchunked`
 
-### guildmanager channel
+### guildmanager whitelist
 
-**Description:** Set a log channel for guild joins/leaves.
+**Description:** Guild whitelist management commands.
 
-**Usage:** `<@1275521742961508432>guildmanager channel`
+**Usage:** `<@1275521742961508432>guildmanager whitelist`
+
+### guildmanager whitelist remove
+
+**Description:** Remove guilds from the whitelist.
+
+**Usage:** `<@1275521742961508432>guildmanager whitelist remove`
+
+### guildmanager whitelist clear
+
+**Description:** Clear guilds from the whitelist.
+
+**Usage:** `<@1275521742961508432>guildmanager whitelist clear`
+
+### guildmanager whitelist add
+
+**Description:** Add guilds to the whitelist.
+
+**Usage:** `<@1275521742961508432>guildmanager whitelist add`
 
 ### guildmanager botratio
 
@@ -74,31 +112,17 @@ The ratio must be between 0-100, pass 0 to disable.
 
 **Usage:** `<@1275521742961508432>guildmanager botratio`
 
-### guildmanager chunk
-
-**Description:** Chunk unchunked guilds.
-
-**Usage:** `<@1275521742961508432>guildmanager chunk`
-
-### guildmanager minmembers
-
-**Description:** Set how many members a server should have for the bot to stay in it.
-
-Pass 0 to disable.
-
-**Usage:** `<@1275521742961508432>guildmanager minmembers`
-
-### guildmanager serverlock
-
-**Description:** Locks [botname] to its current servers only.
-
-**Usage:** `<@1275521742961508432>guildmanager serverlock`
-
 ### guildmanager blacklist
 
 **Description:** Guild blacklist management commands.
 
 **Usage:** `<@1275521742961508432>guildmanager blacklist`
+
+### guildmanager blacklist add
+
+**Description:** Blacklist bot from joining certain guilds (autoleave)
+
+**Usage:** `<@1275521742961508432>guildmanager blacklist add`
 
 ### guildmanager blacklist remove
 
@@ -112,33 +136,9 @@ Pass 0 to disable.
 
 **Usage:** `<@1275521742961508432>guildmanager blacklist clear`
 
-### guildmanager blacklist add
+### guildmanager channel
 
-**Description:** Blacklist bot from joining certain guilds (autoleave)
+**Description:** Set a log channel for guild joins/leaves.
 
-**Usage:** `<@1275521742961508432>guildmanager blacklist add`
-
-### guildmanager whitelist
-
-**Description:** Guild whitelist management commands.
-
-**Usage:** `<@1275521742961508432>guildmanager whitelist`
-
-### guildmanager whitelist remove
-
-**Description:** Remove guilds from the whitelist.
-
-**Usage:** `<@1275521742961508432>guildmanager whitelist remove`
-
-### guildmanager whitelist add
-
-**Description:** Add guilds to the whitelist.
-
-**Usage:** `<@1275521742961508432>guildmanager whitelist add`
-
-### guildmanager whitelist clear
-
-**Description:** Clear guilds from the whitelist.
-
-**Usage:** `<@1275521742961508432>guildmanager whitelist clear`
+**Usage:** `<@1275521742961508432>guildmanager channel`
 

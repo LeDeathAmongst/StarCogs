@@ -6,17 +6,11 @@
 
 **Usage:** `<@1275521742961508432>invites`
 
-### invites leaderboard
+### invites listpin
 
-**Description:** List pinned invites or all invites in a leaderboard style.
+**Description:** List pinned invites.
 
-**Usage:** `<@1275521742961508432>invites leaderboard`
-
-### invites pin
-
-**Description:** Pin an invite to the leaderboard.
-
-**Usage:** `<@1275521742961508432>invites pin`
+**Usage:** `<@1275521742961508432>invites listpin`
 
 ### invites unpin
 
@@ -24,15 +18,21 @@
 
 **Usage:** `<@1275521742961508432>invites unpin`
 
+### invites leaderboard
+
+**Description:** List pinned invites or all invites in a leaderboard style.
+
+**Usage:** `<@1275521742961508432>invites leaderboard`
+
 ### invites show
 
 **Description:** Show the stats for an invite, or show all invites.
 
 **Usage:** `<@1275521742961508432>invites show`
 
-### invites listpin
+### invites pin
 
-**Description:** List pinned invites.
+**Description:** Pin an invite to the leaderboard.
 
-**Usage:** `<@1275521742961508432>invites listpin`
+**Usage:** `<@1275521742961508432>invites pin`
 

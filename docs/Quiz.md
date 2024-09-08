@@ -36,12 +36,6 @@ Use [p]quiz categories to list category names or id numbers.
 
 **Usage:** `<@1275521742961508432>quizset`
 
-### quizset questions
-
-**Description:** Set number of questions per game.
-
-**Usage:** `<@1275521742961508432>quizset questions`
-
 ### quizset afk
 
 **Description:** Set number of questions before the game ends due to non-answers.
@@ -66,4 +60,10 @@ Credit gain will be based on the number of questions set and user speed.
 **Description:** Toggle revealing the answers.
 
 **Usage:** `<@1275521742961508432>quizset show`
+
+### quizset questions
+
+**Description:** Set number of questions per game.
+
+**Usage:** `<@1275521742961508432>quizset questions`
 

@@ -10,16 +10,29 @@ Get started with `[p]roleplay channel`.
 
 **Usage:** `<@1275521742961508432>roleplay`
 
-### roleplay radiotitle
+### roleplay radioimage
 
-**Description:** Set a title for radio mode (embed only)
+**Description:** Set an image for radio mode (embed only)
 
 This only applies to embeds.
 
 **Example:**
-- `[p]roleplay radiotitle New radio transmission detected` - the default
+- `[p]roleplay radioimage https://i.imgur.com/example.png`
+- `[p]roleplay radioimage` - reset to none
 
-**Usage:** `<@1275521742961508432>roleplay radiotitle`
+**Usage:** `<@1275521742961508432>roleplay radioimage`
+
+### roleplay log
+
+**Description:** Set a channel to log role play messages to.
+
+If you do not specify a channel logging will be disabled.
+
+**Examples:**
+- `[p]roleplay log #logs` - set to a channel called logs
+- `[p]roleplay log` - disable logging
+
+**Usage:** `<@1275521742961508432>roleplay log`
 
 ### roleplay radio
 
@@ -33,6 +46,21 @@ The default is disabled.
 
 **Usage:** `<@1275521742961508432>roleplay radio`
 
+### roleplay delete
+
+**Description:** Automatically delete messages in the role play channel after time has passed.
+
+The time is in minutes.
+
+The default is disabled.
+
+**Examples:**
+- `[p]roleplay delete 5` - delete after 5 mins
+- `[p]roleplay delete 30` - delete after 30 mins
+- `[p]roleplay delete` - disable deletion
+
+**Usage:** `<@1275521742961508432>roleplay delete`
+
 ### roleplay embed
 
 **Description:** Enable or disable embeds.
@@ -45,17 +73,16 @@ The default is disabled.
 
 **Usage:** `<@1275521742961508432>roleplay embed`
 
-### roleplay radioimage
+### roleplay radiotitle
 
-**Description:** Set an image for radio mode (embed only)
+**Description:** Set a title for radio mode (embed only)
 
 This only applies to embeds.
 
 **Example:**
-- `[p]roleplay radioimage https://i.imgur.com/example.png`
-- `[p]roleplay radioimage` - reset to none
+- `[p]roleplay radiotitle New radio transmission detected` - the default
 
-**Usage:** `<@1275521742961508432>roleplay radioimage`
+**Usage:** `<@1275521742961508432>roleplay radiotitle`
 
 ### roleplay radiofooter
 
@@ -68,18 +95,6 @@ This only applies to embeds.
 - `[p]roleplay radiofooter` - reset to none
 
 **Usage:** `<@1275521742961508432>roleplay radiofooter`
-
-### roleplay log
-
-**Description:** Set a channel to log role play messages to.
-
-If you do not specify a channel logging will be disabled.
-
-**Examples:**
-- `[p]roleplay log #logs` - set to a channel called logs
-- `[p]roleplay log` - disable logging
-
-**Usage:** `<@1275521742961508432>roleplay log`
 
 ### roleplay settings
 
@@ -98,19 +113,4 @@ Leave blank to disable.
 - `[p]roleplay channel #roleplay` - set the channel to #roleplay
 
 **Usage:** `<@1275521742961508432>roleplay channel`
-
-### roleplay delete
-
-**Description:** Automatically delete messages in the role play channel after time has passed.
-
-The time is in minutes.
-
-The default is disabled.
-
-**Examples:**
-- `[p]roleplay delete 5` - delete after 5 mins
-- `[p]roleplay delete 30` - delete after 30 mins
-- `[p]roleplay delete` - disable deletion
-
-**Usage:** `<@1275521742961508432>roleplay delete`
 

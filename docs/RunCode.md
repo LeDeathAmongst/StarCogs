@@ -32,12 +32,6 @@ Arguments:
 
 **Usage:** `<@1275521742961508432>setruncode`
 
-### setruncode listlanguages
-
-**Description:** Shows a list of all the available languages, or Wandbox or Tio API.
-
-**Usage:** `<@1275521742961508432>setruncode listlanguages`
-
 ### setruncode listidentifiers
 
 **Description:** Lists all the languages identifiers recognized by the bot, only for Wandbox API.
@@ -58,4 +52,10 @@ Arguments:
 **Description:** Lists all the languages extensions.
 
 **Usage:** `<@1275521742961508432>setruncode listextensions`
+
+### setruncode listlanguages
+
+**Description:** Shows a list of all the available languages, or Wandbox or Tio API.
+
+**Usage:** `<@1275521742961508432>setruncode listlanguages`
 

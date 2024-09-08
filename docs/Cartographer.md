@@ -26,17 +26,58 @@ This cog can backup & restore the following:
 
 **Usage:** `<@1275521742961508432>cartographerset`
 
-### cartographerset ignore
+### cartographerset backupmembers
 
-**Description:** Add/Remove a server from the ignore list
+**Description:** Toggle backing up members
 
-**Usage:** `<@1275521742961508432>cartographerset ignore`
+⚠️**Warning**⚠️
+Restoring the roles of all members can be slow for large servers.
+
+**Usage:** `<@1275521742961508432>cartographerset backupmembers`
+
+### cartographerset restorelatest
+
+**Description:** Restore the latest backup for this server
+
+**Usage:** `<@1275521742961508432>cartographerset restorelatest`
+
+### cartographerset messagelimit
+
+**Description:** Set the message backup limit per channel for auto backups
+
+Set to 0 to disable message backups
+
+⚠️**Warning**⚠️
+Setting this to a high number can cause backups to be slow and take up a lot of space.
+
+**Usage:** `<@1275521742961508432>cartographerset messagelimit`
+
+### cartographerset autobackups
+
+**Description:** Enable/Disable allowing auto backups
+
+**Usage:** `<@1275521742961508432>cartographerset autobackups`
+
+### cartographerset backupemojis
+
+**Description:** Toggle backing up emojis
+
+⚠️**Warning**⚠️
+Restoring emojis is EXTREMELY rate-limited and can take a long time (like hours) for servers with many emojis.
+
+**Usage:** `<@1275521742961508432>cartographerset backupemojis`
 
 ### cartographerset allow
 
 **Description:** Add/Remove a server from the allow list
 
 **Usage:** `<@1275521742961508432>cartographerset allow`
+
+### cartographerset ignore
+
+**Description:** Add/Remove a server from the ignore list
+
+**Usage:** `<@1275521742961508432>cartographerset ignore`
 
 ### cartographerset view
 
@@ -58,21 +99,6 @@ This cog can backup & restore the following:
 Restoring stickers is EXTREMELY rate-limited and can take a long time (like hours) for servers with many stickers.
 
 **Usage:** `<@1275521742961508432>cartographerset backupstickers`
-
-### cartographerset restorelatest
-
-**Description:** Restore the latest backup for this server
-
-**Usage:** `<@1275521742961508432>cartographerset restorelatest`
-
-### cartographerset backupemojis
-
-**Description:** Toggle backing up emojis
-
-⚠️**Warning**⚠️
-Restoring emojis is EXTREMELY rate-limited and can take a long time (like hours) for servers with many emojis.
-
-**Usage:** `<@1275521742961508432>cartographerset backupemojis`
 
 ### cartographerset wipebackups
 
@@ -98,30 +124,4 @@ limit: How many messages to backup per channel (0 for None)
 Any roles above the bot's role will not be restored.
 
 **Usage:** `<@1275521742961508432>cartographerset backuproles`
-
-### cartographerset backupmembers
-
-**Description:** Toggle backing up members
-
-⚠️**Warning**⚠️
-Restoring the roles of all members can be slow for large servers.
-
-**Usage:** `<@1275521742961508432>cartographerset backupmembers`
-
-### cartographerset messagelimit
-
-**Description:** Set the message backup limit per channel for auto backups
-
-Set to 0 to disable message backups
-
-⚠️**Warning**⚠️
-Setting this to a high number can cause backups to be slow and take up a lot of space.
-
-**Usage:** `<@1275521742961508432>cartographerset messagelimit`
-
-### cartographerset autobackups
-
-**Description:** Enable/Disable allowing auto backups
-
-**Usage:** `<@1275521742961508432>cartographerset autobackups`
 

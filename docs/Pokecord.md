@@ -6,6 +6,14 @@
 
 **Usage:** `<@1275521742961508432>poke`
 
+### poke trade
+
+**Description:** Pokecord Trading
+
+Currently a work in progress.
+
+**Usage:** `<@1275521742961508432>poke trade`
+
 ### poke locale
 
 **Description:** Set the Pokecord locale to use for yourself.
@@ -18,61 +26,23 @@
 
 **Usage:** `<@1275521742961508432>poke silence`
 
-### poke release
-
-**Description:** Release a pokémon.
-
-**Usage:** `<@1275521742961508432>poke release`
-
-### poke trade
-
-**Description:** Pokecord Trading
-
-Currently a work in progress.
-
-**Usage:** `<@1275521742961508432>poke trade`
-
-### poke dev spawn
-
-**Description:** Spawn a pokemon by name or random
-
-**Usage:** `<@1275521742961508432>poke dev spawn`
-
-### poke dev stats
-
-**Description:** Manually set a pokemons stats
-
-**Usage:** `<@1275521742961508432>poke dev stats`
-
-### poke dev level
-
-**Description:** Manually set a pokemons level
-
-**Usage:** `<@1275521742961508432>poke dev level`
-
-### poke dev ivs
-
-**Description:** Manually set a pokemons IVs
-
-**Usage:** `<@1275521742961508432>poke dev ivs`
-
-### poke dev reveal
-
-**Description:** Shows raw info for an owned pokemon
-
-**Usage:** `<@1275521742961508432>poke dev reveal`
-
-### poke dev strip
-
-**Description:** Forcably removes a pokemone from user
-
-**Usage:** `<@1275521742961508432>poke dev strip`
-
 ### poke set
 
 **Description:** Manage pokecord settings
 
 **Usage:** `<@1275521742961508432>poke set`
+
+### poke set spawnchance
+
+**Description:** Change the range of messages required for a spawn.
+
+**Usage:** `<@1275521742961508432>poke set spawnchance`
+
+### poke set channel
+
+**Description:** Set the channel(s) that pokemon are to spawn in.
+
+**Usage:** `<@1275521742961508432>poke set channel`
 
 ### poke set settings
 
@@ -80,11 +50,29 @@ Currently a work in progress.
 
 **Usage:** `<@1275521742961508432>poke set settings`
 
+### poke set toggle
+
+**Description:** Toggle pokecord on or off.
+
+**Usage:** `<@1275521742961508432>poke set toggle`
+
 ### poke set blacklist
 
 **Description:** Blacklist channels from contributing to pokémon spawning.
 
 **Usage:** `<@1275521742961508432>poke set blacklist`
+
+### poke set whitelist
+
+**Description:** Whitelist channels that will contribute to pokémon spawning.
+
+**Usage:** `<@1275521742961508432>poke set whitelist`
+
+### poke set spawnloop
+
+**Description:** Turn the bot loop on or off.
+
+**Usage:** `<@1275521742961508432>poke set spawnloop`
 
 ### poke set levelup
 
@@ -95,35 +83,47 @@ If no active channels are set then level up messages will send as normal.
 
 **Usage:** `<@1275521742961508432>poke set levelup`
 
-### poke set spawnloop
+### poke dev spawn
 
-**Description:** Turn the bot loop on or off.
+**Description:** Spawn a pokemon by name or random
 
-**Usage:** `<@1275521742961508432>poke set spawnloop`
+**Usage:** `<@1275521742961508432>poke dev spawn`
 
-### poke set channel
+### poke dev reveal
 
-**Description:** Set the channel(s) that pokemon are to spawn in.
+**Description:** Shows raw info for an owned pokemon
 
-**Usage:** `<@1275521742961508432>poke set channel`
+**Usage:** `<@1275521742961508432>poke dev reveal`
 
-### poke set spawnchance
+### poke dev level
 
-**Description:** Change the range of messages required for a spawn.
+**Description:** Manually set a pokemons level
 
-**Usage:** `<@1275521742961508432>poke set spawnchance`
+**Usage:** `<@1275521742961508432>poke dev level`
 
-### poke set whitelist
+### poke dev stats
 
-**Description:** Whitelist channels that will contribute to pokémon spawning.
+**Description:** Manually set a pokemons stats
 
-**Usage:** `<@1275521742961508432>poke set whitelist`
+**Usage:** `<@1275521742961508432>poke dev stats`
 
-### poke set toggle
+### poke dev strip
 
-**Description:** Toggle pokecord on or off.
+**Description:** Forcably removes a pokemone from user
 
-**Usage:** `<@1275521742961508432>poke set toggle`
+**Usage:** `<@1275521742961508432>poke dev strip`
+
+### poke dev ivs
+
+**Description:** Manually set a pokemons IVs
+
+**Usage:** `<@1275521742961508432>poke dev ivs`
+
+### poke release
+
+**Description:** Release a pokémon.
+
+**Usage:** `<@1275521742961508432>poke release`
 
 ### poke nick
 

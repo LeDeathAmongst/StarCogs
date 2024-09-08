@@ -12,25 +12,6 @@
 
 **Usage:** `<@1275521742961508432>timechannelset`
 
-### timechannelset short
-
-**Description:** Get the short identifier for the main `create` command.
-
-The list of acceptable timezones is here (the "TZ database name" column):
-https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
-
-There is a fuzzy search, so you shouldn't need to enter the region.
-
-Please look at `[p]help tcset create` for more information.
-
-**Examples:**
-- `[p]tcset short New York`
-- `[p]tcset short UTC`
-- `[p]tcset short London`
-- `[p]tcset short Europe/London`
-
-**Usage:** `<@1275521742961508432>timechannelset short`
-
 ### timechannelset remove
 
 **Description:** Delete and stop updating a channel.
@@ -75,4 +56,23 @@ eg `{ni-24h}`
 - `[p]tcset create US Pacific: {qv-24h}`
 
 **Usage:** `<@1275521742961508432>timechannelset create`
+
+### timechannelset short
+
+**Description:** Get the short identifier for the main `create` command.
+
+The list of acceptable timezones is here (the "TZ database name" column):
+https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+
+There is a fuzzy search, so you shouldn't need to enter the region.
+
+Please look at `[p]help tcset create` for more information.
+
+**Examples:**
+- `[p]tcset short New York`
+- `[p]tcset short UTC`
+- `[p]tcset short London`
+- `[p]tcset short Europe/London`
+
+**Usage:** `<@1275521742961508432>timechannelset short`
 

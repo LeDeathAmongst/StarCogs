@@ -6,17 +6,17 @@
 
 **Usage:** `<@1275521742961508432>coupon`
 
+### coupon clearall
+
+**Description:** Clears all unclaimed coupons.
+
+**Usage:** `<@1275521742961508432>coupon clearall`
+
 ### coupon list
 
 **Description:** Shows active coupon codes.
 
 **Usage:** `<@1275521742961508432>coupon list`
-
-### coupon create
-
-**Description:** Generates a unique coupon code.
-
-**Usage:** `<@1275521742961508432>coupon create`
 
 ### coupon redeem
 
@@ -24,9 +24,9 @@
 
 **Usage:** `<@1275521742961508432>coupon redeem`
 
-### coupon clearall
+### coupon create
 
-**Description:** Clears all unclaimed coupons.
+**Description:** Generates a unique coupon code.
 
-**Usage:** `<@1275521742961508432>coupon clearall`
+**Usage:** `<@1275521742961508432>coupon create`
 

@@ -12,6 +12,14 @@
 
 **Usage:** `<@1275521742961508432>verifyerset`
 
+### verifyerset message
+
+**Description:** Specify what message should be DMed to a user when they join the guild.
+
+Leave empty to disable this feature.
+
+**Usage:** `<@1275521742961508432>verifyerset message`
+
 ### verifyerset memberrole
 
 **Description:** Set the role to assign to a user when they verify themselves.
@@ -41,14 +49,6 @@ This is per guild.
 This is per guild.
 
 **Usage:** `<@1275521742961508432>verifyerset enable`
-
-### verifyerset message
-
-**Description:** Specify what message should be DMed to a user when they join the guild.
-
-Leave empty to disable this feature.
-
-**Usage:** `<@1275521742961508432>verifyerset message`
 
 ### verifyerset verifiedmessage
 

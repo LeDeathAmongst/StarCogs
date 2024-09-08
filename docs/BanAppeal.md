@@ -12,6 +12,30 @@
 
 **Usage:** `<@1275521742961508432>appealset`
 
+### appealset questions
+
+**Description:** Set ban appeal questions
+
+**Usage:** `<@1275521742961508432>appealset questions`
+
+### appealset questions remove
+
+**Description:** Remove a question
+
+**Usage:** `<@1275521742961508432>appealset questions remove`
+
+### appealset questions list
+
+**Description:** List questions
+
+**Usage:** `<@1275521742961508432>appealset questions list`
+
+### appealset questions add
+
+**Description:** Add a question
+
+**Usage:** `<@1275521742961508432>appealset questions add`
+
 ### appealset managers
 
 **Description:** Set ban appeal managers
@@ -24,53 +48,25 @@
 
 **Usage:** `<@1275521742961508432>appealset managers remove`
 
-### appealset managers add
-
-**Description:** Add a manager
-
-**Usage:** `<@1275521742961508432>appealset managers add`
-
 ### appealset managers list
 
 **Description:** List managers
 
 **Usage:** `<@1275521742961508432>appealset managers list`
 
-### appealset showsettings
+### appealset managers add
 
-**Description:** Show ban appeal settings
+**Description:** Add a manager
 
-**Usage:** `<@1275521742961508432>appealset showsettings`
+**Usage:** `<@1275521742961508432>appealset managers add`
 
-### appealset toggle
+### appealset channel
 
-**Description:** Toggle ban appeal settings
+**Description:** Set ban appeal channel
 
-**Usage:** `<@1275521742961508432>appealset toggle`
+This is the channel where all appeals will be sent.
 
-### appealset questions
-
-**Description:** Set ban appeal questions
-
-**Usage:** `<@1275521742961508432>appealset questions`
-
-### appealset questions list
-
-**Description:** List questions
-
-**Usage:** `<@1275521742961508432>appealset questions list`
-
-### appealset questions remove
-
-**Description:** Remove a question
-
-**Usage:** `<@1275521742961508432>appealset questions remove`
-
-### appealset questions add
-
-**Description:** Add a question
-
-**Usage:** `<@1275521742961508432>appealset questions add`
+**Usage:** `<@1275521742961508432>appealset channel`
 
 ### appealset resetappeal
 
@@ -86,13 +82,17 @@ User `{guild_name}` to be replaced with the server name
 
 **Usage:** `<@1275521742961508432>appealset response`
 
-### appealset channel
+### appealset showsettings
 
-**Description:** Set ban appeal channel
+**Description:** Show ban appeal settings
 
-This is the channel where all appeals will be sent.
+**Usage:** `<@1275521742961508432>appealset showsettings`
 
-**Usage:** `<@1275521742961508432>appealset channel`
+### appealset toggle
+
+**Description:** Toggle ban appeal settings
+
+**Usage:** `<@1275521742961508432>appealset toggle`
 
 ### appealset banmessage
 

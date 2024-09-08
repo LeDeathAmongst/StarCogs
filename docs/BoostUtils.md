@@ -6,11 +6,13 @@
 
 **Usage:** `<@1275521742961508432>boostmessage`
 
-### boostmessage channels
+### boostmessage toggle
 
-**Description:** Add or remove the channels for boost messages.
+**Description:** Enable or disable boost messages.
 
-**Usage:** `<@1275521742961508432>boostmessage channels`
+- Running the command with no arguments will disable the boost messages.
+
+**Usage:** `<@1275521742961508432>boostmessage toggle`
 
 ### boostmessage message
 
@@ -40,11 +42,9 @@
 
 **Usage:** `<@1275521742961508432>boostmessage settings`
 
-### boostmessage toggle
+### boostmessage channels
 
-**Description:** Enable or disable boost messages.
+**Description:** Add or remove the channels for boost messages.
 
-- Running the command with no arguments will disable the boost messages.
-
-**Usage:** `<@1275521742961508432>boostmessage toggle`
+**Usage:** `<@1275521742961508432>boostmessage channels`
 

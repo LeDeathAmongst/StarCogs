@@ -66,15 +66,6 @@ This command is disabled for servers with more than 150 members.
 
 **Usage:** `<@1275521742961508432>aiemoteowner`
 
-### aiemoteowner remove
-
-**Description:** Remove an emoji from the global list
-
-*Arguments*
-- `<emoji>` The emoji to remove
-
-**Usage:** `<@1275521742961508432>aiemoteowner remove`
-
 ### aiemoteowner instruction
 
 **Description:** Add additonal (prompting) instruction for the langauge model when picking an emoji
@@ -83,16 +74,6 @@ This command is disabled for servers with more than 150 members.
 - `<instruction>` The extra instruction to use
 
 **Usage:** `<@1275521742961508432>aiemoteowner instruction`
-
-### aiemoteowner add
-
-**Description:** Add an emoji to the global list
-
-*Arguments*
-- `<emoji>` The emoji to add
-- `<description>` A description of the emoji to be used by OpenAI
-
-**Usage:** `<@1275521742961508432>aiemoteowner add`
 
 ### aiemoteowner sremove
 
@@ -126,6 +107,16 @@ This command is disabled for servers with more than 150 members.
 
 **Usage:** `<@1275521742961508432>aiemoteowner config`
 
+### aiemoteowner add
+
+**Description:** Add an emoji to the global list
+
+*Arguments*
+- `<emoji>` The emoji to add
+- `<description>` A description of the emoji to be used by OpenAI
+
+**Usage:** `<@1275521742961508432>aiemoteowner add`
+
 ### aiemoteowner percent
 
 **Description:** Set the chance that the bot will react to a message (for all servers bot is in)
@@ -134,4 +125,13 @@ This command is disabled for servers with more than 150 members.
 - `<percent>` The percent chance that the bot will react to a message
 
 **Usage:** `<@1275521742961508432>aiemoteowner percent`
+
+### aiemoteowner remove
+
+**Description:** Remove an emoji from the global list
+
+*Arguments*
+- `<emoji>` The emoji to remove
+
+**Usage:** `<@1275521742961508432>aiemoteowner remove`
 

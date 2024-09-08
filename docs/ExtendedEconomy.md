@@ -17,11 +17,54 @@ Should a hybrid or text command fail due to an unhandled exception, the user wil
 
 **Usage:** `<@1275521742961508432>extendedeconomy`
 
-### extendedeconomy autopaydayrole
+### extendedeconomy stackpaydays
 
-**Description:** Add/Remove auto payday roles
+**Description:** Toggle whether payday roles stack or not
 
-**Usage:** `<@1275521742961508432>extendedeconomy autopaydayrole`
+**Usage:** `<@1275521742961508432>extendedeconomy stackpaydays`
+
+### extendedeconomy deleteafter
+
+**Description:** Set the delete after time for cost check messages
+
+- Set to 0 to disable (Recommended for public bots)
+- Default is 0 (disabled)
+
+**Usage:** `<@1275521742961508432>extendedeconomy deleteafter`
+
+### extendedeconomy rolebonus
+
+**Description:** Add/Remove Payday role bonuses
+
+Example: `[p]ecoset rolebonus @role 0.1` - Adds a 10% bonus to the user's payday if they have the role.
+
+To remove a bonus, set the bonus to 0.
+
+**Usage:** `<@1275521742961508432>extendedeconomy rolebonus`
+
+### extendedeconomy resetcooldown
+
+**Description:** Reset the payday cooldown for a user
+
+**Usage:** `<@1275521742961508432>extendedeconomy resetcooldown`
+
+### extendedeconomy view
+
+**Description:** View the current settings
+
+**Usage:** `<@1275521742961508432>extendedeconomy view`
+
+### extendedeconomy autopayday
+
+**Description:** Toggle whether paydays are claimed automatically (Global bank)
+
+**Usage:** `<@1275521742961508432>extendedeconomy autopayday`
+
+### extendedeconomy mainlog
+
+**Description:** Set the main log channel
+
+**Usage:** `<@1275521742961508432>extendedeconomy mainlog`
 
 ### extendedeconomy transfertax
 
@@ -34,54 +77,11 @@ Should a hybrid or text command fail due to an unhandled exception, the user wil
 
 **Usage:** `<@1275521742961508432>extendedeconomy transfertax`
 
-### extendedeconomy deleteafter
+### extendedeconomy autopaydayrole
 
-**Description:** Set the delete after time for cost check messages
+**Description:** Add/Remove auto payday roles
 
-- Set to 0 to disable (Recommended for public bots)
-- Default is 0 (disabled)
-
-**Usage:** `<@1275521742961508432>extendedeconomy deleteafter`
-
-### extendedeconomy mainlog
-
-**Description:** Set the main log channel
-
-**Usage:** `<@1275521742961508432>extendedeconomy mainlog`
-
-### extendedeconomy rolebonus
-
-**Description:** Add/Remove Payday role bonuses
-
-Example: `[p]ecoset rolebonus @role 0.1` - Adds a 10% bonus to the user's payday if they have the role.
-
-To remove a bonus, set the bonus to 0.
-
-**Usage:** `<@1275521742961508432>extendedeconomy rolebonus`
-
-### extendedeconomy autoclaimchannel
-
-**Description:** Set the auto claim channel
-
-**Usage:** `<@1275521742961508432>extendedeconomy autoclaimchannel`
-
-### extendedeconomy view
-
-**Description:** View the current settings
-
-**Usage:** `<@1275521742961508432>extendedeconomy view`
-
-### extendedeconomy stackpaydays
-
-**Description:** Toggle whether payday roles stack or not
-
-**Usage:** `<@1275521742961508432>extendedeconomy stackpaydays`
-
-### extendedeconomy autopayday
-
-**Description:** Toggle whether paydays are claimed automatically (Global bank)
-
-**Usage:** `<@1275521742961508432>extendedeconomy autopayday`
+**Usage:** `<@1275521742961508432>extendedeconomy autopaydayrole`
 
 ### extendedeconomy eventlog
 
@@ -97,11 +97,11 @@ To remove a bonus, set the bonus to 0.
 
 **Usage:** `<@1275521742961508432>extendedeconomy eventlog`
 
-### extendedeconomy resetcooldown
+### extendedeconomy autoclaimchannel
 
-**Description:** Reset the payday cooldown for a user
+**Description:** Set the auto claim channel
 
-**Usage:** `<@1275521742961508432>extendedeconomy resetcooldown`
+**Usage:** `<@1275521742961508432>extendedeconomy autoclaimchannel`
 
 ### addcost
 

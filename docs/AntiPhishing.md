@@ -14,11 +14,11 @@ You can either provide a url or reply to a message containing a url.
 
 **Usage:** `<@1275521742961508432>antiphishing`
 
-### antiphishing stats
+### antiphishing safeemoji
 
-**Description:** Check protection statistics for this server
+**Description:** Toggle the safe emoji functionality.
 
-**Usage:** `<@1275521742961508432>antiphishing stats`
+**Usage:** `<@1275521742961508432>antiphishing safeemoji`
 
 ### antiphishing maxlinks
 
@@ -39,9 +39,9 @@ Options:
 
 **Usage:** `<@1275521742961508432>antiphishing action`
 
-### antiphishing safeemoji
+### antiphishing stats
 
-**Description:** Toggle the safe emoji functionality.
+**Description:** Check protection statistics for this server
 
-**Usage:** `<@1275521742961508432>antiphishing safeemoji`
+**Usage:** `<@1275521742961508432>antiphishing stats`
 

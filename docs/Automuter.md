@@ -6,17 +6,11 @@
 
 **Usage:** `<@1275521742961508432>automuter`
 
-### automuter state
+### automuter disconnect
 
-**Description:** Toggle the state of the Automuter cog
+**Description:** Toggle the state of the disconnect
 
-**Usage:** `<@1275521742961508432>automuter state`
-
-### automuter list
-
-**Description:** List all the channels that have automuter enabled
-
-**Usage:** `<@1275521742961508432>automuter list`
+**Usage:** `<@1275521742961508432>automuter disconnect`
 
 ### automuter reset
 
@@ -30,27 +24,33 @@
 
 **Usage:** `<@1275521742961508432>automuter undeafen`
 
-### automuter unmute
+### automuter list
 
-**Description:** Toggle the state of the unmute
+**Description:** List all the channels that have automuter enabled
 
-**Usage:** `<@1275521742961508432>automuter unmute`
+**Usage:** `<@1275521742961508432>automuter list`
 
-### automuter disconnect
+### automuter state
 
-**Description:** Toggle the state of the disconnect
+**Description:** Toggle the state of the Automuter cog
 
-**Usage:** `<@1275521742961508432>automuter disconnect`
-
-### automuter nukeconfig
-
-**Description:** This command nukes the config
-
-**Usage:** `<@1275521742961508432>automuter nukeconfig`
+**Usage:** `<@1275521742961508432>automuter state`
 
 ### automuter time
 
 **Description:** Toggle the amount of time before an action
 
 **Usage:** `<@1275521742961508432>automuter time`
+
+### automuter unmute
+
+**Description:** Toggle the state of the unmute
+
+**Usage:** `<@1275521742961508432>automuter unmute`
+
+### automuter nukeconfig
+
+**Description:** This command nukes the config
+
+**Usage:** `<@1275521742961508432>automuter nukeconfig`
 

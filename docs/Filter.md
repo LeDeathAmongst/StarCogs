@@ -52,27 +52,35 @@ Use double quotes to add or remove sentences.
 
 **Usage:** `<@1275521742961508432>filter`
 
-### filter add
-
-**Description:** Add words to the filter.
-
-Use double quotes to add sentences.
-
-Examples:
-- `[p]filter add word1 word2 word3`
-- `[p]filter add "This is a sentence"`
-
-**Arguments:**
-
-- `[words...]` The words or sentences to filter.
-
-**Usage:** `<@1275521742961508432>filter add`
-
 ### filter clear
 
 **Description:** Clears this server's filter list.
 
 **Usage:** `<@1275521742961508432>filter clear`
+
+### filter names
+
+**Description:** Toggle name and nickname filtering.
+
+This is disabled by default.
+
+**Usage:** `<@1275521742961508432>filter names`
+
+### filter delete
+
+**Description:** Remove words from the filter.
+
+Use double quotes to remove sentences.
+
+Examples:
+- `[p]filter remove word1 word2 word3`
+- `[p]filter remove "This is a sentence"`
+
+**Arguments:**
+
+- `[words...]` The words or sentences to no longer filter.
+
+**Usage:** `<@1275521742961508432>filter delete`
 
 ### filter channel
 
@@ -81,29 +89,6 @@ Examples:
 Use double quotes to add or remove sentences.
 
 **Usage:** `<@1275521742961508432>filter channel`
-
-### filter channel delete
-
-**Description:** Remove words from the filter.
-
-Use double quotes to remove sentences.
-
-Examples:
-- `[p]filter channel remove #channel word1 word2 word3`
-- `[p]filter channel remove #channel "This is a sentence"`
-
-**Arguments:**
-
-- `<channel>` The text, voice, stage, or forum channel to add filtered words to.
-- `[words...]` The words or sentences to no longer filter.
-
-**Usage:** `<@1275521742961508432>filter channel delete`
-
-### filter channel clear
-
-**Description:** Clears this channel's filter list.
-
-**Usage:** `<@1275521742961508432>filter channel clear`
 
 ### filter channel add
 
@@ -128,33 +113,48 @@ Examples:
 
 **Usage:** `<@1275521742961508432>filter channel list`
 
-### filter delete
+### filter channel clear
+
+**Description:** Clears this channel's filter list.
+
+**Usage:** `<@1275521742961508432>filter channel clear`
+
+### filter channel delete
 
 **Description:** Remove words from the filter.
 
 Use double quotes to remove sentences.
 
 Examples:
-- `[p]filter remove word1 word2 word3`
-- `[p]filter remove "This is a sentence"`
+- `[p]filter channel remove #channel word1 word2 word3`
+- `[p]filter channel remove #channel "This is a sentence"`
 
 **Arguments:**
 
+- `<channel>` The text, voice, stage, or forum channel to add filtered words to.
 - `[words...]` The words or sentences to no longer filter.
 
-**Usage:** `<@1275521742961508432>filter delete`
+**Usage:** `<@1275521742961508432>filter channel delete`
+
+### filter add
+
+**Description:** Add words to the filter.
+
+Use double quotes to add sentences.
+
+Examples:
+- `[p]filter add word1 word2 word3`
+- `[p]filter add "This is a sentence"`
+
+**Arguments:**
+
+- `[words...]` The words or sentences to filter.
+
+**Usage:** `<@1275521742961508432>filter add`
 
 ### filter list
 
 **Description:** Send a list of this server's filtered words.
 
 **Usage:** `<@1275521742961508432>filter list`
-
-### filter names
-
-**Description:** Toggle name and nickname filtering.
-
-This is disabled by default.
-
-**Usage:** `<@1275521742961508432>filter names`
 

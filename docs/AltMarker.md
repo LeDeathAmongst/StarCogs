@@ -6,12 +6,6 @@
 
 **Usage:** `<@1275521742961508432>alt`
 
-### alt get
-
-**Description:** Get alts of a member
-
-**Usage:** `<@1275521742961508432>alt get`
-
 ### alt unmark
 
 **Description:** Unmark an alt account
@@ -23,6 +17,12 @@
 **Description:** Mark an alt account
 
 **Usage:** `<@1275521742961508432>alt mark`
+
+### alt get
+
+**Description:** Get alts of a member
+
+**Usage:** `<@1275521742961508432>alt get`
 
 ### amset
 

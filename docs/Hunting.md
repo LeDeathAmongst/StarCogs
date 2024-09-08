@@ -6,17 +6,11 @@
 
 **Usage:** `<@1275521742961508432>hunting`
 
-### hunting bangtime
+### hunting eagle
 
-**Description:** Toggle displaying the bang response time from users.
+**Description:** Toggle whether shooting an eagle is bad.
 
-**Usage:** `<@1275521742961508432>hunting bangtime`
-
-### hunting mode
-
-**Description:** Toggle whether the bot listens for 'bang' or a reaction.
-
-**Usage:** `<@1275521742961508432>hunting mode`
+**Usage:** `<@1275521742961508432>hunting eagle`
 
 ### hunting clearleaderboard
 
@@ -34,23 +28,11 @@
 
 **Usage:** `<@1275521742961508432>hunting timing`
 
-### hunting eagle
-
-**Description:** Toggle whether shooting an eagle is bad.
-
-**Usage:** `<@1275521742961508432>hunting eagle`
-
 ### hunting stop
 
 **Description:** Stop the hunt.
 
 **Usage:** `<@1275521742961508432>hunting stop`
-
-### hunting start
-
-**Description:** Start the hunt.
-
-**Usage:** `<@1275521742961508432>hunting start`
 
 ### hunting leaderboard
 
@@ -58,6 +40,18 @@
 Use True for the global_leaderboard variable to show the global leaderboard.
 
 **Usage:** `<@1275521742961508432>hunting leaderboard`
+
+### hunting start
+
+**Description:** Start the hunt.
+
+**Usage:** `<@1275521742961508432>hunting start`
+
+### hunting bangtime
+
+**Description:** Toggle displaying the bang response time from users.
+
+**Usage:** `<@1275521742961508432>hunting bangtime`
 
 ### hunting next
 
@@ -84,4 +78,10 @@ Use True for the global_leaderboard variable to show the global leaderboard.
 Leave the options blank to disable bang rewards
 
 **Usage:** `<@1275521742961508432>hunting reward`
+
+### hunting mode
+
+**Description:** Toggle whether the bot listens for 'bang' or a reaction.
+
+**Usage:** `<@1275521742961508432>hunting mode`
 

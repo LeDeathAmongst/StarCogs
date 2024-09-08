@@ -6,29 +6,6 @@
 
 **Usage:** `<@1275521742961508432>rolesbuttons`
 
-### rolesbuttons mode
-
-**Description:** Choose a mode for the roles-buttons of a message.
-
-Type `add_or_remove`:
-- Users get the role if they do not already have it, or lose it.
-Type `add_only`:
-- Users can only get the role, but only manual action will remove it.
-Type `remove_only`:
-- Users can only lose a role, and will not be able to get it again without a manual action.
-Type `replace`:
-- Same as add_or_remove, but the roles from this message will be mutually exclusive, and getting one will remove the previous.
-
-**Usage:** `<@1275521742961508432>rolesbuttons mode`
-
-### rolesbuttons remove
-
-**Description:** Remove a role-button for a message.
-
-Use `[p]rolesbuttons list <message>` to find the config identifier.
-
-**Usage:** `<@1275521742961508432>rolesbuttons remove`
-
 ### rolesbuttons list
 
 **Description:** List all roles-buttons of this server or display the settings for a specific one.
@@ -53,6 +30,20 @@ Use `[p]rolesbuttons list <message>` to find the config identifier.
 
 **Usage:** `<@1275521742961508432>rolesbuttons add`
 
+### rolesbuttons remove
+
+**Description:** Remove a role-button for a message.
+
+Use `[p]rolesbuttons list <message>` to find the config identifier.
+
+**Usage:** `<@1275521742961508432>rolesbuttons remove`
+
+### rolesbuttons clear
+
+**Description:** Clear all roles-buttons for a message.
+
+**Usage:** `<@1275521742961508432>rolesbuttons clear`
+
 ### rolesbuttons bulk
 
 **Description:** Add roles-buttons for a message.
@@ -61,9 +52,18 @@ Use `[p]rolesbuttons list <message>` to find the config identifier.
 
 **Usage:** `<@1275521742961508432>rolesbuttons bulk`
 
-### rolesbuttons clear
+### rolesbuttons mode
 
-**Description:** Clear all roles-buttons for a message.
+**Description:** Choose a mode for the roles-buttons of a message.
 
-**Usage:** `<@1275521742961508432>rolesbuttons clear`
+Type `add_or_remove`:
+- Users get the role if they do not already have it, or lose it.
+Type `add_only`:
+- Users can only get the role, but only manual action will remove it.
+Type `remove_only`:
+- Users can only lose a role, and will not be able to get it again without a manual action.
+Type `replace`:
+- Same as add_or_remove, but the roles from this message will be mutually exclusive, and getting one will remove the previous.
+
+**Usage:** `<@1275521742961508432>rolesbuttons mode`
 

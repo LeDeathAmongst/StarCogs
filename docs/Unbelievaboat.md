@@ -6,23 +6,11 @@
 
 **Usage:** `<@1275521742961508432>unbset`
 
-### unbset default-replies
+### unbset payout
 
-**Description:** Whether to use the default replies to work and crime.
+**Description:** Set the min or max payout for working or crimes.
 
-**Usage:** `<@1275521742961508432>unbset default-replies`
-
-### unbset settings
-
-**Description:** Current unbelievaboat settings.
-
-**Usage:** `<@1275521742961508432>unbset settings`
-
-### unbset fine-rate
-
-**Description:** Set the min or max fine rate for crimes.
-
-**Usage:** `<@1275521742961508432>unbset fine-rate`
+**Usage:** `<@1275521742961508432>unbset payout`
 
 ### unbset cooldown
 
@@ -32,11 +20,59 @@ The time can be formatted as so `1h30m` etc. Valid times are hours, minutes and 
 
 **Usage:** `<@1275521742961508432>unbset cooldown`
 
+### unbset failure-rate
+
+**Description:** Set the failure rate for crimes and robbing.
+
+**Usage:** `<@1275521742961508432>unbset failure-rate`
+
+### unbset wallet
+
+**Description:** Wallet Settings.
+
+**Usage:** `<@1275521742961508432>unbset wallet`
+
+### unbset wallet toggle
+
+**Description:** Toggle the wallet system.
+
+**Usage:** `<@1275521742961508432>unbset wallet toggle`
+
+### unbset wallet max
+
+**Description:** Set the max a wallet can have.
+
+**Usage:** `<@1275521742961508432>unbset wallet max`
+
 ### unbset interest-rate
 
 **Description:** Set the interest rate if unable to pay a fine from wallet.
 
 **Usage:** `<@1275521742961508432>unbset interest-rate`
+
+### unbset default-replies
+
+**Description:** Whether to use the default replies to work and crime.
+
+**Usage:** `<@1275521742961508432>unbset default-replies`
+
+### unbset fine-rate
+
+**Description:** Set the min or max fine rate for crimes.
+
+**Usage:** `<@1275521742961508432>unbset fine-rate`
+
+### unbset list-replies
+
+**Description:** List custom replies.
+
+**Usage:** `<@1275521742961508432>unbset list-replies`
+
+### unbset settings
+
+**Description:** Current unbelievaboat settings.
+
+**Usage:** `<@1275521742961508432>unbset settings`
 
 ### unbset add-reply
 
@@ -57,42 +93,6 @@ Put {amount} in place of where you want the amount earned to be.
 **Description:** Set the min or max betting amounts.
 
 **Usage:** `<@1275521742961508432>unbset betting`
-
-### unbset wallet
-
-**Description:** Wallet Settings.
-
-**Usage:** `<@1275521742961508432>unbset wallet`
-
-### unbset wallet toggle
-
-**Description:** Toggle the wallet system.
-
-**Usage:** `<@1275521742961508432>unbset wallet toggle`
-
-### unbset wallet max
-
-**Description:** Set the max a wallet can have.
-
-**Usage:** `<@1275521742961508432>unbset wallet max`
-
-### unbset payout
-
-**Description:** Set the min or max payout for working or crimes.
-
-**Usage:** `<@1275521742961508432>unbset payout`
-
-### unbset failure-rate
-
-**Description:** Set the failure rate for crimes and robbing.
-
-**Usage:** `<@1275521742961508432>unbset failure-rate`
-
-### unbset list-replies
-
-**Description:** List custom replies.
-
-**Usage:** `<@1275521742961508432>unbset list-replies`
 
 ### cooldowns
 
@@ -133,6 +133,12 @@ Colums   - 1st/2nd/3rd Column.
 
 **Usage:** `<@1275521742961508432>rouletteset toggle`
 
+### rouletteset time
+
+**Description:** Set the time for roulette wheel to start spinning.
+
+**Usage:** `<@1275521742961508432>rouletteset time`
+
 ### rouletteset payouts
 
 **Description:** Set payouts for roulette winnings.
@@ -148,12 +154,6 @@ halfs
 column
 
 **Usage:** `<@1275521742961508432>rouletteset payouts`
-
-### rouletteset time
-
-**Description:** Set the time for roulette wheel to start spinning.
-
-**Usage:** `<@1275521742961508432>rouletteset time`
 
 ### rouletteset settings
 

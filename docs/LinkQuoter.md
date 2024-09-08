@@ -12,17 +12,6 @@
 
 **Usage:** `<@1275521742961508432>setlinkquoter`
 
-### setlinkquoter crossserver
-
-**Description:**  Toggle cross-server quoting.
-
-Turning this setting on will allow this server to quote other servers, and other servers to quote this one.
-
-Default value: `False`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setlinkquoter crossserver`
-
 ### setlinkquoter enabled
 
 **Description:** Toggle automatic link-quoting.
@@ -40,26 +29,25 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setlinkquoter enabled`
 
-### setlinkquoter migratefromphen
+### setlinkquoter deletemessage
 
-**Description:** Migrate config from LinkQuoter by Phen.
+**Description:** Toggle deleting of messages for automatic quoting.
 
-**Usage:** `<@1275521742961508432>setlinkquoter migratefromphen`
+If automatic quoting is enabled, then [botname] will also delete messages that contain links in them.
 
-### setlinkquoter whitelistchannels
+Default value: `False`
+Dev: `<class 'bool'>`
 
-**Description:** Set the channels in which auto-quoting will be enabled.
+**Usage:** `<@1275521742961508432>setlinkquoter deletemessage`
+
+### setlinkquoter blacklistchannels
+
+**Description:** Set the channels in which auto-quoting will be disabled.
 
 Default value: `[]`
 Dev: `Greedy[GuildChannel]`
 
-**Usage:** `<@1275521742961508432>setlinkquoter whitelistchannels`
-
-### setlinkquoter modalconfig
-
-**Description:** Set all settings for the cog with a Discord Modal.
-
-**Usage:** `<@1275521742961508432>setlinkquoter modalconfig`
+**Usage:** `<@1275521742961508432>setlinkquoter blacklistchannels`
 
 ### setlinkquoter deletemessagebutton
 
@@ -85,20 +73,14 @@ Dev: `<class 'int'>`
 
 **Usage:** `<@1275521742961508432>setlinkquoter deleteafter`
 
-### setlinkquoter blacklistchannels
+### setlinkquoter whitelistchannels
 
-**Description:** Set the channels in which auto-quoting will be disabled.
+**Description:** Set the channels in which auto-quoting will be enabled.
 
 Default value: `[]`
 Dev: `Greedy[GuildChannel]`
 
-**Usage:** `<@1275521742961508432>setlinkquoter blacklistchannels`
-
-### setlinkquoter resetsetting
-
-**Description:** Reset a setting.
-
-**Usage:** `<@1275521742961508432>setlinkquoter resetsetting`
+**Usage:** `<@1275521742961508432>setlinkquoter whitelistchannels`
 
 ### setlinkquoter webhooks
 
@@ -109,14 +91,32 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setlinkquoter webhooks`
 
-### setlinkquoter deletemessage
+### setlinkquoter crossserver
 
-**Description:** Toggle deleting of messages for automatic quoting.
+**Description:**  Toggle cross-server quoting.
 
-If automatic quoting is enabled, then [botname] will also delete messages that contain links in them.
+Turning this setting on will allow this server to quote other servers, and other servers to quote this one.
 
 Default value: `False`
 Dev: `<class 'bool'>`
 
-**Usage:** `<@1275521742961508432>setlinkquoter deletemessage`
+**Usage:** `<@1275521742961508432>setlinkquoter crossserver`
+
+### setlinkquoter resetsetting
+
+**Description:** Reset a setting.
+
+**Usage:** `<@1275521742961508432>setlinkquoter resetsetting`
+
+### setlinkquoter migratefromphen
+
+**Description:** Migrate config from LinkQuoter by Phen.
+
+**Usage:** `<@1275521742961508432>setlinkquoter migratefromphen`
+
+### setlinkquoter modalconfig
+
+**Description:** Set all settings for the cog with a Discord Modal.
+
+**Usage:** `<@1275521742961508432>setlinkquoter modalconfig`
 

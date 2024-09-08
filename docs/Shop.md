@@ -6,6 +6,12 @@
 
 **Usage:** `<@1275521742961508432>shop`
 
+### shop listitems
+
+**Description:** List items for sale in the shop.
+
+**Usage:** `<@1275521742961508432>shop listitems`
+
 ### shop offer
 
 **Description:** Offer an item for sale in the shop.
@@ -17,27 +23,21 @@ Once you offer an item up for sell, it will show up in the `[p]shop selling` com
 
 **Usage:** `<@1275521742961508432>shop offer`
 
-### shop createitem
-
-**Description:** Create an item for sale in the shop.
-
-**Usage:** `<@1275521742961508432>shop createitem`
-
 ### shop deleteitem
 
 **Description:** Delete an item from the shop.
 
 **Usage:** `<@1275521742961508432>shop deleteitem`
 
-### shop listitems
-
-**Description:** List items for sale in the shop.
-
-**Usage:** `<@1275521742961508432>shop listitems`
-
 ### shop selling
 
 **Description:** No description provided.
 
 **Usage:** `<@1275521742961508432>shop selling`
+
+### shop createitem
+
+**Description:** Create an item for sale in the shop.
+
+**Usage:** `<@1275521742961508432>shop createitem`
 

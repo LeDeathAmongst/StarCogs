@@ -6,12 +6,6 @@
 
 **Usage:** `<@1275521742961508432>praise`
 
-### praise role
-
-**Description:** Praise a role with a default or custom message.
-
-**Usage:** `<@1275521742961508432>praise role`
-
 ### praise add
 
 **Description:** Add a new praise message to the list.
@@ -23,6 +17,12 @@
 **Description:** List all praise messages.
 
 **Usage:** `<@1275521742961508432>praise list`
+
+### praise role
+
+**Description:** Praise a role with a default or custom message.
+
+**Usage:** `<@1275521742961508432>praise role`
 
 ### praise remove
 

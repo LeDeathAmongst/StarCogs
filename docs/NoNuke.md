@@ -17,17 +17,17 @@ If a user or bot exceeds X mod events within X seconds, the set action will be p
 
 **Usage:** `<@1275521742961508432>nonuke`
 
-### nonuke view
+### nonuke whitelist
 
-**Description:** View the NoNuke settings
+**Description:** Add/Remove users from the whitelist
 
-**Usage:** `<@1275521742961508432>nonuke view`
+**Usage:** `<@1275521742961508432>nonuke whitelist`
 
-### nonuke dm
+### nonuke logchannel
 
-**Description:** Toggle whether the bot sends the user a DM when a kick or ban action is performed
+**Description:** Set the log channel for Anti-Nuke kicks
 
-**Usage:** `<@1275521742961508432>nonuke dm`
+**Usage:** `<@1275521742961508432>nonuke logchannel`
 
 ### nonuke enable
 
@@ -35,22 +35,21 @@ If a user or bot exceeds X mod events within X seconds, the set action will be p
 
 **Usage:** `<@1275521742961508432>nonuke enable`
 
-### nonuke whitelist
+### nonuke cooldown
 
-**Description:** Add/Remove users from the whitelist
+**Description:** Cooldown (in seconds) for NoNuke to trigger
 
-**Usage:** `<@1275521742961508432>nonuke whitelist`
+**Usage:** `<@1275521742961508432>nonuke cooldown`
 
-### nonuke overload
+### nonuke ignorebots
 
-**Description:** How many mod actions can be done within the set cooldown
+**Description:** Toggle whether other bots are ignored
 
-**Mod actions include:**
-Kicks & Bans
-Channel Creation/Edit/Deletion
-Role Creation/Edit/Deletion
+**NOTE:** Bot specific roles (the role created when the bot joins) cannot be removed.
+If NoNuke is set to strip roles, and a bot triggers it while having an integrated role, NoNuke will fail
+to remove the role from it.
 
-**Usage:** `<@1275521742961508432>nonuke overload`
+**Usage:** `<@1275521742961508432>nonuke ignorebots`
 
 ### nonuke action
 
@@ -64,25 +63,26 @@ Role Creation/Edit/Deletion
 
 **Usage:** `<@1275521742961508432>nonuke action`
 
-### nonuke ignorebots
+### nonuke dm
 
-**Description:** Toggle whether other bots are ignored
+**Description:** Toggle whether the bot sends the user a DM when a kick or ban action is performed
 
-**NOTE:** Bot specific roles (the role created when the bot joins) cannot be removed.
-If NoNuke is set to strip roles, and a bot triggers it while having an integrated role, NoNuke will fail
-to remove the role from it.
+**Usage:** `<@1275521742961508432>nonuke dm`
 
-**Usage:** `<@1275521742961508432>nonuke ignorebots`
+### nonuke view
 
-### nonuke cooldown
+**Description:** View the NoNuke settings
 
-**Description:** Cooldown (in seconds) for NoNuke to trigger
+**Usage:** `<@1275521742961508432>nonuke view`
 
-**Usage:** `<@1275521742961508432>nonuke cooldown`
+### nonuke overload
 
-### nonuke logchannel
+**Description:** How many mod actions can be done within the set cooldown
 
-**Description:** Set the log channel for Anti-Nuke kicks
+**Mod actions include:**
+Kicks & Bans
+Channel Creation/Edit/Deletion
+Role Creation/Edit/Deletion
 
-**Usage:** `<@1275521742961508432>nonuke logchannel`
+**Usage:** `<@1275521742961508432>nonuke overload`
 

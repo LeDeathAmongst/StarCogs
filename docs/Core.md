@@ -20,21 +20,6 @@ More information can be found in the [End User Data Documentation.](https://docs
 
 **Usage:** `<@1275521742961508432>mydata`
 
-### mydata whatdata
-
-**Description:** Find out what type of data [botname] stores and why.
-
-**Example:**
-- `[p]mydata whatdata`
-
-**Usage:** `<@1275521742961508432>mydata whatdata`
-
-### mydata getmydata
-
-**Description:** [Coming Soon] Get what data [botname] has about you.
-
-**Usage:** `<@1275521742961508432>mydata getmydata`
-
 ### mydata 3rdparty
 
 **Description:** View the End User Data statements of each 3rd-party module.
@@ -45,6 +30,12 @@ This will send an attachment with the End User Data statements of all loaded 3rd
 - `[p]mydata 3rdparty`
 
 **Usage:** `<@1275521742961508432>mydata 3rdparty`
+
+### mydata getmydata
+
+**Description:** [Coming Soon] Get what data [botname] has about you.
+
+**Usage:** `<@1275521742961508432>mydata getmydata`
 
 ### mydata forgetme
 
@@ -65,18 +56,6 @@ Further interactions with [botname] may cause it to learn about you again.
 **Description:** Commands for more complete data handling.
 
 **Usage:** `<@1275521742961508432>mydata ownermanagement`
-
-### mydata ownermanagement deleteuserasowner
-
-**Description:** Delete data [botname] has about a user.
-
-This will cause the bot to get rid of or disassociate a lot of data about the specified user.
-This may include more than just end user data, including anti abuse records.
-
-**Arguments:**
-- `<user_id>` - The id of the user whose data would be deleted.
-
-**Usage:** `<@1275521742961508432>mydata ownermanagement deleteuserasowner`
 
 ### mydata ownermanagement deleteforuser
 
@@ -144,6 +123,27 @@ Level:
 
 **Usage:** `<@1275521742961508432>mydata ownermanagement setuserdeletionlevel`
 
+### mydata ownermanagement deleteuserasowner
+
+**Description:** Delete data [botname] has about a user.
+
+This will cause the bot to get rid of or disassociate a lot of data about the specified user.
+This may include more than just end user data, including anti abuse records.
+
+**Arguments:**
+- `<user_id>` - The id of the user whose data would be deleted.
+
+**Usage:** `<@1275521742961508432>mydata ownermanagement deleteuserasowner`
+
+### mydata whatdata
+
+**Description:** Find out what type of data [botname] stores and why.
+
+**Example:**
+- `[p]mydata whatdata`
+
+**Usage:** `<@1275521742961508432>mydata whatdata`
+
 ### embedset
 
 **Description:** Commands for toggling embeds on or off.
@@ -166,64 +166,6 @@ The embed settings are checked until the first True/False in this order:
   3. Global setting - `[p]embedset global`
 
 **Usage:** `<@1275521742961508432>embedset`
-
-### embedset showsettings
-
-**Description:** Show the current embed settings.
-
-Provide a command name to check for command specific embed settings.
-
-**Examples:**
-- `[p]embedset showsettings` - Shows embed settings.
-- `[p]embedset showsettings info` - Also shows embed settings for the 'info' command.
-- `[p]embedset showsettings "ignore list"` - Checking subcommands requires quotes.
-
-**Arguments:**
-- `[command]` - Checks this command for command specific embed settings.
-
-**Usage:** `<@1275521742961508432>embedset showsettings`
-
-### embedset channel
-
-**Description:** Set's a channel's embed setting.
-
-If set, this is used instead of the guild and command defaults to determine whether or not to use embeds.
-This is used for all commands done in a channel.
-
-If enabled is left blank, the setting will be unset and the guild default will be used instead.
-
-To see full evaluation order of embed settings, run `[p]help embedset`.
-
-**Examples:**
-- `[p]embedset channel #text-channel False` - Disables embeds in the #text-channel.
-- `[p]embedset channel #forum-channel disable` - Disables embeds in the #forum-channel.
-- `[p]embedset channel #text-channel` - Resets value to use guild default in the #text-channel.
-
-**Arguments:**
-    - `<channel>` - The text, voice, stage, or forum channel to set embed setting for.
-    - `[enabled]` - Whether to use embeds in this channel. Leave blank to reset to default.
-
-**Usage:** `<@1275521742961508432>embedset channel`
-
-### embedset user
-
-**Description:** Sets personal embed setting for DMs.
-
-If set, this is used instead of the global default to determine whether or not to use embeds.
-This is used for all commands executed in a DM with the bot.
-
-If enabled is left blank, the setting will be unset and the global default will be used instead.
-
-To see full evaluation order of embed settings, run `[p]help embedset`.
-
-**Examples:**
-- `[p]embedset user False` - Disables embeds in your DMs.
-- `[p]embedset user` - Resets value to use global default.
-
-**Arguments:**
-- `[enabled]` - Whether to use embeds in your DMs. Leave blank to reset to default.
-
-**Usage:** `<@1275521742961508432>embedset user`
 
 ### embedset global
 
@@ -258,6 +200,42 @@ To see full evaluation order of embed settings, run `[p]help embedset`.
 - `[enabled]` - Whether to use embeds on this server. Leave blank to reset to default.
 
 **Usage:** `<@1275521742961508432>embedset server`
+
+### embedset user
+
+**Description:** Sets personal embed setting for DMs.
+
+If set, this is used instead of the global default to determine whether or not to use embeds.
+This is used for all commands executed in a DM with the bot.
+
+If enabled is left blank, the setting will be unset and the global default will be used instead.
+
+To see full evaluation order of embed settings, run `[p]help embedset`.
+
+**Examples:**
+- `[p]embedset user False` - Disables embeds in your DMs.
+- `[p]embedset user` - Resets value to use global default.
+
+**Arguments:**
+- `[enabled]` - Whether to use embeds in your DMs. Leave blank to reset to default.
+
+**Usage:** `<@1275521742961508432>embedset user`
+
+### embedset showsettings
+
+**Description:** Show the current embed settings.
+
+Provide a command name to check for command specific embed settings.
+
+**Examples:**
+- `[p]embedset showsettings` - Shows embed settings.
+- `[p]embedset showsettings info` - Also shows embed settings for the 'info' command.
+- `[p]embedset showsettings "ignore list"` - Checking subcommands requires quotes.
+
+**Arguments:**
+- `[command]` - Checks this command for command specific embed settings.
+
+**Usage:** `<@1275521742961508432>embedset showsettings`
 
 ### embedset command
 
@@ -319,6 +297,28 @@ To see full evaluation order of embed settings, run `[p]help embedset`.
 - `[enabled]` - Whether to use embeds for this command. Leave blank to reset to default.
 
 **Usage:** `<@1275521742961508432>embedset command server`
+
+### embedset channel
+
+**Description:** Set's a channel's embed setting.
+
+If set, this is used instead of the guild and command defaults to determine whether or not to use embeds.
+This is used for all commands done in a channel.
+
+If enabled is left blank, the setting will be unset and the guild default will be used instead.
+
+To see full evaluation order of embed settings, run `[p]help embedset`.
+
+**Examples:**
+- `[p]embedset channel #text-channel False` - Disables embeds in the #text-channel.
+- `[p]embedset channel #forum-channel disable` - Disables embeds in the #forum-channel.
+- `[p]embedset channel #text-channel` - Resets value to use guild default in the #text-channel.
+
+**Arguments:**
+    - `<channel>` - The text, voice, stage, or forum channel to set embed setting for.
+    - `[enabled]` - Whether to use embeds in this channel. Leave blank to reset to default.
+
+**Usage:** `<@1275521742961508432>embedset channel`
 
 ### traceback
 
@@ -480,33 +480,6 @@ Cogs that were not loaded will only be loaded.
 
 **Usage:** `<@1275521742961508432>slash`
 
-### slash enablecog
-
-**Description:** Marks all application commands in a cog as being enabled, allowing them to be added to the bot.
-
-See a list of cogs with application commands with `[p]slash list`.
-
-This command does NOT sync the enabled commands with Discord, that must be done manually with `[p]slash sync` for commands to appear in users' clients.
-
-**Arguments:**
-    - `<cog_name>` - The cog to enable commands from. This argument is case sensitive.
-
-**Usage:** `<@1275521742961508432>slash enablecog`
-
-### slash list
-
-**Description:** List the slash commands the bot can see, and whether or not they are enabled.
-
-This command shows the state that will be changed to when `[p]slash sync` is run.
-Commands from the same cog are grouped, with the cog name as the header.
-
-The prefix denotes the state of the command:
-- Commands starting with `- ` have not yet been enabled.
-- Commands starting with `+ ` have been manually enabled.
-- Commands starting with `++` have been enabled by the cog author, and cannot be disabled.
-
-**Usage:** `<@1275521742961508432>slash list`
-
 ### slash disablecog
 
 **Description:** Marks all application commands in a cog as being disabled, preventing them from being added to the bot.
@@ -560,6 +533,33 @@ This should be run sparingly, make all necessary changes before running this com
 
 **Usage:** `<@1275521742961508432>slash sync`
 
+### slash enablecog
+
+**Description:** Marks all application commands in a cog as being enabled, allowing them to be added to the bot.
+
+See a list of cogs with application commands with `[p]slash list`.
+
+This command does NOT sync the enabled commands with Discord, that must be done manually with `[p]slash sync` for commands to appear in users' clients.
+
+**Arguments:**
+    - `<cog_name>` - The cog to enable commands from. This argument is case sensitive.
+
+**Usage:** `<@1275521742961508432>slash enablecog`
+
+### slash list
+
+**Description:** List the slash commands the bot can see, and whether or not they are enabled.
+
+This command shows the state that will be changed to when `[p]slash sync` is run.
+Commands from the same cog are grouped, with the cog name as the header.
+
+The prefix denotes the state of the command:
+- Commands starting with `- ` have not yet been enabled.
+- Commands starting with `+ ` have been manually enabled.
+- Commands starting with `++` have been enabled by the cog author, and cannot be disabled.
+
+**Usage:** `<@1275521742961508432>slash list`
+
 ### shutdown
 
 **Description:** Shuts down the bot.
@@ -598,18 +598,6 @@ The restart is not guaranteed: it must be dealt with by the process manager in u
 **Description:** Base command for bank settings.
 
 **Usage:** `<@1275521742961508432>bankset`
-
-### bankset showsettings
-
-**Description:** Show the current bank settings.
-
-**Usage:** `<@1275521742961508432>bankset showsettings`
-
-### bankset bankname
-
-**Description:** Set the bank's name.
-
-**Usage:** `<@1275521742961508432>bankset bankname`
 
 ### bankset creditsname
 
@@ -675,21 +663,6 @@ Examples:
 
 **Usage:** `<@1275521742961508432>bankset prune global`
 
-### bankset prune user
-
-**Description:** Delete the bank account of a specified user.
-
-Examples:
-- `[p]bankset prune user @Twentysix` - Did not confirm. Shows the help message.
-- `[p]bankset prune user @Twentysix yes`
-
-**Arguments**
-
-- `<user>` The user to delete the bank of. Takes mentions, names, and user ids.
-- `<confirmation>` This will default to false unless specified.
-
-**Usage:** `<@1275521742961508432>bankset prune user`
-
 ### bankset prune server
 
 **Description:** Prune bank accounts for users no longer in the server.
@@ -706,17 +679,50 @@ Examples:
 
 **Usage:** `<@1275521742961508432>bankset prune server`
 
+### bankset prune user
+
+**Description:** Delete the bank account of a specified user.
+
+Examples:
+- `[p]bankset prune user @Twentysix` - Did not confirm. Shows the help message.
+- `[p]bankset prune user @Twentysix yes`
+
+**Arguments**
+
+- `<user>` The user to delete the bank of. Takes mentions, names, and user ids.
+- `<confirmation>` This will default to false unless specified.
+
+**Usage:** `<@1275521742961508432>bankset prune user`
+
 ### bankset maxbal
 
 **Description:** Set the maximum balance a user can get.
 
 **Usage:** `<@1275521742961508432>bankset maxbal`
 
+### bankset bankname
+
+**Description:** Set the bank's name.
+
+**Usage:** `<@1275521742961508432>bankset bankname`
+
+### bankset showsettings
+
+**Description:** Show the current bank settings.
+
+**Usage:** `<@1275521742961508432>bankset showsettings`
+
 ### modlogset
 
 **Description:** Manage modlog settings.
 
 **Usage:** `<@1275521742961508432>modlogset`
+
+### modlogset resetcases
+
+**Description:** Reset all modlog cases in this server.
+
+**Usage:** `<@1275521742961508432>modlogset resetcases`
 
 ### modlogset modlog
 
@@ -736,173 +742,17 @@ Example: `[p]modlogset cases kick enabled`
 
 **Usage:** `<@1275521742961508432>modlogset cases`
 
-### modlogset resetcases
-
-**Description:** Reset all modlog cases in this server.
-
-**Usage:** `<@1275521742961508432>modlogset resetcases`
-
 ### set
 
 **Description:** Commands for changing [botname]'s settings.
 
 **Usage:** `<@1275521742961508432>set`
 
-### set deletedelay
-
-**Description:** Set the delay until the bot removes the command message.
-
-Must be between -1 and 60.
-
-Set to -1 to disable this feature.
-
-This is only applied to the current server and not globally.
-
-**Examples:**
-- `[p]set deletedelay` - Shows the current delete delay setting.
-- `[p]set deletedelay 60` - Sets the delete delay to the max of 60 seconds.
-- `[p]set deletedelay -1` - Disables deleting command messages.
-
-**Arguments:**
-- `[time]` - The seconds to wait before deleting the command message. Use -1 to disable.
-
-**Usage:** `<@1275521742961508432>set deletedelay`
-
-### set fuzzy
-
-**Description:** Toggle whether to enable fuzzy command search in DMs.
-
-This allows the bot to identify potential misspelled commands and offer corrections.
-
-Default is for fuzzy command search to be disabled.
-
-**Example:**
-- `[p]set fuzzy`
-
-**Usage:** `<@1275521742961508432>set fuzzy`
-
-### set api
-
-**Description:** Commands to set, list or remove various external API tokens.
-
-This setting will be asked for by some 3rd party cogs and some core cogs.
-
-If passed without the `<service>` or `<tokens>` arguments it will allow you to open a modal to set your API keys securely.
-
-To add the keys provide the service name and the tokens as a comma separated
-list of key,values as described by the cog requesting this command.
-
-Note: API tokens are sensitive, so this command should only be used in a private channel or in DM with the bot.
-
-**Examples:**
-- `[p]set api`
-- `[p]set api spotify`
-- `[p]set api spotify redirect_uri localhost`
-- `[p]set api github client_id,whoops client_secret,whoops`
-
-**Arguments:**
-- `<service>` - The service you're adding tokens to.
-- `<tokens>` - Pairs of token keys and values. The key and value should be separated by one of ` `, `,`, or `;`.
-
-**Usage:** `<@1275521742961508432>set api`
-
-### set api list
-
-**Description:** Show all external API services along with their keys that have been set.
-
-Secrets are not shown.
-
-**Example:**
-- `[p]set api list`
-
-**Usage:** `<@1275521742961508432>set api list`
-
-### set api remove
-
-**Description:** Remove the given services with all their keys and tokens.
-
-**Examples:**
-- `[p]set api remove spotify`
-- `[p]set api remove github youtube`
-
-**Arguments:**
-- `<services...>` - The services to remove.
-
-**Usage:** `<@1275521742961508432>set api remove`
-
-### set serverfuzzy
-
-**Description:** Toggle whether to enable fuzzy command search for the server.
-
-This allows the bot to identify potential misspelled commands and offer corrections.
-
-Note: This can be processor intensive and may be unsuitable for larger servers.
-
-Default is for fuzzy command search to be disabled.
-
-**Example:**
-- `[p]set serverfuzzy`
-
-**Usage:** `<@1275521742961508432>set serverfuzzy`
-
-### set prefix
-
-**Description:** Sets [botname]'s global prefix(es).
-
-Warning: This is not additive. It will replace all current prefixes.
-
-See also the `--mentionable` flag to enable mentioning the bot as the prefix.
-
-**Examples:**
-- `[p]set prefix !`
-- `[p]set prefix "! "` - Quotes are needed to use spaces in prefixes.
-- `[p]set prefix "@[botname] "` - This uses a mention as the prefix. See also the `--mentionable` flag.
-- `[p]set prefix ! ? .` - Sets multiple prefixes.
-
-**Arguments:**
-- `<prefixes...>` - The prefixes the bot will respond to globally.
-
-**Usage:** `<@1275521742961508432>set prefix`
-
-### set serverprefix
-
-**Description:** Sets [botname]'s server prefix(es).
-
-Warning: This will override global prefixes, the bot will not respond to any global prefixes in this server.
-    This is not additive. It will replace all current server prefixes.
-    A prefix cannot have more than 25 characters.
-
-**Examples:**
-- `[p]set serverprefix !`
-- `[p]set serverprefix "! "` - Quotes are needed to use spaces in prefixes.
-- `[p]set serverprefix "@[botname] "` - This uses a mention as the prefix.
-- `[p]set serverprefix ! ? .` - Sets multiple prefixes.
-- `[p]set serverprefix "Red - Discord Bot" ?` - Sets the prefix for a specific server. Quotes are needed to use spaces in the server name.
-
-**Arguments:**
-- `[server]` - The server to set the prefix for. Defaults to current server.
-- `[prefixes...]` - The prefixes the bot will respond to on this server. Leave blank to clear server prefixes.
-
-**Usage:** `<@1275521742961508432>set serverprefix`
-
 ### set roles
 
 **Description:** Set server's admin and mod roles for [botname].
 
 **Usage:** `<@1275521742961508432>set roles`
-
-### set roles removemodrole
-
-**Description:** Removes a mod role for this server.
-
-**Examples:**
-- `[p]set roles removemodrole @Mods`
-- `[p]set roles removemodrole Loyal Helpers`
-
-**Arguments:**
-- `<role>` - The role to remove from being a moderator.
-
-**Usage:** `<@1275521742961508432>set roles removemodrole`
 
 ### set roles addadminrole
 
@@ -958,63 +808,24 @@ This grants access to moderator level commands like:
 
 **Usage:** `<@1275521742961508432>set roles addmodrole`
 
+### set roles removemodrole
+
+**Description:** Removes a mod role for this server.
+
+**Examples:**
+- `[p]set roles removemodrole @Mods`
+- `[p]set roles removemodrole Loyal Helpers`
+
+**Arguments:**
+- `<role>` - The role to remove from being a moderator.
+
+**Usage:** `<@1275521742961508432>set roles removemodrole`
+
 ### set status
 
 **Description:** Commands for setting [botname]'s status.
 
 **Usage:** `<@1275521742961508432>set status`
-
-### set status playing
-
-**Description:** Sets [botname]'s playing status.
-
-This will appear as `Playing <game>` or `PLAYING A GAME: <game>` depending on the context.
-
-Maximum length for a playing status is 128 characters.
-
-**Examples:**
-- `[p]set status playing` - Clears the activity status.
-- `[p]set status playing the keyboard`
-
-**Arguments:**
-- `[game]` - The text to follow `Playing`. Leave blank to clear the current activity status.
-
-**Usage:** `<@1275521742961508432>set status playing`
-
-### set status online
-
-**Description:** Set [botname]'s status to online.
-
-**Usage:** `<@1275521742961508432>set status online`
-
-### set status custom
-
-**Description:** Sets [botname]'s custom status.
-
-This will appear as `<text>`.
-
-Maximum length for a custom status is 128 characters.
-
-**Examples:**
-- `[p]set status custom` - Clears the activity status.
-- `[p]set status custom Running cogs...`
-
-**Arguments:**
-- `[text]` - The custom status text. Leave blank to clear the current activity status.
-
-**Usage:** `<@1275521742961508432>set status custom`
-
-### set status dnd
-
-**Description:** Set [botname]'s status to do not disturb.
-
-**Usage:** `<@1275521742961508432>set status dnd`
-
-### set status idle
-
-**Description:** Set [botname]'s status to idle.
-
-**Usage:** `<@1275521742961508432>set status idle`
 
 ### set status listening
 
@@ -1033,6 +844,12 @@ Maximum length for a listening status is 128 characters.
 
 **Usage:** `<@1275521742961508432>set status listening`
 
+### set status dnd
+
+**Description:** Set [botname]'s status to do not disturb.
+
+**Usage:** `<@1275521742961508432>set status dnd`
+
 ### set status competing
 
 **Description:** Sets [botname]'s competing status.
@@ -1049,6 +866,12 @@ Maximum length for a competing status is 128 characters.
 - `[competing]` - The text to follow `Competing in`. Leave blank to clear the current activity status.
 
 **Usage:** `<@1275521742961508432>set status competing`
+
+### set status idle
+
+**Description:** Set [botname]'s status to idle.
+
+**Usage:** `<@1275521742961508432>set status idle`
 
 ### set status watching
 
@@ -1094,6 +917,46 @@ Leaving both streamer and stream_title empty will clear it.
 - `<stream_title>` - The text to follow `Streaming` in the status.
 
 **Usage:** `<@1275521742961508432>set status streaming`
+
+### set status online
+
+**Description:** Set [botname]'s status to online.
+
+**Usage:** `<@1275521742961508432>set status online`
+
+### set status playing
+
+**Description:** Sets [botname]'s playing status.
+
+This will appear as `Playing <game>` or `PLAYING A GAME: <game>` depending on the context.
+
+Maximum length for a playing status is 128 characters.
+
+**Examples:**
+- `[p]set status playing` - Clears the activity status.
+- `[p]set status playing the keyboard`
+
+**Arguments:**
+- `[game]` - The text to follow `Playing`. Leave blank to clear the current activity status.
+
+**Usage:** `<@1275521742961508432>set status playing`
+
+### set status custom
+
+**Description:** Sets [botname]'s custom status.
+
+This will appear as `<text>`.
+
+Maximum length for a custom status is 128 characters.
+
+**Examples:**
+- `[p]set status custom` - Clears the activity status.
+- `[p]set status custom Running cogs...`
+
+**Arguments:**
+- `[text]` - The custom status text. Leave blank to clear the current activity status.
+
+**Usage:** `<@1275521742961508432>set status custom`
 
 ### set usebuttons
 
@@ -1153,30 +1016,30 @@ https://discordpy.readthedocs.io/en/stable/ext/commands/api.html#discord.ext.com
 
 **Usage:** `<@1275521742961508432>set colour`
 
+### set prefix
+
+**Description:** Sets [botname]'s global prefix(es).
+
+Warning: This is not additive. It will replace all current prefixes.
+
+See also the `--mentionable` flag to enable mentioning the bot as the prefix.
+
+**Examples:**
+- `[p]set prefix !`
+- `[p]set prefix "! "` - Quotes are needed to use spaces in prefixes.
+- `[p]set prefix "@[botname] "` - This uses a mention as the prefix. See also the `--mentionable` flag.
+- `[p]set prefix ! ? .` - Sets multiple prefixes.
+
+**Arguments:**
+- `<prefixes...>` - The prefixes the bot will respond to globally.
+
+**Usage:** `<@1275521742961508432>set prefix`
+
 ### set bot
 
 **Description:** Commands for changing [botname]'s metadata.
 
 **Usage:** `<@1275521742961508432>set bot`
-
-### set bot custominfo
-
-**Description:** Customizes a section of `[p]info`.
-
-The maximum amount of allowed characters is 1024.
-Supports markdown, links and "mentions".
-
-Link example: `[My link](https://example.com)`
-
-**Examples:**
-- `[p]set bot custominfo >>> I can use **markdown** such as quotes, ||spoilers|| and multiple lines.`
-- `[p]set bot custominfo Join my [support server](discord.gg/discord)!`
-- `[p]set bot custominfo` - Removes custom info text.
-
-**Arguments:**
-- `[text]` - The custom info text.
-
-**Usage:** `<@1275521742961508432>set bot custominfo`
 
 ### set bot banner
 
@@ -1220,26 +1083,6 @@ Note: The username of a verified bot cannot be manually changed.
 
 **Usage:** `<@1275521742961508432>set bot username`
 
-### set bot description
-
-**Description:** Sets the bot's description.
-
-Use without a description to reset.
-This is shown in a few locations, including the help menu.
-
-The maximum description length is 250 characters to ensure it displays properly.
-
-The default is "Red V3".
-
-**Examples:**
-- `[p]set bot description` - Resets the description to the default setting.
-- `[p]set bot description MyBot: A Red V3 Bot`
-
-**Arguments:**
-- `[description]` - The description to use for this bot. Leave blank to reset to the default.
-
-**Usage:** `<@1275521742961508432>set bot description`
-
 ### set bot nickname
 
 **Description:** Sets [botname]'s nickname for the current server.
@@ -1279,6 +1122,45 @@ Supports either an attachment or an image URL.
 
 **Usage:** `<@1275521742961508432>set bot avatar remove`
 
+### set bot description
+
+**Description:** Sets the bot's description.
+
+Use without a description to reset.
+This is shown in a few locations, including the help menu.
+
+The maximum description length is 250 characters to ensure it displays properly.
+
+The default is "Red V3".
+
+**Examples:**
+- `[p]set bot description` - Resets the description to the default setting.
+- `[p]set bot description MyBot: A Red V3 Bot`
+
+**Arguments:**
+- `[description]` - The description to use for this bot. Leave blank to reset to the default.
+
+**Usage:** `<@1275521742961508432>set bot description`
+
+### set bot custominfo
+
+**Description:** Customizes a section of `[p]info`.
+
+The maximum amount of allowed characters is 1024.
+Supports markdown, links and "mentions".
+
+Link example: `[My link](https://example.com)`
+
+**Examples:**
+- `[p]set bot custominfo >>> I can use **markdown** such as quotes, ||spoilers|| and multiple lines.`
+- `[p]set bot custominfo Join my [support server](discord.gg/discord)!`
+- `[p]set bot custominfo` - Removes custom info text.
+
+**Arguments:**
+- `[text]` - The custom info text.
+
+**Usage:** `<@1275521742961508432>set bot custominfo`
+
 ### set errormsg
 
 **Description:** Set the message that will be sent on uncaught bot errors.
@@ -1315,23 +1197,6 @@ If you want to change bot's global regional format, see `[p]set regionalformat g
 
 **Usage:** `<@1275521742961508432>set regionalformat`
 
-### set regionalformat server
-
-**Description:** Changes the bot's regional format in this server. This is used for formatting date, time and numbers.
-
-`language_code` can be any language code with country code included, e.g. `en-US`, `de-DE`, `fr-FR`, `pl-PL`, etc.
-Pass "reset" to `language_code` to base regional formatting on bot's locale in this server.
-
-**Examples:**
-- `[p]set regionalformat server en-US`
-- `[p]set region local de-DE`
-- `[p]set regionalformat server reset` - Resets to the locale.
-
-**Arguments:**
-- `[language_code]` - The region format to use for the bot in this server.
-
-**Usage:** `<@1275521742961508432>set regionalformat server`
-
 ### set regionalformat global
 
 **Description:** Changes the bot's regional format. This is used for formatting date, time and numbers.
@@ -1349,6 +1214,23 @@ Pass "reset" to `language_code` to base regional formatting on bot's locale.
 
 **Usage:** `<@1275521742961508432>set regionalformat global`
 
+### set regionalformat server
+
+**Description:** Changes the bot's regional format in this server. This is used for formatting date, time and numbers.
+
+`language_code` can be any language code with country code included, e.g. `en-US`, `de-DE`, `fr-FR`, `pl-PL`, etc.
+Pass "reset" to `language_code` to base regional formatting on bot's locale in this server.
+
+**Examples:**
+- `[p]set regionalformat server en-US`
+- `[p]set region local de-DE`
+- `[p]set regionalformat server reset` - Resets to the locale.
+
+**Arguments:**
+- `[language_code]` - The region format to use for the bot in this server.
+
+**Usage:** `<@1275521742961508432>set regionalformat server`
+
 ### set ownernotifications
 
 **Description:** Commands for configuring owner notifications.
@@ -1356,19 +1238,6 @@ Pass "reset" to `language_code` to base regional formatting on bot's locale.
 Owner notifications include usage of `[p]contact` and available Red updates.
 
 **Usage:** `<@1275521742961508432>set ownernotifications`
-
-### set ownernotifications removedestination
-
-**Description:** Removes a destination text channel from receiving owner notifications.
-
-**Examples:**
-- `[p]set ownernotifications removedestination #owner-notifications`
-- `[p]set ownernotifications deletedestination 168091848718417920` - Accepts channel IDs.
-
-**Arguments:**
-- `<channel>` - The channel to stop sending owner notifications to.
-
-**Usage:** `<@1275521742961508432>set ownernotifications removedestination`
 
 ### set ownernotifications optin
 
@@ -1417,6 +1286,19 @@ Note: This will only stop sending owner notifications to your DMs.
 - `[p]set ownernotifications optout`
 
 **Usage:** `<@1275521742961508432>set ownernotifications optout`
+
+### set ownernotifications removedestination
+
+**Description:** Removes a destination text channel from receiving owner notifications.
+
+**Examples:**
+- `[p]set ownernotifications removedestination #owner-notifications`
+- `[p]set ownernotifications deletedestination 168091848718417920` - Accepts channel IDs.
+
+**Arguments:**
+- `<channel>` - The channel to stop sending owner notifications to.
+
+**Usage:** `<@1275521742961508432>set ownernotifications removedestination`
 
 ### set locale
 
@@ -1481,6 +1363,124 @@ Use "default" to return to the bot's default set language.
 
 **Usage:** `<@1275521742961508432>set locale server`
 
+### set serverfuzzy
+
+**Description:** Toggle whether to enable fuzzy command search for the server.
+
+This allows the bot to identify potential misspelled commands and offer corrections.
+
+Note: This can be processor intensive and may be unsuitable for larger servers.
+
+Default is for fuzzy command search to be disabled.
+
+**Example:**
+- `[p]set serverfuzzy`
+
+**Usage:** `<@1275521742961508432>set serverfuzzy`
+
+### set fuzzy
+
+**Description:** Toggle whether to enable fuzzy command search in DMs.
+
+This allows the bot to identify potential misspelled commands and offer corrections.
+
+Default is for fuzzy command search to be disabled.
+
+**Example:**
+- `[p]set fuzzy`
+
+**Usage:** `<@1275521742961508432>set fuzzy`
+
+### set serverprefix
+
+**Description:** Sets [botname]'s server prefix(es).
+
+Warning: This will override global prefixes, the bot will not respond to any global prefixes in this server.
+    This is not additive. It will replace all current server prefixes.
+    A prefix cannot have more than 25 characters.
+
+**Examples:**
+- `[p]set serverprefix !`
+- `[p]set serverprefix "! "` - Quotes are needed to use spaces in prefixes.
+- `[p]set serverprefix "@[botname] "` - This uses a mention as the prefix.
+- `[p]set serverprefix ! ? .` - Sets multiple prefixes.
+- `[p]set serverprefix "Red - Discord Bot" ?` - Sets the prefix for a specific server. Quotes are needed to use spaces in the server name.
+
+**Arguments:**
+- `[server]` - The server to set the prefix for. Defaults to current server.
+- `[prefixes...]` - The prefixes the bot will respond to on this server. Leave blank to clear server prefixes.
+
+**Usage:** `<@1275521742961508432>set serverprefix`
+
+### set deletedelay
+
+**Description:** Set the delay until the bot removes the command message.
+
+Must be between -1 and 60.
+
+Set to -1 to disable this feature.
+
+This is only applied to the current server and not globally.
+
+**Examples:**
+- `[p]set deletedelay` - Shows the current delete delay setting.
+- `[p]set deletedelay 60` - Sets the delete delay to the max of 60 seconds.
+- `[p]set deletedelay -1` - Disables deleting command messages.
+
+**Arguments:**
+- `[time]` - The seconds to wait before deleting the command message. Use -1 to disable.
+
+**Usage:** `<@1275521742961508432>set deletedelay`
+
+### set api
+
+**Description:** Commands to set, list or remove various external API tokens.
+
+This setting will be asked for by some 3rd party cogs and some core cogs.
+
+If passed without the `<service>` or `<tokens>` arguments it will allow you to open a modal to set your API keys securely.
+
+To add the keys provide the service name and the tokens as a comma separated
+list of key,values as described by the cog requesting this command.
+
+Note: API tokens are sensitive, so this command should only be used in a private channel or in DM with the bot.
+
+**Examples:**
+- `[p]set api`
+- `[p]set api spotify`
+- `[p]set api spotify redirect_uri localhost`
+- `[p]set api github client_id,whoops client_secret,whoops`
+
+**Arguments:**
+- `<service>` - The service you're adding tokens to.
+- `<tokens>` - Pairs of token keys and values. The key and value should be separated by one of ` `, `,`, or `;`.
+
+**Usage:** `<@1275521742961508432>set api`
+
+### set api list
+
+**Description:** Show all external API services along with their keys that have been set.
+
+Secrets are not shown.
+
+**Example:**
+- `[p]set api list`
+
+**Usage:** `<@1275521742961508432>set api list`
+
+### set api remove
+
+**Description:** Remove the given services with all their keys and tokens.
+
+**Examples:**
+- `[p]set api remove spotify`
+- `[p]set api remove github youtube`
+
+**Arguments:**
+- `<services...>` - The services to remove.
+
+**Usage:** `<@1275521742961508432>set api remove`
+
 ### helpset
 
 **Description:** Commands to manage settings for the help command.
@@ -1488,73 +1488,6 @@ Use "default" to return to the bot's default set language.
 All help settings are applied globally.
 
 **Usage:** `<@1275521742961508432>helpset`
-
-### helpset verifychecks
-
-**Description:** Sets if commands which can't be run in the current context should be filtered from help.
-
-Defaults to True.
-Using this without a setting will toggle.
-
-**Examples:**
-- `[p]helpset verifychecks False` - Enables showing unusable commands in help.
-- `[p]helpset verifychecks` - Toggles the value.
-
-**Arguments:**
-- `[verify]` - Whether to hide unusable commands in help. Leave blank to toggle.
-
-**Usage:** `<@1275521742961508432>helpset verifychecks`
-
-### helpset verifyexists
-
-**Description:** Sets whether the bot should respond to help commands for nonexistent topics.
-
-When enabled, this will indicate the existence of help topics, even if the user can't use it.
-
-Note: This setting on its own does not fully prevent command enumeration.
-
-Defaults to False.
-Using this without a setting will toggle.
-
-**Examples:**
-- `[p]helpset verifyexists True` - Enables sending help for nonexistent topics.
-- `[p]helpset verifyexists` - Toggles the value.
-
-**Arguments:**
-- `[verify]` - Whether to respond to help for nonexistent topics. Leave blank to toggle.
-
-**Usage:** `<@1275521742961508432>helpset verifyexists`
-
-### helpset showsettings
-
-**Description:** Show the current help settings.
-
-Warning: These settings may not be accurate if the default formatter is not in use.
-
-**Example:**
-- `[p]helpset showsettings`
-
-**Usage:** `<@1275521742961508432>helpset showsettings`
-
-### helpset usetick
-
-**Description:** This allows the help command message to be ticked if help is sent to a DM.
-
-Ticking is reacting to the help message with a ✅.
-
-Defaults to False.
-Using this without a setting will toggle.
-
-Note: This is only used when the bot is not using menus.
-
-**Examples:**
-- `[p]helpset usetick False` - Disables ticking when help is sent to DMs.
-- `[p]helpset usetick` - Toggles the value.
-
-**Arguments:**
-- `[use_tick]` - Whether to tick the help command when help is sent to DMs. Leave blank to toggle.
-
-**Usage:** `<@1275521742961508432>helpset usetick`
 
 ### helpset showhidden
 
@@ -1660,6 +1593,26 @@ The bot has to have MANAGE_MESSAGES permission for this to work.
 
 **Usage:** `<@1275521742961508432>helpset deletedelay`
 
+### helpset verifyexists
+
+**Description:** Sets whether the bot should respond to help commands for nonexistent topics.
+
+When enabled, this will indicate the existence of help topics, even if the user can't use it.
+
+Note: This setting on its own does not fully prevent command enumeration.
+
+Defaults to False.
+Using this without a setting will toggle.
+
+**Examples:**
+- `[p]helpset verifyexists True` - Enables sending help for nonexistent topics.
+- `[p]helpset verifyexists` - Toggles the value.
+
+**Arguments:**
+- `[verify]` - Whether to respond to help for nonexistent topics. Leave blank to toggle.
+
+**Usage:** `<@1275521742961508432>helpset verifyexists`
+
 ### helpset maxpages
 
 **Description:** Set the maximum number of help pages sent in a server channel.
@@ -1727,6 +1680,53 @@ mean some pages will exceed this limit.
 
 **Usage:** `<@1275521742961508432>helpset resetformatter`
 
+### helpset verifychecks
+
+**Description:** Sets if commands which can't be run in the current context should be filtered from help.
+
+Defaults to True.
+Using this without a setting will toggle.
+
+**Examples:**
+- `[p]helpset verifychecks False` - Enables showing unusable commands in help.
+- `[p]helpset verifychecks` - Toggles the value.
+
+**Arguments:**
+- `[verify]` - Whether to hide unusable commands in help. Leave blank to toggle.
+
+**Usage:** `<@1275521742961508432>helpset verifychecks`
+
+### helpset showsettings
+
+**Description:** Show the current help settings.
+
+Warning: These settings may not be accurate if the default formatter is not in use.
+
+**Example:**
+- `[p]helpset showsettings`
+
+**Usage:** `<@1275521742961508432>helpset showsettings`
+
+### helpset usetick
+
+**Description:** This allows the help command message to be ticked if help is sent to a DM.
+
+Ticking is reacting to the help message with a ✅.
+
+Defaults to False.
+Using this without a setting will toggle.
+
+Note: This is only used when the bot is not using menus.
+
+**Examples:**
+- `[p]helpset usetick False` - Disables ticking when help is sent to DMs.
+- `[p]helpset usetick` - Toggles the value.
+
+**Arguments:**
+- `[use_tick]` - Whether to tick the help command when help is sent to DMs. Leave blank to toggle.
+
+**Usage:** `<@1275521742961508432>helpset usetick`
+
 ### contact
 
 **Description:** Sends a message to the owner.
@@ -1785,6 +1785,19 @@ Use `[p]allowlist clear` to disable the allowlist
 
 **Usage:** `<@1275521742961508432>allowlist`
 
+### allowlist add
+
+**Description:** Adds users to the allowlist.
+
+**Examples:**
+- `[p]allowlist add @26 @Will` - Adds two users to the allowlist.
+- `[p]allowlist add 262626262626262626` - Adds a user by ID.
+
+**Arguments:**
+- `<users...>` - The user or users to add to the allowlist.
+
+**Usage:** `<@1275521742961508432>allowlist add`
+
 ### allowlist list
 
 **Description:** Lists users on the allowlist.
@@ -1809,19 +1822,6 @@ The allowlist will be disabled if all users are removed.
 
 **Usage:** `<@1275521742961508432>allowlist remove`
 
-### allowlist add
-
-**Description:** Adds users to the allowlist.
-
-**Examples:**
-- `[p]allowlist add @26 @Will` - Adds two users to the allowlist.
-- `[p]allowlist add 262626262626262626` - Adds a user by ID.
-
-**Arguments:**
-- `<users...>` - The user or users to add to the allowlist.
-
-**Usage:** `<@1275521742961508432>allowlist add`
-
 ### allowlist clear
 
 **Description:** Clears the allowlist.
@@ -1840,6 +1840,15 @@ This disables the allowlist.
 Use `[p]blocklist clear` to disable the blocklist
 
 **Usage:** `<@1275521742961508432>blocklist`
+
+### blocklist list
+
+**Description:** Lists users on the blocklist.
+
+**Example:**
+- `[p]blocklist list`
+
+**Usage:** `<@1275521742961508432>blocklist list`
 
 ### blocklist remove
 
@@ -1876,15 +1885,6 @@ Use `[p]blocklist clear` to disable the blocklist
 
 **Usage:** `<@1275521742961508432>blocklist add`
 
-### blocklist list
-
-**Description:** Lists users on the blocklist.
-
-**Example:**
-- `[p]blocklist list`
-
-**Usage:** `<@1275521742961508432>blocklist list`
-
 ### localallowlist
 
 **Description:** Commands to manage the server specific allowlist.
@@ -1894,6 +1894,26 @@ Warning: When the allowlist is in use, the bot will ignore commands from everyon
 Use `[p]localallowlist clear` to disable the allowlist
 
 **Usage:** `<@1275521742961508432>localallowlist`
+
+### localallowlist list
+
+**Description:** Lists users and roles on the server allowlist.
+
+**Example:**
+- `[p]localallowlist list`
+
+**Usage:** `<@1275521742961508432>localallowlist list`
+
+### localallowlist clear
+
+**Description:** Clears the allowlist.
+
+This disables the local allowlist and clears all entries.
+
+**Example:**
+- `[p]localallowlist clear`
+
+**Usage:** `<@1275521742961508432>localallowlist clear`
 
 ### localallowlist add
 
@@ -1908,26 +1928,6 @@ Use `[p]localallowlist clear` to disable the allowlist
 - `<users_or_roles...>` - The users or roles to remove from the local allowlist.
 
 **Usage:** `<@1275521742961508432>localallowlist add`
-
-### localallowlist clear
-
-**Description:** Clears the allowlist.
-
-This disables the local allowlist and clears all entries.
-
-**Example:**
-- `[p]localallowlist clear`
-
-**Usage:** `<@1275521742961508432>localallowlist clear`
-
-### localallowlist list
-
-**Description:** Lists users and roles on the server allowlist.
-
-**Example:**
-- `[p]localallowlist list`
-
-**Usage:** `<@1275521742961508432>localallowlist list`
 
 ### localallowlist remove
 
@@ -1952,6 +1952,17 @@ The local allowlist will be disabled if all users are removed.
 Use `[p]localblocklist clear` to disable the blocklist
 
 **Usage:** `<@1275521742961508432>localblocklist`
+
+### localblocklist clear
+
+**Description:** Clears the server blocklist.
+
+This disables the server blocklist and clears all entries.
+
+**Example:**
+- `[p]blocklist clear`
+
+**Usage:** `<@1275521742961508432>localblocklist clear`
 
 ### localblocklist add
 
@@ -1990,64 +2001,11 @@ Use `[p]localblocklist clear` to disable the blocklist
 
 **Usage:** `<@1275521742961508432>localblocklist remove`
 
-### localblocklist clear
-
-**Description:** Clears the server blocklist.
-
-This disables the server blocklist and clears all entries.
-
-**Example:**
-- `[p]blocklist clear`
-
-**Usage:** `<@1275521742961508432>localblocklist clear`
-
 ### command
 
 **Description:** Commands to enable and disable commands and cogs.
 
 **Usage:** `<@1275521742961508432>command`
-
-### command disablecog
-
-**Description:** Disable a cog in this server.
-
-Note: This will only work on loaded cogs, and must reference the title-case cog name.
-
-**Examples:**
-- `[p]command disablecog Economy`
-- `[p]command disablecog ModLog`
-
-**Arguments:**
-- `<cog>` - The name of the cog to disable on this server. Must be title-case.
-
-**Usage:** `<@1275521742961508432>command disablecog`
-
-### command listdisabledcogs
-
-**Description:** List the cogs which are disabled in this server.
-
-**Example:**
-- `[p]command listdisabledcogs`
-
-**Usage:** `<@1275521742961508432>command listdisabledcogs`
-
-### command defaultenablecog
-
-**Description:** Set the default state for a cog as enabled.
-
-This will re-enable the cog for all servers by default.
-To override it, use `[p]command disablecog` on the servers you want to disallow usage.
-
-Note: This will only work on loaded cogs, and must reference the title-case cog name.
-
-**Examples:**
-- `[p]command defaultenablecog Economy`
-- `[p]command defaultenablecog ModLog`
-
-**Arguments:**
-- `<cog>` - The name of the cog to make enabled by default. Must be title-case.
-
-**Usage:** `<@1275521742961508432>command defaultenablecog`
 
 ### command listdisabled
 
@@ -2078,6 +2036,24 @@ Otherwise, this will show disabled commands on the current server.
 - `[p]command listdisabled global`
 
 **Usage:** `<@1275521742961508432>command listdisabled global`
+
+### command defaultenablecog
+
+**Description:** Set the default state for a cog as enabled.
+
+This will re-enable the cog for all servers by default.
+To override it, use `[p]command disablecog` on the servers you want to disallow usage.
+
+Note: This will only work on loaded cogs, and must reference the title-case cog name.
+
+**Examples:**
+- `[p]command defaultenablecog Economy`
+- `[p]command defaultenablecog ModLog`
+
+**Arguments:**
+- `<cog>` - The name of the cog to make enabled by default. Must be title-case.
+
+**Usage:** `<@1275521742961508432>command defaultenablecog`
 
 ### command enablecog
 
@@ -2214,6 +2190,30 @@ Otherwise, this will disable commands on the current server.
 
 **Usage:** `<@1275521742961508432>command disable server`
 
+### command disablecog
+
+**Description:** Disable a cog in this server.
+
+Note: This will only work on loaded cogs, and must reference the title-case cog name.
+
+**Examples:**
+- `[p]command disablecog Economy`
+- `[p]command disablecog ModLog`
+
+**Arguments:**
+- `<cog>` - The name of the cog to disable on this server. Must be title-case.
+
+**Usage:** `<@1275521742961508432>command disablecog`
+
+### command listdisabledcogs
+
+**Description:** List the cogs which are disabled in this server.
+
+**Example:**
+- `[p]command listdisabledcogs`
+
+**Usage:** `<@1275521742961508432>command listdisabledcogs`
+
 ### autoimmune
 
 **Description:** Commands to manage server settings for immunity from automated actions.
@@ -2221,19 +2221,6 @@ Otherwise, this will disable commands on the current server.
 This includes duplicate message deletion and mention spam from the Mod cog, and filters from the Filter cog.
 
 **Usage:** `<@1275521742961508432>autoimmune`
-
-### autoimmune remove
-
-**Description:** Remove a user or role from being immune to automated moderation actions.
-
-**Examples:**
-- `[p]autoimmune remove @Twentysix` - Removes a user.
-- `[p]autoimmune remove @Mods` - Removes a role.
-
-**Arguments:**
-- `<user_or_role>` - The user or role to remove immunity from.
-
-**Usage:** `<@1275521742961508432>autoimmune remove`
 
 ### autoimmune add
 
@@ -2256,6 +2243,19 @@ This includes duplicate message deletion and mention spam from the Mod cog, and 
 - `[p]autoimmune list`
 
 **Usage:** `<@1275521742961508432>autoimmune list`
+
+### autoimmune remove
+
+**Description:** Remove a user or role from being immune to automated moderation actions.
+
+**Examples:**
+- `[p]autoimmune remove @Twentysix` - Removes a user.
+- `[p]autoimmune remove @Mods` - Removes a role.
+
+**Arguments:**
+- `<user_or_role>` - The user or role to remove immunity from.
+
+**Usage:** `<@1275521742961508432>autoimmune remove`
 
 ### autoimmune isimmune
 

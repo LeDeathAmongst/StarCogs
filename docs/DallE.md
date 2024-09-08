@@ -12,17 +12,17 @@
 
 **Usage:** `<@1275521742961508432>dalleset`
 
+### dalleset cooldown
+
+**Description:** Time in seconds between a user's generation ends and they can start a new one.
+
+**Usage:** `<@1275521742961508432>dalleset cooldown`
+
 ### dalleset vip
 
 **Description:** Manage the VIP list which skips the cooldown.
 
 **Usage:** `<@1275521742961508432>dalleset vip`
-
-### dalleset vip remove
-
-**Description:** Remove a list of users from the VIP list.
-
-**Usage:** `<@1275521742961508432>dalleset vip remove`
 
 ### dalleset vip list
 
@@ -36,9 +36,9 @@
 
 **Usage:** `<@1275521742961508432>dalleset vip add`
 
-### dalleset cooldown
+### dalleset vip remove
 
-**Description:** Time in seconds between a user's generation ends and they can start a new one.
+**Description:** Remove a list of users from the VIP list.
 
-**Usage:** `<@1275521742961508432>dalleset cooldown`
+**Usage:** `<@1275521742961508432>dalleset vip remove`
 

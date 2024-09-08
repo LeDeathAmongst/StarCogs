@@ -210,23 +210,23 @@ Still this can give a good idea of where the bot is at I/O wise.
 
 **Usage:** `<@1275521742961508432>botemojis`
 
-### botemojis list
-
-**Description:** List all existing bot emojis
-
-**Usage:** `<@1275521742961508432>botemojis list`
-
-### botemojis delete
-
-**Description:** Delete an bot emoji
-
-**Usage:** `<@1275521742961508432>botemojis delete`
-
 ### botemojis edit
 
 **Description:** Edit a bot emoji's name
 
 **Usage:** `<@1275521742961508432>botemojis edit`
+
+### botemojis fromemoji
+
+**Description:** Create a new bot emoji from an existing one
+
+**Usage:** `<@1275521742961508432>botemojis fromemoji`
+
+### botemojis list
+
+**Description:** List all existing bot emojis
+
+**Usage:** `<@1275521742961508432>botemojis list`
 
 ### botemojis add
 
@@ -242,11 +242,11 @@ If a name is not specified, the image's filename will be used
 
 **Usage:** `<@1275521742961508432>botemojis get`
 
-### botemojis fromemoji
+### botemojis delete
 
-**Description:** Create a new bot emoji from an existing one
+**Description:** Delete an bot emoji
 
-**Usage:** `<@1275521742961508432>botemojis fromemoji`
+**Usage:** `<@1275521742961508432>botemojis delete`
 
 ### pip
 

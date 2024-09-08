@@ -6,11 +6,23 @@
 
 **Usage:** `<@1275521742961508432>tagsettings`
 
-### tagsettings settings
+### tagsettings limit
 
-**Description:** View Tags settings.
+**Description:** Change the global and guild limit for tags.
 
-**Usage:** `<@1275521742961508432>tagsettings settings`
+**Usage:** `<@1275521742961508432>tagsettings limit`
+
+### tagsettings limit global
+
+**Description:** Change the global limit for tags.
+
+**Usage:** `<@1275521742961508432>tagsettings limit global`
+
+### tagsettings limit guild
+
+**Description:** Change the guild limit for tags.
+
+**Usage:** `<@1275521742961508432>tagsettings limit guild`
 
 ### tagsettings block
 
@@ -23,12 +35,6 @@
 **Description:** Remove a custom block from the TagScript interpreter.
 
 **Usage:** `<@1275521742961508432>tagsettings block remove`
-
-### tagsettings block show
-
-**Description:** Show the code of a custom block.
-
-**Usage:** `<@1275521742961508432>tagsettings block show`
 
 ### tagsettings block add
 
@@ -43,6 +49,18 @@ The passed code must return a block class that inherits from `TagScriptEngine.Bl
 **Description:** List all custom blocks in the TagScript interpreter.
 
 **Usage:** `<@1275521742961508432>tagsettings block list`
+
+### tagsettings block show
+
+**Description:** Show the code of a custom block.
+
+**Usage:** `<@1275521742961508432>tagsettings block show`
+
+### tagsettings settings
+
+**Description:** View Tags settings.
+
+**Usage:** `<@1275521742961508432>tagsettings settings`
 
 ### tagsettings dotparam
 
@@ -62,24 +80,6 @@ instead of:
 If you aren't a developer or don't know what this is, there's no reason for you to change it.
 
 **Usage:** `<@1275521742961508432>tagsettings async`
-
-### tagsettings limit
-
-**Description:** Change the global and guild limit for tags.
-
-**Usage:** `<@1275521742961508432>tagsettings limit`
-
-### tagsettings limit global
-
-**Description:** Change the global limit for tags.
-
-**Usage:** `<@1275521742961508432>tagsettings limit global`
-
-### tagsettings limit guild
-
-**Description:** Change the guild limit for tags.
-
-**Usage:** `<@1275521742961508432>tagsettings limit guild`
 
 ### migratealias
 
@@ -139,6 +139,18 @@ Read the [TagScript documentation](https://seina-cogs.readthedocs.io/en/latest/)
 
 **Usage:** `<@1275521742961508432>tag`
 
+### tag edit
+
+**Description:** Edit a tag's TagScript.
+
+The passed tagscript will replace the tag's current tagscript.
+View the [TagScript docs](https://seina-cogs.readthedocs.io/en/latest/blocks.html) to find information on how to write valid tagscript.
+
+**Example:**
+`[p]tag edit rickroll Never gonna give you up!`
+
+**Usage:** `<@1275521742961508432>tag edit`
+
 ### tag usage
 
 **Description:** See tag usage stats.
@@ -159,6 +171,30 @@ The `{args}` block is not supported.
 `[p]tag run {require(Admin):You must be admin to use this tag.} Congrats on being an admin!`
 
 **Usage:** `<@1275521742961508432>tag process`
+
+### tag alias
+
+**Description:**         Add an alias for a tag.
+
+        Adding an alias to the tag will make the tag invokable using the alias or the tag name.
+        In the example below, running `[p]donation` will invoke the `donate` tag.
+​
+        **Example:**
+        `[p]tag alias donate donation`
+
+**Usage:** `<@1275521742961508432>tag alias`
+
+### tag info
+
+**Description:** Show information about a tag.
+
+You can view meta information for a tag on this server or a global tag.
+If a tag on this server has the same name as a global tag, it will show the server tag.
+
+**Example:**
+`[p]tag info notsupport`
+
+**Usage:** `<@1275521742961508432>tag info`
 
 ### tag pastebin
 
@@ -192,27 +228,6 @@ If you want to remove a tag's alias, use `[p]tag unalias`.
 
 **Usage:** `<@1275521742961508432>tag remove`
 
-### tag append
-
-**Description:** Add text to a tag's TagScript.
-
-**Example:**
-`[p]tag append rickroll Never gonna let you down!`
-
-**Usage:** `<@1275521742961508432>tag append`
-
-### tag info
-
-**Description:** Show information about a tag.
-
-You can view meta information for a tag on this server or a global tag.
-If a tag on this server has the same name as a global tag, it will show the server tag.
-
-**Example:**
-`[p]tag info notsupport`
-
-**Usage:** `<@1275521742961508432>tag info`
-
 ### tag docs
 
 **Description:** Search the TagScript documentation for a block.
@@ -224,11 +239,36 @@ https://seina-cogs.readthedocs.io/en/latest/
 
 **Usage:** `<@1275521742961508432>tag docs`
 
-### tag backup
+### tag run
 
-**Description:** Backup all the tag data for your server.
+**Description:** Execute TagScript without storing.
 
-**Usage:** `<@1275521742961508432>tag backup`
+The variables and actions fields display debugging information.
+
+**Example:**
+`[p]tag run {#:yes,no}`
+
+**Usage:** `<@1275521742961508432>tag run`
+
+### tag append
+
+**Description:** Add text to a tag's TagScript.
+
+**Example:**
+`[p]tag append rickroll Never gonna let you down!`
+
+**Usage:** `<@1275521742961508432>tag append`
+
+### tag raw
+
+**Description:** Get a tag's raw content.
+
+The sent TagScript will be escaped from Discord style formatting characters.
+
+**Example:**
+`[p]tag raw noping`
+
+**Usage:** `<@1275521742961508432>tag raw`
 
 ### tag list
 
@@ -241,16 +281,20 @@ To view info on a specific tag, use `[p]tag info`.
 
 **Usage:** `<@1275521742961508432>tag list`
 
-### tag raw
+### tag backup
 
-**Description:** Get a tag's raw content.
+**Description:** Backup all the tag data for your server.
 
-The sent TagScript will be escaped from Discord style formatting characters.
+**Usage:** `<@1275521742961508432>tag backup`
+
+### tag search
+
+**Description:** Search for tags by name.
 
 **Example:**
-`[p]tag raw noping`
+`[p]tag search notsupport`
 
-**Usage:** `<@1275521742961508432>tag raw`
+**Usage:** `<@1275521742961508432>tag search`
 
 ### tag restore
 
@@ -276,27 +320,17 @@ Read the [TagScript documentation](https://seina-cogs.readthedocs.io/en/latest/)
 
 **Usage:** `<@1275521742961508432>tag global`
 
-### tag global raw
+### tag global edit
 
-**Description:** Get a global tag's raw content.
+**Description:** Edit a global tag's TagScript.
 
-The sent TagScript will be escaped from Discord style formatting characters.
-
-**Example:**
-`[p]tag global raw noping`
-
-**Usage:** `<@1275521742961508432>tag global raw`
-
-### tag global remove
-
-**Description:** Permanently delete a global tag.
-
-If you want to remove a global tag's alias, use `[p]tag global unalias`.
+The passed tagscript will replace the global tag's current tagscript.
+View the [TagScript docs](https://seina-cogs.readthedocs.io/en/latest/blocks.html) to find information on how to write valid tagscript.
 
 **Example:**
-`[p]tag global remove RickRoll`
+`[p]tag global edit rickroll Never gonna give you up!`
 
-**Usage:** `<@1275521742961508432>tag global remove`
+**Usage:** `<@1275521742961508432>tag global edit`
 
 ### tag global list
 
@@ -308,6 +342,67 @@ To view info on a specific global tag, use `[p]tag global info`.
 `[p]tag global list`
 
 **Usage:** `<@1275521742961508432>tag global list`
+
+### tag global usage
+
+**Description:** See global tag usage stats.
+
+**Example:**
+`[p]tag global usage`
+
+**Usage:** `<@1275521742961508432>tag global usage`
+
+### tag global append
+
+**Description:** Add text to a global tag's TagScript.
+
+**Example:**
+`[p]tag global append rickroll Never gonna let you down!`
+
+**Usage:** `<@1275521742961508432>tag global append`
+
+### tag global raw
+
+**Description:** Get a global tag's raw content.
+
+The sent TagScript will be escaped from Discord style formatting characters.
+
+**Example:**
+`[p]tag global raw noping`
+
+**Usage:** `<@1275521742961508432>tag global raw`
+
+### tag global pastebin
+
+**Description:** Add a global tag with a Pastebin link.
+
+**Example:**
+`[p]tag global pastebin starwarsopeningcrawl https://pastebin.com/CKjn6uYv`
+
+**Usage:** `<@1275521742961508432>tag global pastebin`
+
+### tag global alias
+
+**Description:** Add an alias for a global tag.
+
+        Adding an alias to the global tag will make the global tag invokable using the alias or the global tag name.
+        In the example below, running `[p]donation` will invoke the `donate` global tag.
+​
+        **Example:**
+        `[p]tag global alias donate donation`
+
+**Usage:** `<@1275521742961508432>tag global alias`
+
+### tag global remove
+
+**Description:** Permanently delete a global tag.
+
+If you want to remove a global tag's alias, use `[p]tag global unalias`.
+
+**Example:**
+`[p]tag global remove RickRoll`
+
+**Usage:** `<@1275521742961508432>tag global remove`
 
 ### tag global search
 
@@ -354,57 +449,6 @@ You can delete the original global tag with the `[p]tag global remove` command.
 
 **Usage:** `<@1275521742961508432>tag global add`
 
-### tag global append
-
-**Description:** Add text to a global tag's TagScript.
-
-**Example:**
-`[p]tag global append rickroll Never gonna let you down!`
-
-**Usage:** `<@1275521742961508432>tag global append`
-
-### tag global pastebin
-
-**Description:** Add a global tag with a Pastebin link.
-
-**Example:**
-`[p]tag global pastebin starwarsopeningcrawl https://pastebin.com/CKjn6uYv`
-
-**Usage:** `<@1275521742961508432>tag global pastebin`
-
-### tag global edit
-
-**Description:** Edit a global tag's TagScript.
-
-The passed tagscript will replace the global tag's current tagscript.
-View the [TagScript docs](https://seina-cogs.readthedocs.io/en/latest/blocks.html) to find information on how to write valid tagscript.
-
-**Example:**
-`[p]tag global edit rickroll Never gonna give you up!`
-
-**Usage:** `<@1275521742961508432>tag global edit`
-
-### tag global alias
-
-**Description:** Add an alias for a global tag.
-
-        Adding an alias to the global tag will make the global tag invokable using the alias or the global tag name.
-        In the example below, running `[p]donation` will invoke the `donate` global tag.
-​
-        **Example:**
-        `[p]tag global alias donate donation`
-
-**Usage:** `<@1275521742961508432>tag global alias`
-
-### tag global usage
-
-**Description:** See global tag usage stats.
-
-**Example:**
-`[p]tag global usage`
-
-**Usage:** `<@1275521742961508432>tag global usage`
-
 ### tag unalias
 
 **Description:** Remove an alias for a tag.
@@ -416,48 +460,4 @@ You can delete the original tag with the `[p]tag remove` command.
 `tag unalias donate donation`
 
 **Usage:** `<@1275521742961508432>tag unalias`
-
-### tag search
-
-**Description:** Search for tags by name.
-
-**Example:**
-`[p]tag search notsupport`
-
-**Usage:** `<@1275521742961508432>tag search`
-
-### tag run
-
-**Description:** Execute TagScript without storing.
-
-The variables and actions fields display debugging information.
-
-**Example:**
-`[p]tag run {#:yes,no}`
-
-**Usage:** `<@1275521742961508432>tag run`
-
-### tag edit
-
-**Description:** Edit a tag's TagScript.
-
-The passed tagscript will replace the tag's current tagscript.
-View the [TagScript docs](https://seina-cogs.readthedocs.io/en/latest/blocks.html) to find information on how to write valid tagscript.
-
-**Example:**
-`[p]tag edit rickroll Never gonna give you up!`
-
-**Usage:** `<@1275521742961508432>tag edit`
-
-### tag alias
-
-**Description:**         Add an alias for a tag.
-
-        Adding an alias to the tag will make the tag invokable using the alias or the tag name.
-        In the example below, running `[p]donation` will invoke the `donate` tag.
-​
-        **Example:**
-        `[p]tag alias donate donation`
-
-**Usage:** `<@1275521742961508432>tag alias`
 

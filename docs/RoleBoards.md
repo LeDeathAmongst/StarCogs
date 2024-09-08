@@ -6,17 +6,6 @@
 
 **Usage:** `<@1275521742961508432>roleboard`
 
-### roleboard toproles
-
-**Description:** Get the roles with the most members.
-
-​
-**Arguments**
-
--   ``<index>``: The number of roles to get the data for.
-
-**Usage:** `<@1275521742961508432>roleboard toproles`
-
 ### roleboard topmembers
 
 **Description:** Get the members with the most roles.
@@ -27,4 +16,15 @@
 -   ``<index>``: The number of members to get the data for.
 
 **Usage:** `<@1275521742961508432>roleboard topmembers`
+
+### roleboard toproles
+
+**Description:** Get the roles with the most members.
+
+​
+**Arguments**
+
+-   ``<index>``: The number of roles to get the data for.
+
+**Usage:** `<@1275521742961508432>roleboard toproles`
 

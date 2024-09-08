@@ -6,17 +6,17 @@
 
 **Usage:** `<@1275521742961508432>reportset`
 
-### reportset output
-
-**Description:** Set the channel where reports will be sent.
-
-**Usage:** `<@1275521742961508432>reportset output`
-
 ### reportset toggle
 
 **Description:** Enable or disable reporting for this server.
 
 **Usage:** `<@1275521742961508432>reportset toggle`
+
+### reportset output
+
+**Description:** Set the channel where reports will be sent.
+
+**Usage:** `<@1275521742961508432>reportset output`
 
 ### report
 

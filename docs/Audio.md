@@ -6,11 +6,11 @@
 
 **Usage:** `<@1275521742961508432>queue`
 
-### queue shuffle
+### queue cleanself
 
-**Description:** Shuffles the queue.
+**Description:** Removes all tracks you requested from the queue.
 
-**Usage:** `<@1275521742961508432>queue shuffle`
+**Usage:** `<@1275521742961508432>queue cleanself`
 
 ### queue clean
 
@@ -18,23 +18,23 @@
 
 **Usage:** `<@1275521742961508432>queue clean`
 
-### queue search
-
-**Description:** Search the queue.
-
-**Usage:** `<@1275521742961508432>queue search`
-
 ### queue clear
 
 **Description:** Clears the queue.
 
 **Usage:** `<@1275521742961508432>queue clear`
 
-### queue cleanself
+### queue search
 
-**Description:** Removes all tracks you requested from the queue.
+**Description:** Search the queue.
 
-**Usage:** `<@1275521742961508432>queue cleanself`
+**Usage:** `<@1275521742961508432>queue search`
+
+### queue shuffle
+
+**Description:** Shuffles the queue.
+
+**Usage:** `<@1275521742961508432>queue shuffle`
 
 ### playlist
 
@@ -52,110 +52,6 @@ Scope info:
 ​ ​ ​ ​ ​ ​ ​ ​ Editable by bot owner and the playlist creator.
 
 **Usage:** `<@1275521742961508432>playlist`
-
-### playlist create
-
-**Description:** Create an empty playlist.
-
-**Usage**:
-​ ​ ​ ​ `[p]playlist create playlist_name [args]`
-
-**Args**:
-​ ​ ​ ​ The following are all optional:
-​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
-
-**Scope** is one of the following:
-​ ​ ​ ​ Global
-​ ​ ​ ​ Guild
-​ ​ ​ ​ User
-
-**Author** can be one of the following:
-​ ​ ​ ​ User ID
-​ ​ ​ ​ User Mention
-​ ​ ​ ​ User Name#123
-
-**Guild** can be one of the following:
-​ ​ ​ ​ Guild ID
-​ ​ ​ ​ Exact guild name
-
-Example use:
-​ ​ ​ ​ `[p]playlist create MyGuildPlaylist`
-​ ​ ​ ​ `[p]playlist create MyGlobalPlaylist --scope Global`
-​ ​ ​ ​ `[p]playlist create MyPersonalPlaylist --scope User`
-
-**Usage:** `<@1275521742961508432>playlist create`
-
-### playlist start
-
-**Description:** Load a playlist into the queue.
-
-**Usage**:
-​ ​ ​ ​` [p]playlist start playlist_name_OR_id [args]`
-
-**Args**:
-​ ​ ​ ​ The following are all optional:
-​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
-
-**Scope** is one of the following:
-​ ​ ​ ​ Global
-​ ​ ​ ​ Guild
-​ ​ ​ ​ User
-
-**Author** can be one of the following:
-​ ​ ​ ​ User ID
-​ ​ ​ ​ User Mention
-​ ​ ​ ​ User Name#123
-
-**Guild** can be one of the following:
-​ ​ ​ ​ Guild ID
-​ ​ ​ ​ Exact guild name
-
-Example use:
-​ ​ ​ ​ `[p]playlist start MyGuildPlaylist`
-​ ​ ​ ​ `[p]playlist start MyGlobalPlaylist --scope Global`
-​ ​ ​ ​ `[p]playlist start MyPersonalPlaylist --scope User`
-
-**Usage:** `<@1275521742961508432>playlist start`
-
-### playlist append
-
-**Description:** Add a track URL, playlist link, or quick search to a playlist.
-
-The track(s) will be appended to the end of the playlist.
-
-**Usage**:
-​ ​ ​ ​ `[p]playlist append playlist_name_OR_id track_name_OR_url [args]`
-
-**Args**:
-​ ​ ​ ​ The following are all optional:
-​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
-
-**Scope** is one of the following:
-​ ​ ​ ​ Global
-​ ​ ​ ​ Guild
-​ ​ ​ ​ User
-
-**Author** can be one of the following:
-​ ​ ​ ​ User ID
-​ ​ ​ ​ User Mention
-​ ​ ​ ​ User Name#123
-
-**Guild** can be one of the following:
-​ ​ ​ ​ Guild ID
-​ ​ ​ ​ Exact guild name
-
-Example use:
-​ ​ ​ ​ `[p]playlist append MyGuildPlaylist Hello by Adele`
-​ ​ ​ ​ `[p]playlist append MyGlobalPlaylist Hello by Adele --scope Global`
-​ ​ ​ ​ `[p]playlist append MyGlobalPlaylist Hello by Adele --scope Global --Author Draper#6666`
-
-**Usage:** `<@1275521742961508432>playlist append`
 
 ### playlist list
 
@@ -259,22 +155,20 @@ Example use:
 
 **Usage:** `<@1275521742961508432>playlist update`
 
-### playlist copy
+### playlist append
 
-**Description:** Copy a playlist from one scope to another.
+**Description:** Add a track URL, playlist link, or quick search to a playlist.
+
+The track(s) will be appended to the end of the playlist.
 
 **Usage**:
-​ ​ ​ ​ `[p]playlist copy playlist_name_OR_id [args]`
+​ ​ ​ ​ `[p]playlist append playlist_name_OR_id track_name_OR_url [args]`
 
 **Args**:
 ​ ​ ​ ​ The following are all optional:
-​ ​ ​ ​ ​ ​ ​ ​ --from-scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --from-author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --from-guild [guild] **Only the bot owner can use this**
-
-​ ​ ​ ​ ​ ​ ​ ​ --to-scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --to-author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --to-guild [guild] **Only the bot owner can use this**
+​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
 
 **Scope** is one of the following:
 ​ ​ ​ ​ Global
@@ -291,11 +185,11 @@ Example use:
 ​ ​ ​ ​ Exact guild name
 
 Example use:
-​ ​ ​ ​ `[p]playlist copy MyGuildPlaylist --from-scope Guild --to-scope Global`
-​ ​ ​ ​ `[p]playlist copy MyGlobalPlaylist --from-scope Global --to-author Draper#6666 --to-scope User`
-​ ​ ​ ​ `[p]playlist copy MyPersonalPlaylist --from-scope user --to-author Draper#6666 --to-scope Guild --to-guild Red - Discord Bot`
+​ ​ ​ ​ `[p]playlist append MyGuildPlaylist Hello by Adele`
+​ ​ ​ ​ `[p]playlist append MyGlobalPlaylist Hello by Adele --scope Global`
+​ ​ ​ ​ `[p]playlist append MyGlobalPlaylist Hello by Adele --scope Global --Author Draper#6666`
 
-**Usage:** `<@1275521742961508432>playlist copy`
+**Usage:** `<@1275521742961508432>playlist append`
 
 ### playlist info
 
@@ -330,43 +224,6 @@ Example use:
 ​ ​ ​ ​ `[p]playlist info MyPersonalPlaylist --scope User`
 
 **Usage:** `<@1275521742961508432>playlist info`
-
-### playlist upload
-
-**Description:** Uploads a playlist file as a playlist for the bot.
-
-V2 and old V3 playlist will be slow.
-V3 Playlist made with `[p]playlist download` will load a lot faster.
-
-**Usage**:
-​ ​ ​ ​ `[p]playlist upload [args]`
-
-**Args**:
-​ ​ ​ ​ The following are all optional:
-​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
-​ ​ ​ ​ ​ ​ ​ ​ --author [user]
-​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
-
-**Scope** is one of the following:
-​ ​ ​ ​ Global
-​ ​ ​ ​ Guild
-​ ​ ​ ​ User
-
-**Author** can be one of the following:
-​ ​ ​ ​ User ID
-​ ​ ​ ​ User Mention
-​ ​ ​ ​ User Name#123
-
-**Guild** can be one of the following:
-​ ​ ​ ​ Guild ID
-​ ​ ​ ​ Exact guild name
-
-Example use:
-​ ​ ​ ​ `[p]playlist upload`
-​ ​ ​ ​ `[p]playlist upload --scope Global`
-​ ​ ​ ​ `[p]playlist upload --scope User`
-
-**Usage:** `<@1275521742961508432>playlist upload`
 
 ### playlist download
 
@@ -440,12 +297,12 @@ Example use:
 
 **Usage:** `<@1275521742961508432>playlist save`
 
-### playlist remove
+### playlist create
 
-**Description:** Remove a track from a playlist by url.
+**Description:** Create an empty playlist.
 
- **Usage**:
-​ ​ ​ ​ `[p]playlist remove playlist_name_OR_id url [args]`
+**Usage**:
+​ ​ ​ ​ `[p]playlist create playlist_name [args]`
 
 **Args**:
 ​ ​ ​ ​ The following are all optional:
@@ -468,11 +325,11 @@ Example use:
 ​ ​ ​ ​ Exact guild name
 
 Example use:
-​ ​ ​ ​ `[p]playlist remove MyGuildPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU`
-​ ​ ​ ​ `[p]playlist remove MyGlobalPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU --scope Global`
-​ ​ ​ ​ `[p]playlist remove MyPersonalPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU --scope User`
+​ ​ ​ ​ `[p]playlist create MyGuildPlaylist`
+​ ​ ​ ​ `[p]playlist create MyGlobalPlaylist --scope Global`
+​ ​ ​ ​ `[p]playlist create MyPersonalPlaylist --scope User`
 
-**Usage:** `<@1275521742961508432>playlist remove`
+**Usage:** `<@1275521742961508432>playlist create`
 
 ### playlist dedupe
 
@@ -507,6 +364,77 @@ Example use:
 ​ ​ ​ ​ `[p]playlist dedupe MyPersonalPlaylist --scope User`
 
 **Usage:** `<@1275521742961508432>playlist dedupe`
+
+### playlist remove
+
+**Description:** Remove a track from a playlist by url.
+
+ **Usage**:
+​ ​ ​ ​ `[p]playlist remove playlist_name_OR_id url [args]`
+
+**Args**:
+​ ​ ​ ​ The following are all optional:
+​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
+
+**Scope** is one of the following:
+​ ​ ​ ​ Global
+​ ​ ​ ​ Guild
+​ ​ ​ ​ User
+
+**Author** can be one of the following:
+​ ​ ​ ​ User ID
+​ ​ ​ ​ User Mention
+​ ​ ​ ​ User Name#123
+
+**Guild** can be one of the following:
+​ ​ ​ ​ Guild ID
+​ ​ ​ ​ Exact guild name
+
+Example use:
+​ ​ ​ ​ `[p]playlist remove MyGuildPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU`
+​ ​ ​ ​ `[p]playlist remove MyGlobalPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU --scope Global`
+​ ​ ​ ​ `[p]playlist remove MyPersonalPlaylist https://www.youtube.com/watch?v=MN3x-kAbgFU --scope User`
+
+**Usage:** `<@1275521742961508432>playlist remove`
+
+### playlist upload
+
+**Description:** Uploads a playlist file as a playlist for the bot.
+
+V2 and old V3 playlist will be slow.
+V3 Playlist made with `[p]playlist download` will load a lot faster.
+
+**Usage**:
+​ ​ ​ ​ `[p]playlist upload [args]`
+
+**Args**:
+​ ​ ​ ​ The following are all optional:
+​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
+
+**Scope** is one of the following:
+​ ​ ​ ​ Global
+​ ​ ​ ​ Guild
+​ ​ ​ ​ User
+
+**Author** can be one of the following:
+​ ​ ​ ​ User ID
+​ ​ ​ ​ User Mention
+​ ​ ​ ​ User Name#123
+
+**Guild** can be one of the following:
+​ ​ ​ ​ Guild ID
+​ ​ ​ ​ Exact guild name
+
+Example use:
+​ ​ ​ ​ `[p]playlist upload`
+​ ​ ​ ​ `[p]playlist upload --scope Global`
+​ ​ ​ ​ `[p]playlist upload --scope User`
+
+**Usage:** `<@1275521742961508432>playlist upload`
 
 ### playlist rename
 
@@ -575,6 +503,78 @@ Example use:
 ​ ​ ​ ​ `[p]playlist delete MyPersonalPlaylist --scope User`
 
 **Usage:** `<@1275521742961508432>playlist delete`
+
+### playlist start
+
+**Description:** Load a playlist into the queue.
+
+**Usage**:
+​ ​ ​ ​` [p]playlist start playlist_name_OR_id [args]`
+
+**Args**:
+​ ​ ​ ​ The following are all optional:
+​ ​ ​ ​ ​ ​ ​ ​ --scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --guild [guild] **Only the bot owner can use this**
+
+**Scope** is one of the following:
+​ ​ ​ ​ Global
+​ ​ ​ ​ Guild
+​ ​ ​ ​ User
+
+**Author** can be one of the following:
+​ ​ ​ ​ User ID
+​ ​ ​ ​ User Mention
+​ ​ ​ ​ User Name#123
+
+**Guild** can be one of the following:
+​ ​ ​ ​ Guild ID
+​ ​ ​ ​ Exact guild name
+
+Example use:
+​ ​ ​ ​ `[p]playlist start MyGuildPlaylist`
+​ ​ ​ ​ `[p]playlist start MyGlobalPlaylist --scope Global`
+​ ​ ​ ​ `[p]playlist start MyPersonalPlaylist --scope User`
+
+**Usage:** `<@1275521742961508432>playlist start`
+
+### playlist copy
+
+**Description:** Copy a playlist from one scope to another.
+
+**Usage**:
+​ ​ ​ ​ `[p]playlist copy playlist_name_OR_id [args]`
+
+**Args**:
+​ ​ ​ ​ The following are all optional:
+​ ​ ​ ​ ​ ​ ​ ​ --from-scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --from-author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --from-guild [guild] **Only the bot owner can use this**
+
+​ ​ ​ ​ ​ ​ ​ ​ --to-scope <scope>
+​ ​ ​ ​ ​ ​ ​ ​ --to-author [user]
+​ ​ ​ ​ ​ ​ ​ ​ --to-guild [guild] **Only the bot owner can use this**
+
+**Scope** is one of the following:
+​ ​ ​ ​ Global
+​ ​ ​ ​ Guild
+​ ​ ​ ​ User
+
+**Author** can be one of the following:
+​ ​ ​ ​ User ID
+​ ​ ​ ​ User Mention
+​ ​ ​ ​ User Name#123
+
+**Guild** can be one of the following:
+​ ​ ​ ​ Guild ID
+​ ​ ​ ​ Exact guild name
+
+Example use:
+​ ​ ​ ​ `[p]playlist copy MyGuildPlaylist --from-scope Guild --to-scope Global`
+​ ​ ​ ​ `[p]playlist copy MyGlobalPlaylist --from-scope Global --to-author Draper#6666 --to-scope User`
+​ ​ ​ ​ `[p]playlist copy MyPersonalPlaylist --from-scope user --to-author Draper#6666 --to-scope Guild --to-guild Red - Discord Bot`
+
+**Usage:** `<@1275521742961508432>playlist copy`
 
 ### play
 
@@ -684,39 +684,13 @@ All the commands in here have the potential to break the Audio cog.
 
 **Usage:** `<@1275521742961508432>llset`
 
-### llset password
+### llset host
 
-**Description:** Set the Lavalink node password.
+**Description:** Set the Lavalink node host.
 
-This command sets the connection password which Audio will use to connect to an unmanaged Lavalink node.
+This command sets the connection host which Audio will use to connect to an unmanaged Lavalink node.
 
-**Usage:** `<@1275521742961508432>llset password`
-
-### llset yaml
-
-**Description:** Uploads a copy of the application.yml file used by the managed Lavalink node.
-
-**Usage:** `<@1275521742961508432>llset yaml`
-
-### llset info
-
-**Description:** Display Lavalink connection settings.
-
-**Usage:** `<@1275521742961508432>llset info`
-
-### llset reset
-
-**Description:** Reset all `llset` changes back to their default values.
-
-**Usage:** `<@1275521742961508432>llset reset`
-
-### llset unmanaged
-
-**Description:** Toggle using external (unmanaged) Lavalink nodes - requires an existing Lavalink node for Audio to work, if enabled.
-
-This command disables the managed Lavalink server. If you do not have another Lavalink node set up, you will be unable to use Audio while this is enabled.
-
-**Usage:** `<@1275521742961508432>llset unmanaged`
+**Usage:** `<@1275521742961508432>llset host`
 
 ### llset java
 
@@ -739,13 +713,11 @@ This toggle sets the connection type to secured or unsecured when connecting to 
 
 **Usage:** `<@1275521742961508432>llset secured`
 
-### llset host
+### llset reset
 
-**Description:** Set the Lavalink node host.
+**Description:** Reset all `llset` changes back to their default values.
 
-This command sets the connection host which Audio will use to connect to an unmanaged Lavalink node.
-
-**Usage:** `<@1275521742961508432>llset host`
+**Usage:** `<@1275521742961508432>llset reset`
 
 ### llset port
 
@@ -764,80 +736,6 @@ All settings under this group will likely cause Audio to malfunction if changed 
 
 **Usage:** `<@1275521742961508432>llset config`
 
-### llset config source
-
-**Description:** `Dangerous command` Toggle audio sources on/off.
-
-By default, all sources are enabled, you should only use commands here to disable a specific source if you have been advised to, disabling sources without background knowledge can cause Audio to break.
-
-**Usage:** `<@1275521742961508432>llset config source`
-
-### llset config source youtube
-
-**Description:** `Dangerous command` Toggle YouTube source on or off (this includes Spotify).
-
-This toggle controls the playback of all YouTube and Spotify related content.
-
-**Usage:** `<@1275521742961508432>llset config source youtube`
-
-### llset config source local
-
-**Description:** Toggle local file usage on or off.
-
-This toggle controls the playback of all local track content, usually found inside the `localtracks` folder.
-
-**Usage:** `<@1275521742961508432>llset config source local`
-
-### llset config source soundcloud
-
-**Description:** Toggle Soundcloud source on or off.
-
-This toggle controls the playback of all SoundCloud related content.
-
-**Usage:** `<@1275521742961508432>llset config source soundcloud`
-
-### llset config source twitch
-
-**Description:** Toggle Twitch source on or off.
-
-This toggle controls the playback of all Twitch related content.
-
-**Usage:** `<@1275521742961508432>llset config source twitch`
-
-### llset config source vimeo
-
-**Description:** Toggle Vimeo source on or off.
-
-This toggle controls the playback of all Vimeo related content.
-
-**Usage:** `<@1275521742961508432>llset config source vimeo`
-
-### llset config source bandcamp
-
-**Description:** Toggle Bandcamp source on or off.
-
-This toggle controls the playback of all Bandcamp related content.
-
-**Usage:** `<@1275521742961508432>llset config source bandcamp`
-
-### llset config source http
-
-**Description:** Toggle HTTP direct URL usage on or off.
-
-This source is used to allow playback from direct HTTP streams (this does not affect direct URL playback for the other sources).
-
-**Usage:** `<@1275521742961508432>llset config source http`
-
-### llset config port
-
-**Description:** `Dangerous command` Set the managed Lavalink node's connection port.
-
-This port is the port the managed Lavalink node binds to, you should only change this if there is a conflict with the default port because you already have an application using port 2333 on this device.
-
-The value by default is `2333`.
-
-**Usage:** `<@1275521742961508432>llset config port`
-
 ### llset config token
 
 **Description:** Set the managed Lavalink node's connection password.
@@ -846,14 +744,6 @@ This is the password required for Audio to connect to the managed Lavalink node.
 The value by default is `youshallnotpass`.
 
 **Usage:** `<@1275521742961508432>llset config token`
-
-### llset config bind
-
-**Description:** `Dangerous command` Set the managed Lavalink node's binding IP address.
-
-This value by default is `localhost` which will restrict the server to only localhost apps by default, changing this will likely break the managed Lavalink node if you don't know what you are doing.
-
-**Usage:** `<@1275521742961508432>llset config bind`
 
 ### llset config server
 
@@ -877,6 +767,102 @@ Only change this if you have been directly advised to, changing it can cause sig
 
 **Usage:** `<@1275521742961508432>llset config server framebuffer`
 
+### llset config bind
+
+**Description:** `Dangerous command` Set the managed Lavalink node's binding IP address.
+
+This value by default is `localhost` which will restrict the server to only localhost apps by default, changing this will likely break the managed Lavalink node if you don't know what you are doing.
+
+**Usage:** `<@1275521742961508432>llset config bind`
+
+### llset config port
+
+**Description:** `Dangerous command` Set the managed Lavalink node's connection port.
+
+This port is the port the managed Lavalink node binds to, you should only change this if there is a conflict with the default port because you already have an application using port 2333 on this device.
+
+The value by default is `2333`.
+
+**Usage:** `<@1275521742961508432>llset config port`
+
+### llset config source
+
+**Description:** `Dangerous command` Toggle audio sources on/off.
+
+By default, all sources are enabled, you should only use commands here to disable a specific source if you have been advised to, disabling sources without background knowledge can cause Audio to break.
+
+**Usage:** `<@1275521742961508432>llset config source`
+
+### llset config source soundcloud
+
+**Description:** Toggle Soundcloud source on or off.
+
+This toggle controls the playback of all SoundCloud related content.
+
+**Usage:** `<@1275521742961508432>llset config source soundcloud`
+
+### llset config source youtube
+
+**Description:** `Dangerous command` Toggle YouTube source on or off (this includes Spotify).
+
+This toggle controls the playback of all YouTube and Spotify related content.
+
+**Usage:** `<@1275521742961508432>llset config source youtube`
+
+### llset config source local
+
+**Description:** Toggle local file usage on or off.
+
+This toggle controls the playback of all local track content, usually found inside the `localtracks` folder.
+
+**Usage:** `<@1275521742961508432>llset config source local`
+
+### llset config source http
+
+**Description:** Toggle HTTP direct URL usage on or off.
+
+This source is used to allow playback from direct HTTP streams (this does not affect direct URL playback for the other sources).
+
+**Usage:** `<@1275521742961508432>llset config source http`
+
+### llset config source bandcamp
+
+**Description:** Toggle Bandcamp source on or off.
+
+This toggle controls the playback of all Bandcamp related content.
+
+**Usage:** `<@1275521742961508432>llset config source bandcamp`
+
+### llset config source twitch
+
+**Description:** Toggle Twitch source on or off.
+
+This toggle controls the playback of all Twitch related content.
+
+**Usage:** `<@1275521742961508432>llset config source twitch`
+
+### llset config source vimeo
+
+**Description:** Toggle Vimeo source on or off.
+
+This toggle controls the playback of all Vimeo related content.
+
+**Usage:** `<@1275521742961508432>llset config source vimeo`
+
+### llset unmanaged
+
+**Description:** Toggle using external (unmanaged) Lavalink nodes - requires an existing Lavalink node for Audio to work, if enabled.
+
+This command disables the managed Lavalink server. If you do not have another Lavalink node set up, you will be unable to use Audio while this is enabled.
+
+**Usage:** `<@1275521742961508432>llset unmanaged`
+
+### llset yaml
+
+**Description:** Uploads a copy of the application.yml file used by the managed Lavalink node.
+
+**Usage:** `<@1275521742961508432>llset yaml`
+
 ### llset heapsize
 
 **Description:** Set the managed Lavalink node maximum heap-size.
@@ -889,6 +875,20 @@ To reset this value to the default, run the command without any input.
 
 **Usage:** `<@1275521742961508432>llset heapsize`
 
+### llset password
+
+**Description:** Set the Lavalink node password.
+
+This command sets the connection password which Audio will use to connect to an unmanaged Lavalink node.
+
+**Usage:** `<@1275521742961508432>llset password`
+
+### llset info
+
+**Description:** Display Lavalink connection settings.
+
+**Usage:** `<@1275521742961508432>llset info`
+
 ### eq
 
 **Description:** Equalizer management.
@@ -899,12 +899,6 @@ Band names are 25, 40, 63, 100, 160, 250, 400, 630, 1k, 1.6k, 2.5k, 4k,
 Setting a band value to -0.25 nullifies it while +0.25 is double.
 
 **Usage:** `<@1275521742961508432>eq`
-
-### eq load
-
-**Description:** Load a saved eq preset.
-
-**Usage:** `<@1275521742961508432>eq load`
 
 ### eq list
 
@@ -928,6 +922,12 @@ Band names are 25, 40, 63, 100, 160, 250, 400, 630, 1k, 1.6k, 2.5k, 4k,
 Setting a band value to -0.25 nullifies it while +0.25 is double.
 
 **Usage:** `<@1275521742961508432>eq set`
+
+### eq load
+
+**Description:** Load a saved eq preset.
+
+**Usage:** `<@1275521742961508432>eq load`
 
 ### eq save
 
@@ -1036,31 +1036,19 @@ over `[p]shuffle`.
 
 **Usage:** `<@1275521742961508432>audioset`
 
-### audioset globaldailyqueue
-
-**Description:** Toggle global daily queues.
-
-Global daily queues creates a playlist for all tracks played today.
-
-**Usage:** `<@1275521742961508432>audioset globaldailyqueue`
-
-### audioset autodeafen
-
-**Description:** Toggle whether the bot will be auto deafened upon joining the voice channel.
-
-**Usage:** `<@1275521742961508432>audioset autodeafen`
-
-### audioset restart
-
-**Description:** Restarts the lavalink connection.
-
-**Usage:** `<@1275521742961508432>audioset restart`
-
 ### audioset lyrics
 
 **Description:** Prioritise tracks with lyrics.
 
 **Usage:** `<@1275521742961508432>audioset lyrics`
+
+### audioset dailyqueue
+
+**Description:** Toggle daily queues.
+
+Daily queues creates a playlist for all tracks played today.
+
+**Usage:** `<@1275521742961508432>audioset dailyqueue`
 
 ### audioset restrictions
 
@@ -1068,47 +1056,59 @@ Global daily queues creates a playlist for all tracks played today.
 
 **Usage:** `<@1275521742961508432>audioset restrictions`
 
-### audioset restrictions blacklist
-
-**Description:** Manages the keyword blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions blacklist`
-
-### audioset restrictions blacklist add
-
-**Description:** Adds a keyword to the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions blacklist add`
-
-### audioset restrictions blacklist clear
-
-**Description:** Clear all keywords added to the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions blacklist clear`
-
-### audioset restrictions blacklist list
-
-**Description:** List all keywords added to the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions blacklist list`
-
-### audioset restrictions blacklist delete
-
-**Description:** Removes a keyword from the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions blacklist delete`
-
 ### audioset restrictions global
 
 **Description:** Manages the global keyword whitelist/blacklist.
 
 **Usage:** `<@1275521742961508432>audioset restrictions global`
 
+### audioset restrictions global blacklist
+
+**Description:** Manages the global keyword blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global blacklist`
+
+### audioset restrictions global blacklist delete
+
+**Description:** Removes a keyword from the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global blacklist delete`
+
+### audioset restrictions global blacklist list
+
+**Description:** List all keywords added to the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global blacklist list`
+
+### audioset restrictions global blacklist clear
+
+**Description:** Clear all keywords added to the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global blacklist clear`
+
+### audioset restrictions global blacklist add
+
+**Description:** Adds a keyword to the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global blacklist add`
+
 ### audioset restrictions global whitelist
 
 **Description:** Manages the global keyword whitelist.
 
 **Usage:** `<@1275521742961508432>audioset restrictions global whitelist`
+
+### audioset restrictions global whitelist delete
+
+**Description:** Removes a keyword from the whitelist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global whitelist delete`
+
+### audioset restrictions global whitelist clear
+
+**Description:** Clear all keywords from the whitelist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions global whitelist clear`
 
 ### audioset restrictions global whitelist add
 
@@ -1124,53 +1124,53 @@ If anything is added to whitelist, it will blacklist everything else.
 
 **Usage:** `<@1275521742961508432>audioset restrictions global whitelist list`
 
-### audioset restrictions global whitelist delete
+### audioset restrictions blacklist
 
-**Description:** Removes a keyword from the whitelist.
+**Description:** Manages the keyword blacklist.
 
-**Usage:** `<@1275521742961508432>audioset restrictions global whitelist delete`
+**Usage:** `<@1275521742961508432>audioset restrictions blacklist`
 
-### audioset restrictions global whitelist clear
-
-**Description:** Clear all keywords from the whitelist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions global whitelist clear`
-
-### audioset restrictions global blacklist
-
-**Description:** Manages the global keyword blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions global blacklist`
-
-### audioset restrictions global blacklist delete
-
-**Description:** Removes a keyword from the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions global blacklist delete`
-
-### audioset restrictions global blacklist add
-
-**Description:** Adds a keyword to the blacklist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions global blacklist add`
-
-### audioset restrictions global blacklist list
+### audioset restrictions blacklist list
 
 **Description:** List all keywords added to the blacklist.
 
-**Usage:** `<@1275521742961508432>audioset restrictions global blacklist list`
+**Usage:** `<@1275521742961508432>audioset restrictions blacklist list`
 
-### audioset restrictions global blacklist clear
+### audioset restrictions blacklist clear
 
 **Description:** Clear all keywords added to the blacklist.
 
-**Usage:** `<@1275521742961508432>audioset restrictions global blacklist clear`
+**Usage:** `<@1275521742961508432>audioset restrictions blacklist clear`
+
+### audioset restrictions blacklist add
+
+**Description:** Adds a keyword to the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions blacklist add`
+
+### audioset restrictions blacklist delete
+
+**Description:** Removes a keyword from the blacklist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions blacklist delete`
 
 ### audioset restrictions whitelist
 
 **Description:** Manages the keyword whitelist.
 
 **Usage:** `<@1275521742961508432>audioset restrictions whitelist`
+
+### audioset restrictions whitelist clear
+
+**Description:** Clear all keywords from the whitelist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions whitelist clear`
+
+### audioset restrictions whitelist list
+
+**Description:** List all keywords added to the whitelist.
+
+**Usage:** `<@1275521742961508432>audioset restrictions whitelist list`
 
 ### audioset restrictions whitelist add
 
@@ -1180,31 +1180,11 @@ If anything is added to whitelist, it will blacklist everything else.
 
 **Usage:** `<@1275521742961508432>audioset restrictions whitelist add`
 
-### audioset restrictions whitelist list
-
-**Description:** List all keywords added to the whitelist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions whitelist list`
-
 ### audioset restrictions whitelist delete
 
 **Description:** Removes a keyword from the whitelist.
 
 **Usage:** `<@1275521742961508432>audioset restrictions whitelist delete`
-
-### audioset restrictions whitelist clear
-
-**Description:** Clear all keywords from the whitelist.
-
-**Usage:** `<@1275521742961508432>audioset restrictions whitelist clear`
-
-### audioset dailyqueue
-
-**Description:** Toggle daily queues.
-
-Daily queues creates a playlist for all tracks played today.
-
-**Usage:** `<@1275521742961508432>audioset dailyqueue`
 
 ### audioset mycountrycode
 
@@ -1260,6 +1240,14 @@ This setting takes precedence over `[p]audioset emptydisconnect`.
 
 **Usage:** `<@1275521742961508432>audioset role`
 
+### audioset dj
+
+**Description:** Toggle DJ mode.
+
+DJ mode allows users with the DJ role to use audio commands.
+
+**Usage:** `<@1275521742961508432>audioset dj`
+
 ### audioset cache
 
 **Description:** Sets the caching level.
@@ -1275,14 +1263,6 @@ Level can be one of the following:
 If you wish to disable a specific cache use a negative number.
 
 **Usage:** `<@1275521742961508432>audioset cache`
-
-### audioset dj
-
-**Description:** Toggle DJ mode.
-
-DJ mode allows users with the DJ role to use audio commands.
-
-**Usage:** `<@1275521742961508432>audioset dj`
 
 ### audioset localpath
 
@@ -1307,23 +1287,17 @@ invalid.
 
 **Usage:** `<@1275521742961508432>audioset cacheage`
 
-### audioset status
-
-**Description:** Enable/disable tracks' titles as status.
-
-**Usage:** `<@1275521742961508432>audioset status`
-
-### audioset emptypause
-
-**Description:** Auto-pause after x seconds when room is empty, 0 to disable.
-
-**Usage:** `<@1275521742961508432>audioset emptypause`
-
 ### audioset autoplay
 
 **Description:** Change auto-play setting.
 
 **Usage:** `<@1275521742961508432>audioset autoplay`
+
+### audioset autoplay reset
+
+**Description:** Resets auto-play to the default playlist.
+
+**Usage:** `<@1275521742961508432>audioset autoplay reset`
 
 ### audioset autoplay playlist
 
@@ -1359,17 +1333,17 @@ Example use:
 
 **Usage:** `<@1275521742961508432>audioset autoplay playlist`
 
-### audioset autoplay reset
-
-**Description:** Resets auto-play to the default playlist.
-
-**Usage:** `<@1275521742961508432>audioset autoplay reset`
-
 ### audioset autoplay toggle
 
 **Description:** Toggle auto-play when there no songs in queue.
 
 **Usage:** `<@1275521742961508432>audioset autoplay toggle`
+
+### audioset status
+
+**Description:** Enable/disable tracks' titles as status.
+
+**Usage:** `<@1275521742961508432>audioset status`
 
 ### audioset maxlength
 
@@ -1379,12 +1353,6 @@ Accepts seconds or a value formatted like 00:00:00 (`hh:mm:ss`) or 00:00 (`mm:ss
 input will turn the max length setting off.
 
 **Usage:** `<@1275521742961508432>audioset maxlength`
-
-### audioset countrycode
-
-**Description:** Set the country code for Spotify searches.
-
-**Usage:** `<@1275521742961508432>audioset countrycode`
 
 ### audioset notify
 
@@ -1420,9 +1388,41 @@ Persistent queues allows the current queue to be restored when the queue closes.
 
 **Usage:** `<@1275521742961508432>audioset persistqueue`
 
+### audioset restart
+
+**Description:** Restarts the lavalink connection.
+
+**Usage:** `<@1275521742961508432>audioset restart`
+
+### audioset emptypause
+
+**Description:** Auto-pause after x seconds when room is empty, 0 to disable.
+
+**Usage:** `<@1275521742961508432>audioset emptypause`
+
 ### audioset logs
 
 **Description:** Sends the managed Lavalink node logs to your DMs.
 
 **Usage:** `<@1275521742961508432>audioset logs`
+
+### audioset countrycode
+
+**Description:** Set the country code for Spotify searches.
+
+**Usage:** `<@1275521742961508432>audioset countrycode`
+
+### audioset globaldailyqueue
+
+**Description:** Toggle global daily queues.
+
+Global daily queues creates a playlist for all tracks played today.
+
+**Usage:** `<@1275521742961508432>audioset globaldailyqueue`
+
+### audioset autodeafen
+
+**Description:** Toggle whether the bot will be auto deafened upon joining the voice channel.
+
+**Usage:** `<@1275521742961508432>audioset autodeafen`
 

@@ -6,6 +6,42 @@
 
 **Usage:** `<@1275521742961508432>temproles`
 
+### temproles selfassign
+
+**Description:** Assign/Add an allowed self Temp Role to yourself, for a specified duration.
+
+**Usage:** `<@1275521742961508432>temproles selfassign`
+
+### temproles assign
+
+**Description:** Assign/Add a TempRole to a member, for a specified duration.
+
+**Usage:** `<@1275521742961508432>temproles assign`
+
+### temproles selflist
+
+**Description:** Unassign/Remove an allowed self Temp Role from yourself.
+
+**Usage:** `<@1275521742961508432>temproles selflist`
+
+### temproles selfunassign
+
+**Description:** Unassign/Remove an allowed self Temp Role from yourself.
+
+**Usage:** `<@1275521742961508432>temproles selfunassign`
+
+### temproles removeallowedselftemprole
+
+**Description:** Remove an allowed self Temp Role.
+
+**Usage:** `<@1275521742961508432>temproles removeallowedselftemprole`
+
+### temproles logschannel
+
+**Description:** Set the logs channel for Temp Roles.
+
+**Usage:** `<@1275521742961508432>temproles logschannel`
+
 ### temproles addallowedselftemprole
 
 **Description:** Add an allowed self Temp Role.
@@ -16,53 +52,17 @@
 
 **Usage:** `<@1275521742961508432>temproles addallowedselftemprole`
 
-### temproles selfunassign
+### temproles unassign
 
-**Description:** Unassign/Remove an allowed self Temp Role from yourself.
+**Description:** Unassign/Remove a TempRole from a member.
 
-**Usage:** `<@1275521742961508432>temproles selfunassign`
-
-### temproles selfassign
-
-**Description:** Assign/Add an allowed self Temp Role to yourself, for a specified duration.
-
-**Usage:** `<@1275521742961508432>temproles selfassign`
+**Usage:** `<@1275521742961508432>temproles unassign`
 
 ### temproles list
 
 **Description:** List active Temp Roles on this server, for optional specified member and/or role.
 
 **Usage:** `<@1275521742961508432>temproles list`
-
-### temproles removeallowedselftemprole
-
-**Description:** Remove an allowed self Temp Role.
-
-**Usage:** `<@1275521742961508432>temproles removeallowedselftemprole`
-
-### temproles assign
-
-**Description:** Assign/Add a TempRole to a member, for a specified duration.
-
-**Usage:** `<@1275521742961508432>temproles assign`
-
-### temproles logschannel
-
-**Description:** Set the logs channel for Temp Roles.
-
-**Usage:** `<@1275521742961508432>temproles logschannel`
-
-### temproles selflist
-
-**Description:** Unassign/Remove an allowed self Temp Role from yourself.
-
-**Usage:** `<@1275521742961508432>temproles selflist`
-
-### temproles unassign
-
-**Description:** Unassign/Remove a TempRole from a member.
-
-**Usage:** `<@1275521742961508432>temproles unassign`
 
 ### temproles edit
 

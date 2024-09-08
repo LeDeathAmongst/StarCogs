@@ -12,6 +12,17 @@
 
 **Usage:** `<@1275521742961508432>invite set`
 
+### invite set invite
+
+**Description:** Set an invite link.
+
+**Arguments**
+    - `invite_type`: The type of invite (e.g., main, admin, support).
+    - `name`: The display name for the invite.
+    - `invite_link`: The invite link.
+
+**Usage:** `<@1275521742961508432>invite set invite`
+
 ### invite set color
 
 **Description:** Set the embed color.
@@ -30,17 +41,6 @@
     - `field_name`: The field name to display in the embed.
 
 **Usage:** `<@1275521742961508432>invite set fieldname`
-
-### invite set invite
-
-**Description:** Set an invite link.
-
-**Arguments**
-    - `invite_type`: The type of invite (e.g., main, admin, support).
-    - `name`: The display name for the invite.
-    - `invite_link`: The invite link.
-
-**Usage:** `<@1275521742961508432>invite set invite`
 
 ### support
 

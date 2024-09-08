@@ -6,12 +6,6 @@
 
 **Usage:** `<@1275521742961508432>urlbuttons`
 
-### urlbuttons add
-
-**Description:** Add a url-button for a message.
-
-**Usage:** `<@1275521742961508432>urlbuttons add`
-
 ### urlbuttons bulk
 
 **Description:** Add a url-button for a message.
@@ -33,6 +27,12 @@
 Use `[p]urlbuttons list <message>` to find the config identifier.
 
 **Usage:** `<@1275521742961508432>urlbuttons remove`
+
+### urlbuttons add
+
+**Description:** Add a url-button for a message.
+
+**Usage:** `<@1275521742961508432>urlbuttons add`
 
 ### urlbuttons clear
 

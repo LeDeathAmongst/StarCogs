@@ -114,26 +114,6 @@ and/or make sure to remove everyone from the list to disable the whitelist.
 
 **Usage:** `<@1275521742961508432>nodms settings`
 
-### nodms toggle
-
-**Description:** Toggle whether to ignore DM messages and/or commands.
-
-Enabling the `<type>` argument `all` and `messages`
-will cause botname] to delete messages everytime someone
-DMs [botname]. Unwanted behaviour may occur if
-people try to spam the bot's DMs while these types
-are enabled.
-
-Message triggers are enabled by default, to disable
-them use the `[p]nodms message toggle <true_or_false>`
-command.
-
-**Arguments**:
-- `<true_or_false>` - enable/disable nodms for [botname].
-- `<type>` - whether to enable messages, commands or (both) all.
-
-**Usage:** `<@1275521742961508432>nodms toggle`
-
 ### nodms blacklist
 
 **Description:** Configure the blacklist for nodms.
@@ -142,6 +122,16 @@ View the list using the `[p]nodms blacklist list <users/commands>` command,
 and/or make sure to remove everyone from the list to disable the blacklist.
 
 **Usage:** `<@1275521742961508432>nodms blacklist`
+
+### nodms blacklist users
+
+**Description:** Add or remove users from the blacklist.
+
+**Arguments**:
+- `<add_or_remove>`: add or remove users from the blacklist.
+- `<users>        `: list of users to be added/removed.
+
+**Usage:** `<@1275521742961508432>nodms blacklist users`
 
 ### nodms blacklist commands
 
@@ -162,13 +152,23 @@ and/or make sure to remove everyone from the list to disable the blacklist.
 
 **Usage:** `<@1275521742961508432>nodms blacklist list`
 
-### nodms blacklist users
+### nodms toggle
 
-**Description:** Add or remove users from the blacklist.
+**Description:** Toggle whether to ignore DM messages and/or commands.
+
+Enabling the `<type>` argument `all` and `messages`
+will cause botname] to delete messages everytime someone
+DMs [botname]. Unwanted behaviour may occur if
+people try to spam the bot's DMs while these types
+are enabled.
+
+Message triggers are enabled by default, to disable
+them use the `[p]nodms message toggle <true_or_false>`
+command.
 
 **Arguments**:
-- `<add_or_remove>`: add or remove users from the blacklist.
-- `<users>        `: list of users to be added/removed.
+- `<true_or_false>` - enable/disable nodms for [botname].
+- `<type>` - whether to enable messages, commands or (both) all.
 
-**Usage:** `<@1275521742961508432>nodms blacklist users`
+**Usage:** `<@1275521742961508432>nodms toggle`
 

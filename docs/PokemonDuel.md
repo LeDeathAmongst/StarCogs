@@ -12,6 +12,12 @@
 
 **Usage:** `<@1275521742961508432>pokemonduel party`
 
+### pokemonduel party list
+
+**Description:** View the pokemon currently in your party.
+
+**Usage:** `<@1275521742961508432>pokemonduel party list`
+
 ### pokemonduel party set
 
 **Description:** Set your party of pokemon.
@@ -27,12 +33,6 @@ In order to set your party, you will need to create a team on Pokemon Showdown T
 8. Copy the text provided, and pass that to this command.
 
 **Usage:** `<@1275521742961508432>pokemonduel party set`
-
-### pokemonduel party list
-
-**Description:** View the pokemon currently in your party.
-
-**Usage:** `<@1275521742961508432>pokemonduel party list`
 
 ### pokemonduel inverse
 

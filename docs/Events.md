@@ -20,13 +20,60 @@ You will be notified when events start and end
 
 **Usage:** `<@1275521742961508432>events`
 
-### events autodelete
+### events pingstaff
 
-**Description:** (Toggle) Auto delete events from config when they complete
+**Description:** (Toggle) Ping staff on event completion
 
-If auto delete is enabled, the messages in the event channel will need to be cleaned up manually
+**Usage:** `<@1275521742961508432>events pingstaff`
 
-**Usage:** `<@1275521742961508432>events autodelete`
+### events notifyrole
+
+**Description:** Add/Remove notify roles
+
+These roles will be pinged on event start and completion
+
+**Usage:** `<@1275521742961508432>events notifyrole`
+
+### events create
+
+**Description:** Create a new event
+
+**Usage:** `<@1275521742961508432>events create`
+
+### events view
+
+**Description:** View the current events and settings
+
+**Usage:** `<@1275521742961508432>events view`
+
+### events delete
+
+**Description:** Delete an event outright
+
+**Usage:** `<@1275521742961508432>events delete`
+
+### events staffrole
+
+**Description:** Add/Remove staff roles
+
+If ping staff is enabled, these roles will be pinged on event completion
+
+**Usage:** `<@1275521742961508432>events staffrole`
+
+### events remove
+
+**Description:** Remove a user from an active event
+
+**Usage:** `<@1275521742961508432>events remove`
+
+### events resultdelete
+
+**Description:** (Toggle) Include event results in the messages to delete on cleanup
+
+If this is on when an event is deleted and the user chooses to clean up the messages,
+the results announcement will also be deleted
+
+**Usage:** `<@1275521742961508432>events resultdelete`
 
 ### events end
 
@@ -45,18 +92,6 @@ This will also delete the event afterwards
 `7d4h` - 7 days 4 hours
 
 **Usage:** `<@1275521742961508432>events shorten`
-
-### events view
-
-**Description:** View the current events and settings
-
-**Usage:** `<@1275521742961508432>events view`
-
-### events pingstaff
-
-**Description:** (Toggle) Ping staff on event completion
-
-**Usage:** `<@1275521742961508432>events pingstaff`
 
 ### events emoji
 
@@ -77,14 +112,6 @@ Existing events will still use the previous emoji for votes
 
 **Usage:** `<@1275521742961508432>events extend`
 
-### events blacklistuser
-
-**Description:** Add/Remove blacklisted users
-
-These users are not allowed to enter events, but can still vote on them
-
-**Usage:** `<@1275521742961508432>events blacklistuser`
-
 ### events blacklistrole
 
 **Description:** Add/Remove blacklisted roles
@@ -93,46 +120,19 @@ These roles are not allowed to enter events, but can still vote on them
 
 **Usage:** `<@1275521742961508432>events blacklistrole`
 
-### events staffrole
+### events blacklistuser
 
-**Description:** Add/Remove staff roles
+**Description:** Add/Remove blacklisted users
 
-If ping staff is enabled, these roles will be pinged on event completion
+These users are not allowed to enter events, but can still vote on them
 
-**Usage:** `<@1275521742961508432>events staffrole`
+**Usage:** `<@1275521742961508432>events blacklistuser`
 
-### events notifyrole
+### events autodelete
 
-**Description:** Add/Remove notify roles
+**Description:** (Toggle) Auto delete events from config when they complete
 
-These roles will be pinged on event start and completion
+If auto delete is enabled, the messages in the event channel will need to be cleaned up manually
 
-**Usage:** `<@1275521742961508432>events notifyrole`
-
-### events resultdelete
-
-**Description:** (Toggle) Include event results in the messages to delete on cleanup
-
-If this is on when an event is deleted and the user chooses to clean up the messages,
-the results announcement will also be deleted
-
-**Usage:** `<@1275521742961508432>events resultdelete`
-
-### events create
-
-**Description:** Create a new event
-
-**Usage:** `<@1275521742961508432>events create`
-
-### events delete
-
-**Description:** Delete an event outright
-
-**Usage:** `<@1275521742961508432>events delete`
-
-### events remove
-
-**Description:** Remove a user from an active event
-
-**Usage:** `<@1275521742961508432>events remove`
+**Usage:** `<@1275521742961508432>events autodelete`
 

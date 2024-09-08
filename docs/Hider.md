@@ -6,6 +6,14 @@
 
 **Usage:** `<@1275521742961508432>hider`
 
+### hider hide
+
+**Description:** Hide a command from being displayed in help.
+
+This will not work if [p]helpset showhidden is enabled.
+
+**Usage:** `<@1275521742961508432>hider hide`
+
 ### hider show
 
 **Description:** Show a command that was previously hidden by Hider.
@@ -17,12 +25,4 @@
 **Description:** List the commands that Hider is hiding.
 
 **Usage:** `<@1275521742961508432>hider list`
-
-### hider hide
-
-**Description:** Hide a command from being displayed in help.
-
-This will not work if [p]helpset showhidden is enabled.
-
-**Usage:** `<@1275521742961508432>hider hide`
 

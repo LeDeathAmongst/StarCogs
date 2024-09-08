@@ -72,17 +72,17 @@
 
 **Usage:** `<@1275521742961508432>warnset threshold`
 
-### warnset channel
-
-**Description:** Set the default channel for warnings.
-
-**Usage:** `<@1275521742961508432>warnset channel`
-
 ### warnset timeoutduration
 
 **Description:** Set the duration (in minutes) for timeouts.
 
 **Usage:** `<@1275521742961508432>warnset timeoutduration`
+
+### warnset channel
+
+**Description:** Set the default channel for warnings.
+
+**Usage:** `<@1275521742961508432>warnset channel`
 
 ### warnset softbanduration
 
@@ -101,16 +101,4 @@
 **Description:** Start an adwarn race that lasts for a configurable amount of time.
 
 **Usage:** `<@1275521742961508432>adrace`
-
-### weeklystats
-
-**Description:** Send an embed with the weekly AdWarn stats sorted by per-issuer.
-
-**Usage:** `<@1275521742961508432>weeklystats`
-
-### monthlystats
-
-**Description:** Send an embed with the monthly AdWarn stats sorted by per-issuer.
-
-**Usage:** `<@1275521742961508432>monthlystats`
 

@@ -1,3 +1,4 @@
+from Star_Utils import Cog
 import discord
 from redbot.core import commands
 from selenium import webdriver
@@ -9,34 +10,33 @@ from selenium.common.exceptions import TimeoutException
 import os
 import tempfile
 
-class Screenshot(commands.Cog):
+
+class Screenshot(Cog):
+
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.hybrid_command(name="screenshot", with_app_command=True, description="Takes a screenshot of the provided website URL.")
+    @commands.hybrid_command(name='screenshot', with_app_command=True,
+        description='Takes a screenshot of the provided website URL.')
     async def screenshot(self, ctx: commands.Context, url: str):
-        await ctx.send("Taking screenshot...")
-
-        # Set up Selenium WebDriver
+        await ctx.send('Taking screenshot...')
         options = webdriver.FirefoxOptions()
-        options.add_argument("--headless")  # Run in headless mode
-
-        # Specify the path to the GeckoDriver executable
-        gecko_driver_path = "/usr/local/bin/geckodriver"
-
-        driver = webdriver.Firefox(service=FirefoxService(executable_path=gecko_driver_path), options=options)
-
+        options.add_argument('--headless')
+        gecko_driver_path = '/usr/local/bin/geckodriver'
+        driver = webdriver.Firefox(service=FirefoxService(executable_path=
+            gecko_driver_path), options=options)
         try:
             driver.get(url)
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
-            screenshot_path = os.path.join(tempfile.gettempdir(), "screenshot.png")
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+                (By.TAG_NAME, 'body')))
+            screenshot_path = os.path.join(tempfile.gettempdir(),
+                'screenshot.png')
             driver.save_screenshot(screenshot_path)
             await ctx.send(file=discord.File(screenshot_path))
         except TimeoutException:
-            await ctx.send("Failed to load the website within the timeout period.")
+            await ctx.send(
+                'Failed to load the website within the timeout period.')
         except Exception as e:
-            await ctx.send(f"An error occurred: {e}")
+            await ctx.send(f'An error occurred: {e}')
         finally:
             driver.quit()

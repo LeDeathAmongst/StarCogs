@@ -42,34 +42,6 @@
 
 **Usage:** `<@1275521742961508432>ideaset`
 
-### ideaset accountage
-
-**Description:** Set the minimum account age required to vote and suggest.
-
-Args:
-    to_vote: Minimum age in hours required to vote.
-    to_suggest: Minimum age in hours required to suggest.
-
-**Usage:** `<@1275521742961508432>ideaset accountage`
-
-### ideaset deletethreads
-
-**Description:** Toggle deleting discussion threads when a suggestion is approved/denied
-
-**Usage:** `<@1275521742961508432>ideaset deletethreads`
-
-### ideaset resetall
-
-**Description:** Reset all user stats
-
-**Usage:** `<@1275521742961508432>ideaset resetall`
-
-### ideaset toggleanonymous
-
-**Description:** Toggle allowing anonymous suggestions
-
-**Usage:** `<@1275521742961508432>ideaset toggleanonymous`
-
 ### ideaset upvoteemoji
 
 **Description:** Set the upvote emoji
@@ -137,6 +109,12 @@ Args:
 
 **Usage:** `<@1275521742961508432>ideaset minplaytime`
 
+### ideaset toggledm
+
+**Description:** Toggle DMing users the results of suggestions they made
+
+**Usage:** `<@1275521742961508432>ideaset toggledm`
+
 ### ideaset roleblacklist
 
 **Description:** Add/remove a role to/from the role blacklist
@@ -148,12 +126,6 @@ Args:
 **Description:** Set the approved, rejected, or pending channels for IdeaBoard
 
 **Usage:** `<@1275521742961508432>ideaset channel`
-
-### ideaset toggledm
-
-**Description:** Toggle DMing users the results of suggestions they made
-
-**Usage:** `<@1275521742961508432>ideaset toggledm`
 
 ### ideaset cooldown
 
@@ -176,12 +148,6 @@ Args:
 
 **Usage:** `<@1275521742961508432>ideaset suggestrole`
 
-### ideaset resetuser
-
-**Description:** Reset a user's stats
-
-**Usage:** `<@1275521742961508432>ideaset resetuser`
-
 ### ideaset rolecooldown
 
 **Description:** Set the suggestion cooldown for a specific role
@@ -189,6 +155,12 @@ Args:
 To remove a role cooldown, specify 0 as the cooldown.
 
 **Usage:** `<@1275521742961508432>ideaset rolecooldown`
+
+### ideaset resetuser
+
+**Description:** Reset a user's stats
+
+**Usage:** `<@1275521742961508432>ideaset resetuser`
 
 ### ideaset jointime
 
@@ -206,12 +178,6 @@ Args:
 
 **Usage:** `<@1275521742961508432>ideaset userblacklist`
 
-### ideaset view
-
-**Description:** View IdeaBoard settings
-
-**Usage:** `<@1275521742961508432>ideaset view`
-
 ### ideaset discussions
 
 **Description:** Toggle opening a discussion thread for each suggestion
@@ -223,4 +189,38 @@ Args:
 **Description:** Add/remove a role to the voting role whitelist
 
 **Usage:** `<@1275521742961508432>ideaset voterole`
+
+### ideaset deletethreads
+
+**Description:** Toggle deleting discussion threads when a suggestion is approved/denied
+
+**Usage:** `<@1275521742961508432>ideaset deletethreads`
+
+### ideaset accountage
+
+**Description:** Set the minimum account age required to vote and suggest.
+
+Args:
+    to_vote: Minimum age in hours required to vote.
+    to_suggest: Minimum age in hours required to suggest.
+
+**Usage:** `<@1275521742961508432>ideaset accountage`
+
+### ideaset resetall
+
+**Description:** Reset all user stats
+
+**Usage:** `<@1275521742961508432>ideaset resetall`
+
+### ideaset toggleanonymous
+
+**Description:** Toggle allowing anonymous suggestions
+
+**Usage:** `<@1275521742961508432>ideaset toggleanonymous`
+
+### ideaset view
+
+**Description:** View IdeaBoard settings
+
+**Usage:** `<@1275521742961508432>ideaset view`
 

@@ -12,15 +12,6 @@
 
 **Usage:** `<@1275521742961508432>triviaset maxscore`
 
-### triviaset revealanswer
-
-**Description:** Set whether or not the answer is revealed.
-
-If enabled, the bot will reveal the answer if no one guesses correctly
-in time.
-
-**Usage:** `<@1275521742961508432>triviaset revealanswer`
-
 ### triviaset payout
 
 **Description:** Set the payout multiplier.
@@ -40,12 +31,6 @@ this multiplier.
 
 **Usage:** `<@1275521742961508432>triviaset custom`
 
-### triviaset custom list
-
-**Description:** List uploaded custom trivia.
-
-**Usage:** `<@1275521742961508432>triviaset custom list`
-
 ### triviaset custom upload
 
 **Description:** Upload a trivia file.
@@ -57,6 +42,12 @@ this multiplier.
 **Description:** Delete a trivia file.
 
 **Usage:** `<@1275521742961508432>triviaset custom delete`
+
+### triviaset custom list
+
+**Description:** List uploaded custom trivia.
+
+**Usage:** `<@1275521742961508432>triviaset custom list`
 
 ### triviaset showsettings
 
@@ -70,6 +61,14 @@ this multiplier.
 
 **Usage:** `<@1275521742961508432>triviaset override`
 
+### triviaset botplays
+
+**Description:** Set whether or not the bot gains points.
+
+If enabled, the bot will gain a point if no one guesses correctly.
+
+**Usage:** `<@1275521742961508432>triviaset botplays`
+
 ### triviaset stopafter
 
 **Description:** Set how long until trivia stops due to no response.
@@ -82,13 +81,14 @@ this multiplier.
 
 **Usage:** `<@1275521742961508432>triviaset timelimit`
 
-### triviaset botplays
+### triviaset revealanswer
 
-**Description:** Set whether or not the bot gains points.
+**Description:** Set whether or not the answer is revealed.
 
-If enabled, the bot will gain a point if no one guesses correctly.
+If enabled, the bot will reveal the answer if no one guesses correctly
+in time.
 
-**Usage:** `<@1275521742961508432>triviaset botplays`
+**Usage:** `<@1275521742961508432>triviaset revealanswer`
 
 ### triviaset usespoilers
 
@@ -107,6 +107,12 @@ questions from all of them.
 
 **Usage:** `<@1275521742961508432>trivia`
 
+### trivia stop
+
+**Description:** Stop an ongoing trivia session.
+
+**Usage:** `<@1275521742961508432>trivia stop`
+
 ### trivia leaderboard
 
 **Description:** Leaderboard for trivia.
@@ -115,20 +121,6 @@ Defaults to the top 10 of this server, sorted by total wins. Use
 subcommands for a more customised leaderboard.
 
 **Usage:** `<@1275521742961508432>trivia leaderboard`
-
-### trivia leaderboard global
-
-**Description:** Global trivia leaderboard.
-
-`<sort_by>` can be any of the following fields:
- - `wins`  : total wins
- - `avg`   : average score
- - `total` : total correct answers from all sessions
- - `games` : total games played
-
-`<top>` is the number of ranks to show on the leaderboard.
-
-**Usage:** `<@1275521742961508432>trivia leaderboard global`
 
 ### trivia leaderboard server
 
@@ -144,6 +136,20 @@ subcommands for a more customised leaderboard.
 
 **Usage:** `<@1275521742961508432>trivia leaderboard server`
 
+### trivia leaderboard global
+
+**Description:** Global trivia leaderboard.
+
+`<sort_by>` can be any of the following fields:
+ - `wins`  : total wins
+ - `avg`   : average score
+ - `total` : total correct answers from all sessions
+ - `games` : total games played
+
+`<top>` is the number of ranks to show on the leaderboard.
+
+**Usage:** `<@1275521742961508432>trivia leaderboard global`
+
 ### trivia list
 
 **Description:** List available trivia categories.
@@ -155,10 +161,4 @@ subcommands for a more customised leaderboard.
 **Description:** Get information about a trivia category.
 
 **Usage:** `<@1275521742961508432>trivia info`
-
-### trivia stop
-
-**Description:** Stop an ongoing trivia session.
-
-**Usage:** `<@1275521742961508432>trivia stop`
 

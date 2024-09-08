@@ -12,25 +12,11 @@
 
 **Usage:** `<@1275521742961508432>altset`
 
-### altset settings
-
-**Description:** View AltDentifier Settings.
-
-**Usage:** `<@1275521742961508432>altset settings`
-
 ### altset whitelist
 
 **Description:** Whitelist a user from AltDentifier actions.
 
 **Usage:** `<@1275521742961508432>altset whitelist`
-
-### altset channel
-
-**Description:** Set the channel to send AltDentifier join checks to.
-
-This also works as a toggle, so if no channel is provided, it will disable join checks for this server.
-
-**Usage:** `<@1275521742961508432>altset channel`
 
 ### altset action
 
@@ -43,6 +29,20 @@ The available actions are:
 `role` (don't say 'role' for this, pass an actual role)
 
 **Usage:** `<@1275521742961508432>altset action`
+
+### altset channel
+
+**Description:** Set the channel to send AltDentifier join checks to.
+
+This also works as a toggle, so if no channel is provided, it will disable join checks for this server.
+
+**Usage:** `<@1275521742961508432>altset channel`
+
+### altset settings
+
+**Description:** View AltDentifier Settings.
+
+**Usage:** `<@1275521742961508432>altset settings`
 
 ### altset unwhitelist
 

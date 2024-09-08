@@ -6,31 +6,11 @@
 
 **Usage:** `<@1275521742961508432>tellme`
 
-### tellme list
-
-**Description:** List commands created with tellme.
-
-**Usage:** `<@1275521742961508432>tellme list`
-
-### tellme create
-
-**Description:** Create a new command.
-
-**Usage:** `<@1275521742961508432>tellme create`
-
 ### tellme delete
 
 **Description:** Delete a command.
 
 **Usage:** `<@1275521742961508432>tellme delete`
-
-### tellme dm
-
-**Description:** Set the message to be sent in dms.
-
-If nothing is passed, it will remove the dm message.
-
-**Usage:** `<@1275521742961508432>tellme dm`
 
 ### tellme server
 
@@ -39,4 +19,24 @@ If nothing is passed, it will remove the dm message.
 If nothing is passed, it will remove the server message.
 
 **Usage:** `<@1275521742961508432>tellme server`
+
+### tellme create
+
+**Description:** Create a new command.
+
+**Usage:** `<@1275521742961508432>tellme create`
+
+### tellme list
+
+**Description:** List commands created with tellme.
+
+**Usage:** `<@1275521742961508432>tellme list`
+
+### tellme dm
+
+**Description:** Set the message to be sent in dms.
+
+If nothing is passed, it will remove the dm message.
+
+**Usage:** `<@1275521742961508432>tellme dm`
 

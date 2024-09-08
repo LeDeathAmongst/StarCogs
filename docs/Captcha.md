@@ -6,36 +6,6 @@
 
 **Usage:** `<@1275521742961508432>captcha`
 
-### captcha timeout
-
-**Description:** Configure the timeout for captcha verification. (Defaults to 120 seconds.)
-
-**Usage:** `<@1275521742961508432>captcha timeout`
-
-### captcha toggle
-
-**Description:** Toggle the captcha verification system.
-
-**Usage:** `<@1275521742961508432>captcha toggle`
-
-### captcha reset
-
-**Description:** Reset all the captcha settings back to default.
-
-**Usage:** `<@1275521742961508432>captcha reset`
-
-### captcha settings
-
-**Description:** View the captcha settings.
-
-**Usage:** `<@1275521742961508432>captcha settings`
-
-### captcha tries
-
-**Description:** Configure the amount of tries needed for the captcha verification. (Defaults to 3 tries.)
-
-**Usage:** `<@1275521742961508432>captcha tries`
-
 ### captcha message
 
 **Description:** Configure the after and before messages.
@@ -54,14 +24,17 @@
 
 **Usage:** `<@1275521742961508432>captcha message before`
 
-### captcha role
+### captcha toggle
 
-**Description:** Configure the role for captcha verification.
+**Description:** Toggle the captcha verification system.
 
-**Note:**
-- Run the command without the role argument to clear the config.
+**Usage:** `<@1275521742961508432>captcha toggle`
 
-**Usage:** `<@1275521742961508432>captcha role`
+### captcha tries
+
+**Description:** Configure the amount of tries needed for the captcha verification. (Defaults to 3 tries.)
+
+**Usage:** `<@1275521742961508432>captcha tries`
 
 ### captcha channel
 
@@ -71,4 +44,31 @@
 - Run the command without the channel argument to clear the config.
 
 **Usage:** `<@1275521742961508432>captcha channel`
+
+### captcha role
+
+**Description:** Configure the role for captcha verification.
+
+**Note:**
+- Run the command without the role argument to clear the config.
+
+**Usage:** `<@1275521742961508432>captcha role`
+
+### captcha settings
+
+**Description:** View the captcha settings.
+
+**Usage:** `<@1275521742961508432>captcha settings`
+
+### captcha reset
+
+**Description:** Reset all the captcha settings back to default.
+
+**Usage:** `<@1275521742961508432>captcha reset`
+
+### captcha timeout
+
+**Description:** Configure the timeout for captcha verification. (Defaults to 120 seconds.)
+
+**Usage:** `<@1275521742961508432>captcha timeout`
 

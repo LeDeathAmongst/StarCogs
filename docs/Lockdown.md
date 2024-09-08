@@ -21,11 +21,14 @@ do `[p]lockdownset listprofiles`
 
 **Usage:** `<@1275521742961508432>lockdownset`
 
-### lockdownset reset
+### lockdownset addprofile
 
-**Description:** Removes all lockdown profiles for the current guild.
+**Description:** Adds a lockdown profile.
 
-**Usage:** `<@1275521742961508432>lockdownset reset`
+Role is the role to be applied when triggering a lockdown
+with this profile.
+
+**Usage:** `<@1275521742961508432>lockdownset addprofile`
 
 ### lockdownset removeprofile
 
@@ -36,14 +39,11 @@ do `[p]lockdownset listprofiles`
 
 **Usage:** `<@1275521742961508432>lockdownset removeprofile`
 
-### lockdownset addprofile
+### lockdownset reset
 
-**Description:** Adds a lockdown profile.
+**Description:** Removes all lockdown profiles for the current guild.
 
-Role is the role to be applied when triggering a lockdown
-with this profile.
-
-**Usage:** `<@1275521742961508432>lockdownset addprofile`
+**Usage:** `<@1275521742961508432>lockdownset reset`
 
 ### lockdownset listprofiles
 

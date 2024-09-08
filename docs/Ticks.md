@@ -12,6 +12,12 @@
 
 **Usage:** `<@1275521742961508432>ticks remove`
 
+### ticks add
+
+**Description:** Add a new tag.
+
+**Usage:** `<@1275521742961508432>ticks add`
+
 ### ticks run
 
 **Description:** Run a tag.
@@ -23,10 +29,4 @@
 **Description:** List all tags.
 
 **Usage:** `<@1275521742961508432>ticks list`
-
-### ticks add
-
-**Description:** Add a new tag.
-
-**Usage:** `<@1275521742961508432>ticks add`
 

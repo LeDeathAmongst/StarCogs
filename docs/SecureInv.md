@@ -28,6 +28,12 @@ Set to 0 for unlimited days.
 
 **Usage:** `<@1275521742961508432>inv set days`
 
+### inv set channel
+
+**Description:** Set or clear the default channel an `[p]inv` directs to.
+
+**Usage:** `<@1275521742961508432>inv set channel`
+
 ### inv set uses
 
 **Description:** Set or clear the default amount of times an `[p]inv` can be used.
@@ -35,10 +41,4 @@ Set to 0 for unlimited days.
 Set to 0 for unlimited uses.
 
 **Usage:** `<@1275521742961508432>inv set uses`
-
-### inv set channel
-
-**Description:** Set or clear the default channel an `[p]inv` directs to.
-
-**Usage:** `<@1275521742961508432>inv set channel`
 

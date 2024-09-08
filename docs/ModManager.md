@@ -6,41 +6,11 @@
 
 **Usage:** `<@1275521742961508432>modmanager`
 
-### modmanager modlog
+### modmanager reason
 
-**Description:** Toggle the Mod Manager modlogs.
+**Description:** Change the ban or kick reason.
 
-**Usage:** `<@1275521742961508432>modmanager modlog`
-
-### modmanager force
-
-**Description:** Force add users to the ban or kick list.
-
-**Usage:** `<@1275521742961508432>modmanager force`
-
-### modmanager force kick
-
-**Description:** Force add users to the kick list.
-
-**Usage:** `<@1275521742961508432>modmanager force kick`
-
-### modmanager force ban
-
-**Description:** Force add users to the ban list.
-
-**Usage:** `<@1275521742961508432>modmanager force ban`
-
-### modmanager clear
-
-**Description:** Clear the ban or kick list.
-
-**Usage:** `<@1275521742961508432>modmanager clear`
-
-### modmanager settings
-
-**Description:** Show the Mod Manager settings.
-
-**Usage:** `<@1275521742961508432>modmanager settings`
+**Usage:** `<@1275521742961508432>modmanager reason`
 
 ### modmanager list
 
@@ -54,9 +24,39 @@
 
 **Usage:** `<@1275521742961508432>modmanager toggle`
 
-### modmanager reason
+### modmanager modlog
 
-**Description:** Change the ban or kick reason.
+**Description:** Toggle the Mod Manager modlogs.
 
-**Usage:** `<@1275521742961508432>modmanager reason`
+**Usage:** `<@1275521742961508432>modmanager modlog`
+
+### modmanager settings
+
+**Description:** Show the Mod Manager settings.
+
+**Usage:** `<@1275521742961508432>modmanager settings`
+
+### modmanager clear
+
+**Description:** Clear the ban or kick list.
+
+**Usage:** `<@1275521742961508432>modmanager clear`
+
+### modmanager force
+
+**Description:** Force add users to the ban or kick list.
+
+**Usage:** `<@1275521742961508432>modmanager force`
+
+### modmanager force ban
+
+**Description:** Force add users to the ban list.
+
+**Usage:** `<@1275521742961508432>modmanager force ban`
+
+### modmanager force kick
+
+**Description:** Force add users to the kick list.
+
+**Usage:** `<@1275521742961508432>modmanager force kick`
 

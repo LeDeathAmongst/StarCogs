@@ -6,6 +6,15 @@
 
 **Usage:** `<@1275521742961508432>race`
 
+### race wipe
+
+**Description:** This command will wipe ALL race data.
+
+You are given a confirmation dialog when using this command.
+If you decide to wipe your data, all stats and settings will be deleted.
+
+**Usage:** `<@1275521742961508432>race wipe`
+
 ### race enter
 
 **Description:** Allows you to enter the race.
@@ -22,26 +31,11 @@ prevents spam.
 
 **Usage:** `<@1275521742961508432>race version`
 
-### race wipe
-
-**Description:** This command will wipe ALL race data.
-
-You are given a confirmation dialog when using this command.
-If you decide to wipe your data, all stats and settings will be deleted.
-
-**Usage:** `<@1275521742961508432>race wipe`
-
 ### race bet
 
 **Description:** Bet on a user in the race.
 
 **Usage:** `<@1275521742961508432>race bet`
-
-### race stats
-
-**Description:** Display your race stats.
-
-**Usage:** `<@1275521742961508432>race stats`
 
 ### race start
 
@@ -56,11 +50,80 @@ The user who started the race is automatically entered into the race.
 
 **Usage:** `<@1275521742961508432>race start`
 
+### race stats
+
+**Description:** Display your race stats.
+
+**Usage:** `<@1275521742961508432>race stats`
+
 ### setrace
 
 **Description:** Race settings commands.
 
 **Usage:** `<@1275521742961508432>setrace`
+
+### setrace bet
+
+**Description:** Bet settings for race.
+
+**Usage:** `<@1275521742961508432>setrace bet`
+
+### setrace bet max
+
+**Description:** Sets the betting maximum.
+
+**Usage:** `<@1275521742961508432>setrace bet max`
+
+### setrace bet multiplier
+
+**Description:** Sets the betting multiplier.
+
+If the bot's economy mode is set to global instead of server-based, this setting is not available.
+
+**Usage:** `<@1275521742961508432>setrace bet multiplier`
+
+### setrace bet min
+
+**Description:** Sets the betting minimum.
+
+**Usage:** `<@1275521742961508432>setrace bet min`
+
+### setrace bet toggle
+
+**Description:** Toggles betting on and off.
+
+**Usage:** `<@1275521742961508432>setrace bet toggle`
+
+### setrace payoutmin
+
+**Description:** Sets the number of players needed to payout prizes and bets.
+
+This sets the required number of players needed to payout prizes.
+If the number of racers aren't met, then nothing is paid out.
+
+The person starting the race is not counted in this minimum number.
+For example, if you are playing alone vs. the bot and the payout min
+is set to 1, you need 1 human player besides the race starter for a
+payout to occur.
+
+If you want race to always pay out, then set players to 0.
+
+**Usage:** `<@1275521742961508432>setrace payoutmin`
+
+### setrace mode
+
+**Description:** Changes the race mode.
+
+Race can either be in normal mode or zoo mode.
+
+Normal Mode:
+    All racers are turtles.
+
+Zoo Mode:
+    Racers are randomly selected from a list of animals with
+    different attributes.
+
+**Usage:** `<@1275521742961508432>setrace mode`
 
 ### setrace prize
 
@@ -103,67 +166,4 @@ This only affects the period where race is still waiting
 for more participants to join the race.
 
 **Usage:** `<@1275521742961508432>setrace wait`
-
-### setrace bet
-
-**Description:** Bet settings for race.
-
-**Usage:** `<@1275521742961508432>setrace bet`
-
-### setrace bet toggle
-
-**Description:** Toggles betting on and off.
-
-**Usage:** `<@1275521742961508432>setrace bet toggle`
-
-### setrace bet min
-
-**Description:** Sets the betting minimum.
-
-**Usage:** `<@1275521742961508432>setrace bet min`
-
-### setrace bet multiplier
-
-**Description:** Sets the betting multiplier.
-
-If the bot's economy mode is set to global instead of server-based, this setting is not available.
-
-**Usage:** `<@1275521742961508432>setrace bet multiplier`
-
-### setrace bet max
-
-**Description:** Sets the betting maximum.
-
-**Usage:** `<@1275521742961508432>setrace bet max`
-
-### setrace payoutmin
-
-**Description:** Sets the number of players needed to payout prizes and bets.
-
-This sets the required number of players needed to payout prizes.
-If the number of racers aren't met, then nothing is paid out.
-
-The person starting the race is not counted in this minimum number.
-For example, if you are playing alone vs. the bot and the payout min
-is set to 1, you need 1 human player besides the race starter for a
-payout to occur.
-
-If you want race to always pay out, then set players to 0.
-
-**Usage:** `<@1275521742961508432>setrace payoutmin`
-
-### setrace mode
-
-**Description:** Changes the race mode.
-
-Race can either be in normal mode or zoo mode.
-
-Normal Mode:
-    All racers are turtles.
-
-Zoo Mode:
-    Racers are randomly selected from a list of animals with
-    different attributes.
-
-**Usage:** `<@1275521742961508432>setrace mode`
 

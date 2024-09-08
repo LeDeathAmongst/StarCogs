@@ -85,41 +85,6 @@ Use help on Casino (upper case) for more commands.
 
 **Usage:** `<@1275521742961508432>casino`
 
-### casino resetuser
-
-**Description:** Reset a user's cooldowns, stats, or everything.
-
-**Usage:** `<@1275521742961508432>casino resetuser`
-
-### casino stats
-
-**Description:** Shows your play statistics for Casino
-
-**Usage:** `<@1275521742961508432>casino stats`
-
-### casino memberships
-
-**Description:** Displays a list of server/global memberships.
-
-**Usage:** `<@1275521742961508432>casino memberships`
-
-### casino releasecredits
-
-**Description:** Approves pending currency for a user.
-
-If this casino has maximum winnings threshold set, and a user makes a bet that
-exceeds this amount, then they will have those credits with held. This command will
-Allow you to release those credits back to the user. This system is designed to limit
-earnings when a player may have found a way to cheat a game.
-
-**Usage:** `<@1275521742961508432>casino releasecredits`
-
-### casino version
-
-**Description:** Shows the current Casino version.
-
-**Usage:** `<@1275521742961508432>casino version`
-
 ### casino admin
 
 **Description:** A list of Admin level and above commands for Casino.
@@ -149,11 +114,113 @@ server (or global) if enabled.
 
 **Usage:** `<@1275521742961508432>casino resetinstance`
 
+### casino stats
+
+**Description:** Shows your play statistics for Casino
+
+**Usage:** `<@1275521742961508432>casino stats`
+
+### casino resetuser
+
+**Description:** Reset a user's cooldowns, stats, or everything.
+
+**Usage:** `<@1275521742961508432>casino resetuser`
+
+### casino version
+
+**Description:** Shows the current Casino version.
+
+**Usage:** `<@1275521742961508432>casino version`
+
+### casino memberships
+
+**Description:** Displays a list of server/global memberships.
+
+**Usage:** `<@1275521742961508432>casino memberships`
+
+### casino releasecredits
+
+**Description:** Approves pending currency for a user.
+
+If this casino has maximum winnings threshold set, and a user makes a bet that
+exceeds this amount, then they will have those credits with held. This command will
+Allow you to release those credits back to the user. This system is designed to limit
+earnings when a player may have found a way to cheat a game.
+
+**Usage:** `<@1275521742961508432>casino releasecredits`
+
 ### casinoset
 
 **Description:** Changes Casino settings
 
 **Usage:** `<@1275521742961508432>casinoset`
+
+### casinoset assignmem
+
+**Description:** Manually assigns a membership to a user.
+
+Users who are assigned a membership no longer need to meet the
+requirements set. However, if the membership is revoked, then the
+user will need to meet the requirements as usual.
+
+**Usage:** `<@1275521742961508432>casinoset assignmem`
+
+### casinoset memdesigner
+
+**Description:** A process to create, edit, and delete memberships.
+
+**Usage:** `<@1275521742961508432>casinoset memdesigner`
+
+### casinoset oldstyle
+
+**Description:** Toggle between editing and sending new messages for casino games..
+
+**Usage:** `<@1275521742961508432>casinoset oldstyle`
+
+### casinoset max
+
+**Description:** Sets the maximum bid for a game.
+
+**Usage:** `<@1275521742961508432>casinoset max`
+
+### casinoset payouttoggle
+
+**Description:** Turns on a payout limit.
+
+The payout limit will withhold winnings from players until they are approved by the
+appropriate authority. To set the limit, use payoutlimit.
+
+**Usage:** `<@1275521742961508432>casinoset payouttoggle`
+
+### casinoset min
+
+**Description:** Sets the minimum bid for a game.
+
+**Usage:** `<@1275521742961508432>casinoset min`
+
+### casinoset access
+
+**Description:** Sets the access level required to play a game.
+
+Access levels are used in conjunction with memberships. To read more on using
+access levels and memberships please refer to the casino wiki.
+
+**Usage:** `<@1275521742961508432>casinoset access`
+
+### casinoset revokemem
+
+**Description:** Revoke an assigned membership.
+
+Members will still keep this membership until the next auto cycle (5mins).
+At that time, they will be re-evaluated and downgraded/upgraded appropriately.
+
+**Usage:** `<@1275521742961508432>casinoset revokemem`
+
+### casinoset gametoggle
+
+**Description:** Opens/Closes a specific game for use.
+
+**Usage:** `<@1275521742961508432>casinoset gametoggle`
 
 ### casinoset mode
 
@@ -167,15 +234,6 @@ the bot is connected to. In addition, admin level commands can only be
 used by the owner or co-owners.
 
 **Usage:** `<@1275521742961508432>casinoset mode`
-
-### casinoset revokemem
-
-**Description:** Revoke an assigned membership.
-
-Members will still keep this membership until the next auto cycle (5mins).
-At that time, they will be re-evaluated and downgraded/upgraded appropriately.
-
-**Usage:** `<@1275521742961508432>casinoset revokemem`
 
 ### casinoset multiplier
 
@@ -209,16 +267,6 @@ This command only restricts the use of playing games.
 
 **Usage:** `<@1275521742961508432>casinoset toggle`
 
-### casinoset assignmem
-
-**Description:** Manually assigns a membership to a user.
-
-Users who are assigned a membership no longer need to meet the
-requirements set. However, if the membership is revoked, then the
-user will need to meet the requirements as usual.
-
-**Usage:** `<@1275521742961508432>casinoset assignmem`
-
 ### casinoset payoutlimit
 
 **Description:** Sets a payout limit.
@@ -228,52 +276,4 @@ reviewed and approved by the appropriate authority. Limits are only triggered if
 payout limits are ON. To turn on payout limits, use payouttoggle.
 
 **Usage:** `<@1275521742961508432>casinoset payoutlimit`
-
-### casinoset payouttoggle
-
-**Description:** Turns on a payout limit.
-
-The payout limit will withhold winnings from players until they are approved by the
-appropriate authority. To set the limit, use payoutlimit.
-
-**Usage:** `<@1275521742961508432>casinoset payouttoggle`
-
-### casinoset gametoggle
-
-**Description:** Opens/Closes a specific game for use.
-
-**Usage:** `<@1275521742961508432>casinoset gametoggle`
-
-### casinoset memdesigner
-
-**Description:** A process to create, edit, and delete memberships.
-
-**Usage:** `<@1275521742961508432>casinoset memdesigner`
-
-### casinoset oldstyle
-
-**Description:** Toggle between editing and sending new messages for casino games..
-
-**Usage:** `<@1275521742961508432>casinoset oldstyle`
-
-### casinoset max
-
-**Description:** Sets the maximum bid for a game.
-
-**Usage:** `<@1275521742961508432>casinoset max`
-
-### casinoset access
-
-**Description:** Sets the access level required to play a game.
-
-Access levels are used in conjunction with memberships. To read more on using
-access levels and memberships please refer to the casino wiki.
-
-**Usage:** `<@1275521742961508432>casinoset access`
-
-### casinoset min
-
-**Description:** Sets the minimum bid for a game.
-
-**Usage:** `<@1275521742961508432>casinoset min`
 

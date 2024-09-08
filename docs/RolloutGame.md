@@ -18,12 +18,6 @@
 
 **Usage:** `<@1275521742961508432>setrolloutgame`
 
-### setrolloutgame resetsetting
-
-**Description:** Reset a setting.
-
-**Usage:** `<@1275521742961508432>setrolloutgame resetsetting`
-
 ### setrolloutgame redeconomy
 
 **Description:** If this option is enabled, the cog will give credits to the user each time the game is won.
@@ -33,17 +27,23 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setrolloutgame redeconomy`
 
+### setrolloutgame modalconfig
+
+**Description:** Set all settings for the cog with a Discord Modal.
+
+**Usage:** `<@1275521742961508432>setrolloutgame modalconfig`
+
 ### setrolloutgame showsettings
 
 **Description:** Show all settings for the cog with defaults and values.
 
 **Usage:** `<@1275521742961508432>setrolloutgame showsettings`
 
-### setrolloutgame modalconfig
+### setrolloutgame resetleaderboard
 
-**Description:** Set all settings for the cog with a Discord Modal.
+**Description:** Reset leaderboard in the guild.
 
-**Usage:** `<@1275521742961508432>setrolloutgame modalconfig`
+**Usage:** `<@1275521742961508432>setrolloutgame resetleaderboard`
 
 ### setrolloutgame prize
 
@@ -54,9 +54,9 @@ Dev: `Range[int, 1000, 50000]`
 
 **Usage:** `<@1275521742961508432>setrolloutgame prize`
 
-### setrolloutgame resetleaderboard
+### setrolloutgame resetsetting
 
-**Description:** Reset leaderboard in the guild.
+**Description:** Reset a setting.
 
-**Usage:** `<@1275521742961508432>setrolloutgame resetleaderboard`
+**Usage:** `<@1275521742961508432>setrolloutgame resetsetting`
 

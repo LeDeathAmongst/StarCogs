@@ -6,11 +6,11 @@
 
 **Usage:** `<@1275521742961508432>bumpset`
 
-### bumpset invite
+### bumpset image
 
-**Description:** Set the invite link.
+**Description:** Set the image URL for the bump embed.
 
-**Usage:** `<@1275521742961508432>bumpset invite`
+**Usage:** `<@1275521742961508432>bumpset image`
 
 ### bumpset description
 
@@ -24,29 +24,47 @@
 
 **Usage:** `<@1275521742961508432>bumpset embed_color`
 
-### bumpset channel
-
-**Description:** Set the bump channel.
-
-**Usage:** `<@1275521742961508432>bumpset channel`
-
 ### bumpset thumbnail
 
 **Description:** Set the thumbnail URL for the bump embed.
 
 **Usage:** `<@1275521742961508432>bumpset thumbnail`
 
-### bumpset image
+### bumpset invite
 
-**Description:** Set the image URL for the bump embed.
+**Description:** Set the invite link.
 
-**Usage:** `<@1275521742961508432>bumpset image`
+**Usage:** `<@1275521742961508432>bumpset invite`
+
+### bumpset channel
+
+**Description:** Set the bump channel.
+
+**Usage:** `<@1275521742961508432>bumpset channel`
 
 ### bumpowner
 
 **Description:** Owner-only bump configuration.
 
 **Usage:** `<@1275521742961508432>bumpowner`
+
+### bumpowner bump_log_channel
+
+**Description:** Set the channel where bump logs are sent.
+
+**Usage:** `<@1275521742961508432>bumpowner bump_log_channel`
+
+### bumpowner report_channel
+
+**Description:** Set the channel where bump reports are sent.
+
+**Usage:** `<@1275521742961508432>bumpowner report_channel`
+
+### bumpowner listprem
+
+**Description:** List all premium codes and who they are assigned to.
+
+**Usage:** `<@1275521742961508432>bumpowner listprem`
 
 ### bumpowner support_server_invite
 
@@ -59,24 +77,6 @@
 **Description:** Set the channel where configuration logs are sent.
 
 **Usage:** `<@1275521742961508432>bumpowner config_log_channel`
-
-### bumpowner bump_log_channel
-
-**Description:** Set the channel where bump logs are sent.
-
-**Usage:** `<@1275521742961508432>bumpowner bump_log_channel`
-
-### bumpowner listprem
-
-**Description:** List all premium codes and who they are assigned to.
-
-**Usage:** `<@1275521742961508432>bumpowner listprem`
-
-### bumpowner report_channel
-
-**Description:** Set the channel where bump reports are sent.
-
-**Usage:** `<@1275521742961508432>bumpowner report_channel`
 
 ### mycodes
 

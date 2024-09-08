@@ -6,29 +6,43 @@
 
 **Usage:** `<@1275521742961508432>chelp`
 
-### chelp info
+### chelp reorder
 
-**Description:** Short info about various themes
+**Description:** This can be used to reorder the categories.
 
-**Usage:** `<@1275521742961508432>chelp info`
+The categories you type are pushed forward while the rest are pushed back.
 
-### chelp nsfw
+**Usage:** `<@1275521742961508432>chelp reorder`
 
-**Description:** Add categories to nsfw, only displayed in nsfw channels
+### chelp list
 
-**Usage:** `<@1275521742961508432>chelp nsfw`
+**Description:** Show the list of categories and the cogs in them
 
-### chelp nsfw add
+**Usage:** `<@1275521742961508432>chelp list`
 
-**Description:** Add categories to the nsfw list
+### chelp remove
 
-**Usage:** `<@1275521742961508432>chelp nsfw add`
+**Description:** Remove categories/cogs or everything
 
-### chelp nsfw remove
+**Usage:** `<@1275521742961508432>chelp remove`
 
-**Description:** Remove categories from the nsfw list
+### chelp remove category
 
-**Usage:** `<@1275521742961508432>chelp nsfw remove`
+**Description:** Remove a multiple categories
+
+**Usage:** `<@1275521742961508432>chelp remove category`
+
+### chelp remove cog
+
+**Description:** Remove a cog(s) from across categories
+
+**Usage:** `<@1275521742961508432>chelp remove cog`
+
+### chelp remove all
+
+**Description:** This will delete all the categories
+
+**Usage:** `<@1275521742961508432>chelp remove all`
 
 ### chelp dev
 
@@ -36,29 +50,113 @@
 
 **Usage:** `<@1275521742961508432>chelp dev`
 
-### chelp dev remove
-
-**Description:** Remove categories from the dev list
-
-**Usage:** `<@1275521742961508432>chelp dev remove`
-
 ### chelp dev add
 
 **Description:** Add categories to the dev list
 
 **Usage:** `<@1275521742961508432>chelp dev add`
 
+### chelp dev remove
+
+**Description:** Remove categories from the dev list
+
+**Usage:** `<@1275521742961508432>chelp dev remove`
+
+### chelp toggle
+
+**Description:** Set to toggle custom formatter or the default help formatter
+`[p]chelp toggle 0` to turn custom off 
+`[p]chelp toggle 1` to turn it on
+
+**Usage:** `<@1275521742961508432>chelp toggle`
+
+### chelp info
+
+**Description:** Short info about various themes
+
+**Usage:** `<@1275521742961508432>chelp info`
+
+### chelp set
+
+**Description:** Change various help settings
+
+**Usage:** `<@1275521742961508432>chelp set`
+
+### chelp set arrows
+
+**Description:** Add custom arrows for fun and profit
+
+**Usage:** `<@1275521742961508432>chelp set arrows`
+
+### chelp set usereply
+
+**Description:** Enable/Disable replies
+
+**Usage:** `<@1275521742961508432>chelp set usereply`
+
+### chelp set nav
+
+**Description:** Enable/Disable navigation arrows
+Disabling this removes every trace of arrows and you can't move to the next page
+People wanted this for some reason lol
+
+**Usage:** `<@1275521742961508432>chelp set nav`
+
+### chelp set deletemessage
+
+**Description:** Delete the user message that started the help menu.
+Note: This only works if the bot has permissions to delete the user message, otherwise it's supressed
+
+**Usage:** `<@1275521742961508432>chelp set deletemessage`
+
+### chelp set thumbnail
+
+**Description:** Set your main thumbnail image here.
+use `[p]chelp settings thumbnail` to reset this
+
+**Usage:** `<@1275521742961508432>chelp set thumbnail`
+
+### chelp set type
+
+**Description:** Toggles between various menus and arrow types
+
+**Usage:** `<@1275521742961508432>chelp set type`
+
+### chelp set timeout
+
+**Description:** Set how long the help menu must stay active
+
+**Usage:** `<@1275521742961508432>chelp set timeout`
+
+### chelp show
+
+**Description:** Show the current help settings
+
+**Usage:** `<@1275521742961508432>chelp show`
+
+### chelp auto
+
+**Description:** Auto categorise cogs based on it's tags and display them
+
+**Usage:** `<@1275521742961508432>chelp auto`
+
+### chelp unload
+
+**Description:** Unloads the given feature, this will reset to default
+
+**Usage:** `<@1275521742961508432>chelp unload`
+
+### chelp refresh
+
+**Description:** Force refresh the list of categories, This would reset all the uninstalled/unloaded cogs and will put them into uncategorised.
+
+**Usage:** `<@1275521742961508432>chelp refresh`
+
 ### chelp edit
 
 **Description:** Add reactions and descriptions to the category
 
 **Usage:** `<@1275521742961508432>chelp edit`
-
-### chelp create
-
-**Description:** Create a new category to add cogs to it using yaml
-
-**Usage:** `<@1275521742961508432>chelp create`
 
 ### chelp load
 
@@ -74,133 +172,35 @@ use `[p]chelp set 0` to revert back to the old help
 
 **Usage:** `<@1275521742961508432>chelp reset`
 
-### chelp remove
-
-**Description:** Remove categories/cogs or everything
-
-**Usage:** `<@1275521742961508432>chelp remove`
-
-### chelp remove cog
-
-**Description:** Remove a cog(s) from across categories
-
-**Usage:** `<@1275521742961508432>chelp remove cog`
-
-### chelp remove category
-
-**Description:** Remove a multiple categories
-
-**Usage:** `<@1275521742961508432>chelp remove category`
-
-### chelp remove all
-
-**Description:** This will delete all the categories
-
-**Usage:** `<@1275521742961508432>chelp remove all`
-
-### chelp list
-
-**Description:** Show the list of categories and the cogs in them
-
-**Usage:** `<@1275521742961508432>chelp list`
-
-### chelp toggle
-
-**Description:** Set to toggle custom formatter or the default help formatter
-`[p]chelp toggle 0` to turn custom off 
-`[p]chelp toggle 1` to turn it on
-
-**Usage:** `<@1275521742961508432>chelp toggle`
-
-### chelp set
-
-**Description:** Change various help settings
-
-**Usage:** `<@1275521742961508432>chelp set`
-
-### chelp set thumbnail
-
-**Description:** Set your main thumbnail image here.
-use `[p]chelp settings thumbnail` to reset this
-
-**Usage:** `<@1275521742961508432>chelp set thumbnail`
-
-### chelp set type
-
-**Description:** Toggles between various menus and arrow types
-
-**Usage:** `<@1275521742961508432>chelp set type`
-
-### chelp set deletemessage
-
-**Description:** Delete the user message that started the help menu.
-Note: This only works if the bot has permissions to delete the user message, otherwise it's supressed
-
-**Usage:** `<@1275521742961508432>chelp set deletemessage`
-
-### chelp set usereply
-
-**Description:** Enable/Disable replies
-
-**Usage:** `<@1275521742961508432>chelp set usereply`
-
-### chelp set arrows
-
-**Description:** Add custom arrows for fun and profit
-
-**Usage:** `<@1275521742961508432>chelp set arrows`
-
-### chelp set nav
-
-**Description:** Enable/Disable navigation arrows
-Disabling this removes every trace of arrows and you can't move to the next page
-People wanted this for some reason lol
-
-**Usage:** `<@1275521742961508432>chelp set nav`
-
-### chelp set timeout
-
-**Description:** Set how long the help menu must stay active
-
-**Usage:** `<@1275521742961508432>chelp set timeout`
-
 ### chelp listthemes
 
 **Description:** List the themes and available features
 
 **Usage:** `<@1275521742961508432>chelp listthemes`
 
-### chelp show
+### chelp nsfw
 
-**Description:** Show the current help settings
+**Description:** Add categories to nsfw, only displayed in nsfw channels
 
-**Usage:** `<@1275521742961508432>chelp show`
+**Usage:** `<@1275521742961508432>chelp nsfw`
 
-### chelp reorder
+### chelp nsfw remove
 
-**Description:** This can be used to reorder the categories.
+**Description:** Remove categories from the nsfw list
 
-The categories you type are pushed forward while the rest are pushed back.
+**Usage:** `<@1275521742961508432>chelp nsfw remove`
 
-**Usage:** `<@1275521742961508432>chelp reorder`
+### chelp nsfw add
 
-### chelp auto
+**Description:** Add categories to the nsfw list
 
-**Description:** Auto categorise cogs based on it's tags and display them
+**Usage:** `<@1275521742961508432>chelp nsfw add`
 
-**Usage:** `<@1275521742961508432>chelp auto`
+### chelp create
 
-### chelp refresh
+**Description:** Create a new category to add cogs to it using yaml
 
-**Description:** Force refresh the list of categories, This would reset all the uninstalled/unloaded cogs and will put them into uncategorised.
-
-**Usage:** `<@1275521742961508432>chelp refresh`
-
-### chelp unload
-
-**Description:** Unloads the given feature, this will reset to default
-
-**Usage:** `<@1275521742961508432>chelp unload`
+**Usage:** `<@1275521742961508432>chelp create`
 
 ### findcategory
 

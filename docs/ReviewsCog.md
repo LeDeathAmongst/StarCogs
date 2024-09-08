@@ -6,29 +6,11 @@
 
 **Usage:** `<@1275521742961508432>review`
 
-### review submit
+### review setchannel
 
-**Description:** Submit a review for approval.
+**Description:** Set the channel where approved reviews will be posted.
 
-**Usage:** `<@1275521742961508432>review submit`
-
-### review remove
-
-**Description:** Remove a review.
-
-**Usage:** `<@1275521742961508432>review remove`
-
-### review export
-
-**Description:** Export reviews to a CSV or PDF file.
-
-**Usage:** `<@1275521742961508432>review export`
-
-### review list
-
-**Description:** List all reviews.
-
-**Usage:** `<@1275521742961508432>review list`
+**Usage:** `<@1275521742961508432>review setchannel`
 
 ### review approve
 
@@ -36,9 +18,27 @@
 
 **Usage:** `<@1275521742961508432>review approve`
 
-### review setchannel
+### review submit
 
-**Description:** Set the channel where approved reviews will be posted.
+**Description:** Submit a review for approval.
 
-**Usage:** `<@1275521742961508432>review setchannel`
+**Usage:** `<@1275521742961508432>review submit`
+
+### review export
+
+**Description:** Export reviews to a CSV or PDF file.
+
+**Usage:** `<@1275521742961508432>review export`
+
+### review remove
+
+**Description:** Remove a review.
+
+**Usage:** `<@1275521742961508432>review remove`
+
+### review list
+
+**Description:** List all reviews.
+
+**Usage:** `<@1275521742961508432>review list`
 

@@ -6,18 +6,6 @@
 
 **Usage:** `<@1275521742961508432>hue`
 
-### hue set
-
-**Description:** Commands for setting hue settings
-
-**Usage:** `<@1275521742961508432>hue set`
-
-### hue set connect
-
-**Description:** Setup command if bridge cannot connect
-
-**Usage:** `<@1275521742961508432>hue set connect`
-
 ### hue brightness
 
 **Description:** Sets the brightness for lights
@@ -26,14 +14,6 @@
 `name` the name of the light to adjust
 
 **Usage:** `<@1275521742961508432>hue brightness`
-
-### hue switch
-
-**Description:** Toggles lights on or off
-
-`name` the name of the light to adjust
-
-**Usage:** `<@1275521742961508432>hue switch`
 
 ### hue random
 
@@ -57,22 +37,23 @@
 
 **Usage:** `<@1275521742961508432>hue on`
 
+### hue set
+
+**Description:** Commands for setting hue settings
+
+**Usage:** `<@1275521742961508432>hue set`
+
+### hue set connect
+
+**Description:** Setup command if bridge cannot connect
+
+**Usage:** `<@1275521742961508432>hue set connect`
+
 ### hue colour
 
 **Description:** Sets the colour for lights
 
 **Usage:** `<@1275521742961508432>hue colour`
-
-### hue colour xy
-
-**Description:** Sets the colour using xyz colour values
-
-`x` must be a number the x value to set
-`y` must be a number the y value to set
-`name` the name of the light to adjust
-Note: The z value is determined from two other values
-
-**Usage:** `<@1275521742961508432>hue colour xy`
 
 ### hue colour hex
 
@@ -95,6 +76,17 @@ Not 100% accurate
 
 **Usage:** `<@1275521742961508432>hue colour rgb`
 
+### hue colour xy
+
+**Description:** Sets the colour using xyz colour values
+
+`x` must be a number the x value to set
+`y` must be a number the y value to set
+`name` the name of the light to adjust
+Note: The z value is determined from two other values
+
+**Usage:** `<@1275521742961508432>hue colour xy`
+
 ### hue temp
 
 **Description:** Sets the colour temperature for lights
@@ -111,4 +103,12 @@ Not 100% accurate
 `name` the name of the light to adjust
 
 **Usage:** `<@1275521742961508432>hue off`
+
+### hue switch
+
+**Description:** Toggles lights on or off
+
+`name` the name of the light to adjust
+
+**Usage:** `<@1275521742961508432>hue switch`
 

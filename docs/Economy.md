@@ -6,24 +6,6 @@
 
 **Usage:** `<@1275521742961508432>bank`
 
-### bank set
-
-**Description:** Set the balance of a user's bank account.
-
-Putting + or - signs before the amount will add/remove currency on the user's bank account instead.
-
-Examples:
-- `[p]bank set @Twentysix 26` - Sets balance to 26
-- `[p]bank set @Twentysix +2` - Increases balance by 2
-- `[p]bank set @Twentysix -6` - Decreases balance by 6
-
-**Arguments**
-
-- `<to>` The user to set the currency of.
-- `<creds>` The amount of currency to set their balance to.
-
-**Usage:** `<@1275521742961508432>bank set`
-
 ### bank balance
 
 **Description:** Show the user's account balance.
@@ -53,6 +35,24 @@ Example:
 - `<amount>` The amount of currency to give.
 
 **Usage:** `<@1275521742961508432>bank transfer`
+
+### bank set
+
+**Description:** Set the balance of a user's bank account.
+
+Putting + or - signs before the amount will add/remove currency on the user's bank account instead.
+
+Examples:
+- `[p]bank set @Twentysix 26` - Sets balance to 26
+- `[p]bank set @Twentysix +2` - Increases balance by 2
+- `[p]bank set @Twentysix -6` - Decreases balance by 6
+
+**Arguments**
+
+- `<to>` The user to set the currency of.
+- `<creds>` The amount of currency to set their balance to.
+
+**Usage:** `<@1275521742961508432>bank set`
 
 ### payday
 
@@ -103,6 +103,19 @@ Example:
 
 **Usage:** `<@1275521742961508432>economyset`
 
+### economyset paydayamount
+
+**Description:** Set the amount earned each payday.
+
+Example:
+- `[p]economyset paydayamount 400`
+
+**Arguments**
+
+- `<creds>` The new amount to give when using the payday command. Default is 120.
+
+**Usage:** `<@1275521742961508432>economyset paydayamount`
+
 ### economyset paydaytime
 
 **Description:** Set the cooldown for the payday command.
@@ -118,6 +131,19 @@ Accepts: seconds, minutes, hours, days, weeks (if no unit is specified, the dura
 
 **Usage:** `<@1275521742961508432>economyset paydaytime`
 
+### economyset slotmin
+
+**Description:** Set the minimum slot machine bid.
+
+Example:
+- `[p]economyset slotmin 10`
+
+**Arguments**
+
+- `<bid>` The new minimum bid for using the slot machine. Default is 5.
+
+**Usage:** `<@1275521742961508432>economyset slotmin`
+
 ### economyset slotmax
 
 **Description:** Set the maximum slot machine bid.
@@ -131,24 +157,26 @@ Example:
 
 **Usage:** `<@1275521742961508432>economyset slotmax`
 
-### economyset paydayamount
-
-**Description:** Set the amount earned each payday.
-
-Example:
-- `[p]economyset paydayamount 400`
-
-**Arguments**
-
-- `<creds>` The new amount to give when using the payday command. Default is 120.
-
-**Usage:** `<@1275521742961508432>economyset paydayamount`
-
 ### economyset showsettings
 
 **Description:** Shows the current economy settings
 
 **Usage:** `<@1275521742961508432>economyset showsettings`
+
+### economyset slottime
+
+**Description:** Set the cooldown for the slot machine.
+
+Examples:
+- `[p]economyset slottime 10`
+- `[p]economyset slottime 10m`
+
+**Arguments**
+
+- `<duration>` The new duration to wait in between uses of the slot machine. Default is 5 seconds.
+Accepts: seconds, minutes, hours, days, weeks (if no unit is specified, the duration is assumed to be given in seconds)
+
+**Usage:** `<@1275521742961508432>economyset slottime`
 
 ### economyset rolepaydayamount
 
@@ -167,32 +195,4 @@ Example:
 - `<creds>` The new amount to give when using the payday command.
 
 **Usage:** `<@1275521742961508432>economyset rolepaydayamount`
-
-### economyset slotmin
-
-**Description:** Set the minimum slot machine bid.
-
-Example:
-- `[p]economyset slotmin 10`
-
-**Arguments**
-
-- `<bid>` The new minimum bid for using the slot machine. Default is 5.
-
-**Usage:** `<@1275521742961508432>economyset slotmin`
-
-### economyset slottime
-
-**Description:** Set the cooldown for the slot machine.
-
-Examples:
-- `[p]economyset slottime 10`
-- `[p]economyset slottime 10m`
-
-**Arguments**
-
-- `<duration>` The new duration to wait in between uses of the slot machine. Default is 5 seconds.
-Accepts: seconds, minutes, hours, days, weeks (if no unit is specified, the duration is assumed to be given in seconds)
-
-**Usage:** `<@1275521742961508432>economyset slottime`
 

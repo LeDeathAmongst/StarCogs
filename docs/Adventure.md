@@ -204,30 +204,6 @@
 
 **Usage:** `<@1275521742961508432>themeset`
 
-### themeset list
-
-**Description:** [Admin] Show custom objects in the specified theme.
-
-**Usage:** `<@1275521742961508432>themeset list`
-
-### themeset list monster
-
-**Description:** [Admin] Show monster objects in the specified theme.
-
-The default theme is `default`.
-This will only display custom monsters added through the `themeset` command.
-
-**Usage:** `<@1275521742961508432>themeset list monster`
-
-### themeset list pet
-
-**Description:** [Admin] Show pet objects in the specified theme.
-
-The default theme is `default`.
-This will only display custom pets added through the `themeset` command.
-
-**Usage:** `<@1275521742961508432>themeset list pet`
-
 ### themeset delete
 
 **Description:** [Owner] Remove objects in the specified theme.
@@ -256,6 +232,21 @@ The default theme is `default`.
 
 **Usage:** `<@1275521742961508432>themeset add`
 
+### themeset add pet
+
+**Description:** [Owner] Add/Update a pet object in the specified theme.
+
+Usage: `[p]themeset add pet theme++name++bonus_multiplier++required_cha++crit_chance++always_crit`
+
+`theme` is the one-word theme folder name. The default is `default`.
+`name` is the name of the pet.
+`bonus_multiplier` is a number between `1.00` and `2.00` for the reward bonus percentage on a successful adventure.
+`required_cha` is the required charisma/diplomacy level that the ranger must overcome to catch the pet - usually between `1` and `500`.
+`crit_chance` is the chance to have a critical strike, between `1` and `100` percent.
+`always_crit` is `True` or `False` for whether the pet will always have a critical strike when attacking.
+
+**Usage:** `<@1275521742961508432>themeset add pet`
+
 ### themeset add monster
 
 **Description:** [Owner] Add/Update a monster object in the specified theme.
@@ -274,20 +265,29 @@ Usage: `[p]themeset add monster theme++name++hp++dipl++pdef++mdef++cdef++boss++i
 
 **Usage:** `<@1275521742961508432>themeset add monster`
 
-### themeset add pet
+### themeset list
 
-**Description:** [Owner] Add/Update a pet object in the specified theme.
+**Description:** [Admin] Show custom objects in the specified theme.
 
-Usage: `[p]themeset add pet theme++name++bonus_multiplier++required_cha++crit_chance++always_crit`
+**Usage:** `<@1275521742961508432>themeset list`
 
-`theme` is the one-word theme folder name. The default is `default`.
-`name` is the name of the pet.
-`bonus_multiplier` is a number between `1.00` and `2.00` for the reward bonus percentage on a successful adventure.
-`required_cha` is the required charisma/diplomacy level that the ranger must overcome to catch the pet - usually between `1` and `500`.
-`crit_chance` is the chance to have a critical strike, between `1` and `100` percent.
-`always_crit` is `True` or `False` for whether the pet will always have a critical strike when attacking.
+### themeset list pet
 
-**Usage:** `<@1275521742961508432>themeset add pet`
+**Description:** [Admin] Show pet objects in the specified theme.
+
+The default theme is `default`.
+This will only display custom pets added through the `themeset` command.
+
+**Usage:** `<@1275521742961508432>themeset list pet`
+
+### themeset list monster
+
+**Description:** [Admin] Show monster objects in the specified theme.
+
+The default theme is `default`.
+This will only display custom monsters added through the `themeset` command.
+
+**Usage:** `<@1275521742961508432>themeset list monster`
 
 ### rebirth
 
@@ -325,17 +325,11 @@ Trade 25 epic chests for 1 legendary chest.
 
 **Usage:** `<@1275521742961508432>loadout`
 
-### loadout save
+### loadout delete
 
-**Description:** Save your current equipment as a loadout.
+**Description:** Delete a saved loadout.
 
-**Usage:** `<@1275521742961508432>loadout save`
-
-### loadout equip
-
-**Description:** Equip a saved loadout.
-
-**Usage:** `<@1275521742961508432>loadout equip`
+**Usage:** `<@1275521742961508432>loadout delete`
 
 ### loadout show
 
@@ -343,11 +337,17 @@ Trade 25 epic chests for 1 legendary chest.
 
 **Usage:** `<@1275521742961508432>loadout show`
 
-### loadout delete
+### loadout equip
 
-**Description:** Delete a saved loadout.
+**Description:** Equip a saved loadout.
 
-**Usage:** `<@1275521742961508432>loadout delete`
+**Usage:** `<@1275521742961508432>loadout equip`
+
+### loadout save
+
+**Description:** Save your current equipment as a loadout.
+
+**Usage:** `<@1275521742961508432>loadout save`
 
 ### aleaderboard
 
@@ -379,12 +379,6 @@ Trade 25 epic chests for 1 legendary chest.
 
 **Usage:** `<@1275521742961508432>atransfer`
 
-### atransfer give
-
-**Description:** [Owner] Give gold to adventurers.
-
-**Usage:** `<@1275521742961508432>atransfer give`
-
 ### atransfer deposit
 
 **Description:** Convert bank currency to gold.
@@ -402,6 +396,12 @@ Trade 25 epic chests for 1 legendary chest.
 **Description:** Convert gold to bank currency.
 
 **Usage:** `<@1275521742961508432>atransfer withdraw`
+
+### atransfer give
+
+**Description:** [Owner] Give gold to adventurers.
+
+**Usage:** `<@1275521742961508432>atransfer give`
 
 ### mysets
 
@@ -639,17 +639,17 @@ Note: An item **degrade** level is how many rebirths it will last, before it is 
 
 **Usage:** `<@1275521742961508432>backpack eset`
 
-### backpack sellall
-
-**Description:** Sell all items in your backpack. Optionally specify rarity or slot.
-
-**Usage:** `<@1275521742961508432>backpack sellall`
-
 ### backpack equip
 
 **Description:** Equip an item from your backpack.
 
 **Usage:** `<@1275521742961508432>backpack equip`
+
+### backpack sell
+
+**Description:** Sell an item from your backpack.
+
+**Usage:** `<@1275521742961508432>backpack sell`
 
 ### backpack disassemble
 
@@ -660,11 +660,11 @@ or the item might break while you are handling it...
 
 **Usage:** `<@1275521742961508432>backpack disassemble`
 
-### backpack sell
+### backpack sellall
 
-**Description:** Sell an item from your backpack.
+**Description:** Sell all items in your backpack. Optionally specify rarity or slot.
 
-**Usage:** `<@1275521742961508432>backpack sell`
+**Usage:** `<@1275521742961508432>backpack sellall`
 
 ### ebackpack
 
@@ -719,46 +719,6 @@ Please read the usage instructions [here](https://github.com/aikaterna/gobcog/bl
 
 **Usage:** `<@1275521742961508432>adventureset`
 
-### adventureset sepcurrency
-
-**Description:** [Owner] Toggle whether the currency should be separated from main bot currency.
-
-**Usage:** `<@1275521742961508432>adventureset sepcurrency`
-
-### adventureset showsettings
-
-**Description:** Display current settings.
-
-**Usage:** `<@1275521742961508432>adventureset showsettings`
-
-### adventureset remove
-
-**Description:** [Owner] Lets you remove an item from a user.
-
-Use the full name of the item including the rarity characters like . or []  or {}.
-
-**Usage:** `<@1275521742961508432>adventureset remove`
-
-### adventureset cartroom
-
-**Description:** [Admin] Lock carts to a specific text channel.
-
-**Usage:** `<@1275521742961508432>adventureset cartroom`
-
-### adventureset dailybonus
-
-**Description:** [Owner] Set the daily xp and currency bonus.
-
-**percentage** must be between 0% and 100%.
-
-**Usage:** `<@1275521742961508432>adventureset dailybonus`
-
-### adventureset embeds
-
-**Description:** [Admin] Set whether or not to use embeds for the adventure game.
-
-**Usage:** `<@1275521742961508432>adventureset embeds`
-
 ### adventureset economy
 
 **Description:** [Admin] Manages the adventure economy.
@@ -780,6 +740,12 @@ Use the full name of the item including the rarity characters like . or []  or {
 
 **Usage:** `<@1275521742961508432>adventureset economy rate`
 
+### adventureset economy withdraw
+
+**Description:** [Admin] Toggle whether users are allowed to withdraw from adventure currency to main currency.
+
+**Usage:** `<@1275521742961508432>adventureset economy withdraw`
+
 ### adventureset economy tax
 
 **Description:** [Owner] Set the tax thresholds.
@@ -790,24 +756,6 @@ Use the full name of the item including the rarity characters like . or []  or {
 Example: `[p]adventureset economy tax 10000,0.1 20000,0.2 ...`
 
 **Usage:** `<@1275521742961508432>adventureset economy tax`
-
-### adventureset economy withdraw
-
-**Description:** [Admin] Toggle whether users are allowed to withdraw from adventure currency to main currency.
-
-**Usage:** `<@1275521742961508432>adventureset economy withdraw`
-
-### adventureset clear
-
-**Description:** [Owner] Lets you clear multiple users character sheets.
-
-**Usage:** `<@1275521742961508432>adventureset clear`
-
-### adventureset globalcartname
-
-**Description:** [Owner] Set the default name of the cart.
-
-**Usage:** `<@1275521742961508432>adventureset globalcartname`
 
 ### adventureset locks
 
@@ -826,6 +774,20 @@ Example: `[p]adventureset economy tax 10000,0.1 20000,0.2 ...`
 **Description:** [Owner] Reset a multiple adventurers lock.
 
 **Usage:** `<@1275521742961508432>adventureset locks user`
+
+### adventureset globalcartname
+
+**Description:** [Owner] Set the default name of the cart.
+
+**Usage:** `<@1275521742961508432>adventureset globalcartname`
+
+### adventureset dailybonus
+
+**Description:** [Owner] Set the daily xp and currency bonus.
+
+**percentage** must be between 0% and 100%.
+
+**Usage:** `<@1275521742961508432>adventureset dailybonus`
 
 ### adventureset carttime
 
@@ -868,15 +830,6 @@ More info can be found at: <https://github.com/aikaterna/gobcog#make-your-own-ad
 
 **Usage:** `<@1275521742961508432>adventureset god`
 
-### adventureset cart
-
-**Description:** [Admin] Add or remove a text channel that the Trader cart can appear in.
-
-If the channel is already in the list, it will be removed.
-Use `[p]adventureset cart` with no arguments to show the channel list.
-
-**Usage:** `<@1275521742961508432>adventureset cart`
-
 ### adventureset rebirthcost
 
 **Description:** [Admin] Set what percentage of the user balance to charge for rebirths.
@@ -893,11 +846,58 @@ Easy mode gives less rewards, but monster information is shown.
 
 **Usage:** `<@1275521742961508432>adventureset easymode`
 
+### adventureset cart
+
+**Description:** [Admin] Add or remove a text channel that the Trader cart can appear in.
+
+If the channel is already in the list, it will be removed.
+Use `[p]adventureset cart` with no arguments to show the channel list.
+
+**Usage:** `<@1275521742961508432>adventureset cart`
+
 ### adventureset globalgod
 
 **Description:** [Owner] Set the default name of the god.
 
 **Usage:** `<@1275521742961508432>adventureset globalgod`
+
+### adventureset clear
+
+**Description:** [Owner] Lets you clear multiple users character sheets.
+
+**Usage:** `<@1275521742961508432>adventureset clear`
+
+### adventureset sepcurrency
+
+**Description:** [Owner] Toggle whether the currency should be separated from main bot currency.
+
+**Usage:** `<@1275521742961508432>adventureset sepcurrency`
+
+### adventureset showsettings
+
+**Description:** Display current settings.
+
+**Usage:** `<@1275521742961508432>adventureset showsettings`
+
+### adventureset cartroom
+
+**Description:** [Admin] Lock carts to a specific text channel.
+
+**Usage:** `<@1275521742961508432>adventureset cartroom`
+
+### adventureset remove
+
+**Description:** [Owner] Lets you remove an item from a user.
+
+Use the full name of the item including the rarity characters like . or []  or {}.
+
+**Usage:** `<@1275521742961508432>adventureset remove`
+
+### adventureset embeds
+
+**Description:** [Admin] Set whether or not to use embeds for the adventure game.
+
+**Usage:** `<@1275521742961508432>adventureset embeds`
 
 ### adventure
 

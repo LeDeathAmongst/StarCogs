@@ -141,65 +141,17 @@ You can upload a file with the code to be executed, or reply to a message contai
 
 **Usage:** `<@1275521742961508432>setdev`
 
-### setdev useextendedenvironment
-
-**Description:** Use my own Dev env with useful values.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev useextendedenvironment`
-
-### setdev autoimports
-
-**Description:** Enable or disable auto imports.
-
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev autoimports`
-
-### setdev ansiformatting
-
-**Description:** Use the `ansi` formatting for results.
-
-Default value: `False`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev ansiformatting`
-
-### setdev richtracebacks
-
-**Description:** Use `rich` to display tracebacks.
-
-Default value: `False`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev richtracebacks`
-
 ### setdev getenvironment
 
 **Description:** Display all Dev environment values.
 
 **Usage:** `<@1275521742961508432>setdev getenvironment`
 
-### setdev uselastlocals
+### setdev resetlocals
 
-**Description:** Use the last locals for each evals. Locals are only registered for `[p]eval`, but can be used in other commands.
+**Description:** Reset its own locals in evals.
 
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev uselastlocals`
-
-### setdev downloaderalreadyagreed
-
-**Description:** If enabled, Downloader will no longer prompt you to type `I agree` when adding a repo, even after a bot restart.
-
-Default value: `False`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setdev downloaderalreadyagreed`
+**Usage:** `<@1275521742961508432>setdev resetlocals`
 
 ### setdev outputmode
 
@@ -210,20 +162,71 @@ Dev: `typing.Literal['repr', 'repr_or_str', 'str']`
 
 **Usage:** `<@1275521742961508432>setdev outputmode`
 
+### setdev downloaderalreadyagreed
+
+**Description:** If enabled, Downloader will no longer prompt you to type `I agree` when adding a repo, even after a bot restart.
+
+Default value: `False`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev downloaderalreadyagreed`
+
+### setdev ansiformatting
+
+**Description:** Use the `ansi` formatting for results.
+
+Default value: `False`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev ansiformatting`
+
+### setdev showsettings
+
+**Description:** Show all settings for the cog with defaults and values.
+
+**Usage:** `<@1275521742961508432>setdev showsettings`
+
+### setdev autoimports
+
+**Description:** Enable or disable auto imports.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev autoimports`
+
+### setdev richtracebacks
+
+**Description:** Use `rich` to display tracebacks.
+
+Default value: `False`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev richtracebacks`
+
+### setdev uselastlocals
+
+**Description:** Use the last locals for each evals. Locals are only registered for `[p]eval`, but can be used in other commands.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev uselastlocals`
+
 ### setdev modalconfig
 
 **Description:** Set all settings for the cog with a Discord Modal.
 
 **Usage:** `<@1275521742961508432>setdev modalconfig`
 
-### setdev sendinteractive
+### setdev useextendedenvironment
 
-**Description:** Send results with `commands.Context.send_interactive`, not a Menu.
+**Description:** Use my own Dev env with useful values.
 
-Default value: `False`
+Default value: `True`
 Dev: `<class 'bool'>`
 
-**Usage:** `<@1275521742961508432>setdev sendinteractive`
+**Usage:** `<@1275521742961508432>setdev useextendedenvironment`
 
 ### setdev senddpyobjects
 
@@ -234,21 +237,18 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setdev senddpyobjects`
 
-### setdev showsettings
-
-**Description:** Show all settings for the cog with defaults and values.
-
-**Usage:** `<@1275521742961508432>setdev showsettings`
-
 ### setdev resetsetting
 
 **Description:** Reset a setting.
 
 **Usage:** `<@1275521742961508432>setdev resetsetting`
 
-### setdev resetlocals
+### setdev sendinteractive
 
-**Description:** Reset its own locals in evals.
+**Description:** Send results with `commands.Context.send_interactive`, not a Menu.
 
-**Usage:** `<@1275521742961508432>setdev resetlocals`
+Default value: `False`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setdev sendinteractive`
 

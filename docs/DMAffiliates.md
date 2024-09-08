@@ -12,15 +12,15 @@
 
 **Usage:** `<@1275521742961508432>dmaffiliate add`
 
-### dmaffiliate remove
-
-**Description:** Remove an affiliate message by its index.
-
-**Usage:** `<@1275521742961508432>dmaffiliate remove`
-
 ### dmaffiliate list
 
 **Description:** List all affiliate messages.
 
 **Usage:** `<@1275521742961508432>dmaffiliate list`
+
+### dmaffiliate remove
+
+**Description:** Remove an affiliate message by its index.
+
+**Usage:** `<@1275521742961508432>dmaffiliate remove`
 

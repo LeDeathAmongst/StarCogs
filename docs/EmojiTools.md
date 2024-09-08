@@ -11,117 +11,23 @@
 
 **Usage:** `<@1275521742961508432>emojitools`
 
-### emojitools save
+### emojitools delete
 
-**Description:** Save Custom Emojis to Folders
+**Description:** Delete Server Custom Emojis
 
-**IMPORTANT**: this **will** save folders to the cog data path, requiring storage in the machine the bot is hosted on.
-The folders will be accessible to admin across all servers with access to this cog.
-The other `EmojiTools` features that do **NOT** require storage, so disable this command group if you wish.
-For large public bots, it is highly recommended to restrict usage of or disable this command group.
+**Usage:** `<@1275521742961508432>emojitools delete`
 
-**Usage:** `<@1275521742961508432>emojitools save`
+### emojitools delete all
 
-### emojitools save folders
+**Description:** Delete all specific custom emojis from the server.
 
-**Description:** List all your saved EmojiTools folders.
+**Usage:** `<@1275521742961508432>emojitools delete all`
 
-**Usage:** `<@1275521742961508432>emojitools save folders`
+### emojitools delete emojis
 
-### emojitools save server
+**Description:** Delete custom emojis from the server.
 
-**Description:** Save to a folder all custom emojis from this server (folder name defaults to server name).
-
-**Usage:** `<@1275521742961508432>emojitools save server`
-
-### emojitools save emojis
-
-**Description:** Save to a folder the specified custom emojis (can be from any server).
-
-**Usage:** `<@1275521742961508432>emojitools save emojis`
-
-### emojitools save getzip
-
-**Description:** Zip and upload an EmojiTools folder.
-
-**Usage:** `<@1275521742961508432>emojitools save getzip`
-
-### emojitools save remove
-
-**Description:** Remove an EmojiTools folder.
-
-**Usage:** `<@1275521742961508432>emojitools save remove`
-
-### emojitools info
-
-**Description:** Get info about a custom emoji from this server.
-
-**Usage:** `<@1275521742961508432>emojitools info`
-
-### emojitools edit
-
-**Description:** Edit Custom Emojis in the Server
-
-**Usage:** `<@1275521742961508432>emojitools edit`
-
-### emojitools edit roles
-
-**Description:** Edit the roles to which the usage of a custom emoji from this server is restricted.
-
-**Usage:** `<@1275521742961508432>emojitools edit roles`
-
-### emojitools edit name
-
-**Description:** Edit the name of a custom emoji from this server.
-
-**Usage:** `<@1275521742961508432>emojitools edit name`
-
-### emojitools add
-
-**Description:** Add Custom Emojis to Server
-
-**Usage:** `<@1275521742961508432>emojitools add`
-
-### emojitools add allreactionsfrom
-
-**Description:** Add emojis to this server from all reactions in a message.
-
-**Usage:** `<@1275521742961508432>emojitools add allreactionsfrom`
-
-### emojitools add fromimage
-
-**Description:** Add an emoji to this server from a provided image.
-
-The attached image should be in one of the following formats: `.png`, `.jpg`, or `.gif`.
-
-**Usage:** `<@1275521742961508432>emojitools add fromimage`
-
-### emojitools add emoji
-
-**Description:** Add an emoji to this server (leave `name` blank to use the emoji's original name).
-
-**Usage:** `<@1275521742961508432>emojitools add emoji`
-
-### emojitools add fromzip
-
-**Description:** Add some emojis to this server from a provided .zip archive.
-
-The `.zip` archive should extract to a folder, which contains files in the formats `.png`, `.jpg`, or `.gif`.
-You can also use the `[p]emojitools tozip` command to get a zip archive, extract it, remove unnecessary emojis, then re-zip and upload.
-
-**Usage:** `<@1275521742961508432>emojitools add fromzip`
-
-### emojitools add fromreaction
-
-**Description:** Add an emoji to this server from a specific reaction on a message.
-
-**Usage:** `<@1275521742961508432>emojitools add fromreaction`
-
-### emojitools add emojis
-
-**Description:** Add some emojis to this server.
-
-**Usage:** `<@1275521742961508432>emojitools add emojis`
+**Usage:** `<@1275521742961508432>emojitools delete emojis`
 
 ### emojitools tozip
 
@@ -145,21 +51,115 @@ The returned `.zip` archive can be used for the `[p]emojitools add fromzip` comm
 
 **Usage:** `<@1275521742961508432>emojitools tozip server`
 
-### emojitools delete
+### emojitools save
 
-**Description:** Delete Server Custom Emojis
+**Description:** Save Custom Emojis to Folders
 
-**Usage:** `<@1275521742961508432>emojitools delete`
+**IMPORTANT**: this **will** save folders to the cog data path, requiring storage in the machine the bot is hosted on.
+The folders will be accessible to admin across all servers with access to this cog.
+The other `EmojiTools` features that do **NOT** require storage, so disable this command group if you wish.
+For large public bots, it is highly recommended to restrict usage of or disable this command group.
 
-### emojitools delete all
+**Usage:** `<@1275521742961508432>emojitools save`
 
-**Description:** Delete all specific custom emojis from the server.
+### emojitools save server
 
-**Usage:** `<@1275521742961508432>emojitools delete all`
+**Description:** Save to a folder all custom emojis from this server (folder name defaults to server name).
 
-### emojitools delete emojis
+**Usage:** `<@1275521742961508432>emojitools save server`
 
-**Description:** Delete custom emojis from the server.
+### emojitools save emojis
 
-**Usage:** `<@1275521742961508432>emojitools delete emojis`
+**Description:** Save to a folder the specified custom emojis (can be from any server).
+
+**Usage:** `<@1275521742961508432>emojitools save emojis`
+
+### emojitools save remove
+
+**Description:** Remove an EmojiTools folder.
+
+**Usage:** `<@1275521742961508432>emojitools save remove`
+
+### emojitools save folders
+
+**Description:** List all your saved EmojiTools folders.
+
+**Usage:** `<@1275521742961508432>emojitools save folders`
+
+### emojitools save getzip
+
+**Description:** Zip and upload an EmojiTools folder.
+
+**Usage:** `<@1275521742961508432>emojitools save getzip`
+
+### emojitools edit
+
+**Description:** Edit Custom Emojis in the Server
+
+**Usage:** `<@1275521742961508432>emojitools edit`
+
+### emojitools edit name
+
+**Description:** Edit the name of a custom emoji from this server.
+
+**Usage:** `<@1275521742961508432>emojitools edit name`
+
+### emojitools edit roles
+
+**Description:** Edit the roles to which the usage of a custom emoji from this server is restricted.
+
+**Usage:** `<@1275521742961508432>emojitools edit roles`
+
+### emojitools add
+
+**Description:** Add Custom Emojis to Server
+
+**Usage:** `<@1275521742961508432>emojitools add`
+
+### emojitools add emojis
+
+**Description:** Add some emojis to this server.
+
+**Usage:** `<@1275521742961508432>emojitools add emojis`
+
+### emojitools add fromzip
+
+**Description:** Add some emojis to this server from a provided .zip archive.
+
+The `.zip` archive should extract to a folder, which contains files in the formats `.png`, `.jpg`, or `.gif`.
+You can also use the `[p]emojitools tozip` command to get a zip archive, extract it, remove unnecessary emojis, then re-zip and upload.
+
+**Usage:** `<@1275521742961508432>emojitools add fromzip`
+
+### emojitools add fromimage
+
+**Description:** Add an emoji to this server from a provided image.
+
+The attached image should be in one of the following formats: `.png`, `.jpg`, or `.gif`.
+
+**Usage:** `<@1275521742961508432>emojitools add fromimage`
+
+### emojitools add allreactionsfrom
+
+**Description:** Add emojis to this server from all reactions in a message.
+
+**Usage:** `<@1275521742961508432>emojitools add allreactionsfrom`
+
+### emojitools add emoji
+
+**Description:** Add an emoji to this server (leave `name` blank to use the emoji's original name).
+
+**Usage:** `<@1275521742961508432>emojitools add emoji`
+
+### emojitools add fromreaction
+
+**Description:** Add an emoji to this server from a specific reaction on a message.
+
+**Usage:** `<@1275521742961508432>emojitools add fromreaction`
+
+### emojitools info
+
+**Description:** Get info about a custom emoji from this server.
+
+**Usage:** `<@1275521742961508432>emojitools info`
 

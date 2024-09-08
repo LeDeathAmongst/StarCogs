@@ -6,14 +6,13 @@
 
 **Usage:** `<@1275521742961508432>nospoiler`
 
-### nospoiler deleteafter
+### nospoiler message
 
-**Description:** Set when the warn message should delete.
+**Description:** Set the spoiler warning message.
 
-Default timeout is 10 seconds.
-Timeout must be between 10 and 120 seconds.
+If the message is not set, the bot will use the default message.
 
-**Usage:** `<@1275521742961508432>nospoiler deleteafter`
+**Usage:** `<@1275521742961508432>nospoiler message`
 
 ### nospoiler logchannel
 
@@ -23,31 +22,26 @@ If the channel is not set, the bot will not log the deleted spoiler messages.
 
 **Usage:** `<@1275521742961508432>nospoiler logchannel`
 
-### nospoiler togglewarnmsg
-
-**Description:** Toggle the spoiler warning message on or off.
-
-**Usage:** `<@1275521742961508432>nospoiler togglewarnmsg`
-
 ### nospoiler settings
 
 **Description:** Show the settings.
 
 **Usage:** `<@1275521742961508432>nospoiler settings`
 
-### nospoiler useembed
+### nospoiler deleteafter
 
-**Description:** Toggle the spoiler warning message to use embed or not.
+**Description:** Set when the warn message should delete.
 
-**Usage:** `<@1275521742961508432>nospoiler useembed`
+Default timeout is 10 seconds.
+Timeout must be between 10 and 120 seconds.
 
-### nospoiler message
+**Usage:** `<@1275521742961508432>nospoiler deleteafter`
 
-**Description:** Set the spoiler warning message.
+### nospoiler togglewarnmsg
 
-If the message is not set, the bot will use the default message.
+**Description:** Toggle the spoiler warning message on or off.
 
-**Usage:** `<@1275521742961508432>nospoiler message`
+**Usage:** `<@1275521742961508432>nospoiler togglewarnmsg`
 
 ### nospoiler version
 
@@ -60,4 +54,10 @@ If the message is not set, the bot will use the default message.
 **Description:** Toggle NoSpoiler filter on/off.
 
 **Usage:** `<@1275521742961508432>nospoiler toggle`
+
+### nospoiler useembed
+
+**Description:** Toggle the spoiler warning message to use embed or not.
+
+**Usage:** `<@1275521742961508432>nospoiler useembed`
 

@@ -6,14 +6,6 @@
 
 **Usage:** `<@1275521742961508432>pets`
 
-### pets cooldown
-
-**Description:** Set the pet appearance cooldown in seconds.
-
-300s/5 minute minimum. Default is 3600s/1 hour.
-
-**Usage:** `<@1275521742961508432>pets cooldown`
-
 ### pets thanks
 
 **Description:** Set the pet thanks message.
@@ -25,6 +17,12 @@
 **Description:** Channel management for pet appearance.
 
 **Usage:** `<@1275521742961508432>pets channel`
+
+### pets channel add
+
+**Description:** Add a text channel for pets.
+
+**Usage:** `<@1275521742961508432>pets channel add`
 
 ### pets channel addall
 
@@ -44,17 +42,25 @@
 
 **Usage:** `<@1275521742961508432>pets channel remove`
 
-### pets channel add
-
-**Description:** Add a text channel for pets.
-
-**Usage:** `<@1275521742961508432>pets channel add`
-
 ### pets hello
 
 **Description:** Set the pet greeting message.
 
 **Usage:** `<@1275521742961508432>pets hello`
+
+### pets cooldown
+
+**Description:** Set the pet appearance cooldown in seconds.
+
+300s/5 minute minimum. Default is 3600s/1 hour.
+
+**Usage:** `<@1275521742961508432>pets cooldown`
+
+### pets toggle
+
+**Description:** Toggle pets on the server.
+
+**Usage:** `<@1275521742961508432>pets toggle`
 
 ### pets delete
 
@@ -64,12 +70,6 @@ To leave the thanks message with no deletion, use 0 as the amount.
 Max is 5 minutes (300).
 
 **Usage:** `<@1275521742961508432>pets delete`
-
-### pets toggle
-
-**Description:** Toggle pets on the server.
-
-**Usage:** `<@1275521742961508432>pets toggle`
 
 ### pets credits
 

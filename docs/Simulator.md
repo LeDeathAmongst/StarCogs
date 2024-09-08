@@ -12,47 +12,17 @@
 
 **Usage:** `<@1275521742961508432>simulator start`
 
-### simulator set
+### simulator stop
 
-**Description:** Set up your simulator.
+**Description:** Stop the simulator.
 
-**Usage:** `<@1275521742961508432>simulator set`
+**Usage:** `<@1275521742961508432>simulator stop`
 
-### simulator set inputrole
+### simulator count
 
-**Description:** Members must have this role to participate in the simulator.
+**Description:** Count instances of a word, globally or for a user
 
-**Usage:** `<@1275521742961508432>simulator set inputrole`
-
-### simulator set conversationdelay
-
-**Description:** Simulated conversations will occur randomly according to this value in minutes.
-
-**Usage:** `<@1275521742961508432>simulator set conversationdelay`
-
-### simulator set commentdelay
-
-**Description:** Messages will be sent randomly during simulated conversations according to this value in seconds.
-
-**Usage:** `<@1275521742961508432>simulator set commentdelay`
-
-### simulator set inputchannels
-
-**Description:** Set a series of channels that will feed the simulator.
-
-**Usage:** `<@1275521742961508432>simulator set inputchannels`
-
-### simulator set outputchannel
-
-**Description:** Set the channel the simulator will run in.
-
-**Usage:** `<@1275521742961508432>simulator set outputchannel`
-
-### simulator set showsettings
-
-**Description:** Show the current simulator settings
-
-**Usage:** `<@1275521742961508432>simulator set showsettings`
+**Usage:** `<@1275521742961508432>simulator count`
 
 ### simulator info
 
@@ -72,17 +42,47 @@
 
 **Usage:** `<@1275521742961508432>simulator feed`
 
-### simulator count
+### simulator set
 
-**Description:** Count instances of a word, globally or for a user
+**Description:** Set up your simulator.
 
-**Usage:** `<@1275521742961508432>simulator count`
+**Usage:** `<@1275521742961508432>simulator set`
 
-### simulator stop
+### simulator set outputchannel
 
-**Description:** Stop the simulator.
+**Description:** Set the channel the simulator will run in.
 
-**Usage:** `<@1275521742961508432>simulator stop`
+**Usage:** `<@1275521742961508432>simulator set outputchannel`
+
+### simulator set commentdelay
+
+**Description:** Messages will be sent randomly during simulated conversations according to this value in seconds.
+
+**Usage:** `<@1275521742961508432>simulator set commentdelay`
+
+### simulator set conversationdelay
+
+**Description:** Simulated conversations will occur randomly according to this value in minutes.
+
+**Usage:** `<@1275521742961508432>simulator set conversationdelay`
+
+### simulator set inputchannels
+
+**Description:** Set a series of channels that will feed the simulator.
+
+**Usage:** `<@1275521742961508432>simulator set inputchannels`
+
+### simulator set showsettings
+
+**Description:** Show the current simulator settings
+
+**Usage:** `<@1275521742961508432>simulator set showsettings`
+
+### simulator set inputrole
+
+**Description:** Members must have this role to participate in the simulator.
+
+**Usage:** `<@1275521742961508432>simulator set inputrole`
 
 ### dontsimulateme
 

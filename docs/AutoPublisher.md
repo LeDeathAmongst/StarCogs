@@ -12,18 +12,6 @@
 
 **Usage:** `<@1275521742961508432>autopublisher stats`
 
-### autopublisher version
-
-**Description:** Shows the version of the cog.
-
-**Usage:** `<@1275521742961508432>autopublisher version`
-
-### autopublisher settings
-
-**Description:** Show AutoPublisher setting.
-
-**Usage:** `<@1275521742961508432>autopublisher settings`
-
 ### autopublisher reset
 
 **Description:** Reset AutoPublisher setting.
@@ -44,6 +32,18 @@ Please note select menu's can't view more than 25 channels.
 - You can confrim or remove multiple channels at once. (must go by one by one)
 
 **Usage:** `<@1275521742961508432>autopublisher ignorechannel`
+
+### autopublisher version
+
+**Description:** Shows the version of the cog.
+
+**Usage:** `<@1275521742961508432>autopublisher version`
+
+### autopublisher settings
+
+**Description:** Show AutoPublisher setting.
+
+**Usage:** `<@1275521742961508432>autopublisher settings`
 
 ### autopublisher toggle
 

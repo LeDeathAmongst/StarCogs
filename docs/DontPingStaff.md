@@ -6,96 +6,6 @@
 
 **Usage:** `<@1275521742961508432>dps`
 
-### dps muterole
-
-**Description:** Set a role to be used for muting.
-
-**Usage:** `<@1275521742961508432>dps muterole`
-
-### dps whitelist
-
-**Description:** Manage whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist`
-
-### dps whitelist add
-
-**Description:** Add users/roles/channels to the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist add`
-
-### dps whitelist add role
-
-**Description:** Add roles to the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist add role`
-
-### dps whitelist add channel
-
-**Description:** Add channels to the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist add channel`
-
-### dps whitelist add user
-
-**Description:** Add users to the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist add user`
-
-### dps whitelist remove
-
-**Description:** Remove users/roles/channels from the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist remove`
-
-### dps whitelist remove role
-
-**Description:** Remove roles from the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist remove role`
-
-### dps whitelist remove channel
-
-**Description:** Remove channels from the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist remove channel`
-
-### dps whitelist remove user
-
-**Description:** Remove users from the whitelist.
-
-**Usage:** `<@1275521742961508432>dps whitelist remove user`
-
-### dps addroles
-
-**Description:** Manage roles to be added to the user.
-
-**Usage:** `<@1275521742961508432>dps addroles`
-
-### dps addroles add
-
-**Description:** Add a role to be added to the user.
-
-**Usage:** `<@1275521742961508432>dps addroles add`
-
-### dps addroles list
-
-**Description:** List the roles to be added to the user.
-
-**Usage:** `<@1275521742961508432>dps addroles list`
-
-### dps addroles remove
-
-**Description:** Remove a role from being added to the user.
-
-**Usage:** `<@1275521742961508432>dps addroles remove`
-
-### dps toggle
-
-**Description:** Toggle the module.
-
-**Usage:** `<@1275521742961508432>dps toggle`
-
 ### dps action
 
 **Description:** Choose none, kick, ban, mute, addroles, removeroles as the action.
@@ -132,17 +42,21 @@
 
 **Usage:** `<@1275521742961508432>dps staffrole list`
 
-### dps settings
+### dps scope
 
-**Description:** Show the current settings.
+**Description:** Set the scope of the module.
 
-**Usage:** `<@1275521742961508432>dps settings`
+**Scope**
+- `guild` - Enable DPS __**server-wide**__ by passing **guild**.
+- `category` - Enable DPS for a specific category by passing its **category ID**.
+- `channel` - Enable DPS for a specific channel by passing its **channel ID**.
 
-### dps per
+**Note**: You can specify multiple categories and channels, separated **by a space**. Running the command again will **override** the previous configuration.
 
-**Description:** Set how long to wait between actions.
+**Example**
+- To enable DPS for **specific channels**, **categories**, or a **mix of both**: `dps scope 123456789 123456789 123456789`
 
-**Usage:** `<@1275521742961508432>dps per`
+**Usage:** `<@1275521742961508432>dps scope`
 
 ### dps removeroles
 
@@ -168,25 +82,111 @@
 
 **Usage:** `<@1275521742961508432>dps removeroles add`
 
+### dps per
+
+**Description:** Set how long to wait between actions.
+
+**Usage:** `<@1275521742961508432>dps per`
+
 ### dps amount
 
 **Description:** Set how many pings are needed to trigger an action.
 
 **Usage:** `<@1275521742961508432>dps amount`
 
-### dps scope
+### dps settings
 
-**Description:** Set the scope of the module.
+**Description:** Show the current settings.
 
-**Scope**
-- `guild` - Enable DPS __**server-wide**__ by passing **guild**.
-- `category` - Enable DPS for a specific category by passing its **category ID**.
-- `channel` - Enable DPS for a specific channel by passing its **channel ID**.
+**Usage:** `<@1275521742961508432>dps settings`
 
-**Note**: You can specify multiple categories and channels, separated **by a space**. Running the command again will **override** the previous configuration.
+### dps muterole
 
-**Example**
-- To enable DPS for **specific channels**, **categories**, or a **mix of both**: `dps scope 123456789 123456789 123456789`
+**Description:** Set a role to be used for muting.
 
-**Usage:** `<@1275521742961508432>dps scope`
+**Usage:** `<@1275521742961508432>dps muterole`
+
+### dps addroles
+
+**Description:** Manage roles to be added to the user.
+
+**Usage:** `<@1275521742961508432>dps addroles`
+
+### dps addroles add
+
+**Description:** Add a role to be added to the user.
+
+**Usage:** `<@1275521742961508432>dps addroles add`
+
+### dps addroles list
+
+**Description:** List the roles to be added to the user.
+
+**Usage:** `<@1275521742961508432>dps addroles list`
+
+### dps addroles remove
+
+**Description:** Remove a role from being added to the user.
+
+**Usage:** `<@1275521742961508432>dps addroles remove`
+
+### dps whitelist
+
+**Description:** Manage whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist`
+
+### dps whitelist add
+
+**Description:** Add users/roles/channels to the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist add`
+
+### dps whitelist add channel
+
+**Description:** Add channels to the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist add channel`
+
+### dps whitelist add role
+
+**Description:** Add roles to the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist add role`
+
+### dps whitelist add user
+
+**Description:** Add users to the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist add user`
+
+### dps whitelist remove
+
+**Description:** Remove users/roles/channels from the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist remove`
+
+### dps whitelist remove user
+
+**Description:** Remove users from the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist remove user`
+
+### dps whitelist remove channel
+
+**Description:** Remove channels from the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist remove channel`
+
+### dps whitelist remove role
+
+**Description:** Remove roles from the whitelist.
+
+**Usage:** `<@1275521742961508432>dps whitelist remove role`
+
+### dps toggle
+
+**Description:** Toggle the module.
+
+**Usage:** `<@1275521742961508432>dps toggle`
 

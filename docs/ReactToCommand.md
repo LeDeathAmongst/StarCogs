@@ -6,6 +6,12 @@
 
 **Usage:** `<@1275521742961508432>reacttocommand`
 
+### reacttocommand remove
+
+**Description:** Remove a reaction-command for a message.
+
+**Usage:** `<@1275521742961508432>reacttocommand remove`
+
 ### reacttocommand add
 
 **Description:** Add a reaction-command for a message.
@@ -15,12 +21,6 @@ The command will be invoked with the permissions of the user who clicked on the 
 This user must be able to see writing in the channel.
 
 **Usage:** `<@1275521742961508432>reacttocommand add`
-
-### reacttocommand remove
-
-**Description:** Remove a reaction-command for a message.
-
-**Usage:** `<@1275521742961508432>reacttocommand remove`
 
 ### reacttocommand clear
 

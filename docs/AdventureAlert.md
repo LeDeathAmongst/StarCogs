@@ -6,33 +6,11 @@
 
 **Usage:** `<@1275521742961508432>adventurealert`
 
-### adventurealert removeall
+### adventurealert settings
 
-**Description:** Remove all adventurealert settings in all guilds
+**Description:** Shows a list of servers you have alerts
 
-**Usage:** `<@1275521742961508432>adventurealert removeall`
-
-### adventurealert role
-
-**Description:** Add or remove a role to be pinged when a dragon appears
-
-`alert_style` - Must be one of:
-    - `adventure` (default)
-    - `boss` or `dragon`
-    - `cart`
-    - `immortal`
-    - `miniboss`
-    - `possessed`
-    - `ascended`
-    - `transcended`
-
-**Usage:** `<@1275521742961508432>adventurealert role`
-
-### adventurealert removealluser
-
-**Description:** Remove A specified user from adventurealert across the bot
-
-**Usage:** `<@1275521742961508432>adventurealert removealluser`
+**Usage:** `<@1275521742961508432>adventurealert settings`
 
 ### adventurealert global
 
@@ -50,9 +28,9 @@
 
 **Usage:** `<@1275521742961508432>adventurealert global`
 
-### adventurealert removeuser
+### adventurealert role
 
-**Description:** Remove a specific user ID from adventure alerts
+**Description:** Add or remove a role to be pinged when a dragon appears
 
 `alert_style` - Must be one of:
     - `adventure` (default)
@@ -64,7 +42,7 @@
     - `ascended`
     - `transcended`
 
-**Usage:** `<@1275521742961508432>adventurealert removeuser`
+**Usage:** `<@1275521742961508432>adventurealert role`
 
 ### adventurealert toggle
 
@@ -82,9 +60,31 @@
 
 **Usage:** `<@1275521742961508432>adventurealert toggle`
 
-### adventurealert settings
+### adventurealert removeuser
 
-**Description:** Shows a list of servers you have alerts
+**Description:** Remove a specific user ID from adventure alerts
 
-**Usage:** `<@1275521742961508432>adventurealert settings`
+`alert_style` - Must be one of:
+    - `adventure` (default)
+    - `boss` or `dragon`
+    - `cart`
+    - `immortal`
+    - `miniboss`
+    - `possessed`
+    - `ascended`
+    - `transcended`
+
+**Usage:** `<@1275521742961508432>adventurealert removeuser`
+
+### adventurealert removeall
+
+**Description:** Remove all adventurealert settings in all guilds
+
+**Usage:** `<@1275521742961508432>adventurealert removeall`
+
+### adventurealert removealluser
+
+**Description:** Remove A specified user from adventurealert across the bot
+
+**Usage:** `<@1275521742961508432>adventurealert removealluser`
 

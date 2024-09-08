@@ -12,29 +12,23 @@ YAML example:
 
 **Usage:** `<@1275521742961508432>paginator`
 
-### paginator raw
+### paginator create
 
-**Description:** Get the raw JSON of a paginator group's page.
+**Description:** Initiate a new paginator group.
 
-**Usage:** `<@1275521742961508432>paginator raw`
+**Usage:** `<@1275521742961508432>paginator create`
 
-### paginator start
+### paginator removepage
 
-**Description:** Starts a paginator of the given group name
+**Description:** Remove a page from a paginator group.
 
-**Usage:** `<@1275521742961508432>paginator start`
+**Usage:** `<@1275521742961508432>paginator removepage`
 
-### paginator list
+### paginator info
 
-**Description:** List all paginator groups in the server.
+**Description:** Get information about a paginator group.
 
-**Usage:** `<@1275521742961508432>paginator list`
-
-### paginator delete
-
-**Description:** Delete a paginator group.
-
-**Usage:** `<@1275521742961508432>paginator delete`
+**Usage:** `<@1275521742961508432>paginator info`
 
 ### paginator addpage
 
@@ -67,11 +61,17 @@ Example YAML: https://pastebin.com/e9ZvhYUn
 
 **Usage:** `<@1275521742961508432>paginator addpage fromyaml`
 
-### paginator create
+### paginator delete
 
-**Description:** Initiate a new paginator group.
+**Description:** Delete a paginator group.
 
-**Usage:** `<@1275521742961508432>paginator create`
+**Usage:** `<@1275521742961508432>paginator delete`
+
+### paginator start
+
+**Description:** Starts a paginator of the given group name
+
+**Usage:** `<@1275521742961508432>paginator start`
 
 ### paginator editpage
 
@@ -79,15 +79,15 @@ Example YAML: https://pastebin.com/e9ZvhYUn
 
 **Usage:** `<@1275521742961508432>paginator editpage`
 
-### paginator removepage
+### paginator raw
 
-**Description:** Remove a page from a paginator group.
+**Description:** Get the raw JSON of a paginator group's page.
 
-**Usage:** `<@1275521742961508432>paginator removepage`
+**Usage:** `<@1275521742961508432>paginator raw`
 
-### paginator info
+### paginator list
 
-**Description:** Get information about a paginator group.
+**Description:** List all paginator groups in the server.
 
-**Usage:** `<@1275521742961508432>paginator info`
+**Usage:** `<@1275521742961508432>paginator list`
 

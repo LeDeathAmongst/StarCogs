@@ -6,11 +6,17 @@
 
 **Usage:** `<@1275521742961508432>personalreact`
 
-### personalreact replies
+### personalreact enable
 
-**Description:** Allow the bot to react on the messages which ping you in replies.
+**Description:** Enable PersonalReact for you.
 
-**Usage:** `<@1275521742961508432>personalreact replies`
+**Usage:** `<@1275521742961508432>personalreact enable`
+
+### personalreact addreactions
+
+**Description:** Add reaction(s).
+
+**Usage:** `<@1275521742961508432>personalreact addreactions`
 
 ### personalreact view
 
@@ -24,41 +30,11 @@
 
 **Usage:** `<@1275521742961508432>personalreact reactions`
 
-### personalreact removereactions
-
-**Description:** Remove reaction(s).
-
-**Usage:** `<@1275521742961508432>personalreact removereactions`
-
 ### personalreact ignorebots
 
 **Description:** Ignore bots.
 
 **Usage:** `<@1275521742961508432>personalreact ignorebots`
-
-### personalreact disable
-
-**Description:** Disable PersonalReact for you.
-
-**Usage:** `<@1275521742961508432>personalreact disable`
-
-### personalreact customtrigger
-
-**Description:** Set a custom trigger.
-
-**Usage:** `<@1275521742961508432>personalreact customtrigger`
-
-### personalreact userid
-
-**Description:** Allow the bot to react on the messages which contain your user ID.
-
-**Usage:** `<@1275521742961508432>personalreact userid`
-
-### personalreact enable
-
-**Description:** Enable PersonalReact for you.
-
-**Usage:** `<@1275521742961508432>personalreact enable`
 
 ### personalreact ignoremyself
 
@@ -66,17 +42,77 @@
 
 **Usage:** `<@1275521742961508432>personalreact ignoremyself`
 
-### personalreact addreactions
+### personalreact disable
 
-**Description:** Add reaction(s).
+**Description:** Disable PersonalReact for you.
 
-**Usage:** `<@1275521742961508432>personalreact addreactions`
+**Usage:** `<@1275521742961508432>personalreact disable`
+
+### personalreact userid
+
+**Description:** Allow the bot to react on the messages which contain your user ID.
+
+**Usage:** `<@1275521742961508432>personalreact userid`
+
+### personalreact customtrigger
+
+**Description:** Set a custom trigger.
+
+**Usage:** `<@1275521742961508432>personalreact customtrigger`
+
+### personalreact removereactions
+
+**Description:** Remove reaction(s).
+
+**Usage:** `<@1275521742961508432>personalreact removereactions`
+
+### personalreact replies
+
+**Description:** Allow the bot to react on the messages which ping you in replies.
+
+**Usage:** `<@1275521742961508432>personalreact replies`
 
 ### setpersonalreact
 
 **Description:** Set PersonalReact settings.
 
 **Usage:** `<@1275521742961508432>setpersonalreact`
+
+### setpersonalreact roles
+
+**Description:** Set the roles requirements.
+
+**Usage:** `<@1275521742961508432>setpersonalreact roles`
+
+### setpersonalreact modalconfig
+
+**Description:** Set all settings for the cog with a Discord Modal.
+
+**Usage:** `<@1275521742961508432>setpersonalreact modalconfig`
+
+### setpersonalreact maxreactionspermember
+
+**Description:** The maximum number of reactions a member can set for them.
+
+Default value: `5`
+Dev: `Range[int, 1, 8]`
+
+**Usage:** `<@1275521742961508432>setpersonalreact maxreactionspermember`
+
+### setpersonalreact addbaserolesrequirements
+
+**Description:** Add base roles requirements.
+
+**Usage:** `<@1275521742961508432>setpersonalreact addbaserolesrequirements`
+
+### setpersonalreact useamountssum
+
+**Description:** Whether to use the sum of the roles requirements or the maximum amount.
+
+Default value: `True`
+Dev: `<class 'bool'>`
+
+**Usage:** `<@1275521742961508432>setpersonalreact useamountssum`
 
 ### setpersonalreact clearmember
 
@@ -93,41 +129,17 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setpersonalreact allowrepliestrigger`
 
-### setpersonalreact resetsetting
-
-**Description:** Reset a setting.
-
-**Usage:** `<@1275521742961508432>setpersonalreact resetsetting`
-
-### setpersonalreact alwaysallowcustomtrigger
-
-**Description:** Whether to always allow the custom trigger feature.
-
-Default value: `False`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setpersonalreact alwaysallowcustomtrigger`
-
 ### setpersonalreact removebaserolesrequirements
 
 **Description:** Remove base roles requirements.
 
 **Usage:** `<@1275521742961508432>setpersonalreact removebaserolesrequirements`
 
-### setpersonalreact addctrolesrequirements
+### setpersonalreact resetsetting
 
-**Description:** Add custom trigger roles requirements.
+**Description:** Reset a setting.
 
-**Usage:** `<@1275521742961508432>setpersonalreact addctrolesrequirements`
-
-### setpersonalreact mincustomtriggerlength
-
-**Description:** The minimum length of a custom trigger.
-
-Default value: `3`
-Dev: `Range[int, 3, 8]`
-
-**Usage:** `<@1275521742961508432>setpersonalreact mincustomtriggerlength`
+**Usage:** `<@1275521742961508432>setpersonalreact resetsetting`
 
 ### setpersonalreact blacklistedchannels
 
@@ -138,26 +150,29 @@ Dev: `Greedy[Union]`
 
 **Usage:** `<@1275521742961508432>setpersonalreact blacklistedchannels`
 
-### setpersonalreact maxreactionspermember
+### setpersonalreact mincustomtriggerlength
 
-**Description:** The maximum number of reactions a member can set for them.
+**Description:** The minimum length of a custom trigger.
 
-Default value: `5`
-Dev: `Range[int, 1, 8]`
+Default value: `3`
+Dev: `Range[int, 3, 8]`
 
-**Usage:** `<@1275521742961508432>setpersonalreact maxreactionspermember`
+**Usage:** `<@1275521742961508432>setpersonalreact mincustomtriggerlength`
 
-### setpersonalreact removectrolesrequirements
+### setpersonalreact alwaysallowcustomtrigger
 
-**Description:** Remove custom trigger roles requirements.
+**Description:** Whether to always allow the custom trigger feature.
 
-**Usage:** `<@1275521742961508432>setpersonalreact removectrolesrequirements`
+Default value: `False`
+Dev: `<class 'bool'>`
 
-### setpersonalreact roles
+**Usage:** `<@1275521742961508432>setpersonalreact alwaysallowcustomtrigger`
 
-**Description:** Set the roles requirements.
+### setpersonalreact addctrolesrequirements
 
-**Usage:** `<@1275521742961508432>setpersonalreact roles`
+**Description:** Add custom trigger roles requirements.
+
+**Usage:** `<@1275521742961508432>setpersonalreact addctrolesrequirements`
 
 ### setpersonalreact showsettings
 
@@ -165,24 +180,9 @@ Dev: `Range[int, 1, 8]`
 
 **Usage:** `<@1275521742961508432>setpersonalreact showsettings`
 
-### setpersonalreact useamountssum
+### setpersonalreact removectrolesrequirements
 
-**Description:** Whether to use the sum of the roles requirements or the maximum amount.
+**Description:** Remove custom trigger roles requirements.
 
-Default value: `True`
-Dev: `<class 'bool'>`
-
-**Usage:** `<@1275521742961508432>setpersonalreact useamountssum`
-
-### setpersonalreact modalconfig
-
-**Description:** Set all settings for the cog with a Discord Modal.
-
-**Usage:** `<@1275521742961508432>setpersonalreact modalconfig`
-
-### setpersonalreact addbaserolesrequirements
-
-**Description:** Add base roles requirements.
-
-**Usage:** `<@1275521742961508432>setpersonalreact addbaserolesrequirements`
+**Usage:** `<@1275521742961508432>setpersonalreact removectrolesrequirements`
 

@@ -12,30 +12,11 @@
 
 **Usage:** `<@1275521742961508432>infochannelset`
 
-### infochannelset name
+### infochannelset togglerole
 
-**Description:** Change the name of the infochannel for the specified channel type.
+**Description:** Toggle an infochannel that shows the count of users with the specified role
 
-{count} must be used to display number of total members in the server.
-Leave blank to set back to default.
-
-Examples:
-- `[p]infochannelset name members Cool Cats: {count}`
-- `[p]infochannelset name bots {count} Robot Overlords`
-
-Valid Types are:
-- `members`: Total members on the server
-- `humans`: Total members that aren't bots
-- `boosters`: Total amount of boosters
-- `bots`: Total bots
-- `roles`: Total number of roles
-- `channels`: Total number of channels excluding infochannels
-- `online`: Total online members
-- `offline`: Total offline members
-
-Warning: This command counts against the channel update rate limit and may be queued.
-
-**Usage:** `<@1275521742961508432>infochannelset name`
+**Usage:** `<@1275521742961508432>infochannelset togglerole`
 
 ### infochannelset togglechannel
 
@@ -72,9 +53,28 @@ Warning: This command counts against the channel update rate limit and may be qu
 
 **Usage:** `<@1275521742961508432>infochannelset rolename`
 
-### infochannelset togglerole
+### infochannelset name
 
-**Description:** Toggle an infochannel that shows the count of users with the specified role
+**Description:** Change the name of the infochannel for the specified channel type.
 
-**Usage:** `<@1275521742961508432>infochannelset togglerole`
+{count} must be used to display number of total members in the server.
+Leave blank to set back to default.
+
+Examples:
+- `[p]infochannelset name members Cool Cats: {count}`
+- `[p]infochannelset name bots {count} Robot Overlords`
+
+Valid Types are:
+- `members`: Total members on the server
+- `humans`: Total members that aren't bots
+- `boosters`: Total amount of boosters
+- `bots`: Total bots
+- `roles`: Total number of roles
+- `channels`: Total number of channels excluding infochannels
+- `online`: Total online members
+- `offline`: Total offline members
+
+Warning: This command counts against the channel update rate limit and may be queued.
+
+**Usage:** `<@1275521742961508432>infochannelset name`
 

@@ -6,17 +6,11 @@
 
 **Usage:** `<@1275521742961508432>messagestats`
 
-### messagestats addcounter
+### messagestats resetcounter
 
-**Description:** Adds a counter for how many times a message with this word has been sent in this server.
+**Description:** Resets the counter of the word to 0 and the started-counting date to now.
 
-**Usage:** `<@1275521742961508432>messagestats addcounter`
-
-### messagestats list
-
-**Description:** Lists all words we are looking for in this server with their stored info.
-
-**Usage:** `<@1275521742961508432>messagestats list`
+**Usage:** `<@1275521742961508432>messagestats resetcounter`
 
 ### messagestats delcounter
 
@@ -24,11 +18,23 @@
 
 **Usage:** `<@1275521742961508432>messagestats delcounter`
 
-### messagestats notifychannel
+### messagestats checkcounter
 
-**Description:** Whenever a message containing this word appears in this server a message is sent to the set channel.
+**Description:** Checks how many messages containing this word have been sent since we started counting.
 
-**Usage:** `<@1275521742961508432>messagestats notifychannel`
+**Usage:** `<@1275521742961508432>messagestats checkcounter`
+
+### messagestats addcounter
+
+**Description:** Adds a counter for how many times a message with this word has been sent in this server.
+
+**Usage:** `<@1275521742961508432>messagestats addcounter`
+
+### messagestats notifyme
+
+**Description:** Whenever the word appears in a message on this server you will receive a DM from this bot.
+
+**Usage:** `<@1275521742961508432>messagestats notifyme`
 
 ### messagestats info
 
@@ -36,23 +42,11 @@
 
 **Usage:** `<@1275521742961508432>messagestats info`
 
-### messagestats dontnotifychannel
+### messagestats list
 
-**Description:** Turn off the notifychannel trigger.
+**Description:** Lists all words we are looking for in this server with their stored info.
 
-**Usage:** `<@1275521742961508432>messagestats dontnotifychannel`
-
-### messagestats resetcounter
-
-**Description:** Resets the counter of the word to 0 and the started-counting date to now.
-
-**Usage:** `<@1275521742961508432>messagestats resetcounter`
-
-### messagestats checkcounter
-
-**Description:** Checks how many messages containing this word have been sent since we started counting.
-
-**Usage:** `<@1275521742961508432>messagestats checkcounter`
+**Usage:** `<@1275521742961508432>messagestats list`
 
 ### messagestats dontnotifyme
 
@@ -60,9 +54,15 @@
 
 **Usage:** `<@1275521742961508432>messagestats dontnotifyme`
 
-### messagestats notifyme
+### messagestats dontnotifychannel
 
-**Description:** Whenever the word appears in a message on this server you will receive a DM from this bot.
+**Description:** Turn off the notifychannel trigger.
 
-**Usage:** `<@1275521742961508432>messagestats notifyme`
+**Usage:** `<@1275521742961508432>messagestats dontnotifychannel`
+
+### messagestats notifychannel
+
+**Description:** Whenever a message containing this word appears in this server a message is sent to the set channel.
+
+**Usage:** `<@1275521742961508432>messagestats notifychannel`
 

@@ -12,17 +12,17 @@
 
 **Usage:** `<@1275521742961508432>setkofitracker`
 
-### setkofitracker instructions
-
-**Description:** Instructions on how to set up KoFiTracker.
-
-**Usage:** `<@1275521742961508432>setkofitracker instructions`
-
 ### setkofitracker remove
 
 **Description:** Remove a KoFi page from tracking.
 
 **Usage:** `<@1275521742961508432>setkofitracker remove`
+
+### setkofitracker instructions
+
+**Description:** Instructions on how to set up KoFiTracker.
+
+**Usage:** `<@1275521742961508432>setkofitracker instructions`
 
 ### setkofitracker list
 

@@ -12,17 +12,17 @@
 
 **Usage:** `<@1275521742961508432>fastclickgame multi`
 
-### fastclickgame leaderboard
-
-**Description:** Show Fast Click Game leaderboard.
-
-**Usage:** `<@1275521742961508432>fastclickgame leaderboard`
-
 ### fastclickgame duel
 
 **Description:** Play Fast Click Game with another player.
 
 **Usage:** `<@1275521742961508432>fastclickgame duel`
+
+### fastclickgame leaderboard
+
+**Description:** Show Fast Click Game leaderboard.
+
+**Usage:** `<@1275521742961508432>fastclickgame leaderboard`
 
 ### setfastclickgame
 
@@ -30,32 +30,23 @@
 
 **Usage:** `<@1275521742961508432>setfastclickgame`
 
-### setfastclickgame prize
+### setfastclickgame modalconfig
 
-**Description:** Set the prize for Red bank system and cog leaderboard. Default is 5000.
+**Description:** Set all settings for the cog with a Discord Modal.
 
-Default value: `2500`
-Dev: `Range[int, 1000, 50000]`
-
-**Usage:** `<@1275521742961508432>setfastclickgame prize`
-
-### setfastclickgame resetleaderboard
-
-**Description:** Reset leaderboard in the guild.
-
-**Usage:** `<@1275521742961508432>setfastclickgame resetleaderboard`
-
-### setfastclickgame showsettings
-
-**Description:** Show all settings for the cog with defaults and values.
-
-**Usage:** `<@1275521742961508432>setfastclickgame showsettings`
+**Usage:** `<@1275521742961508432>setfastclickgame modalconfig`
 
 ### setfastclickgame resetsetting
 
 **Description:** Reset a setting.
 
 **Usage:** `<@1275521742961508432>setfastclickgame resetsetting`
+
+### setfastclickgame resetleaderboard
+
+**Description:** Reset leaderboard in the guild.
+
+**Usage:** `<@1275521742961508432>setfastclickgame resetleaderboard`
 
 ### setfastclickgame redeconomy
 
@@ -66,9 +57,18 @@ Dev: `<class 'bool'>`
 
 **Usage:** `<@1275521742961508432>setfastclickgame redeconomy`
 
-### setfastclickgame modalconfig
+### setfastclickgame prize
 
-**Description:** Set all settings for the cog with a Discord Modal.
+**Description:** Set the prize for Red bank system and cog leaderboard. Default is 5000.
 
-**Usage:** `<@1275521742961508432>setfastclickgame modalconfig`
+Default value: `2500`
+Dev: `Range[int, 1000, 50000]`
+
+**Usage:** `<@1275521742961508432>setfastclickgame prize`
+
+### setfastclickgame showsettings
+
+**Description:** Show all settings for the cog with defaults and values.
+
+**Usage:** `<@1275521742961508432>setfastclickgame showsettings`
 

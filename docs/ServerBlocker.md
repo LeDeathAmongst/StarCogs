@@ -12,15 +12,15 @@
 
 **Usage:** `<@1275521742961508432>serverblock add`
 
-### serverblock list
-
-**Description:** List all blocked servers.
-
-**Usage:** `<@1275521742961508432>serverblock list`
-
 ### serverblock remove
 
 **Description:** Remove a server from the blocklist.
 
 **Usage:** `<@1275521742961508432>serverblock remove`
+
+### serverblock list
+
+**Description:** List all blocked servers.
+
+**Usage:** `<@1275521742961508432>serverblock list`
 

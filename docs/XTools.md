@@ -6,11 +6,11 @@
 
 **Usage:** `<@1275521742961508432>apiset`
 
-### apiset auth
+### apiset help
 
-**Description:** No description provided.
+**Description:** Tutorial for getting your ClientID and Secret
 
-**Usage:** `<@1275521742961508432>apiset auth`
+**Usage:** `<@1275521742961508432>apiset help`
 
 ### apiset tokens
 
@@ -18,17 +18,17 @@
 
 **Usage:** `<@1275521742961508432>apiset tokens`
 
-### apiset help
-
-**Description:** Tutorial for getting your ClientID and Secret
-
-**Usage:** `<@1275521742961508432>apiset help`
-
 ### apiset reset
 
 **Description:** Reset the all token data
 
 **Usage:** `<@1275521742961508432>apiset reset`
+
+### apiset auth
+
+**Description:** No description provided.
+
+**Usage:** `<@1275521742961508432>apiset auth`
 
 ### xstatuschannel
 

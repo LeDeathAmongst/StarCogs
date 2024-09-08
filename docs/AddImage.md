@@ -6,23 +6,27 @@
 
 **Usage:** `<@1275521742961508432>addimage`
 
-### addimage list
+### addimage addglobal
 
-**Description:** List images added to bot
+**Description:** Add an image to direct upload globally
 
-**Usage:** `<@1275521742961508432>addimage list`
+`name` the command name used to post the image
 
-### addimage clean_deleted_images
+**Usage:** `<@1275521742961508432>addimage addglobal`
 
-**Description:** Cleanup deleted images that are not supposed to be saved anymore
+### addimage add
 
-**Usage:** `<@1275521742961508432>addimage clean_deleted_images`
+**Description:** Add an image to direct upload on this server
 
-### addimage clear_global
+`name` the command name used to post the image
 
-**Description:** Clears the full set of images stored globally
+**Usage:** `<@1275521742961508432>addimage add`
 
-**Usage:** `<@1275521742961508432>addimage clear_global`
+### addimage deleteallbyuser
+
+**Description:** Delete all triggers created by a specified user ID.
+
+**Usage:** `<@1275521742961508432>addimage deleteallbyuser`
 
 ### addimage deleteglobal
 
@@ -40,13 +44,23 @@
 
 **Usage:** `<@1275521742961508432>addimage delete`
 
-### addimage addglobal
+### addimage clear_images
 
-**Description:** Add an image to direct upload globally
+**Description:** Clear all the images stored for the current server
 
-`name` the command name used to post the image
+**Usage:** `<@1275521742961508432>addimage clear_images`
 
-**Usage:** `<@1275521742961508432>addimage addglobal`
+### addimage clear_global
+
+**Description:** Clears the full set of images stored globally
+
+**Usage:** `<@1275521742961508432>addimage clear_global`
+
+### addimage clean_deleted_images
+
+**Description:** Cleanup deleted images that are not supposed to be saved anymore
+
+**Usage:** `<@1275521742961508432>addimage clean_deleted_images`
 
 ### addimage ignoreglobal
 
@@ -54,23 +68,9 @@
 
 **Usage:** `<@1275521742961508432>addimage ignoreglobal`
 
-### addimage clear_images
+### addimage list
 
-**Description:** Clear all the images stored for the current server
+**Description:** List images added to bot
 
-**Usage:** `<@1275521742961508432>addimage clear_images`
-
-### addimage add
-
-**Description:** Add an image to direct upload on this server
-
-`name` the command name used to post the image
-
-**Usage:** `<@1275521742961508432>addimage add`
-
-### addimage deleteallbyuser
-
-**Description:** Delete all triggers created by a specified user ID.
-
-**Usage:** `<@1275521742961508432>addimage deleteallbyuser`
+**Usage:** `<@1275521742961508432>addimage list`
 

@@ -24,11 +24,11 @@
 
 **Usage:** `<@1275521742961508432>minecraft getplayerskin`
 
-### minecraft removeserver
+### minecraft editlastmessage
 
-**Description:** Remove a Minecraft Java server in Config.
+**Description:** Edit the last message sent for changes.
 
-**Usage:** `<@1275521742961508432>minecraft removeserver`
+**Usage:** `<@1275521742961508432>minecraft editlastmessage`
 
 ### minecraft getserver
 
@@ -36,9 +36,9 @@
 
 **Usage:** `<@1275521742961508432>minecraft getserver`
 
-### minecraft editlastmessage
+### minecraft removeserver
 
-**Description:** Edit the last message sent for changes.
+**Description:** Remove a Minecraft Java server in Config.
 
-**Usage:** `<@1275521742961508432>minecraft editlastmessage`
+**Usage:** `<@1275521742961508432>minecraft removeserver`
 

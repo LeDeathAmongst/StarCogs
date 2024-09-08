@@ -22,6 +22,12 @@ Improper usage of this command can break your bot, be careful.
 
 **Usage:** `<@1275521742961508432>repo`
 
+### repo list
+
+**Description:** List all installed repos.
+
+**Usage:** `<@1275521742961508432>repo list`
+
 ### repo info
 
 **Description:** Show information about a repo.
@@ -34,12 +40,6 @@ Example:
 - `<repo>` The name of the repo to show info about.
 
 **Usage:** `<@1275521742961508432>repo info`
-
-### repo list
-
-**Description:** List all installed repos.
-
-**Usage:** `<@1275521742961508432>repo list`
 
 ### repo delete
 
@@ -54,6 +54,23 @@ Examples:
 - `<repos...>` The repo or repos to remove.
 
 **Usage:** `<@1275521742961508432>repo delete`
+
+### repo update
+
+**Description:** Update all repos, or ones of your choosing.
+
+This will *not* update the cogs installed from those repos.
+
+Examples:
+- `[p]repo update`
+- `[p]repo update 26-Cogs`
+- `[p]repo update 26-Cogs Laggrons-Dumb-Cogs`
+
+**Arguments**
+
+- `[repos...]` The name or names of repos to update. If omitted, all repos are updated.
+
+**Usage:** `<@1275521742961508432>repo update`
 
 ### repo add
 
@@ -74,23 +91,6 @@ The branch will be the default branch if not specified.
 - `[branch]` Optional branch to install cogs from.
 
 **Usage:** `<@1275521742961508432>repo add`
-
-### repo update
-
-**Description:** Update all repos, or ones of your choosing.
-
-This will *not* update the cogs installed from those repos.
-
-Examples:
-- `[p]repo update`
-- `[p]repo update 26-Cogs`
-- `[p]repo update 26-Cogs Laggrons-Dumb-Cogs`
-
-**Arguments**
-
-- `[repos...]` The name or names of repos to update. If omitted, all repos are updated.
-
-**Usage:** `<@1275521742961508432>repo update`
 
 ### cog
 
@@ -163,6 +163,17 @@ Examples:
 
 **Usage:** `<@1275521742961508432>cog pin`
 
+### cog reinstallreqs
+
+**Description:** This command should not be used unless Red specifically asks for it.
+
+This command will reinstall cog requirements and shared libraries for all installed cogs.
+
+Red might ask the owner to use this when it clears contents of the lib folder
+because of change in minor version of Python.
+
+**Usage:** `<@1275521742961508432>cog reinstallreqs`
+
 ### cog install
 
 **Description:** Install a cog from the given repo.
@@ -207,17 +218,6 @@ Example:
 - `<repo>` The repo to list cogs from.
 
 **Usage:** `<@1275521742961508432>cog list`
-
-### cog reinstallreqs
-
-**Description:** This command should not be used unless Red specifically asks for it.
-
-This command will reinstall cog requirements and shared libraries for all installed cogs.
-
-Red might ask the owner to use this when it clears contents of the lib folder
-because of change in minor version of Python.
-
-**Usage:** `<@1275521742961508432>cog reinstallreqs`
 
 ### cog uninstall
 

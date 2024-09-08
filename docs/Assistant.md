@@ -95,6 +95,28 @@ You will need an **[api key](https://platform.openai.com/account/api-keys)** fro
 
 **Usage:** `<@1275521742961508432>assistant`
 
+### assistant minlength
+
+**Description:** set min character length for questions
+
+Set to 0 to respond to anything
+
+**Usage:** `<@1275521742961508432>assistant minlength`
+
+### assistant wipecog
+
+**Description:** Wipe all settings and data for entire cog
+
+**Usage:** `<@1275521742961508432>assistant wipecog`
+
+### assistant exportcsv
+
+**Description:** Export embeddings to a .csv file
+
+**Note:** csv exports do not include the embedding values
+
+**Usage:** `<@1275521742961508432>assistant exportcsv`
+
 ### assistant frequency
 
 **Description:** Set the frequency penalty for the model (-2.0 to 2.0)
@@ -122,13 +144,62 @@ Questions are converted to embeddings and compared against stored embeddings to 
 
 **Usage:** `<@1275521742961508432>assistant relatedness`
 
-### assistant exportcsv
+### assistant override
 
-**Description:** Export embeddings to a .csv file
+**Description:** Override settings for specific roles
 
-**Note:** csv exports do not include the embedding values
+**NOTE**
+If a user has two roles with override settings, override associated with the higher role will be used.
 
-**Usage:** `<@1275521742961508432>assistant exportcsv`
+**Usage:** `<@1275521742961508432>assistant override`
+
+### assistant override model
+
+**Description:** Assign a role to use a model
+
+*Specify same role and model to remove the override*
+
+**Usage:** `<@1275521742961508432>assistant override model`
+
+### assistant override maxtime
+
+**Description:** Assign a max retention time override to a role
+
+*Specify same role and time to remove the override*
+
+**Usage:** `<@1275521742961508432>assistant override maxtime`
+
+### assistant override maxretention
+
+**Description:** Assign a max message retention override to a role
+
+*Specify same role and retention amount to remove the override*
+
+**Usage:** `<@1275521742961508432>assistant override maxretention`
+
+### assistant override maxresponsetokens
+
+**Description:** Assign a max response token override to a role
+
+Set to 0 for response tokens to be dynamic
+
+*Specify same role and token count to remove the override*
+
+**Usage:** `<@1275521742961508432>assistant override maxresponsetokens`
+
+### assistant override maxtokens
+
+**Description:** Assign a max token override to a role
+
+*Specify same role and token count to remove the override*
+
+**Usage:** `<@1275521742961508432>assistant override maxtokens`
+
+### assistant openaikey
+
+**Description:** Set your OpenAI key
+
+**Usage:** `<@1275521742961508432>assistant openaikey`
 
 ### assistant resetglobalembeddings
 
@@ -138,23 +209,22 @@ This will delete any and all saved embedding training data for the assistant.
 
 **Usage:** `<@1275521742961508432>assistant resetglobalembeddings`
 
-### assistant usage
-
-**Description:** View the token usage stats for this server
-
-**Usage:** `<@1275521742961508432>assistant usage`
-
-### assistant openaikey
-
-**Description:** Set your OpenAI key
-
-**Usage:** `<@1275521742961508432>assistant openaikey`
-
 ### assistant questionmark
 
 **Description:** Toggle whether questions need to end with **__?__**
 
 **Usage:** `<@1275521742961508432>assistant questionmark`
+
+### assistant importcsv
+
+**Description:** Import embeddings to use with the assistant
+
+Args:
+    overwrite (bool): overwrite embeddings with existing entry names
+
+This will read excel files too
+
+**Usage:** `<@1275521742961508432>assistant importcsv`
 
 ### assistant collab
 
@@ -163,6 +233,12 @@ This will delete any and all saved embedding training data for the assistant.
 Multiple people speaking in a channel will be treated as a single conversation.
 
 **Usage:** `<@1275521742961508432>assistant collab`
+
+### assistant sysoverride
+
+**Description:** Toggle allowing per-conversation system prompt overriding
+
+**Usage:** `<@1275521742961508432>assistant sysoverride`
 
 ### assistant maxrecursion
 
@@ -184,34 +260,21 @@ Only the following models can call functions at the moment
 
 **Usage:** `<@1275521742961508432>assistant embedmodel`
 
-### assistant importcsv
-
-**Description:** Import embeddings to use with the assistant
-
-Args:
-    overwrite (bool): overwrite embeddings with existing entry names
-
-This will read excel files too
-
-**Usage:** `<@1275521742961508432>assistant importcsv`
-
-### assistant sysoverride
-
-**Description:** Toggle allowing per-conversation system prompt overriding
-
-**Usage:** `<@1275521742961508432>assistant sysoverride`
-
-### assistant toggledraw
-
-**Description:** Toggle the draw command on or off
-
-**Usage:** `<@1275521742961508432>assistant toggledraw`
-
 ### assistant exportjson
 
 **Description:** Export embeddings to a json file
 
 **Usage:** `<@1275521742961508432>assistant exportjson`
+
+### assistant tutor
+
+**Description:** Add/Remove items from the tutor list.
+
+If using OpenAI's function calling and talking to a tutor, the AI is able to create its own embeddings to remember later
+
+`role_or_member` can be a member or role
+
+**Usage:** `<@1275521742961508432>assistant tutor`
 
 ### assistant backupcog
 
@@ -221,13 +284,11 @@ This will read excel files too
 
 **Usage:** `<@1275521742961508432>assistant backupcog`
 
-### assistant braveapikey
+### assistant toggledraw
 
-**Description:** Enables use of the `search_internet` function
+**Description:** Toggle the draw command on or off
 
-Get your API key **[Here](https://brave.com/search/api/)**
-
-**Usage:** `<@1275521742961508432>assistant braveapikey`
+**Usage:** `<@1275521742961508432>assistant toggledraw`
 
 ### assistant presence
 
@@ -244,23 +305,13 @@ Positive values penalize new tokens based on whether they appear in the text so 
 
 **Usage:** `<@1275521742961508432>assistant regexblacklist`
 
-### assistant tutor
+### assistant braveapikey
 
-**Description:** Add/Remove items from the tutor list.
+**Description:** Enables use of the `search_internet` function
 
-If using OpenAI's function calling and talking to a tutor, the AI is able to create its own embeddings to remember later
+Get your API key **[Here](https://brave.com/search/api/)**
 
-`role_or_member` can be a member or role
-
-**Usage:** `<@1275521742961508432>assistant tutor`
-
-### assistant view
-
-**Description:** View current settings
-
-To send in current channel, use `[p]assistant view false`
-
-**Usage:** `<@1275521742961508432>assistant view`
+**Usage:** `<@1275521742961508432>assistant braveapikey`
 
 ### assistant system
 
@@ -298,6 +349,23 @@ Check out [This Guide](https://platform.openai.com/docs/guides/prompt-engineerin
 
 **Usage:** `<@1275521742961508432>assistant system`
 
+### assistant importjson
+
+**Description:** Import embeddings to use with the assistant
+
+Args:
+    overwrite (bool): overwrite embeddings with existing entry names
+
+**Usage:** `<@1275521742961508432>assistant importjson`
+
+### assistant view
+
+**Description:** View current settings
+
+To send in current channel, use `[p]assistant view false`
+
+**Usage:** `<@1275521742961508432>assistant view`
+
 ### assistant resolution
 
 **Description:** Switch vision resolution between high and low for relevant GPT-4-Turbo models
@@ -319,6 +387,18 @@ Set to 0 to disable conversation retention
 
 **Usage:** `<@1275521742961508432>assistant maxretention`
 
+### assistant restorecog
+
+**Description:** Restore the cog from a backup
+
+**Usage:** `<@1275521742961508432>assistant restorecog`
+
+### assistant timezone
+
+**Description:** Set the timezone used for prompt placeholders
+
+**Usage:** `<@1275521742961508432>assistant timezone`
+
 ### assistant resetembeddings
 
 **Description:** Wipe saved embeddings for the assistant
@@ -326,21 +406,6 @@ Set to 0 to disable conversation retention
 This will delete any and all saved embedding training data for the assistant.
 
 **Usage:** `<@1275521742961508432>assistant resetembeddings`
-
-### assistant importjson
-
-**Description:** Import embeddings to use with the assistant
-
-Args:
-    overwrite (bool): overwrite embeddings with existing entry names
-
-**Usage:** `<@1275521742961508432>assistant importjson`
-
-### assistant restorecog
-
-**Description:** Restore the cog from a backup
-
-**Usage:** `<@1275521742961508432>assistant restorecog`
 
 ### assistant listentobots
 
@@ -368,6 +433,12 @@ The bot can safely handle if this happens and will either continue on, or block 
 
 **Usage:** `<@1275521742961508432>assistant regexfailblock`
 
+### assistant channel
+
+**Description:** Set the channel for the assistant
+
+**Usage:** `<@1275521742961508432>assistant channel`
+
 ### assistant maxtokens
 
 **Description:** Set the max tokens that the bot will send to the model
@@ -381,11 +452,20 @@ Using more than the model can handle will raise exceptions.
 
 **Usage:** `<@1275521742961508432>assistant maxtokens`
 
-### assistant channel
+### assistant importexcel
 
-**Description:** Set the channel for the assistant
+**Description:** Import embeddings from an .xlsx file
 
-**Usage:** `<@1275521742961508432>assistant channel`
+Args:
+    overwrite (bool): overwrite embeddings with existing entry names
+
+**Usage:** `<@1275521742961508432>assistant importexcel`
+
+### assistant channelprompt
+
+**Description:** Set a channel specific system prompt
+
+**Usage:** `<@1275521742961508432>assistant channelprompt`
 
 ### assistant maxtime
 
@@ -406,21 +486,6 @@ This will delete any and all saved conversations for the assistant.
 
 **Usage:** `<@1275521742961508432>assistant resetconversations`
 
-### assistant importexcel
-
-**Description:** Import embeddings from an .xlsx file
-
-Args:
-    overwrite (bool): overwrite embeddings with existing entry names
-
-**Usage:** `<@1275521742961508432>assistant importexcel`
-
-### assistant channelprompt
-
-**Description:** Set a channel specific system prompt
-
-**Usage:** `<@1275521742961508432>assistant channelprompt`
-
 ### assistant resetglobalconversations
 
 **Description:** Wipe saved conversations for the assistant in all servers
@@ -428,14 +493,6 @@ Args:
 This will delete any and all saved conversations for the assistant.
 
 **Usage:** `<@1275521742961508432>assistant resetglobalconversations`
-
-### assistant minlength
-
-**Description:** set min character length for questions
-
-Set to 0 to respond to anything
-
-**Usage:** `<@1275521742961508432>assistant minlength`
 
 ### assistant prompt
 
@@ -481,6 +538,14 @@ If question mode is on, embeddings will only be sourced during the first message
 
 **Usage:** `<@1275521742961508432>assistant questionmode`
 
+### assistant blacklist
+
+**Description:** Add/Remove items from the blacklist
+
+`channel_role_member` can be a member, role, channel, or category channel
+
+**Usage:** `<@1275521742961508432>assistant blacklist`
+
 ### assistant mentionrespond
 
 **Description:** Toggle whether the bot responds to mentions in any channel
@@ -495,6 +560,16 @@ Set to 0 for response tokens to be dynamic
 
 **Usage:** `<@1275521742961508432>assistant maxresponsetokens`
 
+### assistant model
+
+**Description:** Set the OpenAI model to use
+
+**NOTE**
+Specifying a model without it's identifier (like `gpt-3.5-turbo` instead of `gpt-3.5-turbo-0125`)
+will sometimes lose the ability to call functions in parallel for some reason, this is an OpenAI issue.
+
+**Usage:** `<@1275521742961508432>assistant model`
+
 ### assistant refreshembeds
 
 **Description:** Refresh embedding weights
@@ -505,62 +580,19 @@ Embeddings that were created using OpenAI cannot be use with the self-hosted mod
 
 **Usage:** `<@1275521742961508432>assistant refreshembeds`
 
-### assistant override
-
-**Description:** Override settings for specific roles
-
-**NOTE**
-If a user has two roles with override settings, override associated with the higher role will be used.
-
-**Usage:** `<@1275521742961508432>assistant override`
-
-### assistant override maxtime
-
-**Description:** Assign a max retention time override to a role
-
-*Specify same role and time to remove the override*
-
-**Usage:** `<@1275521742961508432>assistant override maxtime`
-
-### assistant override maxretention
-
-**Description:** Assign a max message retention override to a role
-
-*Specify same role and retention amount to remove the override*
-
-**Usage:** `<@1275521742961508432>assistant override maxretention`
-
-### assistant override maxresponsetokens
-
-**Description:** Assign a max response token override to a role
-
-Set to 0 for response tokens to be dynamic
-
-*Specify same role and token count to remove the override*
-
-**Usage:** `<@1275521742961508432>assistant override maxresponsetokens`
-
-### assistant override model
-
-**Description:** Assign a role to use a model
-
-*Specify same role and model to remove the override*
-
-**Usage:** `<@1275521742961508432>assistant override model`
-
-### assistant override maxtokens
-
-**Description:** Assign a max token override to a role
-
-*Specify same role and token count to remove the override*
-
-**Usage:** `<@1275521742961508432>assistant override maxtokens`
-
 ### assistant resetusage
 
 **Description:** Reset the token usage stats for this server
 
 **Usage:** `<@1275521742961508432>assistant resetusage`
+
+### assistant exportexcel
+
+**Description:** Export embeddings to an .xlsx file
+
+**Note:** csv exports do not include the embedding values
+
+**Usage:** `<@1275521742961508432>assistant exportexcel`
 
 ### assistant temperature
 
@@ -579,19 +611,17 @@ Top N is the amount of embeddings to include with the initial prompt
 
 **Usage:** `<@1275521742961508432>assistant topn`
 
-### assistant exportexcel
-
-**Description:** Export embeddings to an .xlsx file
-
-**Note:** csv exports do not include the embedding values
-
-**Usage:** `<@1275521742961508432>assistant exportexcel`
-
 ### assistant persist
 
 **Description:** Toggle persistent conversations
 
 **Usage:** `<@1275521742961508432>assistant persist`
+
+### assistant usage
+
+**Description:** View the token usage stats for this server
+
+**Usage:** `<@1275521742961508432>assistant usage`
 
 ### assistant channelpromptshow
 
@@ -604,14 +634,6 @@ Top N is the amount of embeddings to include with the initial prompt
 **Description:** Toggle the assistant on or off
 
 **Usage:** `<@1275521742961508432>assistant toggle`
-
-### assistant blacklist
-
-**Description:** Add/Remove items from the blacklist
-
-`channel_role_member` can be a member, role, channel, or category channel
-
-**Usage:** `<@1275521742961508432>assistant blacklist`
 
 ### assistant embedmethod
 
@@ -635,28 +657,6 @@ Dynamic embeddings are helpful for Q&A, but not so much for chat when you need t
 **Description:** Toggle whether to ping the user on replies
 
 **Usage:** `<@1275521742961508432>assistant mention`
-
-### assistant model
-
-**Description:** Set the OpenAI model to use
-
-**NOTE**
-Specifying a model without it's identifier (like `gpt-3.5-turbo` instead of `gpt-3.5-turbo-0125`)
-will sometimes lose the ability to call functions in parallel for some reason, this is an OpenAI issue.
-
-**Usage:** `<@1275521742961508432>assistant model`
-
-### assistant timezone
-
-**Description:** Set the timezone used for prompt placeholders
-
-**Usage:** `<@1275521742961508432>assistant timezone`
-
-### assistant wipecog
-
-**Description:** Wipe all settings and data for entire cog
-
-**Usage:** `<@1275521742961508432>assistant wipecog`
 
 ### embeddings
 

@@ -6,65 +6,29 @@
 
 **Usage:** `<@1275521742961508432>roomer`
 
-### roomer auto
+### roomer text
 
-**Description:** Automation settings.
+**Description:** Change settings for private text channels.
 
-**Usage:** `<@1275521742961508432>roomer auto`
+**Usage:** `<@1275521742961508432>roomer text`
 
-### roomer auto userlimit
+### roomer text disable
 
-**Description:** Set the user limit for automatically created voicechannels.
+**Description:** Enable private text channels.
 
-**Usage:** `<@1275521742961508432>roomer auto userlimit`
+**Usage:** `<@1275521742961508432>roomer text disable`
 
-### roomer auto channel
+### roomer text enable
 
-**Description:** Manage channels related to automated voicechannels.
+**Description:** Enable private text channels.
 
-**Usage:** `<@1275521742961508432>roomer auto channel`
-
-### roomer auto channel add
-
-**Description:** Add a start channel used for automatic voicechannels.
-
-**Usage:** `<@1275521742961508432>roomer auto channel add`
-
-### roomer auto channel remove
-
-**Description:** Remove a start channel used for automatic voicechannels.
-
-**Usage:** `<@1275521742961508432>roomer auto channel remove`
-
-### roomer auto enable
-
-**Description:** Enable automatic voicechannel creation.
-
-**Usage:** `<@1275521742961508432>roomer auto enable`
-
-### roomer auto disable
-
-**Description:** Disable automatic voicechannel creation.
-
-**Usage:** `<@1275521742961508432>roomer auto disable`
-
-### roomer auto name
-
-**Description:** Set the name that is used for automatically created voicechannels.
-
-**Usage:** `<@1275521742961508432>roomer auto name`
+**Usage:** `<@1275521742961508432>roomer text enable`
 
 ### roomer private
 
 **Description:** Change settings for private rooms
 
 **Usage:** `<@1275521742961508432>roomer private`
-
-### roomer private disable
-
-**Description:** Disable private rooms
-
-**Usage:** `<@1275521742961508432>roomer private disable`
 
 ### roomer private startchannel
 
@@ -73,29 +37,65 @@ I recommend not allowing talking permissions here.
 
 **Usage:** `<@1275521742961508432>roomer private startchannel`
 
+### roomer private disable
+
+**Description:** Disable private rooms
+
+**Usage:** `<@1275521742961508432>roomer private disable`
+
 ### roomer private enable
 
 **Description:** Enable private rooms
 
 **Usage:** `<@1275521742961508432>roomer private enable`
 
-### roomer text
+### roomer auto
 
-**Description:** Change settings for private text channels.
+**Description:** Automation settings.
 
-**Usage:** `<@1275521742961508432>roomer text`
+**Usage:** `<@1275521742961508432>roomer auto`
 
-### roomer text enable
+### roomer auto name
 
-**Description:** Enable private text channels.
+**Description:** Set the name that is used for automatically created voicechannels.
 
-**Usage:** `<@1275521742961508432>roomer text enable`
+**Usage:** `<@1275521742961508432>roomer auto name`
 
-### roomer text disable
+### roomer auto userlimit
 
-**Description:** Enable private text channels.
+**Description:** Set the user limit for automatically created voicechannels.
 
-**Usage:** `<@1275521742961508432>roomer text disable`
+**Usage:** `<@1275521742961508432>roomer auto userlimit`
+
+### roomer auto disable
+
+**Description:** Disable automatic voicechannel creation.
+
+**Usage:** `<@1275521742961508432>roomer auto disable`
+
+### roomer auto enable
+
+**Description:** Enable automatic voicechannel creation.
+
+**Usage:** `<@1275521742961508432>roomer auto enable`
+
+### roomer auto channel
+
+**Description:** Manage channels related to automated voicechannels.
+
+**Usage:** `<@1275521742961508432>roomer auto channel`
+
+### roomer auto channel remove
+
+**Description:** Remove a start channel used for automatic voicechannels.
+
+**Usage:** `<@1275521742961508432>roomer auto channel remove`
+
+### roomer auto channel add
+
+**Description:** Add a start channel used for automatic voicechannels.
+
+**Usage:** `<@1275521742961508432>roomer auto channel add`
 
 ### vc
 
@@ -127,17 +127,17 @@ I recommend not allowing talking permissions here.
 
 **Usage:** `<@1275521742961508432>tc`
 
-### tc join
-
-**Description:** Join a private text channel.
-
-**Usage:** `<@1275521742961508432>tc join`
-
 ### tc create
 
 **Description:** Create a private text channel.
 
 **Usage:** `<@1275521742961508432>tc create`
+
+### tc join
+
+**Description:** Join a private text channel.
+
+**Usage:** `<@1275521742961508432>tc join`
 
 ### tc close
 

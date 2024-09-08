@@ -6,17 +6,17 @@
 
 **Usage:** `<@1275521742961508432>setquar`
 
-### setquar report
-
-**Description:** Send an embed with quarantine reason to a specified channel
-
-**Usage:** `<@1275521742961508432>setquar report`
-
 ### setquar role
 
 **Description:** Set the quarantine role
 
 **Usage:** `<@1275521742961508432>setquar role`
+
+### setquar report
+
+**Description:** Send an embed with quarantine reason to a specified channel
+
+**Usage:** `<@1275521742961508432>setquar report`
 
 ### setquar list
 

@@ -6,36 +6,11 @@
 
 **Usage:** `<@1275521742961508432>automod`
 
-### automod actions
-
-**Description:** View the servers saved automod actions
-
-**Usage:** `<@1275521742961508432>automod actions`
-
 ### automod create
 
 **Description:** Create automod rules, triggers, and actions
 
 **Usage:** `<@1275521742961508432>automod create`
-
-### automod create rule
-
-**Description:** Create an automod rule in the server
-
-Usage:
-- `trigger:` The name of a saved trigger.
-- `actions:` The name(s) of saved actions.
-- `enabled:` yes/true/t to enable this rule right away.
-- `roles:` The roles that are exempt from this rule.
-- `channels:` The channels that are exempt from this rule.
-- `reason:` An optional reason for creating this rule.
-
-Example:
-    `[p]automod create rule trigger: mytrigger actions: timeoutuser notifymods enabled: true roles: @mods`
-    Will create an automod rule with the saved trigger `mytrigger` and
-    the saved actions `timeoutuser` and `notifymods`.
-
-**Usage:** `<@1275521742961508432>automod create rule`
 
 ### automod create trigger
 
@@ -73,15 +48,40 @@ Examples:
 
 **Usage:** `<@1275521742961508432>automod create action`
 
-### automod rules
+### automod create rule
 
-**Description:** View the servers current automod rules
+**Description:** Create an automod rule in the server
 
-**Usage:** `<@1275521742961508432>automod rules`
+Usage:
+- `trigger:` The name of a saved trigger.
+- `actions:` The name(s) of saved actions.
+- `enabled:` yes/true/t to enable this rule right away.
+- `roles:` The roles that are exempt from this rule.
+- `channels:` The channels that are exempt from this rule.
+- `reason:` An optional reason for creating this rule.
+
+Example:
+    `[p]automod create rule trigger: mytrigger actions: timeoutuser notifymods enabled: true roles: @mods`
+    Will create an automod rule with the saved trigger `mytrigger` and
+    the saved actions `timeoutuser` and `notifymods`.
+
+**Usage:** `<@1275521742961508432>automod create rule`
+
+### automod actions
+
+**Description:** View the servers saved automod actions
+
+**Usage:** `<@1275521742961508432>automod actions`
 
 ### automod triggers
 
 **Description:** View the servers saved automod triggers
 
 **Usage:** `<@1275521742961508432>automod triggers`
+
+### automod rules
+
+**Description:** View the servers current automod rules
+
+**Usage:** `<@1275521742961508432>automod rules`
 
