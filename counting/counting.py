@@ -5,7 +5,7 @@ from redbot.core.bot import Red
 import discord
 from discord import PartialEmoji
 
-from Star_Utils import Cog, Settings  # Import Settings from Star_Utils
+from Star_Utils import Cog, Settings, Loop
 
 class Counting(Cog):
     """An advanced counting game cog with multiple features and extensive customization."""
