@@ -210,7 +210,8 @@ class Counting(Cog):
                     await self.config.global_last_counter_id.set(None)
                     await self.relay_message(message, correct=False)
 
-                await message.delete()
+                if not local:
+                    await message.delete()
                 self.log_action("warning", f"{message.author.display_name} counted incorrectly.")
 
         except ValueError:
@@ -233,7 +234,7 @@ class Counting(Cog):
                 if channel_id != message.channel.id:
                     channel = self.bot.get_channel(channel_id)
                     if channel:
-                        await channel.send(f"**{message.guild.name} - {display_name} messed up the count!**")
+                        await channel.send(f"**{message.guild.name} - {display_name} messed up the count! Restarting at 1!**")
 
     @commands.command()
     async def currentnumber(self, ctx):
