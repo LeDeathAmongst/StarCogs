@@ -194,6 +194,71 @@ class RoleLocker(Cog):
             else:
                 await ctx.send(f"Cog `{qualified_name}` was not locked.")
 
+    @rolelock.command()
+    async def tierlist(self, ctx: commands.Context):
+        """List all tiers and the roles in them."""
+        role_tiers = await self.config.role_tiers()
+        if not role_tiers:
+            await ctx.send("There are no tiers set up.")
+            return
+
+        description = []
+        for tier_name, role_ids in role_tiers.items():
+            roles = [ctx.guild.get_role(role_id) for role_id in role_ids]
+            role_names = [f"<:dot:1279793197165314059> {role.name}" for role in roles if role is not None]
+            description.append(f"**{tier_name}**: {', '.join(role_names)}")
+
+        embed = discord.Embed(
+            title="Role Tiers",
+            description="\n".join(description),
+            color=await ctx.embed_color()
+        )
+        await ctx.send(embed=embed)
+
+    @rolelock.command()
+    async def usertiers(self, ctx: commands.Context):
+        """Display the user's tiers and accessible cogs/commands."""
+        user_roles = {role.id for role in ctx.author.roles}
+        role_tiers = await self.config.role_tiers()
+        user_tiers = self.get_user_tiers(user_roles, role_tiers)
+
+        accessible_cogs = [cog for cog in self.cache["allowed_cogs"] if any(tier in user_tiers for tier in self.cache["allowed_cogs"])]
+        accessible_commands = [command for command in self.cache["allowed_commands"] if any(tier in user_tiers for tier in self.cache["allowed_commands"])]
+
+        embed = discord.Embed(
+            title=f"{ctx.author.display_name}'s Tiers and Access",
+            color=await ctx.embed_color()
+        )
+        embed.add_field(name="Tiers", value=", ".join(user_tiers) if user_tiers else "None", inline=False)
+        embed.add_field(name="Accessible Cogs", value=", ".join(accessible_cogs) if accessible_cogs else "None", inline=False)
+        embed.add_field(name="Accessible Commands", value=", ".join(accessible_commands) if accessible_commands else "None", inline=False)
+
+        await ctx.send(embed=embed)
+
+    @rolelock.command()
+    async def tierinfo(self, ctx: commands.Context, tier_name: str):
+        """Display the commands, roles, and cogs accessible in a specific tier."""
+        role_tiers = await self.config.role_tiers()
+        if tier_name not in role_tiers:
+            await ctx.send(f"Tier `{tier_name}` does not exist.")
+            return
+
+        roles = [ctx.guild.get_role(role_id) for role_id in role_tiers[tier_name]]
+        role_names = [f"<:dot:1279793197165314059> {role.name}" for role in roles if role is not None]
+
+        accessible_cogs = [cog for cog, tiers in self.cache["allowed_cogs"].items() if tier_name in tiers]
+        accessible_commands = [command for command, tiers in self.cache["allowed_commands"].items() if tier_name in tiers]
+
+        embed = discord.Embed(
+            title=f"Tier `{tier_name}` Information",
+            color=await ctx.embed_color()
+        )
+        embed.add_field(name="Roles", value=", ".join(role_names) if role_names else "None", inline=False)
+        embed.add_field(name="Accessible Cogs", value=", ".join(accessible_cogs) if accessible_cogs else "None", inline=False)
+        embed.add_field(name="Accessible Commands", value=", ".join(accessible_commands) if accessible_commands else "None", inline=False)
+
+        await ctx.send(embed=embed)
+
     def get_cog_qualified_name(self, cog_name: str) -> typing.Optional[str]:
         """Get the qualified name of a cog."""
         cog = self.bot.get_cog(cog_name)
@@ -242,24 +307,3 @@ class RoleLocker(Cog):
         async with self.config.role_limits() as role_limits:
             role_limits[role.id] = max_members
         await ctx.send(f"Role `{role.name}` cannot have more than `{max_members}` members.")
-
-    @rolelock.command()
-    async def tierlist(self, ctx: commands.Context):
-        """List all tiers and the roles in them."""
-        role_tiers = await self.config.role_tiers()
-        if not role_tiers:
-            await ctx.send("There are no tiers set up.")
-            return
-
-        description = []
-        for tier_name, role_ids in role_tiers.items():
-            roles = [ctx.guild.get_role(role_id) for role_id in role_ids]
-            role_names = [role.name for role in roles if role is not None]
-            description.append(f"**{tier_name}**: {', '.join(role_names)}")
-
-        embed = discord.Embed(
-            title="Role Tiers",
-            description="\n".join(description),
-            color=await ctx.embed_color()
-        )
-        await ctx.send(embed=embed)
