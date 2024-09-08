@@ -13,7 +13,8 @@
         "mkdocs-dracula-theme",
         "pandas",
         "aiocache",
-        "pyyaml"
+        "pyyaml",
+        "numpy==2.0.0"
     ],
     "min_bot_version": "3.5.11",
     "end_user_data_statement": "",
