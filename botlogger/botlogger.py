@@ -1,12 +1,13 @@
+from Star_Utils import Cog
 import discord
 from discord.ext import tasks
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 import logging
+logger = logging.getLogger('red.botlogger')
 
-logger = logging.getLogger("red.botlogger")
 
-class BotLogger(commands.Cog):
+class BotLogger(Cog):
     """A cog to log bot installations to servers and user profiles."""
 
     def __init__(self, bot: Red):
@@ -15,13 +16,12 @@ class BotLogger(commands.Cog):
         self.config.register_global(log_channel=None)
         self.config.register_user(installed=False)
         self.config.register_guild(installed=False)
-
-        # Set up logging to a file
-        handler = logging.FileHandler(filename='bot_install.log', encoding='utf-8', mode='a')
-        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        handler = logging.FileHandler(filename='bot_install.log', encoding=
+            'utf-8', mode='a')
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
-
         self.check_user_installs.start()
 
     def cog_unload(self):
@@ -37,21 +37,24 @@ class BotLogger(commands.Cog):
     async def setlogchannel(self, ctx, channel: discord.TextChannel):
         """Set the channel where logs will be sent."""
         await self.config.log_channel.set(channel.id)
-        await ctx.send(f"Log channel set to {channel.mention}")
+        await ctx.send(f'Log channel set to {channel.mention}')
 
     @botlog.command()
     async def usercount(self, ctx):
         """Get the total count of users who have installed the bot to their profile."""
         all_users = await self.config.all_users()
-        installed_users = [user_id for user_id, data in all_users.items() if data['installed']]
+        installed_users = [user_id for user_id, data in all_users.items() if
+            data['installed']]
         total_installed_users = len(installed_users)
-        await ctx.send(f"The total number of users who have installed the bot to their profile is: {total_installed_users}")
+        await ctx.send(
+            f'The total number of users who have installed the bot to their profile is: {total_installed_users}'
+            )
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         """Event when the bot is added to a server."""
         await self.config.guild(guild).installed.set(True)
-        log_message = f"Bot added to server: {guild.name} (ID: {guild.id})"
+        log_message = f'Bot added to server: {guild.name} (ID: {guild.id})'
         logger.info(log_message)
         await self.send_log(log_message, guild)
 
@@ -59,7 +62,7 @@ class BotLogger(commands.Cog):
     async def on_guild_remove(self, guild):
         """Event when the bot is removed from a server."""
         await self.config.guild(guild).installed.set(False)
-        log_message = f"Bot removed from server: {guild.name} (ID: {guild.id})"
+        log_message = f'Bot removed from server: {guild.name} (ID: {guild.id})'
         logger.info(log_message)
         await self.send_log(log_message, guild)
 
@@ -71,7 +74,9 @@ class BotLogger(commands.Cog):
             if data['installed']:
                 user = self.bot.get_user(user_id)
                 if user:
-                    log_message = f"Bot installed to user profile: {user.name} (ID: {user.id})"
+                    log_message = (
+                        f'Bot installed to user profile: {user.name} (ID: {user.id})'
+                        )
                     logger.info(log_message)
                     await self.send_log(log_message, user=user)
 
@@ -81,14 +86,19 @@ class BotLogger(commands.Cog):
         if log_channel_id:
             log_channel = self.bot.get_channel(log_channel_id)
             if log_channel:
-                embed = discord.Embed(title="Bot Installation Log", description=message, color=discord.Color.blue())
+                embed = discord.Embed(title='Bot Installation Log',
+                    description=message, color=discord.Color.blue())
                 if guild:
-                    embed.add_field(name="Server Name", value=guild.name, inline=True)
-                    embed.add_field(name="Server ID", value=guild.id, inline=True)
+                    embed.add_field(name='Server Name', value=guild.name,
+                        inline=True)
+                    embed.add_field(name='Server ID', value=guild.id,
+                        inline=True)
                 if user:
-                    embed.add_field(name="User Name", value=user.name, inline=True)
-                    embed.add_field(name="User ID", value=user.id, inline=True)
+                    embed.add_field(name='User Name', value=user.name,
+                        inline=True)
+                    embed.add_field(name='User ID', value=user.id, inline=True)
                 await log_channel.send(embed=embed)
+
 
 def setup(bot: Red):
     bot.add_cog(BotLogger(bot))
