@@ -25,15 +25,6 @@ class Counting(Cog):
             wrong_emote=self.default_wrong_emoji,
             shame_role=None,
             last_counter_id=None,
-            default_roasts=[
-                "{display_name} couldn't even count to {next_number}! Maybe try using your fingers next time?",
-                "Looks like {display_name} skipped a few math classes... Back to square one!",
-                "{display_name}, is that your final answer? Because it's definitely wrong!",
-                "{display_name}'s counting skills are as impressive as their ability to divide by zero.",
-                "{display_name}, are you sure you're not a calculator in disguise? Because your math is off!",
-            ],
-            success_message="Great job, {display_name}! The next number is {next_number}.",
-            failure_message="Oops, {display_name}! You messed up. The number was {expected_number}.",
             linked_channels=[],
             global_current_number=0,
             global_last_counter_id=None,
@@ -73,18 +64,6 @@ class Counting(Cog):
                 "last_counter_id": {
                     "converter": Optional[int],
                     "description": "ID of the last user who counted correctly.",
-                },
-                "default_roasts": {
-                    "converter": list,
-                    "description": "Default roasts for incorrect counting.",
-                },
-                "success_message": {
-                    "converter": str,
-                    "description": "Message for successful counting.",
-                },
-                "failure_message": {
-                    "converter": str,
-                    "description": "Message for failed counting.",
                 },
             },
             global_path=[],  # Ensure global path is empty
@@ -173,87 +152,66 @@ class Counting(Cog):
         # Handle local counting
         local_channel_id = await self.config.channel_id()
         if message.channel.id == local_channel_id:
-            await self.handle_local_counting(message)
+            await self.handle_counting(message, local=True)
 
         # Handle global counting
         linked_channels = await self.config.linked_channels()
         if message.channel.id in linked_channels:
-            await self.handle_global_counting(message)
+            await self.handle_counting(message, local=False)
 
-    async def handle_local_counting(self, message: discord.Message):
-        """Handle the local counting logic."""
-        guild_config = await self.config.all()
+    async def handle_counting(self, message: discord.Message, local: bool):
+        """Handle the counting logic for both local and global."""
+        if local:
+            current_number = await self.config.current_number()
+            last_counter_id = await self.config.last_counter_id()
+            correct_emote = await self.config.correct_emote()
+            wrong_emote = await self.config.wrong_emote()
+            leaderboard = await self.config.leaderboard()
+        else:
+            current_number = await self.config.global_current_number()
+            last_counter_id = await self.config.global_last_counter_id()
+            correct_emote = self.default_correct_emoji
+            wrong_emote = self.default_wrong_emoji
+            leaderboard = await self.config.global_leaderboard()
+
         try:
             next_number = int(message.content)
-            last_counter_id = guild_config["last_counter_id"]
-            if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
-                await self.config.current_number.set(next_number)
-                await self.config.last_counter_id.set(message.author.id)
+            if next_number == current_number + 1 and message.author.id != last_counter_id:
+                if local:
+                    await self.config.current_number.set(next_number)
+                    await self.config.last_counter_id.set(message.author.id)
+                else:
+                    await self.config.global_current_number.set(next_number)
+                    await self.config.global_last_counter_id.set(message.author.id)
 
-                correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
                 if isinstance(correct_emote, str):
                     await message.add_reaction(correct_emote)
 
-                leaderboard = guild_config["leaderboard"]
-                user_id = str(message.author.id)
-                leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
-                await self.config.leaderboard.set(leaderboard)
+                user_key = str(message.author.id)
+                leaderboard[user_key] = leaderboard.get(user_key, 0) + 1
+
+                if local:
+                    await self.config.leaderboard.set(leaderboard)
+                else:
+                    await self.config.global_leaderboard.set(leaderboard)
 
                 self.log_action("info", f"{message.author.display_name} counted correctly to {next_number}.")
 
             else:
-                wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
                 if isinstance(wrong_emote, str):
                     await message.add_reaction(wrong_emote)
 
-                await self.config.current_number.set(0)
-                await self.config.last_counter_id.set(None)
+                if local:
+                    await self.config.current_number.set(0)
+                    await self.config.last_counter_id.set(None)
+                else:
+                    await self.config.global_current_number.set(0)
+                    await self.config.global_last_counter_id.set(None)
 
                 self.log_action("warning", f"{message.author.display_name} counted incorrectly.")
 
         except ValueError:
             pass  # Ignore non-numeric messages
-
-    async def handle_global_counting(self, message: discord.Message):
-        """Handle the global counting logic."""
-        try:
-            next_number = int(message.content)
-            global_current_number = await self.config.global_current_number()
-            global_last_counter_id = await self.config.global_last_counter_id()
-
-            if next_number == global_current_number + 1 and message.author.id != global_last_counter_id:
-                await self.config.global_current_number.set(next_number)
-                await self.config.global_last_counter_id.set(message.author.id)
-
-                # Use the default correct emoji
-                correct_emote = self.default_correct_emoji
-                if isinstance(correct_emote, str):
-                    await message.add_reaction(correct_emote)
-
-                # Update global leaderboard
-                global_leaderboard = await self.config.global_leaderboard()
-                user_key = f"{message.guild.id}-{message.author.id}"
-                global_leaderboard[user_key] = global_leaderboard.get(user_key, 0) + 1
-                await self.config.global_leaderboard.set(global_leaderboard)
-
-                # Relay the message to all linked channels
-                linked_channels = await self.config.linked_channels()
-                for channel_id in linked_channels:
-                    if channel_id != message.channel.id:
-                        channel = self.bot.get_channel(channel_id)
-                        if channel:
-                            await channel.send(f"{message.author.display_name}: {next_number}")
-
-            else:
-                # Use the default wrong emoji
-                wrong_emote = self.default_wrong_emoji
-                if isinstance(wrong_emote, str):
-                    await message.add_reaction(wrong_emote)
-
-                await message.delete()
-
-        except ValueError:
-            await message.delete()
 
     @commands.command()
     async def currentnumber(self, ctx):
