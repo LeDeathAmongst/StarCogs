@@ -17,7 +17,7 @@ class Counting(Cog):
         self.default_correct_emoji = "<a:Tick:1279795666507272225>"
         self.default_wrong_emoji = "<a:Wrong:1279795741300097025>"
 
-        # Initialize the Config object
+        # Initialize the Config object for global configuration
         self.config = Config.get_conf(self, identifier=271828, force_registration=True)
         self.config.register_global(
             current_number=0,
@@ -36,24 +36,10 @@ class Counting(Cog):
             ],
             success_message="Great job, {display_name}! The next number is {next_number}.",
             failure_message="Oops, {display_name}! You messed up. The number was {expected_number}.",
-        )
-        self.config.register_guild(
-            current_number=0,
-            channel_id=None,
-            leaderboard={},
-            correct_emote=self.default_correct_emoji,
-            wrong_emote=self.default_wrong_emoji,
-            shame_role=None,
-            last_counter_id=None,
-            default_roasts=[
-                "{display_name} couldn't even count to {next_number}! Maybe try using your fingers next time?",
-                "Looks like {display_name} skipped a few math classes... Back to square one!",
-                "{display_name}, is that your final answer? Because it's definitely wrong!",
-                "{display_name}'s counting skills are as impressive as their ability to divide by zero.",
-                "{display_name}, are you sure you're not a calculator in disguise? Because your math is off!",
-            ],
-            success_message="Great job, {display_name}! The next number is {next_number}.",
-            failure_message="Oops, {display_name}! You messed up. The number was {expected_number}.",
+            linked_channels=[],  # For global counting
+            global_current_number=0,
+            global_last_counter_id=None,
+            global_leaderboard={},  # Global leaderboard
         )
 
         # Initialize settings using the Settings class from Star_Utils
@@ -61,7 +47,7 @@ class Counting(Cog):
             bot=self.bot,
             cog=self,
             config=self.config,
-            group="guild",
+            group="global",  # Use global configurations
             settings={
                 "current_number": {
                     "converter": int,
@@ -104,7 +90,7 @@ class Counting(Cog):
                     "description": "Message for failed counting.",
                 },
             },
-            global_path=[],
+            global_path=[],  # Ensure global path is empty
             use_profiles_system=False,
             can_edit=True,
         )
@@ -130,10 +116,10 @@ class Counting(Cog):
 
     async def reset_leaderboard_daily(self):
         """Reset the leaderboard daily."""
-        all_guilds = self.bot.guilds
-        for guild in all_guilds:
-            await self.settings.set_raw("leaderboard", value={}, _object=guild)
-            self.log_action("info", f"Leaderboard reset for guild {guild.id}.")
+        # Reset leaderboard globally
+        await self.settings.set_raw("leaderboard", value={}, _object=None)
+        await self.config.global_leaderboard.set({})
+        self.log_action("info", "Global leaderboard reset.")
 
     def log_action(self, level: str, message: str):
         """Log an action in the logs dictionary."""
@@ -151,122 +137,146 @@ class Counting(Cog):
         for loop in self.loops:
             loop.stop_all()
 
-    def get_data_object(self, ctx: commands.Context):
-        """Determine whether to use guild or global settings."""
-        return ctx.guild if ctx.guild else None
-
     @commands.command()
     async def countingsetchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
         """Sets the channel for the counting game. If no channel is provided, a new one is created."""
-        data_object = self.get_data_object(ctx)
-
         if channel is None:
             channel = await ctx.guild.create_text_channel(name="counting-game")
             await ctx.send(f"Counting game channel created: {channel.mention}. Please set the shame role (optional) using `countingsetshamerole`.")
         else:
             await ctx.send(f"Counting game channel set to {channel.mention}. Please set the shame role (optional) using `countingsetshamerole`.")
 
-        await self.settings.set_raw("channel_id", value=channel.id, _object=data_object)
-        await self.settings.set_raw("current_number", value=0, _object=data_object)
-        await self.settings.set_raw("leaderboard", value={}, _object=data_object)
-        await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
+        await self.settings.set_raw("channel_id", value=channel.id, _object=None)
+        await self.settings.set_raw("current_number", value=0, _object=None)
+        await self.settings.set_raw("leaderboard", value={}, _object=None)
+        await self.settings.set_raw("last_counter_id", value=None, _object=None)
 
-        self.log_action("info", f"Counting channel set to {channel.id} in guild {ctx.guild.id if ctx.guild else 'global'}.")
+        self.log_action("info", f"Counting channel set to {channel.id}.")
 
     @commands.command()
     async def countingsetshamerole(self, ctx, shame_role: discord.Role):
         """Sets the shame role for incorrect counting (optional)."""
-        data_object = self.get_data_object(ctx)
-        await self.settings.set_raw("shame_role", value=shame_role.id, _object=data_object)
+        await self.settings.set_raw("shame_role", value=shame_role.id, _object=None)
         await ctx.send(f"Shame role for counting set to {shame_role.mention}")
-        self.log_action("info", f"Shame role set to {shame_role.id} in guild {ctx.guild.id if ctx.guild else 'global'}.")
+        self.log_action("info", f"Shame role set to {shame_role.id}.")
 
     @commands.command()
     async def countingsetemotes(self, ctx, correct_emote: str, wrong_emote: str):
         """Sets the emotes for correct and wrong counts."""
-        data_object = self.get_data_object(ctx)
-        await self.settings.set_raw("correct_emote", value=correct_emote, _object=data_object)
-        await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=data_object)
+        await self.settings.set_raw("correct_emote", value=correct_emote, _object=None)
+        await self.settings.set_raw("wrong_emote", value=wrong_emote, _object=None)
         await ctx.send("Emotes updated successfully.")
-        self.log_action("info", f"Correct emote set to {correct_emote}, wrong emote set to {wrong_emote} in guild {ctx.guild.id if ctx.guild else 'global'}.")
+        self.log_action("info", f"Correct emote set to {correct_emote}, wrong emote set to {wrong_emote}.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        """Handles messages in the counting game channel."""
+        """Handles messages in both local and global counting channels."""
         if message.author.bot:
             return
 
-        data_object = message.guild or None
-        guild_config = await self.settings.get_values(_object=data_object)
-        if guild_config["channel_id"] == message.channel.id:
-            try:
-                next_number = int(message.content)
-                last_counter_id = guild_config["last_counter_id"]
-                if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
-                    await self.settings.set_raw("current_number", value=next_number, _object=data_object)
-                    await self.settings.set_raw("last_counter_id", value=message.author.id, _object=data_object)
+        # Handle local counting
+        local_channel_id = await self.settings.get_raw("channel_id", _object=None)
+        if message.channel.id == local_channel_id:
+            await self.handle_local_counting(message)
 
-                    correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
-                    if isinstance(correct_emote, str):
-                        await message.add_reaction(correct_emote)
+        # Handle global counting
+        linked_channels = await self.config.linked_channels()
+        if message.channel.id in linked_channels:
+            await self.handle_global_counting(message)
 
-                    leaderboard = guild_config["leaderboard"]
-                    user_id = str(message.author.id)
-                    leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
-                    await self.settings.set_raw("leaderboard", value=leaderboard, _object=data_object)
+    async def handle_local_counting(self, message: discord.Message):
+        """Handle the local counting logic."""
+        guild_config = await self.settings.get_values(_object=None)
+        try:
+            next_number = int(message.content)
+            last_counter_id = guild_config["last_counter_id"]
+            if next_number == guild_config["current_number"] + 1 and message.author.id != last_counter_id:
+                await self.settings.set_raw("current_number", value=next_number, _object=None)
+                await self.settings.set_raw("last_counter_id", value=message.author.id, _object=None)
 
-                    success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
-                    await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
+                correct_emote = guild_config.get("correct_emote", self.default_correct_emoji)
+                if isinstance(correct_emote, str):
+                    await message.add_reaction(correct_emote)
 
-                    self.log_action("info", f"{message.author.display_name} counted correctly to {next_number} in guild {message.guild.id if message.guild else 'global'}.")
+                leaderboard = guild_config["leaderboard"]
+                user_id = str(message.author.id)
+                leaderboard[user_id] = leaderboard.get(user_id, 0) + 1
+                await self.settings.set_raw("leaderboard", value=leaderboard, _object=None)
 
-                else:
-                    wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
-                    if isinstance(wrong_emote, str):
-                        await message.add_reaction(wrong_emote)
+                success_message = guild_config.get("success_message", "Great job, {display_name}! The next number is {next_number}.")
+                await message.channel.send(success_message.format(display_name=message.author.display_name, next_number=next_number + 1))
 
-                    failure_message = guild_config.get("failure_message", "Oops, {display_name}! You messed up. The number was {expected_number}.")
-                    await message.channel.send(failure_message.format(display_name=message.author.display_name, expected_number=guild_config["current_number"] + 1))
+                self.log_action("info", f"{message.author.display_name} counted correctly to {next_number}.")
 
-                    if guild_config["shame_role"]:
-                        shame_role = message.guild.get_role(guild_config["shame_role"])
-                        if shame_role:
-                            await message.author.add_roles(shame_role, reason="Wrong count or double counting")
-                            await message.channel.set_permissions(shame_role, send_messages=False)
+            else:
+                wrong_emote = guild_config.get("wrong_emote", self.default_wrong_emoji)
+                if isinstance(wrong_emote, str):
+                    await message.add_reaction(wrong_emote)
 
-                        roasts = guild_config.get("default_roasts", [
-                            f"{message.author.display_name} couldn't even count to {guild_config['current_number'] + 1}! Maybe try using your fingers next time?",
-                            f"Looks like {message.author.display_name} skipped a few math classes... Back to square one!",
-                            f"{message.author.display_name}, is that your final answer? Because it's definitely wrong!",
-                            f"{message.author.display_name}'s counting skills are as impressive as their ability to divide by zero.",
-                            f"{message.author.display_name}, are you sure you're not a calculator in disguise? Because your math is off!",
-                        ])
-                        roast = random.choice(roasts)
-                        await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
+                failure_message = guild_config.get("failure_message", "Oops, {display_name}! You messed up. The number was {expected_number}.")
+                await message.channel.send(failure_message.format(display_name=message.author.display_name, expected_number=guild_config["current_number"] + 1))
 
-                    await self.settings.set_raw("current_number", value=0, _object=data_object)
-                    await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
+                if guild_config["shame_role"]:
+                    shame_role = message.guild.get_role(guild_config["shame_role"])
+                    if shame_role:
+                        await message.author.add_roles(shame_role, reason="Wrong count or double counting")
+                        await message.channel.set_permissions(shame_role, send_messages=False)
 
-                    self.log_action("warning", f"{message.author.display_name} counted incorrectly in guild {message.guild.id if message.guild else 'global'}.")
+                    roasts = guild_config.get("default_roasts", [
+                        f"{message.author.display_name} couldn't even count to {guild_config['current_number'] + 1}! Maybe try using your fingers next time?",
+                        f"Looks like {message.author.display_name} skipped a few math classes... Back to square one!",
+                        f"{message.author.display_name}, is that your final answer? Because it's definitely wrong!",
+                        f"{message.author.display_name}'s counting skills are as impressive as their ability to divide by zero.",
+                        f"{message.author.display_name}, are you sure you're not a calculator in disguise? Because your math is off!",
+                    ])
+                    roast = random.choice(roasts)
+                    await message.channel.send(embed=discord.Embed(description=roast, color=discord.Color.red()))
 
-            except ValueError:
-                pass  # Ignore non-numeric messages
+                await self.settings.set_raw("current_number", value=0, _object=None)
+                await self.settings.set_raw("last_counter_id", value=None, _object=None)
+
+                self.log_action("warning", f"{message.author.display_name} counted incorrectly.")
+
+        except ValueError:
+            pass  # Ignore non-numeric messages
+
+    async def handle_global_counting(self, message: discord.Message):
+        """Handle the global counting logic."""
+        try:
+            next_number = int(message.content)
+            global_current_number = await self.config.global_current_number()
+            global_last_counter_id = await self.config.global_last_counter_id()
+
+            if next_number == global_current_number + 1 and message.author.id != global_last_counter_id:
+                await self.config.global_current_number.set(next_number)
+                await self.config.global_last_counter_id.set(message.author.id)
+                await message.add_reaction("✅")
+
+                # Update global leaderboard
+                global_leaderboard = await self.config.global_leaderboard()
+                user_key = f"{message.guild.id}-{message.author.id}"
+                global_leaderboard[user_key] = global_leaderboard.get(user_key, 0) + 1
+                await self.config.global_leaderboard.set(global_leaderboard)
+
+            else:
+                await message.delete()
+
+        except ValueError:
+            await message.delete()
 
     @commands.command()
     async def currentnumber(self, ctx):
-        """Displays the current number in the counting game."""
-        data_object = self.get_data_object(ctx)
-        current_number = await self.settings.get_raw("current_number", _object=data_object)
-        await ctx.send(f"The current number is: {current_number}")
+        """Displays the current number in the local counting game."""
+        current_number = await self.settings.get_raw("current_number", _object=None)
+        await ctx.send(f"The current local number is: {current_number}")
 
-    @commands.command(aliases=["countingboard", "countingleaderboard"])
+    @commands.command()
     async def countinglb(self, ctx):
-        """Displays the leaderboard in an embed."""
-        data_object = self.get_data_object(ctx)
-        leaderboard = await self.settings.get_raw("leaderboard", _object=data_object)
+        """Displays the local leaderboard in an embed."""
+        leaderboard = await self.settings.get_raw("leaderboard", _object=None)
         if leaderboard:
             sorted_leaderboard = sorted(leaderboard.items(), key=lambda item: item[1], reverse=True)
-            embed = discord.Embed(title="Counting Game Leaderboard", color=discord.Color.blue())
+            embed = discord.Embed(title="Local Counting Game Leaderboard", color=discord.Color.blue())
             for user_id, score in sorted_leaderboard[:10]:  # Show top 10
                 user = self.bot.get_user(int(user_id))
                 if user:
@@ -278,21 +288,70 @@ class Counting(Cog):
     @commands.guildowner()
     @commands.command(name="reset")
     async def reset_game(self, ctx: commands.Context, mode: Optional[str] = None):
-        """Resets the counting game."""
-        data_object = self.get_data_object(ctx)
+        """Resets the local counting game."""
         if mode not in ["sequential", "reverse", None]:
             await ctx.send("Invalid mode. Please choose 'sequential', 'reverse', or leave empty for both.")
             return
 
         if mode in ["sequential", None]:
-            await self.settings.set_raw("current_number", value=0, _object=data_object)
-            await self.settings.set_raw("leaderboard", value={}, _object=data_object)
-            await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
+            await self.settings.set_raw("current_number", value=0, _object=None)
+            await self.settings.set_raw("leaderboard", value={}, _object=None)
+            await self.settings.set_raw("last_counter_id", value=None, _object=None)
 
         if mode in ["reverse", None]:
-            await self.settings.set_raw("current_number", value=100000, _object=data_object)
-            await self.settings.set_raw("leaderboard", value={}, _object=data_object)
-            await self.settings.set_raw("last_counter_id", value=None, _object=data_object)
+            await self.settings.set_raw("current_number", value=100000, _object=None)
+            await self.settings.set_raw("leaderboard", value={}, _object=None)
+            await self.settings.set_raw("last_counter_id", value=None, _object=None)
 
-        await ctx.send(f"The counting game{' for ' + mode if mode else ''} has been reset.")
-        self.log_action("info", f"Counting game reset in guild {ctx.guild.id if ctx.guild else 'global'}.")
+        await ctx.send(f"The local counting game{' for ' + mode if mode else ''} has been reset.")
+        self.log_action("info", "Local counting game reset.")
+
+    @commands.group(name="globalcounting", invoke_without_command=True)
+    async def globalcounting(self, ctx: commands.Context):
+        """Manage global counting settings."""
+        await ctx.send_help(ctx.command)
+
+    @globalcounting.command(name="set")
+    async def globalcountingset(self, ctx: commands.Context):
+        """Link the current channel to the global counting network."""
+        linked_channels = await self.config.linked_channels()
+        if ctx.channel.id not in linked_channels:
+            linked_channels.append(ctx.channel.id)
+            await self.config.linked_channels.set(linked_channels)
+            await ctx.send("This channel has been linked to the global counting network.")
+        else:
+            await ctx.send("This channel is already linked to the global counting network.")
+
+    @globalcounting.command(name="unset")
+    async def globalcountingunset(self, ctx: commands.Context):
+        """Unlink the current channel from the global counting network."""
+        linked_channels = await self.config.linked_channels()
+        if ctx.channel.id in linked_channels:
+            linked_channels.remove(ctx.channel.id)
+            await self.config.linked_channels.set(linked_channels)
+            await ctx.send("This channel has been unlinked from the global counting network.")
+        else:
+            await ctx.send("This channel is not linked to the global counting network.")
+
+    @commands.command()
+    async def globalcurrentnumber(self, ctx: commands.Context):
+        """Displays the current number in the global counting game."""
+        global_current_number = await self.config.global_current_number()
+        await ctx.send(f"The current global number is: {global_current_number}")
+
+    @commands.command()
+    async def globallb(self, ctx: commands.Context):
+        """Displays the global leaderboard."""
+        global_leaderboard = await self.config.global_leaderboard()
+        if global_leaderboard:
+            sorted_leaderboard = sorted(global_leaderboard.items(), key=lambda item: item[1], reverse=True)
+            embed = discord.Embed(title="Global Counting Game Leaderboard", color=discord.Color.green())
+            for user_key, score in sorted_leaderboard[:10]:  # Show top 10
+                guild_id, user_id = map(int, user_key.split('-'))
+                guild = self.bot.get_guild(guild_id)
+                user = guild.get_member(user_id) if guild else None
+                if user:
+                    embed.add_field(name=f"{guild.name} - {user.display_name}", value=score, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("The global leaderboard is empty.")
