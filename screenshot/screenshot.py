@@ -141,7 +141,7 @@ class Screenshot(Cog, CogsUtils):
             file_.close()
 
             embed = discord.Embed(
-                description=f"# [*{site_name}*]({url})", color=discord.Color.blue()
+                description=f"# [{site_name}]({url})", color=discord.Color.blue()
             )
             embed.set_image(url="attachment://screenshot.png")
 
