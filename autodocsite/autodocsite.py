@@ -7,7 +7,8 @@ import shutil
 import yaml
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile
-from Star_Utils import Cog, Settings, CustomCmdFmt, IGNORE  # Assuming these are available
+from Star_Utils import Cog, Settings
+from .formatter import CustomCmdFmt, IGNORE
 from tabulate import tabulate
 import functools
 
