@@ -1,4 +1,4 @@
-from StarUtils import Cog, settings
+from Star_Utils import Cog, Settings
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from discord import Role
