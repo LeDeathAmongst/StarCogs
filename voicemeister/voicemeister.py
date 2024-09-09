@@ -442,7 +442,7 @@ def check_perms_source_dest(
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
-    async def voicemeisterset(self, ctx: commands.Context) -> None:
+    async def voicemeisterset(self, ctx: commands.Context, aliases=["vmset"]) -> None:
         """Configure the VoiceMeister cog."""
 
     @voicemeisterset.command()
