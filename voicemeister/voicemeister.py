@@ -1,6 +1,6 @@
 from abc import ABC
 from contextlib import suppress
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Optional
 
 import discord
 from redbot.core import Config, commands
