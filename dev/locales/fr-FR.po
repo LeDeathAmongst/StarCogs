@@ -1,113 +1,84 @@
 from Star_Utils import Cog
-from Star_Utils import CogsUtils
-from redbot.core import commands
-from redbot.core.i18n import Translator
-import discord
-import typing
+from redbot.core import errors
+import importlib
+import sys
+try:
+    import Star_Utils
+except ModuleNotFoundError:
+    raise errors.CogLoadError(
+        "The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary."
+        )
+modules = sorted([module for module in sys.modules if module.split('.')[0] ==
+    'Star_Utils'], reverse=True)
+for module in modules:
+    try:
+        importlib.reload(sys.modules[module])
+    except ModuleNotFoundError:
+        pass
+del Star_Utils
+from redbot.core.bot import Red
 import asyncio
-import io
-import textwrap
-from redbot.core.dev_commands import START_CODE_BLOCK_RE
-_: Translator = Translator('Dev', __file__)
+import builtins
+import typing
+import rich
+from redbot.core.utils import get_end_user_data_statement
+from redbot.core.utils.chat_formatting import humanize_list
+from .dev import Dev
+from .env import ctxconsole
+__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
+original_sys_displayhook = None
+original_rich_get_console = None
 
 
-def cleanup_code(code: str) ->str:
-    if code.startswith('```') and code.endswith('```'):
-        code = START_CODE_BLOCK_RE.sub('', code)[:-3].rstrip('\n')
-    else:
-        code = code.strip('\n`')
-    code = textwrap.dedent(code)
-    with io.StringIO(code) as codeio:
-        for line in codeio:
-            line = line.strip()
-            if line and not line.startswith('#'):
-                break
-        else:
-            return 'pass'
-    return code
+async def setup_after_ready(bot: Red) ->None:
+    await bot.wait_until_red_ready()
+
+    def _displayhook(obj: typing.Any) ->None:
+        if obj is not None:
+            _console = ctxconsole.get()
+            builtins._ = None
+            rich.pretty.pprint(obj, console=_console)
+            builtins._ = obj
+
+    def _get_console() ->rich.console.Console:
+        return ctxconsole.get()
+    global original_sys_displayhook
+    original_sys_displayhook = sys.displayhook
+    sys.displayhook = _displayhook
+    global original_rich_get_console
+    original_rich_get_console = rich.get_console
+    rich.get_console = _get_console
 
 
-class ExecuteModal(discord.ui.Modal):
+async def setup(bot: Red) ->None:
+    if not bot._cli_flags.dev:
+        raise errors.CogLoadError('This cog requires the `--dev` CLI flag.')
+    cog = Dev(bot)
+    if (core_dev := bot.get_cog('Dev')) is not None:
+        if (env_extensions := getattr(core_dev, 'env_extensions', None)
+            ) is not None:
+            cog.env_extensions = env_extensions
+        if (source_cache := getattr(core_dev, 'source_cache', None)
+            ) is not None:
+            cog.source_cache = source_cache
+        if (dev_space := getattr(core_dev, 'dev_space', None)) is not None:
+            cog.dev_space = dev_space
+        if (_last_result := getattr(core_dev, '_last_result', None)
+            ) is not None:
+            cog._last_result = _last_result
+        if (sessions := getattr(core_dev, 'sessions', None)):
+            s = 's' if len(sessions) > 1 else ''
+            is_private = bot._connection._private_channels.__contains__
+            raise errors.CogLoadError(f'End your REPL session{s} first: ' +
+                humanize_list([('Private channel' if is_private(id) else
+                f'<#{id}>') for id in sessions]))
+    await bot.remove_cog('Dev')
+    await bot.add_cog(cog)
+    asyncio.create_task(setup_after_ready(bot))
 
-    def __init__(self, cog: Cog, ctx: commands.Context, choice: typing.
-        Literal['debug', 'eval']='eval') ->None:
-        self.cog: Cog = cog
-        self.ctx: commands.Context = ctx
-        self.choice: typing.Literal['debug', 'eval'] = choice
-        super().__init__(title=_('Execute') + ' ' + self.choice.title(),
-            timeout=60 * 10)
-        self.code: discord.ui.TextInput = discord.ui.TextInput(label=_(
-            'Code to Execute'), style=discord.TextStyle.long, placeholder=_
-            ('Write your code here...'), required=True)
-        self.add_item(self.code)
 
-    async def on_submit(self, interaction: discord.Interaction) ->None:
-        await interaction.response.defer()
-        context = getattr(self.ctx, 'original_context', self.ctx)
-        context.interaction = interaction
-        code = self.code.value
-        source = cleanup_code(code)
-        await self.cog.my_exec(context, type='debug', source=source,
-            send_result=True)
-
-
-class ExecuteView(discord.ui.View):
-
-    def __init__(self, cog: Cog) ->None:
-        super().__init__(timeout=180)
-        self.cog: Cog = cog
-        self.ctx: commands.Context = None
-        self._message: discord.Message = None
-        self._ready: asyncio.Event = asyncio.Event()
-
-    async def start(self, ctx: commands.Context) ->None:
-        self.ctx: commands.Context = ctx
-        self._message: discord.Message = await self.ctx.send(view=self)
-        self.cog.views[self._message] = self
-        await self._ready.wait()
-        return self._message
-
-    async def interaction_check(self, interaction: discord.Interaction) ->bool:
-        if interaction.user.id not in [self.ctx.author.id] + list(self.ctx.
-            bot.owner_ids):
-            await interaction.response.send_message(_(
-                'You are not allowed to use this interaction.'), ephemeral=True
-                )
-            return False
-        return True
-
-    async def on_timeout(self) ->None:
-        for child in self.children:
-            child: discord.ui.Item
-            if hasattr(child, 'disabled') and not (isinstance(child,
-                discord.ui.Button) and child.style == discord.ButtonStyle.url):
-                child.disabled = True
-        try:
-            await self._message.edit(view=self)
-        except discord.HTTPException:
-            pass
-        self._ready.set()
-
-    @discord.ui.button(label=_('Execute Debug'), custom_id='execute_debug')
-    async def execute_debug(self, interaction: discord.Interaction, button:
-        discord.ui.Button) ->None:
-        await interaction.response.send_modal(ExecuteModal(cog=self.cog,
-            ctx=self.ctx, choice='debug'))
-
-    @discord.ui.button(label=_('Execute Eval'), custom_id='execute_eval')
-    async def execute_eval(self, interaction: discord.Interaction, button:
-        discord.ui.Button) ->None:
-        await interaction.response.send_modal(ExecuteModal(cog=self.cog,
-            ctx=self.ctx, choice='eval'))
-
-    @discord.ui.button(style=discord.ButtonStyle.danger, emoji='✖️',
-        custom_id='close_page')
-    async def close_page(self, interaction: discord.Interaction, button:
-        discord.ui.Button) ->None:
-        try:
-            await interaction.response.defer()
-        except discord.errors.NotFound:
-            pass
-        self.stop()
-        await CogsUtils.delete_message(self._message)
-        self._ready.set()
+async def teardown(bot: Red) ->None:
+    if original_sys_displayhook is not None:
+        sys.displayhook = original_sys_displayhook
+    if original_rich_get_console is not None:
+        rich.get_console = original_rich_get_console
