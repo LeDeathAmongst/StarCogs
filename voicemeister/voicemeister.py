@@ -1,6 +1,5 @@
 from contextlib import suppress
-from typing import Any, ClassVar, Optional
-
+from typing import Any, ClassVar, Optional, Tuple, List
 import discord
 from redbot.core import Config, checks, commands
 from redbot.core.bot import Red
@@ -377,7 +376,53 @@ class VoiceMeister(Cog):
         banned_words = ["explicit_word1", "explicit_word2", "racist_word1"]
         return not any(banned_word in name.lower() for banned_word in banned_words)
 
-    # Setup and Configuration Commands
+    def check_perms_source_dest(self, source_channel: discord.VoiceChannel, dest_category: discord.CategoryChannel, with_manage_roles_guild: bool = False, with_legacy_text_channel: bool = False, with_optional_clone_perms: bool = False, detailed: bool = False) -> Tuple[bool, bool, str]:
+        """Check permissions for the source and destination channels."""
+        required_perms = {
+            "view_channel": True,
+            "connect": True,
+            "speak": True,
+            "move_members": True,
+            "manage_channels": True,
+            "create_instant_invite": True
+        }
+        optional_perms = {
+            "manage_roles": with_manage_roles_guild,
+            "send_messages": with_legacy_text_channel,
+            "read_message_history": with_legacy_text_channel
+        }
+        if with_optional_clone_perms:
+            optional_perms.update({
+                "view_channel": True,
+                "connect": True,
+                "speak": True,
+                "move_members": True,
+                "manage_channels": True,
+                "create_instant_invite": True
+            })
+
+        def check_permissions(channel: discord.abc.GuildChannel, perms: dict) -> bool:
+            permissions = channel.permissions_for(channel.guild.me)
+            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
+
+        source_required = check_permissions(source_channel, required_perms)
+        dest_required = check_permissions(dest_category, required_perms)
+        source_optional = check_permissions(source_channel, optional_perms)
+        dest_optional = check_permissions(dest_category, optional_perms)
+
+        required_check = source_required and dest_required
+        optional_check = source_optional and dest_optional
+
+        details = ""
+        if detailed:
+            missing_required = [perm for perm, value in required_perms.items() if not value]
+            missing_optional = [perm for perm, value in optional_perms.items() if not value]
+            details = (
+                f"Missing required permissions: {', '.join(missing_required)}\n"
+                f"Missing optional permissions: {', '.join(missing_optional)}"
+            )
+
+        return required_check, optional_check, details
 
     @commands.group()
     @commands.guild_only()
@@ -1305,7 +1350,7 @@ class VoiceMeister(Cog):
 
     async def _check_all_perms(
         self, guild: discord.Guild, *, detailed: bool = False
-    ) -> tuple[bool, bool, list[str]]:
+    ) -> Tuple[bool, bool, List[str]]:
         """Check all permissions for all VoiceMeisters in a guild."""
         result_required = True
         result_optional = True
