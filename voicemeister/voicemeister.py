@@ -27,6 +27,7 @@ DEFAULT_EMOJIS = {
     "create_text": "<:SpeachBubble:1279890650535428198>",  # Speech Bubble
     "reset": "<:reset:1280057459146362880>"  # Reset
 }
+
 REGION_OPTIONS = [
     ("Automatic", None),
     ("Brazil", "brazil"),
@@ -150,7 +151,7 @@ class VoiceMeister(Cog):
         """Lock your AutoRoom."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=False)
-            await interaction.response.edit_message(content=f"{channel.name} is now locked.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"{channel.name} is now locked.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -158,7 +159,7 @@ class VoiceMeister(Cog):
         """Unlock your AutoRoom."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=True)
-            await interaction.response.edit_message(content=f"{channel.name} is now unlocked.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"{channel.name} is now unlocked.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -182,7 +183,7 @@ class VoiceMeister(Cog):
             # Update the voice channel topic with the text channel ID
             await channel.edit(topic=f"Text Channel ID: {text_channel.id}")
 
-            await interaction.response.edit_message(content=f"Temporary text channel {text_channel.mention} created.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
         except discord.errors.HTTPException as e:
             if "Channel topic contains at least one word that is not allowed" in str(e):
                 await interaction.response.send_message("Failed to set channel topic due to restricted words.", ephemeral=True)
@@ -198,11 +199,11 @@ class VoiceMeister(Cog):
             if current_owner_id is None or self._has_override_permissions(interaction.user, autoroom_info):
                 await self.config.channel(channel).owner.set(interaction.user.id)
                 await channel.edit(name=f"{interaction.user.display_name}'s Channel")
-                await interaction.response.edit_message(content=f"You have claimed ownership of the channel.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="You have claimed ownership of the channel.", ephemeral=True)
             else:
                 current_owner = interaction.guild.get_member(current_owner_id)
                 owner_name = current_owner.display_name if current_owner else "Unknown"
-                await interaction.response.edit_message(content=f"The channel is already owned by {owner_name}.", view=interaction.message.components[0])
+                await interaction.response.send_message(content=f"The channel is already owned by {owner_name}.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -210,7 +211,7 @@ class VoiceMeister(Cog):
         """Delete the voice channel and linked text channel."""
         try:
             await channel.delete()
-            await interaction.response.edit_message(content="The channel has been deleted.", view=interaction.message.components[0])
+            await interaction.response.send_message(content="The channel has been deleted.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -219,7 +220,7 @@ class VoiceMeister(Cog):
         try:
             await self.config.channel(channel).owner.set(new_owner.id)
             await channel.edit(name=f"{new_owner.display_name}'s Channel")
-            await interaction.response.edit_message(content=f"Ownership transferred to {new_owner.display_name}.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"Ownership transferred to {new_owner.display_name}.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -232,34 +233,34 @@ class VoiceMeister(Cog):
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now public.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             elif action == "deny":
                 await channel.set_permissions(interaction.guild.default_role, connect=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now private.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
             elif action == "lock":
                 await channel.set_permissions(interaction.guild.default_role, connect=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now locked.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now locked.", ephemeral=True)
             elif action == "unlock":
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, send_messages=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now unlocked.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now unlocked.", ephemeral=True)
             elif action == "private":
                 await channel.set_permissions(interaction.guild.default_role, view_channel=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now private.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
             elif action == "public":
                 await channel.set_permissions(interaction.guild.default_role, view_channel=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now public.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             else:
-                await interaction.response.edit_message(content="Invalid action.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -299,7 +300,7 @@ class VoiceMeister(Cog):
             embed.add_field(name="Allowed Users", value=allowed_users_text)
             embed.add_field(name="Denied Users", value=denied_users_text)
 
-            await interaction.response.edit_message(embed=embed, view=interaction.message.components[0])
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -348,7 +349,7 @@ class VoiceMeister(Cog):
     async def handle_error(self, interaction: discord.Interaction, error: Exception):
         """Handle errors by sending a user-friendly message and optionally logging."""
         error_message = "An error occurred while processing your request. Please try again later."
-        await interaction.response.edit_message(content=error_message, view=interaction.message.components[0])
+        await interaction.response.send_message(content=error_message, ephemeral=True)
 
     def get_text_channel(self, voice_channel: discord.VoiceChannel) -> Optional[discord.TextChannel]:
         """Find a text channel associated with the voice channel."""
@@ -432,7 +433,7 @@ class VoiceMeisterView(Buttons):
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         invite = await channel.create_invite(max_uses=1, unique=True)
-        await interaction.response.edit_message(content=f"Here is your invite to the voice channel: {invite.url}", view=interaction.message.components[0])
+        await interaction.response.send_message(content=f"Here is your invite to the voice channel: {invite.url}", ephemeral=True)
 
     async def handle_ban(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await interaction.response.send_modal(DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="deny"))
