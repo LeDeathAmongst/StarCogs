@@ -8,7 +8,7 @@ from discord.ext.commands import CooldownMapping
 from redbot.core import Config
 from redbot.core.bot import Red
 
-from voicemeister.pcx_template import Template
+from voicemeister.star_template import Template
 
 
 class MixinMeta(ABC):
