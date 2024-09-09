@@ -1,11 +1,12 @@
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 from Star_Utils import Buttons, Dropdown, Cog, Settings
+import datetime
 
 MAX_CHANNEL_NAME_LENGTH = 100
-MAX_BITRATE = 96  # Maximum bitrate in kbps
+BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
 DEFAULT_CHANNEL_NAME = "New Voice Channel"
 
 DEFAULT_EMOJIS = {
@@ -27,6 +28,7 @@ DEFAULT_EMOJIS = {
     "create_text": "<:SpeachBubble:1279890650535428198>",  # Speech Bubble
     "reset": "<:reset:1280057459146362880>"  # Reset
 }
+
 REGION_OPTIONS = [
     ("Automatic", None),
     ("Brazil", "brazil"),
@@ -52,13 +54,15 @@ class VoiceMeister(Cog):
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         default_guild = {
             "lobby_channel": None,
+            "category": None,
             "temp_channels": {},
             "user_limits": {},
             "banned_users": {},
             "allowed_users": {},
             "banned_roles": {},
             "allowed_roles": {},
-            "owners": {}
+            "owners": {},
+            "linked_text_channels": {}
         }
         self.config.register_guild(**default_guild)
         self.settings = Settings(
@@ -71,6 +75,11 @@ class VoiceMeister(Cog):
                     "path": ["lobby_channel"],
                     "converter": discord.VoiceChannel,
                     "description": "Set the lobby channel for join-to-create.",
+                },
+                "category": {
+                    "path": ["category"],
+                    "converter": discord.CategoryChannel,
+                    "description": "Set the category for creating temporary voice channels.",
                 }
             }
         )
@@ -83,10 +92,18 @@ class VoiceMeister(Cog):
         await self.config.guild(ctx.guild).lobby_channel.set(channel.id)
         await ctx.send(f"Lobby channel set to {channel.name}.", ephemeral=True)
 
+    @commands.hybrid_command(name="setcategory", with_app_command=True)
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_channels=True)
+    async def set_category(self, ctx: commands.Context, category: discord.CategoryChannel):
+        """Set the category for creating temporary voice channels."""
+        await self.config.guild(ctx.guild).category.set(category.id)
+        await ctx.send(f"Category set to {category.name}.", ephemeral=True)
+
     @commands.hybrid_command(name="controlpanel", with_app_command=True)
     async def control_panel(self, ctx: commands.Context):
         """Open the voice control panel."""
-        view = VoiceMeisterView(bot=self.bot, author=ctx.author)
+        view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Control Panel",
             description="\n".join([
@@ -115,6 +132,7 @@ class VoiceMeister(Cog):
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         guild_data = await self.config.guild(member.guild).all()
         lobby_channel_id = guild_data["lobby_channel"]
+        category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
 
@@ -125,8 +143,12 @@ class VoiceMeister(Cog):
 
         # Join-to-Create feature
         if after.channel and after.channel.id == lobby_channel_id:
-            # Create a temporary channel
-            category = after.channel.category
+            # Create a temporary channel in the specified category
+            category = member.guild.get_channel(category_id)
+            if category is None or not isinstance(category, discord.CategoryChannel):
+                await member.send("The category for creating temporary voice channels is not set or invalid.")
+                return
+
             permissions = {
                 member: discord.PermissionOverwrite(connect=True, manage_channels=True)
             }
@@ -150,7 +172,7 @@ class VoiceMeister(Cog):
         """Lock your AutoRoom."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=False)
-            await interaction.response.edit_message(content=f"{channel.name} is now locked.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"{channel.name} is now locked.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -158,17 +180,19 @@ class VoiceMeister(Cog):
         """Unlock your AutoRoom."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=True)
-            await interaction.response.edit_message(content=f"{channel.name} is now unlocked.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"{channel.name} is now unlocked.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
     async def create_text_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Create a temporary text channel linked to the voice channel."""
         try:
-            existing_text_channel = self.get_text_channel(channel)
-            if existing_text_channel:
-                await interaction.response.send_message(f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True)
-                return
+            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            if channel.id in linked_channels:
+                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
+                if existing_text_channel:
+                    await interaction.response.send_message(f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True)
+                    return
 
             category = channel.category
             text_channel = await category.create_text_channel(
@@ -179,10 +203,11 @@ class VoiceMeister(Cog):
             for member in channel.members:
                 await text_channel.set_permissions(member, read_messages=True, send_messages=True)
 
-            # Update the voice channel topic with the text channel ID
-            await channel.edit(topic=f"Text Channel ID: {text_channel.id}")
+            # Log the linked text channel
+            linked_channels[channel.id] = text_channel.id
+            await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
 
-            await interaction.response.edit_message(content=f"Temporary text channel {text_channel.mention} created.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
         except discord.errors.HTTPException as e:
             if "Channel topic contains at least one word that is not allowed" in str(e):
                 await interaction.response.send_message("Failed to set channel topic due to restricted words.", ephemeral=True)
@@ -192,34 +217,49 @@ class VoiceMeister(Cog):
     async def claim(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Claim ownership of the AutoRoom if there is no current owner, or override if admin/owner."""
         try:
-            autoroom_info = await self.get_autoroom_info(channel)
-            current_owner_id = autoroom_info.get("owner")
+            owners = await self.config.guild(channel.guild).owners()
+            current_owner_id = owners.get(str(channel.id))
 
-            if current_owner_id is None or self._has_override_permissions(interaction.user, autoroom_info):
-                await self.config.channel(channel).owner.set(interaction.user.id)
+            if current_owner_id is None or self._has_override_permissions(interaction.user, owners):
+                owners[str(channel.id)] = interaction.user.id
+                await self.config.guild(channel.guild).owners.set(owners)
                 await channel.edit(name=f"{interaction.user.display_name}'s Channel")
-                await interaction.response.edit_message(content=f"You have claimed ownership of the channel.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="You have claimed ownership of the channel.", ephemeral=True)
             else:
                 current_owner = interaction.guild.get_member(current_owner_id)
                 owner_name = current_owner.display_name if current_owner else "Unknown"
-                await interaction.response.edit_message(content=f"The channel is already owned by {owner_name}.", view=interaction.message.components[0])
+                await interaction.response.send_message(content=f"The channel is already owned by {owner_name}.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Delete the voice channel and linked text channel."""
         try:
+            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            text_channel_id = linked_channels.get(channel.id)
+            if text_channel_id:
+                text_channel = channel.guild.get_channel(text_channel_id)
+                if text_channel:
+                    await text_channel.delete()
+
             await channel.delete()
-            await interaction.response.edit_message(content="The channel has been deleted.", view=interaction.message.components[0])
+            await interaction.response.send_message(content="The channel has been deleted.", ephemeral=True)
+
+            # Clean up the stored data
+            if channel.id in linked_channels:
+                del linked_channels[channel.id]
+                await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
         except Exception as e:
             await self.handle_error(interaction, e)
 
     async def transfer_ownership(self, interaction: discord.Interaction, channel: discord.VoiceChannel, new_owner: discord.Member):
         """Transfer ownership of the channel."""
         try:
-            await self.config.channel(channel).owner.set(new_owner.id)
+            owners = await self.config.guild(channel.guild).owners()
+            owners[str(channel.id)] = new_owner.id
+            await self.config.guild(channel.guild).owners.set(owners)
             await channel.edit(name=f"{new_owner.display_name}'s Channel")
-            await interaction.response.edit_message(content=f"Ownership transferred to {new_owner.display_name}.", view=interaction.message.components[0])
+            await interaction.response.send_message(content=f"Ownership transferred to {new_owner.display_name}.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -232,43 +272,43 @@ class VoiceMeister(Cog):
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now public.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             elif action == "deny":
                 await channel.set_permissions(interaction.guild.default_role, connect=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now private.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
             elif action == "lock":
                 await channel.set_permissions(interaction.guild.default_role, connect=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now locked.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now locked.", ephemeral=True)
             elif action == "unlock":
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, send_messages=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now unlocked.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now unlocked.", ephemeral=True)
             elif action == "private":
                 await channel.set_permissions(interaction.guild.default_role, view_channel=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                await interaction.response.edit_message(content=f"The AutoRoom is now private.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
             elif action == "public":
                 await channel.set_permissions(interaction.guild.default_role, view_channel=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                await interaction.response.edit_message(content=f"The AutoRoom is now public.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             else:
-                await interaction.response.edit_message(content="Invalid action.", view=interaction.message.components[0])
+                await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
     async def info(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Provide information about the current voice channel."""
         try:
-            autoroom_info = await self.get_autoroom_info(channel)
-            owner_id = autoroom_info.get("owner")
-            owner = interaction.guild.get_member(owner_id)
+            owners = await self.config.guild(channel.guild).owners()
+            owner_id = owners.get(str(channel.id))
+            owner = channel.guild.get_member(owner_id)
             owner_name = owner.display_name if owner else "None"
             owner_mention = owner.mention if owner else "None"
 
@@ -291,15 +331,15 @@ class VoiceMeister(Cog):
 
             embed = discord.Embed(title=f"Info for {channel.name}", color=0x7289da)
             embed.add_field(name="Owner", value=f"{owner_name} ({owner_mention})")
-            embed.add_field(name="Age", value=humanize_timedelta(timedelta=channel_age))
+            embed.add_field(name="Allowed Members", value=allowed_users_text)
+            embed.add_field(name="Denied Members", value=denied_users_text)
             embed.add_field(name="Bitrate", value=f"{bitrate} kbps")
+            embed.add_field(name="Time Created", value=channel.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            embed.add_field(name="Last Update", value=channel.edited_at.strftime("%Y-%m-%d %H:%M:%S") if channel.edited_at else "Never")
             embed.add_field(name="User Limit", value=user_limit)
             embed.add_field(name="Region", value=rtc_region)
-            embed.add_field(name="Private", value="Yes" if self._get_autoroom_type(channel, interaction.guild.default_role) == "private" else "No")
-            embed.add_field(name="Allowed Users", value=allowed_users_text)
-            embed.add_field(name="Denied Users", value=denied_users_text)
 
-            await interaction.response.edit_message(embed=embed, view=interaction.message.components[0])
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -311,7 +351,7 @@ class VoiceMeister(Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
-    def _has_override_permissions(self, user: discord.Member, autoroom_info: dict) -> bool:
+    def _has_override_permissions(self, user: discord.Member, owners: dict) -> bool:
         """Check if the user has override permissions."""
         if user.guild_permissions.administrator or user.id == user.guild.owner_id:
             return True
@@ -348,16 +388,13 @@ class VoiceMeister(Cog):
     async def handle_error(self, interaction: discord.Interaction, error: Exception):
         """Handle errors by sending a user-friendly message and optionally logging."""
         error_message = "An error occurred while processing your request. Please try again later."
-        await interaction.response.edit_message(content=error_message, view=interaction.message.components[0])
+        await interaction.response.send_message(content=error_message, ephemeral=True)
 
     def get_text_channel(self, voice_channel: discord.VoiceChannel) -> Optional[discord.TextChannel]:
         """Find a text channel associated with the voice channel."""
-        category = voice_channel.category
-        if category:
-            for channel in category.channels:
-                if isinstance(channel, discord.TextChannel) and channel.topic and f"Voice Channel ID: {voice_channel.id}" in channel.topic:
-                    return channel
-        return None
+        linked_channels = self.config.guild(voice_channel.guild).linked_text_channels()
+        text_channel_id = linked_channels.get(voice_channel.id)
+        return voice_channel.guild.get_channel(text_channel_id)
 
     def is_name_valid(self, name: str) -> bool:
         """Check if the name is valid (not explicit or racist)."""
@@ -367,26 +404,26 @@ class VoiceMeister(Cog):
 # View Class for Control Panel
 
 class VoiceMeisterView(Buttons):
-    def __init__(self, bot: Red, author: discord.Member):
+    def __init__(self, bot: Red, author: discord.Member, infinity: bool = True):
         buttons = [
-            {"emoji": DEFAULT_EMOJIS["lock"], "custom_id": "lock"},
-            {"emoji": DEFAULT_EMOJIS["unlock"], "custom_id": "unlock"},
-            {"emoji": DEFAULT_EMOJIS["limit"], "custom_id": "limit"},
-            {"emoji": DEFAULT_EMOJIS["hide"], "custom_id": "hide"},
-            {"emoji": DEFAULT_EMOJIS["unhide"], "custom_id": "unhide"},
-            {"emoji": DEFAULT_EMOJIS["invite"], "custom_id": "invite"},
-            {"emoji": DEFAULT_EMOJIS["ban"], "custom_id": "ban"},
-            {"emoji": DEFAULT_EMOJIS["permit"], "custom_id": "permit"},
-            {"emoji": DEFAULT_EMOJIS["rename"], "custom_id": "rename"},
-            {"emoji": DEFAULT_EMOJIS["bitrate"], "custom_id": "bitrate"},
-            {"emoji": DEFAULT_EMOJIS["region"], "custom_id": "region"},
-            {"emoji": DEFAULT_EMOJIS["claim"], "custom_id": "claim"},
-            {"emoji": DEFAULT_EMOJIS["transfer"], "custom_id": "transfer"},
-            {"emoji": DEFAULT_EMOJIS["info"], "custom_id": "info"},
-            {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete"},
-            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text"},
+            {"emoji": DEFAULT_EMOJIS["lock"], "custom_id": "lock", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["unlock"], "custom_id": "unlock", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["hide"], "custom_id": "hide", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["unhide"], "custom_id": "unhide", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["limit"], "custom_id": "limit", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["ban"], "custom_id": "ban", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["permit"], "custom_id": "permit", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["claim"], "custom_id": "claim", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["transfer"], "custom_id": "transfer", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["info"], "custom_id": "info", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["rename"], "custom_id": "rename", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["bitrate"], "custom_id": "bitrate", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["region"], "custom_id": "region", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["invite"], "custom_id": "invite", "row": 3},
         ]
-        super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click)
+        super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click, infinity=infinity)
         self.bot = bot
         self.author = author
 
@@ -432,19 +469,19 @@ class VoiceMeisterView(Buttons):
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         invite = await channel.create_invite(max_uses=1, unique=True)
-        await interaction.response.edit_message(content=f"Here is your invite to the voice channel: {invite.url}", view=interaction.message.components[0])
+        await interaction.response.send_message(content=f"Here is your invite to the voice channel: {invite.url}", ephemeral=True)
 
     async def handle_ban(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="deny"))
+        await interaction.response.send_message("Select a member to ban.", view=DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="deny"), ephemeral=True)
 
     async def handle_permit(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="allow"))
+        await interaction.response.send_message("Select a member to permit.", view=DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="allow"), ephemeral=True)
 
     async def handle_rename(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await interaction.response.send_modal(ChangeNameModal(self.bot.get_cog("VoiceMeister"), channel))
 
     async def handle_bitrate(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(ChangeBitrateModal(self.bot.get_cog("VoiceMeister"), channel))
+        await interaction.response.send_message("Select a bitrate.", view=BitrateSelectView(self.bot.get_cog("VoiceMeister"), channel), ephemeral=True)
 
     async def handle_region(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").change_region(interaction, channel)
@@ -453,7 +490,7 @@ class VoiceMeisterView(Buttons):
         await self.bot.get_cog("VoiceMeister").claim(interaction, channel)
 
     async def handle_transfer(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(TransferOwnershipSelect(self.bot.get_cog("VoiceMeister"), channel))
+        await interaction.response.send_message("Select a member to transfer ownership to.", view=TransferOwnershipSelect(self.bot.get_cog("VoiceMeister"), channel), ephemeral=True)
 
     async def handle_info(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").info(interaction, channel)
@@ -468,7 +505,7 @@ class VoiceMeisterView(Buttons):
 
 class DenyAllowSelect(Dropdown):
     def __init__(self, cog, channel, action):
-        user_options = [{"label": member.display_name, "value": str(member.id)} for member in channel.guild.members]
+        user_options = [{"label": member.display_name, "value": str(member.id)} for member in channel.members]
         super().__init__(
             placeholder="Select a member",
             options=user_options,
@@ -508,6 +545,24 @@ class TransferOwnershipSelect(Dropdown):
         except Exception as e:
             await cog.handle_error(interaction, e)
 
+class BitrateSelectView(Dropdown):
+    def __init__(self, cog, channel):
+        bitrate_options = [{"label": f"{bitrate} kbps", "value": str(bitrate)} for bitrate in BITRATE_OPTIONS]
+        super().__init__(
+            placeholder="Select Bitrate",
+            options=bitrate_options,
+            function=self.on_select,
+            function_kwargs={"cog": cog, "channel": channel}
+        )
+
+    async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
+        try:
+            selected_bitrate = int(options[0])
+            await channel.edit(bitrate=selected_bitrate * 1000)
+            await interaction.response.send_message(f"Bitrate changed to {selected_bitrate} kbps.", ephemeral=True)
+        except Exception as e:
+            await cog.handle_error(interaction, e)
+
 # Modal Classes
 
 class ChangeBitrateModal(discord.ui.Modal, title="Change Bitrate"):
@@ -522,8 +577,8 @@ class ChangeBitrateModal(discord.ui.Modal, title="Change Bitrate"):
         try:
             await interaction.response.defer(ephemeral=True)
             bitrate_value = self.bitrate_value.value
-            if not bitrate_value.isdigit() or int(bitrate_value) > MAX_BITRATE:
-                await interaction.followup.send(f"Invalid bitrate. Please enter a value between 8 and {MAX_BITRATE} kbps.", ephemeral=True)
+            if not bitrate_value.isdigit() or int(bitrate_value) > max(BITRATE_OPTIONS):
+                await interaction.followup.send(f"Invalid bitrate. Please enter a value between 8 and {max(BITRATE_OPTIONS)} kbps.", ephemeral=True)
                 return
 
             if self.channel:
