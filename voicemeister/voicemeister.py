@@ -59,7 +59,8 @@ class VoiceMeister(Cog):
             "allowed_users": {},
             "banned_roles": {},
             "allowed_roles": {},
-            "owners": {}
+            "owners": {},
+            "linked_text_channels": {}
         }
         self.config.register_guild(**default_guild)
         self.settings = Settings(
@@ -166,10 +167,12 @@ class VoiceMeister(Cog):
     async def create_text_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Create a temporary text channel linked to the voice channel."""
         try:
-            existing_text_channel = self.get_text_channel(channel)
-            if existing_text_channel:
-                await interaction.response.send_message(f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True)
-                return
+            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            if channel.id in linked_channels:
+                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
+                if existing_text_channel:
+                    await interaction.response.send_message(f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True)
+                    return
 
             category = channel.category
             text_channel = await category.create_text_channel(
@@ -180,8 +183,9 @@ class VoiceMeister(Cog):
             for member in channel.members:
                 await text_channel.set_permissions(member, read_messages=True, send_messages=True)
 
-            # Update the voice channel topic with the text channel ID
-            await channel.edit(topic=f"Text Channel ID: {text_channel.id}")
+            # Log the linked text channel
+            linked_channels[channel.id] = text_channel.id
+            await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
 
             await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
         except discord.errors.HTTPException as e:
@@ -193,11 +197,12 @@ class VoiceMeister(Cog):
     async def claim(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Claim ownership of the AutoRoom if there is no current owner, or override if admin/owner."""
         try:
-            autoroom_info = await self.get_autoroom_info(channel)
-            current_owner_id = autoroom_info.get("owner")
+            owners = await self.config.guild(channel.guild).owners()
+            current_owner_id = owners.get(str(channel.id))
 
-            if current_owner_id is None or self._has_override_permissions(interaction.user, autoroom_info):
-                await self.config.channel(channel).owner.set(interaction.user.id)
+            if current_owner_id is None or self._has_override_permissions(interaction.user, owners):
+                owners[str(channel.id)] = interaction.user.id
+                await self.config.guild(channel.guild).owners.set(owners)
                 await channel.edit(name=f"{interaction.user.display_name}'s Channel")
                 await interaction.response.send_message(content="You have claimed ownership of the channel.", ephemeral=True)
             else:
@@ -210,15 +215,28 @@ class VoiceMeister(Cog):
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Delete the voice channel and linked text channel."""
         try:
+            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            if channel.id in linked_channels:
+                text_channel = channel.guild.get_channel(linked_channels[channel.id])
+                if text_channel:
+                    await text_channel.delete()
+
             await channel.delete()
             await interaction.response.send_message(content="The channel has been deleted.", ephemeral=True)
+
+            # Clean up the stored data
+            if channel.id in linked_channels:
+                del linked_channels[channel.id]
+                await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
         except Exception as e:
             await self.handle_error(interaction, e)
 
     async def transfer_ownership(self, interaction: discord.Interaction, channel: discord.VoiceChannel, new_owner: discord.Member):
         """Transfer ownership of the channel."""
         try:
-            await self.config.channel(channel).owner.set(new_owner.id)
+            owners = await self.config.guild(channel.guild).owners()
+            owners[str(channel.id)] = new_owner.id
+            await self.config.guild(channel.guild).owners.set(owners)
             await channel.edit(name=f"{new_owner.display_name}'s Channel")
             await interaction.response.send_message(content=f"Ownership transferred to {new_owner.display_name}.", ephemeral=True)
         except Exception as e:
@@ -267,9 +285,9 @@ class VoiceMeister(Cog):
     async def info(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Provide information about the current voice channel."""
         try:
-            autoroom_info = await self.get_autoroom_info(channel)
-            owner_id = autoroom_info.get("owner")
-            owner = interaction.guild.get_member(owner_id)
+            owners = await self.config.guild(channel.guild).owners()
+            owner_id = owners.get(str(channel.id))
+            owner = channel.guild.get_member(owner_id)
             owner_name = owner.display_name if owner else "None"
             owner_mention = owner.mention if owner else "None"
 
@@ -312,7 +330,7 @@ class VoiceMeister(Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
-    def _has_override_permissions(self, user: discord.Member, autoroom_info: dict) -> bool:
+    def _has_override_permissions(self, user: discord.Member, owners: dict) -> bool:
         """Check if the user has override permissions."""
         if user.guild_permissions.administrator or user.id == user.guild.owner_id:
             return True
@@ -353,12 +371,9 @@ class VoiceMeister(Cog):
 
     def get_text_channel(self, voice_channel: discord.VoiceChannel) -> Optional[discord.TextChannel]:
         """Find a text channel associated with the voice channel."""
-        category = voice_channel.category
-        if category:
-            for channel in category.channels:
-                if isinstance(channel, discord.TextChannel) and channel.topic and f"Voice Channel ID: {voice_channel.id}" in channel.topic:
-                    return channel
-        return None
+        linked_channels = self.config.guild(voice_channel.guild).linked_text_channels()
+        text_channel_id = linked_channels.get(voice_channel.id)
+        return voice_channel.guild.get_channel(text_channel_id)
 
     def is_name_valid(self, name: str) -> bool:
         """Check if the name is valid (not explicit or racist)."""
@@ -454,7 +469,7 @@ class VoiceMeisterView(Buttons):
         await self.bot.get_cog("VoiceMeister").claim(interaction, channel)
 
     async def handle_transfer(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(TransferOwnershipSelect(self.bot.get_cog("VoiceMeister"), channel))
+        await interaction.response.send_message("Select a member to transfer ownership to.", view=TransferOwnershipSelect(self.bot.get_cog("VoiceMeister"), channel), ephemeral=True)
 
     async def handle_info(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").info(interaction, channel)
@@ -469,7 +484,7 @@ class VoiceMeisterView(Buttons):
 
 class DenyAllowSelect(Dropdown):
     def __init__(self, cog, channel, action):
-        user_options = [{"label": member.display_name, "value": str(member.id)} for member in channel.guild.members]
+        user_options = [{"label": member.display_name, "value": str(member.id)} for member in channel.members]
         super().__init__(
             placeholder="Select a member",
             options=user_options,
