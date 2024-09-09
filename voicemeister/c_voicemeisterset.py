@@ -9,7 +9,7 @@ from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core.utils.predicates import MessagePredicate
 
 from .abc import MixinMeta
-from .pcx_lib import SettingDisplay
+from .star_lib import SettingDisplay
 
 channel_name_template = {
     "username": "{{username}}'s Room{% if dupenum > 1 %} ({{dupenum}}){% endif %}",
