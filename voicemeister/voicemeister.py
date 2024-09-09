@@ -216,8 +216,9 @@ class VoiceMeister(Cog):
         """Delete the voice channel and linked text channel."""
         try:
             linked_channels = await self.config.guild(channel.guild).linked_text_channels()
-            if channel.id in linked_channels:
-                text_channel = channel.guild.get_channel(linked_channels[channel.id])
+            text_channel_id = linked_channels.get(channel.id)
+            if text_channel_id:
+                text_channel = channel.guild.get_channel(text_channel_id)
                 if text_channel:
                     await text_channel.delete()
 
@@ -310,13 +311,13 @@ class VoiceMeister(Cog):
 
             embed = discord.Embed(title=f"Info for {channel.name}", color=0x7289da)
             embed.add_field(name="Owner", value=f"{owner_name} ({owner_mention})")
-            embed.add_field(name="Age", value=humanize_timedelta(timedelta=channel_age))
+            embed.add_field(name="Allowed Members", value=allowed_users_text)
+            embed.add_field(name="Denied Members", value=denied_users_text)
             embed.add_field(name="Bitrate", value=f"{bitrate} kbps")
+            embed.add_field(name="Time Created", value=channel.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            embed.add_field(name="Last Update", value=channel.edited_at.strftime("%Y-%m-%d %H:%M:%S") if channel.edited_at else "Never")
             embed.add_field(name="User Limit", value=user_limit)
             embed.add_field(name="Region", value=rtc_region)
-            embed.add_field(name="Private", value="Yes" if self._get_autoroom_type(channel, interaction.guild.default_role) == "private" else "No")
-            embed.add_field(name="Allowed Users", value=allowed_users_text)
-            embed.add_field(name="Denied Users", value=denied_users_text)
 
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
