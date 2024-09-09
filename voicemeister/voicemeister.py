@@ -1,4 +1,3 @@
-from abc import ABC
 from contextlib import suppress
 from typing import Any, ClassVar, Optional
 
@@ -49,7 +48,7 @@ REGION_OPTIONS = [
     ("US West", "us-west"),
 ]
 
-class VoiceMeister(Cog, ABC):
+class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     def __init__(self, bot: Red):
