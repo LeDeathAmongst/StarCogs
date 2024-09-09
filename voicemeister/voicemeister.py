@@ -3,9 +3,10 @@ from redbot.core.bot import Red
 import discord
 from typing import Optional, Dict
 from Star_Utils import Buttons, Dropdown, Cog, Settings
+import datetime
 
 MAX_CHANNEL_NAME_LENGTH = 100
-MAX_BITRATE = 96  # Maximum bitrate in kbps
+BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
 DEFAULT_CHANNEL_NAME = "New Voice Channel"
 
 DEFAULT_EMOJIS = {
@@ -53,6 +54,7 @@ class VoiceMeister(Cog):
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         default_guild = {
             "lobby_channel": None,
+            "category": None,
             "temp_channels": {},
             "user_limits": {},
             "banned_users": {},
@@ -73,6 +75,11 @@ class VoiceMeister(Cog):
                     "path": ["lobby_channel"],
                     "converter": discord.VoiceChannel,
                     "description": "Set the lobby channel for join-to-create.",
+                },
+                "category": {
+                    "path": ["category"],
+                    "converter": discord.CategoryChannel,
+                    "description": "Set the category for creating temporary voice channels.",
                 }
             }
         )
@@ -84,6 +91,14 @@ class VoiceMeister(Cog):
         """Set the lobby channel for join-to-create."""
         await self.config.guild(ctx.guild).lobby_channel.set(channel.id)
         await ctx.send(f"Lobby channel set to {channel.name}.", ephemeral=True)
+
+    @commands.hybrid_command(name="setcategory", with_app_command=True)
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_channels=True)
+    async def set_category(self, ctx: commands.Context, category: discord.CategoryChannel):
+        """Set the category for creating temporary voice channels."""
+        await self.config.guild(ctx.guild).category.set(category.id)
+        await ctx.send(f"Category set to {category.name}.", ephemeral=True)
 
     @commands.hybrid_command(name="controlpanel", with_app_command=True)
     async def control_panel(self, ctx: commands.Context):
@@ -117,6 +132,7 @@ class VoiceMeister(Cog):
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         guild_data = await self.config.guild(member.guild).all()
         lobby_channel_id = guild_data["lobby_channel"]
+        category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
 
@@ -127,8 +143,12 @@ class VoiceMeister(Cog):
 
         # Join-to-Create feature
         if after.channel and after.channel.id == lobby_channel_id:
-            # Create a temporary channel
-            category = after.channel.category
+            # Create a temporary channel in the specified category
+            category = member.guild.get_channel(category_id)
+            if category is None or not isinstance(category, discord.CategoryChannel):
+                await member.send("The category for creating temporary voice channels is not set or invalid.")
+                return
+
             permissions = {
                 member: discord.PermissionOverwrite(connect=True, manage_channels=True)
             }
@@ -386,22 +406,22 @@ class VoiceMeister(Cog):
 class VoiceMeisterView(Buttons):
     def __init__(self, bot: Red, author: discord.Member, infinity: bool = True):
         buttons = [
-            {"emoji": DEFAULT_EMOJIS["lock"], "custom_id": "lock"},
-            {"emoji": DEFAULT_EMOJIS["unlock"], "custom_id": "unlock"},
-            {"emoji": DEFAULT_EMOJIS["limit"], "custom_id": "limit"},
-            {"emoji": DEFAULT_EMOJIS["hide"], "custom_id": "hide"},
-            {"emoji": DEFAULT_EMOJIS["unhide"], "custom_id": "unhide"},
-            {"emoji": DEFAULT_EMOJIS["invite"], "custom_id": "invite"},
-            {"emoji": DEFAULT_EMOJIS["ban"], "custom_id": "ban"},
-            {"emoji": DEFAULT_EMOJIS["permit"], "custom_id": "permit"},
-            {"emoji": DEFAULT_EMOJIS["rename"], "custom_id": "rename"},
-            {"emoji": DEFAULT_EMOJIS["bitrate"], "custom_id": "bitrate"},
-            {"emoji": DEFAULT_EMOJIS["region"], "custom_id": "region"},
-            {"emoji": DEFAULT_EMOJIS["claim"], "custom_id": "claim"},
-            {"emoji": DEFAULT_EMOJIS["transfer"], "custom_id": "transfer"},
-            {"emoji": DEFAULT_EMOJIS["info"], "custom_id": "info"},
-            {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete"},
-            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text"},
+            {"emoji": DEFAULT_EMOJIS["lock"], "custom_id": "lock", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["unlock"], "custom_id": "unlock", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["hide"], "custom_id": "hide", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["unhide"], "custom_id": "unhide", "row": 0},
+            {"emoji": DEFAULT_EMOJIS["limit"], "custom_id": "limit", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["ban"], "custom_id": "ban", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["permit"], "custom_id": "permit", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["claim"], "custom_id": "claim", "row": 1},
+            {"emoji": DEFAULT_EMOJIS["transfer"], "custom_id": "transfer", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["info"], "custom_id": "info", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["rename"], "custom_id": "rename", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["bitrate"], "custom_id": "bitrate", "row": 2},
+            {"emoji": DEFAULT_EMOJIS["region"], "custom_id": "region", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["invite"], "custom_id": "invite", "row": 3},
         ]
         super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click, infinity=infinity)
         self.bot = bot
@@ -461,7 +481,7 @@ class VoiceMeisterView(Buttons):
         await interaction.response.send_modal(ChangeNameModal(self.bot.get_cog("VoiceMeister"), channel))
 
     async def handle_bitrate(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(ChangeBitrateModal(self.bot.get_cog("VoiceMeister"), channel))
+        await interaction.response.send_message("Select a bitrate.", view=BitrateSelectView(self.bot.get_cog("VoiceMeister"), channel), ephemeral=True)
 
     async def handle_region(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").change_region(interaction, channel)
@@ -525,6 +545,24 @@ class TransferOwnershipSelect(Dropdown):
         except Exception as e:
             await cog.handle_error(interaction, e)
 
+class BitrateSelectView(Dropdown):
+    def __init__(self, cog, channel):
+        bitrate_options = [{"label": f"{bitrate} kbps", "value": str(bitrate)} for bitrate in BITRATE_OPTIONS]
+        super().__init__(
+            placeholder="Select Bitrate",
+            options=bitrate_options,
+            function=self.on_select,
+            function_kwargs={"cog": cog, "channel": channel}
+        )
+
+    async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
+        try:
+            selected_bitrate = int(options[0])
+            await channel.edit(bitrate=selected_bitrate * 1000)
+            await interaction.response.send_message(f"Bitrate changed to {selected_bitrate} kbps.", ephemeral=True)
+        except Exception as e:
+            await cog.handle_error(interaction, e)
+
 # Modal Classes
 
 class ChangeBitrateModal(discord.ui.Modal, title="Change Bitrate"):
@@ -539,8 +577,8 @@ class ChangeBitrateModal(discord.ui.Modal, title="Change Bitrate"):
         try:
             await interaction.response.defer(ephemeral=True)
             bitrate_value = self.bitrate_value.value
-            if not bitrate_value.isdigit() or int(bitrate_value) > MAX_BITRATE:
-                await interaction.followup.send(f"Invalid bitrate. Please enter a value between 8 and {MAX_BITRATE} kbps.", ephemeral=True)
+            if not bitrate_value.isdigit() or int(bitrate_value) > max(BITRATE_OPTIONS):
+                await interaction.followup.send(f"Invalid bitrate. Please enter a value between 8 and {max(BITRATE_OPTIONS)} kbps.", ephemeral=True)
                 return
 
             if self.channel:
