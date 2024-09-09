@@ -69,6 +69,50 @@ class VoiceMeister(Cog):
         }
         self.config.register_guild(**default_guild)
 
+        self.settings = Settings(
+            bot=bot,
+            cog=self,
+            config=None,  # Replace with actual config if needed
+            group="guild",
+            settings={
+                "lobby_channel": {
+                    "path": ["lobby_channel"],
+                    "converter": int,
+                    "command_name": "lobbychannel",
+                    "label": "Lobby Channel",
+                    "description": "Set the lobby channel for voice channel creation.",
+                },
+                "category": {
+                    "path": ["category"],
+                    "converter": int,
+                    "command_name": "category",
+                    "label": "Category",
+                    "description": "Set the category for temporary voice channels.",
+                },
+                "temp_channels": {
+                    "path": ["temp_channels"],
+                    "converter": dict,
+                    "command_name": "tempchannels",
+                    "label": "Temporary Channels",
+                    "description": "Manage temporary channels.",
+                },
+                "owners": {
+                    "path": ["owners"],
+                    "converter": dict,
+                    "command_name": "owners",
+                    "label": "Channel Owners",
+                    "description": "Manage channel ownership.",
+                },
+                "linked_text_channels": {
+                    "path": ["linked_text_channels"],
+                    "converter": dict,
+                    "command_name": "linkedtextchannels",
+                    "label": "Linked Text Channels",
+                    "description": "Manage linked text channels.",
+                },
+            }
+        )
+
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
         """Open the voice interface."""
@@ -197,7 +241,7 @@ class VoiceMeister(Cog):
             owners = await self.config.guild(channel.guild).owners()
             current_owner_id = owners.get(str(channel.id))
 
-            if current_owner_id is None or self._has_override_permissions(interaction.user, owners):
+            if current_owner_id is None or self._has_override_permissions(interaction.user):
                 owners[str(channel.id)] = interaction.user.id
                 await self.config.guild(channel.guild).owners.set(owners)
                 await channel.edit(name=f"{interaction.user.display_name}'s Channel")
@@ -255,26 +299,6 @@ class VoiceMeister(Cog):
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
                 await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
-            elif action == "lock":
-                await channel.set_permissions(interaction.guild.default_role, connect=False)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
-                await interaction.response.send_message(content="The AutoRoom is now locked.", ephemeral=True)
-            elif action == "unlock":
-                await channel.set_permissions(interaction.guild.default_role, connect=True)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=True)
-                await interaction.response.send_message(content="The AutoRoom is now unlocked.", ephemeral=True)
-            elif action == "private":
-                await channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
-            elif action == "public":
-                await channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             else:
                 await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
@@ -328,7 +352,7 @@ class VoiceMeister(Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
-    def _has_override_permissions(self, user: discord.Member, owners: dict) -> bool:
+    def _has_override_permissions(self, user: discord.Member) -> bool:
         """Check if the user has override permissions."""
         if user.guild_permissions.administrator or user.id == user.guild.owner_id:
             return True
@@ -340,27 +364,6 @@ class VoiceMeister(Cog):
         if member.voice and isinstance(member.voice.channel, discord.VoiceChannel):
             return member.voice.channel
         return None
-
-    @staticmethod
-    def _get_autoroom_type(autoroom: discord.VoiceChannel, role: discord.Role) -> str:
-        """Get the type of access a role has in an AutoRoom (public, locked, private, etc)."""
-        view_channel = role.permissions.view_channel
-        connect = role.permissions.connect
-        if role in autoroom.overwrites:
-            overwrites_allow, overwrites_deny = autoroom.overwrites[role].pair()
-            if overwrites_allow.view_channel:
-                view_channel = True
-            if overwrites_allow.connect:
-                connect = True
-            if overwrites_deny.view_channel:
-                view_channel = False
-            if overwrites_deny.connect:
-                connect = False
-        if not view_channel and not connect:
-            return "private"
-        if view_channel and not connect:
-            return "locked"
-        return "public"
 
     async def handle_error(self, interaction: discord.Interaction, error: Exception):
         """Handle errors by sending a user-friendly message and optionally logging."""
@@ -450,247 +453,7 @@ class VoiceMeister(Cog):
     @voicemeisterset.command()
     async def settings(self, ctx: commands.Context) -> None:
         """Display current settings."""
-        if not ctx.guild:
-            return
-        server_section = SettingDisplay("Server Settings")
-        server_section.add(
-            "Admin access all VoiceMeisters",
-            await self.config.guild(ctx.guild).admin_access(),
-        )
-        server_section.add(
-            "Moderator access all VoiceMeisters",
-            await self.config.guild(ctx.guild).mod_access(),
-        )
-        bot_roles = ", ".join(
-            [role.name for role in await self.get_bot_roles(ctx.guild)]
-        )
-        if bot_roles:
-            server_section.add("Bot roles allowed in all VoiceMeisters", bot_roles)
-
-        voicemeister_sections = []
-        avcs = await self.get_all_voicemeister_source_configs(ctx.guild)
-        for avc_id, avc_settings in avcs.items():
-            source_channel = ctx.guild.get_channel(avc_id)
-            if not isinstance(source_channel, discord.VoiceChannel):
-                continue
-            dest_category = ctx.guild.get_channel(avc_settings["dest_category_id"])
-            voicemeister_section = SettingDisplay(f"VoiceMeister - {source_channel.name}")
-            voicemeister_section.add(
-                "Room type",
-                avc_settings["room_type"].capitalize(),
-            )
-            voicemeister_section.add(
-                "Destination category",
-                f"#{dest_category.name}" if dest_category else "INVALID CATEGORY",
-            )
-            if avc_settings["legacy_text_channel"]:
-                voicemeister_section.add(
-                    "Legacy Text Channel",
-                    "True",
-                )
-            if not avc_settings["perm_send_messages"]:
-                voicemeister_section.add(
-                    "Send Messages",
-                    "False",
-                )
-            if not avc_settings["perm_owner_manage_channels"]:
-                voicemeister_section.add(
-                    "Owner Manage Channel",
-                    "False",
-                )
-            member_roles = self.get_member_roles(source_channel)
-            if member_roles:
-                voicemeister_section.add(
-                    "Member Roles" if len(member_roles) > 1 else "Member Role",
-                    ", ".join(role.name for role in member_roles),
-                )
-            room_name_format = "Username"
-            if avc_settings["channel_name_type"] in channel_name_template:
-                room_name_format = avc_settings["channel_name_type"].capitalize()
-            elif (
-                avc_settings["channel_name_type"] == "custom"
-                and avc_settings["channel_name_format"]
-            ):
-                room_name_format = f'Custom: "{avc_settings["channel_name_format"]}"'
-            voicemeister_section.add("Room name format", room_name_format)
-            voicemeister_sections.append(voicemeister_section)
-
-        message = server_section.display(*voicemeister_sections)
-        required_check, optional_check, _ = await self._check_all_perms(ctx.guild)
-        if not required_check:
-            message += "\n" + error(
-                "It looks like I am missing one or more required permissions. "
-                "Until I have them, the VoiceMeister cog may not function properly "
-                "for all VoiceMeister Sources. "
-                "Check `[p]voicemeisterset permissions` for more information."
-            )
-        elif not optional_check:
-            message += "\n" + warning(
-                "All VoiceMeisters will work correctly, as I have all of the required permissions. "
-                "However, it looks like I am missing one or more optional permissions "
-                "for one or more VoiceMeisters. "
-                "Check `[p]voicemeisterset permissions` for more information."
-            )
-        await ctx.send(message)
-
-    @voicemeisterset.command(aliases=["perms"])
-    async def permissions(self, ctx: commands.Context) -> None:
-        """Check that the bot has all needed permissions."""
-        if not ctx.guild:
-            return
-        required_check, optional_check, details_list = await self._check_all_perms(
-            ctx.guild, detailed=True
-        )
-        if not details_list:
-            await ctx.send(
-                info(
-                    "You don't have any VoiceMeister Sources set up! "
-                    "Set one up with `[p]voicemeisterset create` first, "
-                    "then I can check what permissions I need for it."
-                )
-            )
-            return
-
-        if (
-            len(details_list) > 1
-            and not ctx.channel.permissions_for(ctx.guild.me).add_reactions
-        ):
-            await ctx.send(
-                error(
-                    "Since you have multiple VoiceMeister Sources, "
-                    'I need the "Add Reactions" permission to display permission information.'
-                )
-            )
-            return
-
-        if not required_check:
-            await ctx.send(
-                error(
-                    "It looks like I am missing one or more required permissions. "
-                    "Until I have them, the VoiceMeister Source(s) in question will not function properly."
-                    "\n\n"
-                    "The easiest way of fixing this is just giving me these permissions as part of my server role, "
-                    "otherwise you will need to give me these permissions on the VoiceMeister Source and destination "
-                    "category, as specified below."
-                )
-            )
-        elif not optional_check:
-            await ctx.send(
-                warning(
-                    "It looks like I am missing one or more optional permissions. "
-                    "All VoiceMeisters will work, however some extra features may not work. "
-                    "\n\n"
-                    "The easiest way of fixing this is just giving me these permissions as part of my server role, "
-                    "otherwise you will need to give me these permissions on the destination category, "
-                    "as specified below."
-                    "\n\n"
-                    "In the case of optional permissions, any permission on the VoiceMeister Source will be copied to "
-                    "the created VoiceMeister, as if we were cloning the VoiceMeister Source. In order for this to work, "
-                    "I need each permission to be allowed in the destination category (or server). "
-                    "If it isn't allowed, I will skip copying that permission over."
-                )
-            )
-        else:
-            await ctx.send(success("Everything looks good here!"))
-
-        if len(details_list) > 1:
-            if (
-                ctx.channel.permissions_for(ctx.guild.me).add_reactions
-                and ctx.channel.permissions_for(ctx.guild.me).read_message_history
-            ):
-                await menu(ctx, details_list, DEFAULT_CONTROLS, timeout=60.0)
-            else:
-                for details in details_list:
-                    await ctx.send(details)
-        else:
-            await ctx.send(details_list[0])
-
-    @voicemeisterset.group()
-    async def access(self, ctx: commands.Context) -> None:
-        """Control access to all VoiceMeisters.
-
-        Roles that are considered "admin" or "moderator" are
-        set up with the commands `[p]set addadminrole`
-        and `[p]set addmodrole` (plus the remove commands too)
-        """
-
-    @access.command(name="admin")
-    async def access_admin(self, ctx: commands.Context) -> None:
-        """Allow Admins to join locked/private VoiceMeisters."""
-        if not ctx.guild:
-            return
-        admin_access = not await self.config.guild(ctx.guild).admin_access()
-        await self.config.guild(ctx.guild).admin_access.set(admin_access)
-        await ctx.send(
-            success(
-                f"Admins are {'now' if admin_access else 'no longer'} able to join (new) locked/private VoiceMeisters."
-            )
-        )
-
-    @access.command(name="mod")
-    async def access_mod(self, ctx: commands.Context) -> None:
-        """Allow Moderators to join locked/private VoiceMeisters."""
-        if not ctx.guild:
-            return
-        mod_access = not await self.config.guild(ctx.guild).mod_access()
-        await self.config.guild(ctx.guild).mod_access.set(mod_access)
-        await ctx.send(
-            success(
-                f"Moderators are {'now' if mod_access else 'no longer'} able to join (new) locked/private VoiceMeisters."
-            )
-        )
-
-    @access.group(name="bot")
-    async def access_bot(self, ctx: commands.Context) -> None:
-        """Automatically allow bots into VoiceMeisters.
-
-        The VoiceMeister Owner is able to freely allow or deny these roles as they see fit.
-        """
-
-    @access_bot.command(name="add")
-    async def access_bot_add(self, ctx: commands.Context, role: discord.Role) -> None:
-        """Allow a bot role into every VoiceMeister."""
-        if not ctx.guild:
-            return
-        bot_role_ids = await self.config.guild(ctx.guild).bot_access()
-        if role.id not in bot_role_ids:
-            bot_role_ids.append(role.id)
-            await self.config.guild(ctx.guild).bot_access.set(bot_role_ids)
-
-        role_list = "\n".join(
-            [role.name for role in await self.get_bot_roles(ctx.guild)]
-        )
-        await ctx.send(
-            success(
-                f"VoiceMeisters will now allow the following bot roles in by default:\n\n{role_list}"
-            )
-        )
-
-    @access_bot.command(name="remove", aliases=["delete", "del"])
-    async def access_bot_remove(
-        self, ctx: commands.Context, role: discord.Role
-    ) -> None:
-        """Disallow a bot role from joining every VoiceMeister."""
-        if not ctx.guild:
-            return
-        bot_role_ids = await self.config.guild(ctx.guild).bot_access()
-        if role.id in bot_role_ids:
-            bot_role_ids.remove(role.id)
-            await self.config.guild(ctx.guild).bot_access.set(bot_role_ids)
-
-        if bot_role_ids:
-            role_list = "\n".join(
-                [role.name for role in await self.get_bot_roles(ctx.guild)]
-            )
-            await ctx.send(
-                success(
-                    f"VoiceMeisters will now allow the following bot roles in by default:\n\n{role_list}"
-                )
-            )
-        else:
-            await ctx.send(
-                success("New VoiceMeisters will not allow any extra bot roles in.")
-            )
+        await self.settings.show_settings(ctx)
 
     @voicemeisterset.command(aliases=["enable", "add"])
     async def create(
