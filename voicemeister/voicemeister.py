@@ -1,7 +1,7 @@
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 import discord
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 
 MAX_CHANNEL_NAME_LENGTH = 100
@@ -9,23 +9,22 @@ MAX_BITRATE = 96  # Maximum bitrate in kbps
 DEFAULT_CHANNEL_NAME = "New Voice Channel"
 
 DEFAULT_EMOJIS = {
-    "lock": "<:Locked:1279848927587467447>",  # Locked
-    "unlock": "<:Unlocked:1279848944570073109>",  # Unlocked
-    "limit": "<:People:1279848931043573790>",  # People
-    "hide": "<:Crossed_Eye:1279848957475819723>",  # Crossed_Eye
-    "unhide": "<:Eye:1279848986299076728>",  # Eye
-    "invite": "<:Invite:1279857570634272818>",  # Invite/Request Join
-    "ban": "<:Hammer:1279848987922530365>",  # Hammer
-    "permit": "<:Check_Mark:1279848948491747411>",  # Check_Mark
-    "rename": "<:Pensil:1279848929126645879>",  # Pensil
-    "bitrate": "<:Headphones:1279848994327232584>",  # Headphones
-    "region": "<:Servers:1279848940786810891>",  # Servers
-    "claim": "<:Crown:1279848977658810451>",  # Crown
-    "transfer": "<:Person_With_Rotation:1279848936752021504>",  # Person_With_Rotation
-    "info": "<:Information:1279848926383702056>",  # Info
-    "delete": "<:TrashCan:1279875131136806993>",  # TrashCan
-    "create_text": "<:SpeachBubble:1279890650535428198>",  # Speech Bubble
-    "reset": "<:reset:1280057459146362880>"  # Reset
+    "lock": "🔒",
+    "unlock": "🔓",
+    "limit": "🔊",
+    "hide": "👁 ️",
+    "unhide": "👥",
+    "invite": "📨",
+    "ban": "🔨",
+    "permit": "✅",
+    "rename": "✏️",
+    "bitrate": "🎧",
+    "region": "🌍",
+    "claim": "👑",
+    "transfer": "🔄",
+    "info": "ℹ️",
+    "delete": "🗑 ️",
+    "create_text": "💬",
 }
 
 REGION_OPTIONS = [
@@ -87,7 +86,7 @@ class VoiceMeister(Cog):
     @commands.hybrid_command(name="controlpanel", with_app_command=True)
     async def control_panel(self, ctx: commands.Context):
         """Open the voice control panel."""
-        view = VoiceMeisterView(bot=self.bot, author=ctx.author)
+        view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Control Panel",
             description="\n".join([
@@ -368,7 +367,7 @@ class VoiceMeister(Cog):
 # View Class for Control Panel
 
 class VoiceMeisterView(Buttons):
-    def __init__(self, bot: Red, author: discord.Member):
+    def __init__(self, bot: Red, author: discord.Member, infinity: bool = True):
         buttons = [
             {"emoji": DEFAULT_EMOJIS["lock"], "custom_id": "lock"},
             {"emoji": DEFAULT_EMOJIS["unlock"], "custom_id": "unlock"},
@@ -387,7 +386,7 @@ class VoiceMeisterView(Buttons):
             {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete"},
             {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text"},
         ]
-        super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click)
+        super().__init__(buttons=buttons, members=[author.id] + list(bot.owner_ids), function=self.on_button_click, infinity=infinity)
         self.bot = bot
         self.author = author
 
@@ -602,3 +601,6 @@ class RegionSelectView(Dropdown):
             await interaction.followup.send(f"Region changed to {selected_region if rtc_region else 'Automatic'}.", ephemeral=True)
         except Exception as e:
             await cog.handle_error(interaction, e)
+
+async def setup(bot: Red):
+    await bot.add_cog(VoiceMeister(bot))
