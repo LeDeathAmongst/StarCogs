@@ -1,7 +1,11 @@
-from redbot.core import commands, Config
-from redbot.core.bot import Red
+from abc import ABC
+from contextlib import suppress
+from typing import Any, ClassVar
+
 import discord
-from typing import Optional, Dict
+from redbot.core import Config, commands
+from redbot.core.bot import Red
+from redbot.core.utils.chat_formatting import humanize_timedelta, success, error, warning
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 import datetime
 
@@ -14,17 +18,17 @@ DEFAULT_EMOJIS = {
     "unlock": "<:Unlocked:1279848944570073109>",
     "limit": "<:People:1279848931043573790>",
     "hide": "<:Crossed_Eye:1279848957475819723>",
-    "unhide": "<:Eye:1279848986299076728>",  
+    "unhide": "<:Eye:1279848986299076728>",
     "invite": "<:Invite:1279857570634272818>",
-    "ban": "<:Hammer:1279848987922530365>",  
+    "ban": "<:Hammer:1279848987922530365>",
     "permit": "<:Check_Mark:1279848948491747411>",
-    "rename": "<:Pensil:1279848929126645879>",  
+    "rename": "<:Pensil:1279848929126645879>",
     "bitrate": "<:Headphones:1279848994327232584>",
     "region": "<:Servers:1279848940786810891>",
-    "claim": "<:Crown:1279848977658810451>",  
+    "claim": "<:Crown:1279848977658810451>",
     "transfer": "<:Person_With_Rotation:1279848936752021504>",
     "info": "<:Information:1279848926383702056>",
-    "delete": "<:TrashCan:1279875131136806993>", 
+    "delete": "<:TrashCan:1279875131136806993>",
     "create_text": "<:SpeachBubble:1279890650535428198>"
 }
 
@@ -64,40 +68,38 @@ class VoiceMeister(Cog):
             "linked_text_channels": {}
         }
         self.config.register_guild(**default_guild)
-        self.settings = Settings(
-            bot=self.bot,
-            cog=self,
-            config=self.config,
-            group=Config.GUILD,
-            settings={
-                "lobby_channel": {
-                    "path": ["lobby_channel"],
-                    "converter": discord.VoiceChannel,
-                    "description": "Set the lobby channel for join-to-create.",
-                },
-                "category": {
-                    "path": ["category"],
-                    "converter": discord.CategoryChannel,
-                    "description": "Set the category for creating temporary voice channels.",
-                }
-            }
-        )
 
-    @commands.hybrid_command(name="setlobby", with_app_command=True)
+    @commands.group(name="voicemeisterset", aliases=["vmset"], invoke_without_command=True)
     @commands.guild_only()
-    @commands.admin_or_permissions(manage_channels=True)
+    @commands.admin_or_permissions(manage_guild=True)
+    async def voicemeisterset(self, ctx: commands.Context):
+        """Configure the VoiceMeister settings."""
+        await ctx.send_help(ctx.command)
+
+    @voicemeisterset.command(name="settings")
+    async def vmset_settings(self, ctx: commands.Context):
+        """Display current settings."""
+        guild_data = await self.config.guild(ctx.guild).all()
+        lobby_channel = guild_data["lobby_channel"]
+        category = guild_data["category"]
+        lobby_channel_name = self.bot.get_channel(lobby_channel).name if lobby_channel else "Not Set"
+        category_name = self.bot.get_channel(category).name if category else "Not Set"
+        embed = discord.Embed(title="VoiceMeister Settings", color=discord.Color.blue())
+        embed.add_field(name="Lobby Channel", value=lobby_channel_name)
+        embed.add_field(name="Category", value=category_name)
+        await ctx.send(embed=embed)
+
+    @voicemeisterset.command(name="setlobby")
     async def set_lobby(self, ctx: commands.Context, channel: discord.VoiceChannel):
         """Set the lobby channel for join-to-create."""
         await self.config.guild(ctx.guild).lobby_channel.set(channel.id)
-        await ctx.send(f"Lobby channel set to {channel.name}.", ephemeral=True)
+        await ctx.send(success(f"Lobby channel set to {channel.name}."))
 
-    @commands.hybrid_command(name="setcategory", with_app_command=True)
-    @commands.guild_only()
-    @commands.admin_or_permissions(manage_channels=True)
+    @voicemeisterset.command(name="setcategory")
     async def set_category(self, ctx: commands.Context, category: discord.CategoryChannel):
         """Set the category for creating temporary voice channels."""
         await self.config.guild(ctx.guild).category.set(category.id)
-        await ctx.send(f"Category set to {category.name}.", ephemeral=True)
+        await ctx.send(success(f"Category set to {category.name}."))
 
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
@@ -105,13 +107,35 @@ class VoiceMeister(Cog):
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
-            description="Lock | Unlock | Unhide | Hide\n"
-                        "Limit | Ban | Permit | Claim\n"
-                        "Transfer | Info | Rename | Headphones\n"
-                        "Region | Chat | Delete | Invite",
+            description=self._fancy_interface_description(),
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed, view=view, ephemeral=True)
+
+    def _fancy_interface_description(self) -> str:
+        """Generate a fancy interface description with boxes and emojis."""
+        actions = [
+            ("lock", "Lock"),
+            ("unlock", "Unlock"),
+            ("hide", "Unhide"),
+            ("hide", "Hide"),
+            ("limit", "Limit"),
+            ("ban", "Ban"),
+            ("permit", "Permit"),
+            ("claim", "Claim"),
+            ("transfer", "Transfer"),
+            ("info", "Info"),
+            ("rename", "Rename"),
+            ("bitrate", "Bitrate"),
+            ("region", "Region"),
+            ("create_text", "Chat"),
+            ("delete", "Delete"),
+            ("invite", "Invite")
+        ]
+        description = ""
+        for emoji, name in actions:
+            description += f"**{DEFAULT_EMOJIS[emoji]} {name}**\n"
+        return description
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
