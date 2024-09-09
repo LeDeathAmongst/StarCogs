@@ -7,26 +7,25 @@ import datetime
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
-DEFAULT_CHANNEL_NAME = "New Voice Channel"
+DEFAULT_CHANNEL_NAME = "Voice Legion"
 
 DEFAULT_EMOJIS = {
-    "lock": "<:Locked:1279848927587467447>",  # Locked
-    "unlock": "<:Unlocked:1279848944570073109>",  # Unlocked
-    "limit": "<:People:1279848931043573790>",  # People
-    "hide": "<:Crossed_Eye:1279848957475819723>",  # Crossed_Eye
-    "unhide": "<:Eye:1279848986299076728>",  # Eye
-    "invite": "<:Invite:1279857570634272818>",  # Invite/Request Join
-    "ban": "<:Hammer:1279848987922530365>",  # Hammer
-    "permit": "<:Check_Mark:1279848948491747411>",  # Check_Mark
-    "rename": "<:Pensil:1279848929126645879>",  # Pensil
-    "bitrate": "<:Headphones:1279848994327232584>",  # Headphones
-    "region": "<:Servers:1279848940786810891>",  # Servers
-    "claim": "<:Crown:1279848977658810451>",  # Crown
-    "transfer": "<:Person_With_Rotation:1279848936752021504>",  # Person_With_Rotation
-    "info": "<:Information:1279848926383702056>",  # Info
-    "delete": "<:TrashCan:1279875131136806993>",  # TrashCan
-    "create_text": "<:SpeachBubble:1279890650535428198>",  # Speech Bubble
-    "reset": "<:reset:1280057459146362880>"  # Reset
+    "lock": "<:Locked:1279848927587467447>",
+    "unlock": "<:Unlocked:1279848944570073109>",
+    "limit": "<:People:1279848931043573790>",
+    "hide": "<:Crossed_Eye:1279848957475819723>",
+    "unhide": "<:Eye:1279848986299076728>",  
+    "invite": "<:Invite:1279857570634272818>",
+    "ban": "<:Hammer:1279848987922530365>",  
+    "permit": "<:Check_Mark:1279848948491747411>",
+    "rename": "<:Pensil:1279848929126645879>",  
+    "bitrate": "<:Headphones:1279848994327232584>",
+    "region": "<:Servers:1279848940786810891>",
+    "claim": "<:Crown:1279848977658810451>",  
+    "transfer": "<:Person_With_Rotation:1279848936752021504>",
+    "info": "<:Information:1279848926383702056>",
+    "delete": "<:TrashCan:1279875131136806993>", 
+    "create_text": "<:SpeachBubble:1279890650535428198>"
 }
 
 REGION_OPTIONS = [
@@ -100,30 +99,16 @@ class VoiceMeister(Cog):
         await self.config.guild(ctx.guild).category.set(category.id)
         await ctx.send(f"Category set to {category.name}.", ephemeral=True)
 
-    @commands.hybrid_command(name="controlpanel", with_app_command=True)
-    async def control_panel(self, ctx: commands.Context):
-        """Open the voice control panel."""
+    @commands.hybrid_command(name="interface", with_app_command=True)
+    async def interface(self, ctx: commands.Context):
+        """Open the voice interface."""
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
-            title="Voice Control Panel",
-            description="\n".join([
-                f"{DEFAULT_EMOJIS['lock']} Lock",
-                f"{DEFAULT_EMOJIS['unlock']} Unlock",
-                f"{DEFAULT_EMOJIS['limit']} User Limit",
-                f"{DEFAULT_EMOJIS['hide']} Hide",
-                f"{DEFAULT_EMOJIS['unhide']} Unhide",
-                f"{DEFAULT_EMOJIS['invite']} Invite",
-                f"{DEFAULT_EMOJIS['ban']} Ban",
-                f"{DEFAULT_EMOJIS['permit']} Permit",
-                f"{DEFAULT_EMOJIS['rename']} Rename",
-                f"{DEFAULT_EMOJIS['bitrate']} Bitrate",
-                f"{DEFAULT_EMOJIS['region']} Region",
-                f"{DEFAULT_EMOJIS['claim']} Claim",
-                f"{DEFAULT_EMOJIS['transfer']} Transfer",
-                f"{DEFAULT_EMOJIS['info']} Info",
-                f"{DEFAULT_EMOJIS['delete']} Delete Channel",
-                f"{DEFAULT_EMOJIS['create_text']} Create Text Channel",
-            ]),
+            title="Voice Interface",
+            description="Lock | Unlock | Unhide | Hide\n"
+                        "Limit | Ban | Permit | Claim\n"
+                        "Transfer | Info | Rename | Headphones\n"
+                        "Region | Chat | Delete | Invite",
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed, view=view, ephemeral=True)
@@ -450,22 +435,39 @@ class VoiceMeisterView(Buttons):
         if handler:
             voice_channel = self.bot.get_cog("VoiceMeister")._get_current_voice_channel(interaction.user)
             if voice_channel:
-                await handler(interaction, voice_channel)
+                owners = await self.bot.get_cog("VoiceMeister").config.guild(voice_channel.guild).owners()
+                owner_id = owners.get(str(voice_channel.id))
+                if interaction.data["custom_id"] == "info" or interaction.user.id == owner_id:
+                    await handler(interaction, voice_channel)
+                else:
+                    await interaction.response.send_message("You are not the owner of this channel.", ephemeral=True)
 
     async def handle_lock(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").locked(interaction, channel)
+        if channel.overwrites_for(interaction.guild.default_role).connect is False:
+            await interaction.response.send_message("The channel is already locked.", ephemeral=True)
+        else:
+            await self.bot.get_cog("VoiceMeister").locked(interaction, channel)
 
     async def handle_unlock(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").unlock(interaction, channel)
+        if channel.overwrites_for(interaction.guild.default_role).connect is True:
+            await interaction.response.send_message("The channel is already unlocked.", ephemeral=True)
+        else:
+            await self.bot.get_cog("VoiceMeister").unlock(interaction, channel)
 
     async def handle_user_limit(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await interaction.response.send_modal(SetUserLimitModal(self.bot.get_cog("VoiceMeister"), channel))
 
     async def handle_hide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "private", channel)
+        if channel.overwrites_for(interaction.guild.default_role).view_channel is False:
+            await interaction.response.send_message("The channel is already hidden.", ephemeral=True)
+        else:
+            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "private", channel)
 
     async def handle_unhide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "public", channel)
+        if channel.overwrites_for(interaction.guild.default_role).view_channel is True:
+            await interaction.response.send_message("The channel is already visible.", ephemeral=True)
+        else:
+            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "public", channel)
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         invite = await channel.create_invite(max_uses=1, unique=True)
@@ -487,7 +489,12 @@ class VoiceMeisterView(Buttons):
         await self.bot.get_cog("VoiceMeister").change_region(interaction, channel)
 
     async def handle_claim(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").claim(interaction, channel)
+        owners = await self.bot.get_cog("VoiceMeister").config.guild(channel.guild).owners()
+        current_owner_id = owners.get(str(channel.id))
+        if current_owner_id == interaction.user.id:
+            await interaction.response.send_message("You already own this channel.", ephemeral=True)
+        else:
+            await self.bot.get_cog("VoiceMeister").claim(interaction, channel)
 
     async def handle_transfer(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await interaction.response.send_message("Select a member to transfer ownership to.", view=TransferOwnershipSelect(self.bot.get_cog("VoiceMeister"), channel), ephemeral=True)
