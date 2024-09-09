@@ -4,8 +4,11 @@ import discord
 from redbot.core import Config, checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_timedelta, success, error, warning, info
+from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
+from .star_lib import Perms, SettingDisplay
 import datetime
+import asyncio
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
@@ -53,6 +56,8 @@ class VoiceMeister(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        self.config.init_custom("VOICEMEISTER_SOURCE", 2)
+        self.config.register_custom("VOICEMEISTER_SOURCE", default={})
         default_guild = {
             "lobby_channel": None,
             "category": None,
@@ -66,6 +71,50 @@ class VoiceMeister(Cog):
             "linked_text_channels": {}
         }
         self.config.register_guild(**default_guild)
+
+        self.settings = Settings(
+            bot=bot,
+            cog=self,
+            config=None,  # Replace with actual config if needed
+            group="guild",
+            settings={
+                "lobby_channel": {
+                    "path": ["lobby_channel"],
+                    "converter": int,
+                    "command_name": "lobbychannel",
+                    "label": "Lobby Channel",
+                    "description": "Set the lobby channel for voice channel creation.",
+                },
+                "category": {
+                    "path": ["category"],
+                    "converter": int,
+                    "command_name": "category",
+                    "label": "Category",
+                    "description": "Set the category for temporary voice channels.",
+                },
+                "temp_channels": {
+                    "path": ["temp_channels"],
+                    "converter": dict,
+                    "command_name": "tempchannels",
+                    "label": "Temporary Channels",
+                    "description": "Manage temporary channels.",
+                },
+                "owners": {
+                    "path": ["owners"],
+                    "converter": dict,
+                    "command_name": "owners",
+                    "label": "Channel Owners",
+                    "description": "Manage channel ownership.",
+                },
+                "linked_text_channels": {
+                    "path": ["linked_text_channels"],
+                    "converter": dict,
+                    "command_name": "linkedtextchannels",
+                    "label": "Linked Text Channels",
+                    "description": "Manage linked text channels.",
+                },
+            }
+        )
 
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
@@ -195,7 +244,7 @@ class VoiceMeister(Cog):
             owners = await self.config.guild(channel.guild).owners()
             current_owner_id = owners.get(str(channel.id))
 
-            if current_owner_id is None or self._has_override_permissions(interaction.user, owners):
+            if current_owner_id is None or self._has_override_permissions(interaction.user):
                 owners[str(channel.id)] = interaction.user.id
                 await self.config.guild(channel.guild).owners.set(owners)
                 await channel.edit(name=f"{interaction.user.display_name}'s Channel")
@@ -253,26 +302,6 @@ class VoiceMeister(Cog):
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
                 await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
-            elif action == "lock":
-                await channel.set_permissions(interaction.guild.default_role, connect=False)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
-                await interaction.response.send_message(content="The AutoRoom is now locked.", ephemeral=True)
-            elif action == "unlock":
-                await channel.set_permissions(interaction.guild.default_role, connect=True)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=True)
-                await interaction.response.send_message(content="The AutoRoom is now unlocked.", ephemeral=True)
-            elif action == "private":
-                await channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, view_channel=False)
-                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
-            elif action == "public":
-                await channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, view_channel=True)
-                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
             else:
                 await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
@@ -326,7 +355,7 @@ class VoiceMeister(Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
-    def _has_override_permissions(self, user: discord.Member, owners: dict) -> bool:
+    def _has_override_permissions(self, user: discord.Member) -> bool:
         """Check if the user has override permissions."""
         if user.guild_permissions.administrator or user.id == user.guild.owner_id:
             return True
@@ -376,78 +405,74 @@ class VoiceMeister(Cog):
         banned_words = ["explicit_word1", "explicit_word2", "racist_word1"]
         return not any(banned_word in name.lower() for banned_word in banned_words)
 
-def check_perms_source_dest(
-    self,
-    source_channel: discord.VoiceChannel,
-    dest_category: discord.CategoryChannel,
-    with_manage_roles_guild: bool = False,
-    with_legacy_text_channel: bool = False,
-    with_optional_clone_perms: bool = False,
-    detailed: bool = False
-) -> Tuple[bool, bool, str]:
-    """Check permissions for the source and destination channels."""
-    # Define required and optional permissions
-    required_perms = {
-        "view_channel": True,
-        "connect": True,
-        "speak": True,
-        "move_members": True,
-        "manage_channels": True,
-        "create_instant_invite": True
-    }
-    optional_perms = {
-        "manage_roles": with_manage_roles_guild,
-        "send_messages": with_legacy_text_channel,
-        "read_message_history": with_legacy_text_channel
-    }
-    if with_optional_clone_perms:
-        optional_perms.update({
+    def check_perms_source_dest(
+        self,
+        source_channel: discord.VoiceChannel,
+        dest_category: discord.CategoryChannel,
+        with_manage_roles_guild: bool = False,
+        with_legacy_text_channel: bool = False,
+        with_optional_clone_perms: bool = False,
+        detailed: bool = False
+    ) -> Tuple[bool, bool, str]:
+        """Check permissions for the source and destination channels."""
+        # Define required and optional permissions
+        required_perms = {
             "view_channel": True,
             "connect": True,
             "speak": True,
             "move_members": True,
             "manage_channels": True,
             "create_instant_invite": True
-        })
+        }
+        optional_perms = {
+            "manage_roles": with_manage_roles_guild,
+            "send_messages": with_legacy_text_channel,
+            "read_message_history": with_legacy_text_channel
+        }
+        if with_optional_clone_perms:
+            optional_perms.update({
+                "view_channel": True,
+                "connect": True,
+                "speak": True,
+                "move_members": True,
+                "manage_channels": True,
+                "create_instant_invite": True
+            })
 
-    def check_permissions(channel: discord.abc.GuildChannel, perms: dict) -> bool:
-        permissions = channel.permissions_for(channel.guild.me)
-        # If the bot has Administrator, it has all permissions
-        if permissions.administrator:
-            return True
-        return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
+        def check_permissions(channel: discord.abc.GuildChannel, perms: dict) -> bool:
+            permissions = channel.permissions_for(channel.guild.me)
+            # If the bot has Administrator, it has all permissions
+            if permissions.administrator:
+                return True
+            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
 
-    # Check permissions for the source and destination
-    source_required = check_permissions(source_channel, required_perms)
-    dest_required = check_permissions(dest_category, required_perms)
-    source_optional = check_permissions(source_channel, optional_perms)
-    dest_optional = check_permissions(dest_category, optional_perms)
+        # Check permissions for the source and destination
+        source_required = check_permissions(source_channel, required_perms)
+        dest_required = check_permissions(dest_category, required_perms)
+        source_optional = check_permissions(source_channel, optional_perms)
+        dest_optional = check_permissions(dest_category, optional_perms)
 
-    # Determine if all required and optional permissions are met
-    required_check = source_required and dest_required
-    optional_check = source_optional and dest_optional
+        # Determine if all required and optional permissions are met
+        required_check = source_required and dest_required
+        optional_check = source_optional and dest_optional
 
-    # Generate a detailed report if needed
-    details = ""
-    if detailed:
-        missing_required = [perm for perm, value in required_perms.items() if not value]
-        missing_optional = [perm for perm, value in optional_perms.items() if not value]
-        details = (
-            f"Missing required permissions: {', '.join(missing_required)}\n"
-            f"Missing optional permissions: {', '.join(missing_optional)}"
-        )
+        # Generate a detailed report if needed
+        details = ""
+        if detailed:
+            missing_required = [perm for perm, value in required_perms.items() if not value]
+            missing_optional = [perm for perm, value in optional_perms.items() if not value]
+            details = (
+                f"Missing required permissions: {', '.join(missing_required)}\n"
+                f"Missing optional permissions: {', '.join(missing_optional)}"
+            )
 
-    return required_check, optional_check, details
+        return required_check, optional_check, details
 
-    @commands.group()
+    @commands.group(aliases=["vmset"])
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
     async def voicemeisterset(self, ctx: commands.Context) -> None:
         """Configure the VoiceMeister cog."""
-
-    @voicemeisterset.command()
-    async def settings(self, ctx: commands.Context) -> None:
-        """Display current settings."""
         if not ctx.guild:
             return
         server_section = SettingDisplay("Server Settings")
@@ -606,7 +631,6 @@ def check_perms_source_dest(
     @voicemeisterset.group()
     async def access(self, ctx: commands.Context) -> None:
         """Control access to all VoiceMeisters.
-
         Roles that are considered "admin" or "moderator" are
         set up with the commands `[p]set addadminrole`
         and `[p]set addmodrole` (plus the remove commands too)
@@ -641,7 +665,6 @@ def check_perms_source_dest(
     @access.group(name="bot")
     async def access_bot(self, ctx: commands.Context) -> None:
         """Automatically allow bots into VoiceMeisters.
-
         The VoiceMeister Owner is able to freely allow or deny these roles as they see fit.
         """
 
@@ -689,6 +712,11 @@ def check_perms_source_dest(
             await ctx.send(
                 success("New VoiceMeisters will not allow any extra bot roles in.")
             )
+
+    @voicemeisterset.command()
+    async def settings(self, ctx: commands.Context) -> None:
+        """Display current settings."""
+        await self.settings.show_settings(ctx)
 
     @voicemeisterset.command(aliases=["enable", "add"])
     async def create(
