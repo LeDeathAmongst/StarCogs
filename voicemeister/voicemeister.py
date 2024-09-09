@@ -6,6 +6,7 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_timedelta, success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
+from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
 
