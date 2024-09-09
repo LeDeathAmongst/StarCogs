@@ -9,22 +9,23 @@ MAX_BITRATE = 96  # Maximum bitrate in kbps
 DEFAULT_CHANNEL_NAME = "New Voice Channel"
 
 DEFAULT_EMOJIS = {
-    "lock": "🔒",
-    "unlock": "🔓",
-    "limit": "🔊",
-    "hide": "👁 ️",
-    "unhide": "👥",
-    "invite": "📨",
-    "ban": "🔨",
-    "permit": "✅",
-    "rename": "✏️",
-    "bitrate": "🎧",
-    "region": "🌍",
-    "claim": "👑",
-    "transfer": "🔄",
-    "info": "ℹ️",
-    "delete": "🗑 ️",
-    "create_text": "💬",
+    "lock": "<:Locked:1279848927587467447>",  # Locked
+    "unlock": "<:Unlocked:1279848944570073109>",  # Unlocked
+    "limit": "<:People:1279848931043573790>",  # People
+    "hide": "<:Crossed_Eye:1279848957475819723>",  # Crossed_Eye
+    "unhide": "<:Eye:1279848986299076728>",  # Eye
+    "invite": "<:Invite:1279857570634272818>",  # Invite/Request Join
+    "ban": "<:Hammer:1279848987922530365>",  # Hammer
+    "permit": "<:Check_Mark:1279848948491747411>",  # Check_Mark
+    "rename": "<:Pensil:1279848929126645879>",  # Pensil
+    "bitrate": "<:Headphones:1279848994327232584>",  # Headphones
+    "region": "<:Servers:1279848940786810891>",  # Servers
+    "claim": "<:Crown:1279848977658810451>",  # Crown
+    "transfer": "<:Person_With_Rotation:1279848936752021504>",  # Person_With_Rotation
+    "info": "<:Information:1279848926383702056>",  # Info
+    "delete": "<:TrashCan:1279875131136806993>",  # TrashCan
+    "create_text": "<:SpeachBubble:1279890650535428198>",  # Speech Bubble
+    "reset": "<:reset:1280057459146362880>"  # Reset
 }
 
 REGION_OPTIONS = [
