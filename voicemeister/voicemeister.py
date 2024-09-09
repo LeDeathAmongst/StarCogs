@@ -436,10 +436,10 @@ class VoiceMeisterView(Buttons):
         await interaction.response.send_message(content=f"Here is your invite to the voice channel: {invite.url}", ephemeral=True)
 
     async def handle_ban(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="deny"))
+        await interaction.response.send_message("Select a member to ban.", view=DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="deny"), ephemeral=True)
 
     async def handle_permit(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await interaction.response.send_modal(DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="allow"))
+        await interaction.response.send_message("Select a member to permit.", view=DenyAllowSelect(self.bot.get_cog("VoiceMeister"), channel, action="allow"), ephemeral=True)
 
     async def handle_rename(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await interaction.response.send_modal(ChangeNameModal(self.bot.get_cog("VoiceMeister"), channel))
@@ -602,6 +602,3 @@ class RegionSelectView(Dropdown):
             await interaction.followup.send(f"Region changed to {selected_region if rtc_region else 'Automatic'}.", ephemeral=True)
         except Exception as e:
             await cog.handle_error(interaction, e)
-
-async def setup(bot: Red):
-    await bot.add_cog(VoiceMeister(bot))
