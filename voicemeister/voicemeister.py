@@ -181,7 +181,7 @@ class VoiceMeister(Cog):
             image.paste(emoji_image, (x + 30, y + 10), emoji_image)
 
             # Draw the name
-            text_width, text_height = draw.textsize(name, font=font)
+            text_width, text_height = font.getsize(name)
             draw.text(
                 (x + (box_width - text_width) / 2, y + 60),
                 name,
