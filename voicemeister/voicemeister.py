@@ -6,6 +6,9 @@ from .star_lib import Perms
 from .star_template import Template
 from Star_Utils import Cog
 import asyncio
+from .c_voicemeister import VoiceMeisterCommands
+from .c_voicemeisterset import VoiceMeisterSet
+from .vminterface import VMInterface
 
 class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
