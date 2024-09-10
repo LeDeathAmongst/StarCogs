@@ -32,8 +32,93 @@ class VMInterface:
 
     async def _generate_interface_image(self, ctx: discord.ext.commands.Context):
         """Generate an image for the interface description using Discord emojis."""
-        # Implementation for generating the image
-        pass
+        actions = [
+            ("lock", "Lock"),
+            ("unlock", "Unlock"),
+            ("hide", "Hide"),
+            ("unhide", "Unhide"),
+            ("limit", "Limit"),
+            ("ban", "Ban"),
+            ("permit", "Permit"),
+            ("claim", "Claim"),
+            ("transfer", "Transfer"),
+            ("info", "Info"),
+            ("rename", "Rename"),
+            ("bitrate", "Bitrate"),
+            ("region", "Region"),
+            ("create_text", "WIP"),
+            ("delete", "Delete"),
+            ("invite", "Invite")
+        ]
+
+        # Calculate dimensions
+        num_columns = 4
+        num_rows = (len(actions) + num_columns - 1) // num_columns
+        box_width = 100
+        box_height = 30
+        padding = 7
+        total_width = box_width * num_columns + padding * (num_columns - 1)
+        total_height = box_height * num_rows + padding * (num_rows - 1)
+
+        # Use the bot's color for the box background
+        bot_color = ctx.me.color.to_rgb()
+
+        # Create the image with a transparent background
+        image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
+
+        # Use a default font provided by Pillow
+        try:
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 14)
+        except IOError:
+            font = ImageFont.load_default()
+
+        def draw_rounded_rectangle(draw, xy, radius, fill, outline=None, width=1):
+            """Draw a rounded rectangle."""
+            x1, y1, x2, y2 = xy
+            draw.rectangle([x1 + radius, y1, x2 - radius, y2], fill=fill)
+            draw.rectangle([x1, y1 + radius, x2, y2 - radius], fill=fill)
+            draw.pieslice([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=fill)
+            draw.pieslice([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=fill)
+            if outline:
+                draw.arc([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=outline, width=width)
+                draw.arc([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=outline, width=width)
+                draw.line([x1 + radius, y1, x2 - radius, y1], fill=outline, width=width)
+                draw.line([x1 + radius, y2, x2 - radius, y2], fill=outline, width=width)
+                draw.line([x1, y1 + radius, x1, y2 - radius], fill=outline, width=width)
+                draw.line([x2, y1 + radius, x2, y2 - radius], fill=outline, width=width)
+
+        # Draw the boxes, emojis, and names
+        for i, (emoji_name, name) in enumerate(actions):
+            x = (i % num_columns) * (box_width + padding)
+            y = (i // num_columns) * (box_height + padding)
+
+            # Draw rounded rectangle with bot's color fill
+            draw_rounded_rectangle(draw, [x, y, x + box_width, y + box_height], radius=10, fill=bot_color, outline=bot_color, width=2)
+
+            # Fetch emoji image
+            emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
+            emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
+            response = requests.get(emoji_url)
+            emoji_image = Image.open(BytesIO(response.content)).resize((20, 20))
+            image.paste(emoji_image, (x + 5, y + (box_height - 20) // 2), emoji_image)
+
+            # Draw the name next to the emoji
+            text_bbox = font.getbbox(name)
+            text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+            draw.text(
+                (x + 30, y + (box_height - text_height) / 2),
+                name,
+                fill=(255, 255, 255),  # White text
+                font=font
+            )
+
+        # Save the image to a file
+        image.save(self.image_path, format="PNG")
 
 # View Class for Control Panel
 
