@@ -8,7 +8,7 @@ from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_lib import Perms, SettingDisplay
 from abc import ABC
-from .abc import 
+from .abc import MixinMeta
 import datetime
 import asyncio
 
