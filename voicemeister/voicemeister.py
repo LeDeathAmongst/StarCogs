@@ -72,7 +72,7 @@ class VoiceMeister(commands.Cog):
             "banned_roles": {},
             "allowed_roles": {},
             "owners": {},
-            "linked_text_channels": {}
+            "associated_text_channel": {}
         }
         self.config.register_guild(**default_guild)
 
@@ -110,8 +110,8 @@ class VoiceMeister(commands.Cog):
                     "label": "Channel Owners",
                     "description": "Manage channel ownership.",
                 },
-                "linked_text_channels": {
-                    "path": ["linked_text_channels"],
+                "associated_text_channel": {
+                    "path": ["associated_text_channel"],
                     "converter": dict,
                     "command_name": "linkedtextchannels",
                     "label": "Linked Text Channels",
@@ -240,7 +240,7 @@ class VoiceMeister(commands.Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
-        linked_channels = guild_data["linked_text_channels"]
+        linked_channels = guild_data["associated_text_channel"]
         owners = guild_data["owners"]
 
         # Check if the user has any banned role
@@ -286,7 +286,7 @@ class VoiceMeister(commands.Cog):
 
                 del owners[str(before.channel.id)]
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
-                await self.config.guild(member.guild).linked_text_channels.set(linked_channels)
+                await self.config.guild(member.guild).associated_text_channel.set(linked_channels)
                 await self.config.guild(member.guild).owners.set(owners)
             elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
                 # Transfer ownership if the owner leaves
@@ -297,6 +297,50 @@ class VoiceMeister(commands.Cog):
                     new_channel_name = f"{new_owner.display_name}'s Channel"
                     await before.channel.edit(name=new_channel_name)
                     await self.config.guild(member.guild).owners.set(owners)
+
+    async def _cleanup_voicemeisters(self) -> None:
+        """Remove non-existent VoiceMeisters from the config."""
+        await self.bot.wait_until_ready()
+        voice_channel_dict = await self.config.all_channels()
+        for voice_channel_id, voice_channel_settings in voice_channel_dict.items():
+            voice_channel = self.bot.get_channel(voice_channel_id)
+            if voice_channel:
+                if isinstance(voice_channel, discord.VoiceChannel):
+                    # Delete VoiceMeister if it is empty
+                    await self._process_voicemeister_delete(voice_channel)
+            else:
+                # VoiceMeister has already been deleted, clean up legacy text channel if it still exists
+                legacy_text_channel = await self.get_voicemeister_legacy_text_channel(
+                    voice_channel_settings["associated_text_channel"]
+                )
+                if legacy_text_channel:
+                    await legacy_text_channel.delete(
+                        reason="VoiceMeister: Associated voice channel deleted."
+                    )
+                await self.config.channel_from_id(voice_channel_id).clear()
+
+    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel) -> None:
+        """Process the deletion of an empty VoiceMeister."""
+        if len(voice_channel.members) == 0:
+            await voice_channel.delete(reason="VoiceMeister: Channel is empty.")
+            linked_channels = await self.config.guild(voice_channel.guild).associated_text_channel()
+            text_channel_id = linked_channels.pop(voice_channel.id, None)
+            if text_channel_id:
+                text_channel = voice_channel.guild.get_channel(text_channel_id)
+                if text_channel:
+                    await text_channel.delete()
+            await self.config.guild(voice_channel.guild).associated_text_channel.set(linked_channels)
+
+    async def get_voicemeister_legacy_text_channel(self, channel_id: Optional[int]) -> Optional[discord.TextChannel]:
+        """Get the legacy text channel associated with a VoiceMeister."""
+        if channel_id:
+            return self.bot.get_channel(channel_id)
+        return None
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        """Start cleanup task when the bot is ready."""
+        await self._cleanup_voicemeisters()
 
     async def locked(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Lock your VoiceMeister."""
@@ -317,7 +361,7 @@ class VoiceMeister(commands.Cog):
     async def create_text_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Create a temporary text channel linked to the voice channel."""
         try:
-            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
             if channel.id in linked_channels:
                 existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
                 if existing_text_channel:
@@ -335,7 +379,7 @@ class VoiceMeister(commands.Cog):
 
             # Log the linked text channel
             linked_channels[channel.id] = text_channel.id
-            await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+            await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
 
             await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
         except discord.errors.HTTPException as e:
@@ -365,7 +409,7 @@ class VoiceMeister(commands.Cog):
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Delete the voice channel and linked text channel."""
         try:
-            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
             text_channel_id = linked_channels.get(channel.id)
             if text_channel_id:
                 text_channel = channel.guild.get_channel(text_channel_id)
@@ -378,7 +422,7 @@ class VoiceMeister(commands.Cog):
             # Clean up the stored data
             if channel.id in linked_channels:
                 del linked_channels[channel.id]
-                await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+                await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -509,7 +553,7 @@ class VoiceMeister(commands.Cog):
 
     def get_text_channel(self, voice_channel: discord.VoiceChannel) -> Optional[discord.TextChannel]:
         """Find a text channel associated with the voice channel."""
-        linked_channels = self.config.guild(voice_channel.guild).linked_text_channels()
+        linked_channels = self.config.guild(voice_channel.guild).associated_text_channel()
         text_channel_id = linked_channels.get(voice_channel.id)
         return voice_channel.guild.get_channel(text_channel_id)
 
@@ -658,7 +702,7 @@ class VoiceMeister(commands.Cog):
     ) -> discord.TextChannel | None:
         """Get the legacy text channel associated with a VoiceMeister."""
         if isinstance(voicemeister, discord.VoiceChannel):
-            linked_channels = await self.config.guild(voicemeister.guild).linked_text_channels()
+            linked_channels = await self.config.guild(voicemeister.guild).associated_text_channel()
             text_channel_id = linked_channels.get(voicemeister.id)
             return voicemeister.guild.get_channel(text_channel_id)
         return None
@@ -1782,7 +1826,7 @@ class VoiceMeisterView(Buttons):
         """Create a temporary text channel linked to the voice channel."""
         try:
             cog = self.bot.get_cog("VoiceMeister")
-            linked_channels = await cog.config.guild(channel.guild).linked_text_channels()
+            linked_channels = await cog.config.guild(channel.guild).associated_text_channel()
 
             if channel.id in linked_channels:
                 existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
@@ -1807,7 +1851,7 @@ class VoiceMeisterView(Buttons):
 
             # Log the linked text channel
             linked_channels[channel.id] = text_channel.id
-            await cog.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+            await cog.config.guild(channel.guild).associated_text_channel.set(linked_channels)
 
             await interaction.response.send_message(
                 content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True
