@@ -151,13 +151,13 @@ class VoiceMeister(Cog):
         ]
 
     # Create a grid-like structure for better visual appeal
-        description = "```"
+        description = ""
         max_width = 4
         for i, (emoji, name) in enumerate(actions):
             if i % max_width == 0 and i != 0:
                 description += "\n"
             description += f"{DEFAULT_EMOJIS[emoji]} {name:<12}"
-        description += "```"
+        description += ""
 
         return description
 
