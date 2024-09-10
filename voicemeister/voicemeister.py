@@ -7,6 +7,8 @@ from redbot.core.utils.chat_formatting import humanize_timedelta, success, error
 from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_lib import Perms, SettingDisplay
+from abc import ABC
+from .abc import MixinMeta
 import datetime
 import asyncio
 
@@ -193,7 +195,7 @@ class VoiceMeister(Cog):
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
 
     async def locked(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Lock your AutoRoom."""
+        """Lock your VoiceMeister."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=False)
             await interaction.response.send_message(content=f"{channel.name} is now locked.", ephemeral=True)
@@ -201,7 +203,7 @@ class VoiceMeister(Cog):
             await self.handle_error(interaction, e)
 
     async def unlock(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Unlock your AutoRoom."""
+        """Unlock your VoiceMeister."""
         try:
             await channel.set_permissions(interaction.guild.default_role, connect=True)
             await interaction.response.send_message(content=f"{channel.name} is now unlocked.", ephemeral=True)
@@ -239,7 +241,7 @@ class VoiceMeister(Cog):
                 await self.handle_error(interaction, e)
 
     async def claim(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Claim ownership of the AutoRoom if there is no current owner, or override if admin/owner."""
+        """Claim ownership of the VoiceMeister if there is no current owner, or override if admin/owner."""
         try:
             owners = await self.config.guild(channel.guild).owners()
             current_owner_id = owners.get(str(channel.id))
@@ -288,7 +290,7 @@ class VoiceMeister(Cog):
             await self.handle_error(interaction, e)
 
     async def _process_allow_deny(self, interaction: discord.Interaction, action: str, channel: discord.VoiceChannel):
-        """Process allowing or denying users/roles access to the AutoRoom."""
+        """Process allowing or denying users/roles access to the VoiceMeister."""
         try:
             text_channel = self.get_text_channel(channel)
 
@@ -296,12 +298,12 @@ class VoiceMeister(Cog):
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=True)
-                await interaction.response.send_message(content="The AutoRoom is now public.", ephemeral=True)
+                await interaction.response.send_message(content="The VoiceMeister is now public.", ephemeral=True)
             elif action == "deny":
                 await channel.set_permissions(interaction.guild.default_role, connect=False)
                 if text_channel:
                     await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
-                await interaction.response.send_message(content="The AutoRoom is now private.", ephemeral=True)
+                await interaction.response.send_message(content="The VoiceMeister is now private.", ephemeral=True)
             else:
                 await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
@@ -369,12 +371,12 @@ class VoiceMeister(Cog):
         return None
 
     @staticmethod
-    def _get_autoroom_type(autoroom: discord.VoiceChannel, role: discord.Role) -> str:
-        """Get the type of access a role has in an AutoRoom (public, locked, private, etc)."""
+    def _get_voicemeister_type(voicemeister: discord.VoiceChannel, role: discord.Role) -> str:
+        """Get the type of access a role has in an VoiceMeister (public, locked, private, etc)."""
         view_channel = role.permissions.view_channel
         connect = role.permissions.connect
-        if role in autoroom.overwrites:
-            overwrites_allow, overwrites_deny = autoroom.overwrites[role].pair()
+        if role in voicemeister.overwrites:
+            overwrites_allow, overwrites_deny = voicemeister.overwrites[role].pair()
             if overwrites_allow.view_channel:
                 view_channel = True
             if overwrites_allow.connect:
@@ -468,11 +470,161 @@ class VoiceMeister(Cog):
 
         return required_check, optional_check, details
 
-    @commands.group(aliases=["vmset"])
+class VoiceMeisterSetCommands(MixinMeta, commands.Cog):
+    """The voicemeisterset command."""
+
+    def __init__(self, bot: Red):
+        self.bot = bot
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        # Initialize any other necessary attributes here
+
+    def get_template_data(self, member: discord.Member | discord.User) -> dict[str, str]:
+        """Retrieve template data for a member or user."""
+        return {
+            "username": member.display_name,
+            "mention": member.mention,
+            "id": str(member.id),
+            "game": member.activity.name if member.activity else "No Game"
+        }
+
+    def format_template_room_name(self, template: str, data: dict, num: int = 1) -> str:
+        """Format a room name based on a template."""
+        try:
+            formatted_name = template.format(**data)
+            if num > 1:
+                formatted_name += f" ({num})"
+            return formatted_name
+        except KeyError as e:
+            raise RuntimeError(f"Template variable {e} not found.")
+
+    async def is_admin_or_admin_role(self, who: discord.Role | discord.Member) -> bool:
+        """Check if a role or member is an admin."""
+        if isinstance(who, discord.Member):
+            return who.guild_permissions.administrator
+        elif isinstance(who, discord.Role):
+            return any(role.permissions.administrator for role in who.guild.roles if role.id == who.id)
+        return False
+
+    async def is_mod_or_mod_role(self, who: discord.Role | discord.Member) -> bool:
+        """Check if a role or member is a moderator."""
+        if isinstance(who, discord.Member):
+            return who.guild_permissions.manage_guild
+        elif isinstance(who, discord.Role):
+            return any(role.permissions.manage_guild for role in who.guild.roles if role.id == who.id)
+        return False
+
+    def check_perms_source_dest(
+        self,
+        voicemeister_source: discord.VoiceChannel,
+        category_dest: discord.CategoryChannel,
+        *,
+        with_manage_roles_guild: bool = False,
+        with_legacy_text_channel: bool = False,
+        with_optional_clone_perms: bool = False,
+        detailed: bool = False,
+    ) -> tuple[bool, bool, str | None]:
+        """Check permissions for source and destination channels."""
+        required_perms = {
+            "manage_channels": True,
+            "connect": True,
+            "speak": True
+        }
+        optional_perms = {
+            "manage_roles": with_manage_roles_guild,
+            "send_messages": with_legacy_text_channel,
+            "read_message_history": with_legacy_text_channel
+        }
+
+        def has_permissions(channel, perms):
+            permissions = channel.permissions_for(channel.guild.me)
+            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
+
+        source_required = has_permissions(voicemeister_source, required_perms)
+        dest_required = has_permissions(category_dest, required_perms)
+        source_optional = has_permissions(voicemeister_source, optional_perms)
+        dest_optional = has_permissions(category_dest, optional_perms)
+
+        required_check = source_required and dest_required
+        optional_check = source_optional and dest_optional
+
+        details = None
+        if detailed:
+            details = "Missing required permissions: " + ", ".join(
+                perm for perm, value in required_perms.items() if not value
+            )
+
+        return required_check, optional_check, details
+
+    async def get_all_voicemeister_source_configs(
+        self, guild: discord.Guild
+    ) -> dict[int, dict[str, Any]]:
+        """Get all VoiceMeister source configurations."""
+        return await self.config.custom("AUTOROOM_SOURCE", str(guild.id)).all()
+
+    async def get_voicemeister_source_config(
+        self, voicemeister_source: discord.VoiceChannel | discord.abc.GuildChannel | None
+    ) -> dict[str, Any] | None:
+        """Get a specific VoiceMeister source configuration."""
+        if voicemeister_source:
+            return await self.config.custom("AUTOROOM_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
+        return None
+
+    async def get_voicemeister_info(
+        self, voicemeister: discord.VoiceChannel | None
+    ) -> dict[str, Any] | None:
+        """Get information about a VoiceMeister channel."""
+        if voicemeister:
+            return {
+                "name": voicemeister.name,
+                "bitrate": voicemeister.bitrate,
+                "user_limit": voicemeister.user_limit,
+                "region": voicemeister.rtc_region
+            }
+        return None
+
+    async def get_voicemeister_legacy_text_channel(
+        self, voicemeister: discord.VoiceChannel | int | None
+    ) -> discord.TextChannel | None:
+        """Get the legacy text channel associated with a VoiceMeister."""
+        if isinstance(voicemeister, discord.VoiceChannel):
+            linked_channels = await self.config.guild(voicemeister.guild).linked_text_channels()
+            text_channel_id = linked_channels.get(voicemeister.id)
+            return voicemeister.guild.get_channel(text_channel_id)
+        return None
+
+    @staticmethod
+    def check_if_member_or_role_allowed(
+        channel: discord.VoiceChannel,
+        member_or_role: discord.Member | discord.Role,
+    ) -> bool:
+        """Check if a member or role is allowed in a channel."""
+        overwrites = channel.overwrites_for(member_or_role)
+        return overwrites.connect is not False
+
+    def get_member_roles(
+        self, voicemeister_source: discord.VoiceChannel
+    ) -> list[discord.Role]:
+        """Get roles that can access a VoiceMeister source."""
+        return [role for role in voicemeister_source.guild.roles if role in voicemeister_source.overwrites]
+
+    async def get_bot_roles(self, guild: discord.Guild) -> list[discord.Role]:
+        """Get roles associated with the bot."""
+        bot_roles = await self.config.guild(guild).bot_access()
+        return [guild.get_role(role_id) for role_id in bot_roles if guild.get_role(role_id)]
+    
+    @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
     async def voicemeisterset(self, ctx: commands.Context) -> None:
-        """Configure the VoiceMeister cog."""
+        """Configure the VoiceMeister cog.
+
+        For a quick rundown on how to get started with this cog,
+        check out [the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md)
+        """
+
+    @voicemeisterset.command()
+    async def settings(self, ctx: commands.Context) -> None:
+        """Display current settings."""
         if not ctx.guild:
             return
         server_section = SettingDisplay("Server Settings")
@@ -631,6 +783,7 @@ class VoiceMeister(Cog):
     @voicemeisterset.group()
     async def access(self, ctx: commands.Context) -> None:
         """Control access to all VoiceMeisters.
+
         Roles that are considered "admin" or "moderator" are
         set up with the commands `[p]set addadminrole`
         and `[p]set addmodrole` (plus the remove commands too)
@@ -665,6 +818,7 @@ class VoiceMeister(Cog):
     @access.group(name="bot")
     async def access_bot(self, ctx: commands.Context) -> None:
         """Automatically allow bots into VoiceMeisters.
+
         The VoiceMeister Owner is able to freely allow or deny these roles as they see fit.
         """
 
@@ -713,11 +867,6 @@ class VoiceMeister(Cog):
                 success("New VoiceMeisters will not allow any extra bot roles in.")
             )
 
-    @voicemeisterset.command()
-    async def settings(self, ctx: commands.Context) -> None:
-        """Display current settings."""
-        await self.settings.show_settings(ctx)
-
     @voicemeisterset.command(aliases=["enable", "add"])
     async def create(
         self,
@@ -725,9 +874,9 @@ class VoiceMeister(Cog):
         source_voice_channel: discord.VoiceChannel,
         dest_category: discord.CategoryChannel,
     ) -> None:
-        """Create a VoiceMeister Source.
+        """Create an VoiceMeister Source.
 
-        Anyone joining a VoiceMeister Source will automatically have a new
+        Anyone joining an VoiceMeister Source will automatically have a new
         voice channel (VoiceMeister) created in the destination category,
         and then be moved into it.
         """
@@ -758,9 +907,9 @@ class VoiceMeister(Cog):
         options = ["public", "locked", "private", "server"]
         pred = MessagePredicate.lower_contained_in(options, ctx)
         await ctx.send(
-            "**Welcome to the setup wizard for creating a VoiceMeister Source!**"
+            "**Welcome to the setup wizard for creating an VoiceMeister Source!**"
             "\n"
-            f"Users joining the {source_voice_channel.mention} VoiceMeister Source will have a VoiceMeister "
+            f"Users joining the {source_voice_channel.mention} VoiceMeister Source will have an VoiceMeister "
             f"created in the {dest_category.mention} category and be moved into it."
             "\n\n"
             "**VoiceMeister Type**"
@@ -813,7 +962,7 @@ class VoiceMeister(Cog):
         await ctx.send(
             "**Channel Name**"
             "\n"
-            "When a VoiceMeister is created, a name will be generated for it. How would you like that name to be generated?"
+            "When an VoiceMeister is created, a name will be generated for it. How would you like that name to be generated?"
             "\n\n"
             f'`username` - Shows up as "{ctx.author.display_name}\'s Room"\n'
             "`game    ` - VoiceMeister Owner's playing game, otherwise `username`"
@@ -830,7 +979,7 @@ class VoiceMeister(Cog):
 
         # Save new source
         await self.config.custom(
-            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
+            "AUTOROOM_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
         ).set(new_source)
         await ctx.send(
             success(
@@ -846,15 +995,15 @@ class VoiceMeister(Cog):
         ctx: commands.Context,
         voicemeister_source: discord.VoiceChannel,
     ) -> None:
-        """Remove a VoiceMeister Source."""
+        """Remove an VoiceMeister Source."""
         if not ctx.guild:
             return
         await self.config.custom(
-            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+            "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
         ).clear()
         await ctx.send(
             success(
-                f"**{voicemeister_source.mention}** is no longer a VoiceMeister Source channel."
+                f"**{voicemeister_source.mention}** is no longer an VoiceMeister Source channel."
             )
         )
 
@@ -874,7 +1023,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).dest_category_id.set(dest_category.id)
             perms_required, perms_optional, details = self.check_perms_source_dest(
                 voicemeister_source, dest_category, detailed=True
@@ -896,7 +1045,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -943,7 +1092,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).room_type.set(room_type)
             await ctx.send(
                 success(
@@ -953,13 +1102,13 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
     @modify.group(name="name")
     async def modify_name(self, ctx: commands.Context) -> None:
-        """Set the default name format of a VoiceMeister."""
+        """Set the default name format of an VoiceMeister."""
 
     @modify_name.command(name="username")
     async def modify_name_username(
@@ -1039,14 +1188,14 @@ class VoiceMeister(Cog):
                     )
                     return
                 await self.config.custom(
-                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.set(template)
             else:
                 await self.config.custom(
-                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.clear()
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).channel_name_type.set(room_type)
             message = (
                 f"New VoiceMeisters created by **{voicemeister_source.mention}** "
@@ -1069,7 +1218,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1121,7 +1270,7 @@ class VoiceMeister(Cog):
                 return
 
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.set(hint_text)
 
             await ctx.send(
@@ -1134,7 +1283,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1149,7 +1298,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.clear()
             await ctx.send(
                 success(
@@ -1159,7 +1308,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1181,10 +1330,10 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels()
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels.set(new_config_value)
             await ctx.send(
                 success(
@@ -1194,7 +1343,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1207,10 +1356,10 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages()
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages.set(new_config_value)
             await ctx.send(
                 success(
@@ -1220,7 +1369,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1242,7 +1391,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.set(value=True)
             await ctx.send(
                 success(
@@ -1252,7 +1401,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1267,7 +1416,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.clear()
             await ctx.send(
                 success(
@@ -1277,7 +1426,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1322,7 +1471,7 @@ class VoiceMeister(Cog):
                 return
 
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.set(topic_text)
 
             await ctx.send(
@@ -1335,7 +1484,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1350,7 +1499,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.clear()
             await ctx.send(
                 success(
@@ -1360,7 +1509,7 @@ class VoiceMeister(Cog):
         else:
             await ctx.send(
                 error(
-                    f"**{voicemeister_source.mention}** is not a VoiceMeister Source channel."
+                    f"**{voicemeister_source.mention}** is not an VoiceMeister Source channel."
                 )
             )
 
@@ -1377,7 +1526,7 @@ class VoiceMeister(Cog):
                 "\n\n"
                 "**Member Roles**"
                 "\n"
-                "Only members that can view and join a VoiceMeister Source will be able to join its resulting VoiceMeisters. "
+                "Only members that can view and join an VoiceMeister Source will be able to join its resulting VoiceMeisters. "
                 "If you would like to limit VoiceMeisters to only allow certain members, simply deny the everyone role "
                 "from viewing/connecting to the VoiceMeister Source and allow your member roles to view/connect to it."
                 "\n\n"
@@ -1393,7 +1542,7 @@ class VoiceMeister(Cog):
 
     async def _check_all_perms(
         self, guild: discord.Guild, *, detailed: bool = False
-    ) -> Tuple[bool, bool, List[str]]:
+    ) -> tuple[bool, bool, list[str]]:
         """Check all permissions for all VoiceMeisters in a guild."""
         result_required = True
         result_optional = True
