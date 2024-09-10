@@ -14,6 +14,7 @@ import os
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import requests
+import asyncio
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
