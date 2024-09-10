@@ -157,44 +157,52 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-        # Calculate the size of each box
+        # Calculate dimensions
+        num_columns = 4
+        num_rows = (len(actions) + num_columns - 1) // num_columns
         box_width = 150
-        box_height = 70
-        padding = 10
-        total_width = box_width * 4 + padding * 3
-        total_height = box_height * 4 + padding * 3
-
-        # Create the image with a transparent background
-        image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
-        draw = ImageDraw.Draw(image)
-
-        # Use a default font provided by Pillow
-        try:
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
-        except IOError:
-            font = ImageFont.load_default()
+        box_height = 50
+        padding = 5
+        total_width = box_width * num_columns + padding * (num_columns - 1)
+        total_height = box_height * num_rows + padding * (num_rows - 1)
 
         # Use the bot's color for both border and text
         bot_color = ctx.me.color.to_rgb()
 
+        # Calculate luminance to determine contrasting background
+        luminance = (0.299 * bot_color[0] + 0.587 * bot_color[1] + 0.114 * bot_color[2]) / 255
+
+        # Choose background color based on luminance
+        background_color = (255, 255, 255) if luminance < 0.5 else (0, 0, 0)
+
+        # Create the image with the chosen background color
+        image = Image.new("RGBA", (total_width, total_height), color=background_color)
+        draw = ImageDraw.Draw(image)
+
+        # Use a default font provided by Pillow
+        try:
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 14)
+        except IOError:
+            font = ImageFont.load_default()
+
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
-            x = (i % 4) * (box_width + padding)
-            y = (i // 4) * (box_height + padding)
+            x = (i % num_columns) * (box_width + padding)
+            y = (i // num_columns) * (box_height + padding)
             draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
             emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
             response = requests.get(emoji_url)
-            emoji_image = Image.open(BytesIO(response.content)).resize((30, 30))
-            image.paste(emoji_image, (x + 5, y + (box_height - 30) // 2), emoji_image)
+            emoji_image = Image.open(BytesIO(response.content)).resize((20, 20))
+            image.paste(emoji_image, (x + 5, y + (box_height - 20) // 2), emoji_image)
 
             # Draw the name next to the emoji
             text_bbox = font.getbbox(name)
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
             draw.text(
-                (x + 40, y + (box_height - text_height) / 2),
+                (x + 30, y + (box_height - text_height) / 2),
                 name,
                 fill=bot_color,
                 font=font
