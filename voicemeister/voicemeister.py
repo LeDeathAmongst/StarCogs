@@ -116,19 +116,24 @@ class VoiceMeister(Cog):
             }
         )
 
+        # Initialize loops
+        self.loops = []
+
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
         """Open the voice interface."""
-        view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
+        image = await self._generate_interface_image(ctx)
+        file = discord.File(fp=image, filename="interface.png")
         embed = discord.Embed(
             title="Voice Interface",
-            description=self._fancy_interface_description(),
+            description="Here's your interface:",
             color=discord.Color.blue()
         )
-        await ctx.send(embed=embed, view=view, ephemeral=True)
+        embed.set_image(url="attachment://interface.png")
+        await ctx.send(embed=embed, file=file, ephemeral=True)
 
-    def _fancy_interface_description(self) -> str:
-        """Generate a neatly formatted interface description with a 4x4 grid layout."""
+    async def _generate_interface_image(self, ctx: commands.Context) -> BytesIO:
+        """Generate an image for the interface description using Discord emojis."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
@@ -148,39 +153,44 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-        # Calculate the maximum width needed for the boxes
-        max_label_length = max(len(f"{DEFAULT_EMOJIS[emoji]} {name}") for emoji, name in actions)
-        box_width = max_label_length + 4  # Add padding for aesthetics
+        # Calculate the size of the image
+        box_width = 100
+        box_height = 100
+        image_width = box_width * 4
+        image_height = box_height * 4
 
-        # Define box drawing characters
-        top_left = "┌"
-        top_right = "┐"
-        bottom_left = "└"
-        bottom_right = "┘"
-        horizontal = "─"
-        vertical = "│"
+        # Create the image
+        image = Image.new("RGB", (image_width, image_height), color="white")
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.load_default()
 
-        description = ""
-        for i, (emoji, name) in enumerate(actions):
-            # Calculate padding for centering the text
-            label = f"{DEFAULT_EMOJIS[emoji]} {name}"
-            padding = (box_width - len(label)) // 2
-            padded_label = f"{' ' * padding}{label}{' ' * padding}"
-            if len(padded_label) < box_width:
-                padded_label += ' ' * (box_width - len(padded_label))
+        # Draw the boxes and emojis
+        for i, (emoji_name, name) in enumerate(actions):
+            x = (i % 4) * box_width
+            y = (i // 4) * box_height
+            draw.rectangle([x, y, x + box_width, y + box_height], outline="black", width=2)
 
-            # Construct the box for each label
-            if i % 4 == 0:
-                if i != 0:
-                    description += f"\n{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
-                description += f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
+            # Fetch emoji image
+            emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
+            emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
+            response = requests.get(emoji_url)
+            emoji_image = Image.open(BytesIO(response.content)).resize((40, 40))
+            image.paste(emoji_image, (x + 30, y + 10), emoji_image)
 
-            description += f"{vertical}{padded_label}{vertical}"
+            # Draw the name
+            text_width, text_height = draw.textsize(name, font=font)
+            draw.text(
+                (x + (box_width - text_width) / 2, y + 60),
+                name,
+                fill="black",
+                font=font
+            )
 
-        # Close the last row
-        description += f"\n{bottom_left}{horizontal * (box_width - 2)}{bottom_right}"
-
-        return description
+        # Save the image to a BytesIO object
+        image_bytes = BytesIO()
+        image.save(image_bytes, format="PNG")
+        image_bytes.seek(0)
+        return image_bytes
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
@@ -399,6 +409,10 @@ class VoiceMeister(Cog):
             await interaction.response.send_message("Select a region for the voice channel:", view=view, ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
+
+    async def cog_unload(self):
+        for loop in self.loops:
+            loop.stop_all()
 
     def _has_override_permissions(self, user: discord.Member) -> bool:
         """Check if the user has override permissions."""
@@ -1708,7 +1722,8 @@ class DenyAllowSelect(Dropdown):
             placeholder="Select a member",
             options=user_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel, "action": action}
+            function_kwargs={"cog": cog, "channel": channel, "action": action},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel, action):
@@ -1730,7 +1745,8 @@ class TransferOwnershipSelect(Dropdown):
             placeholder="Select a new owner",
             options=member_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
@@ -1750,7 +1766,8 @@ class BitrateSelectView(Dropdown):
             placeholder="Select Bitrate",
             options=bitrate_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
@@ -1842,7 +1859,8 @@ class RegionSelectView(Dropdown):
             placeholder="Select Region",
             options=region_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
