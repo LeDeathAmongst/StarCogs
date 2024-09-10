@@ -130,7 +130,7 @@ class VoiceMeister(Cog):
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
-            description="Here's your interface:",
+            description="Use these buttons to control your private voice!",
             color=discord.Color.blue()
         )
         embed.set_image(url="attachment://interface.png")
@@ -175,7 +175,7 @@ class VoiceMeister(Cog):
             font = ImageFont.load_default()
 
         # Use the bot's color for both border and text
-        bot_color = bot.get_embed_color()
+        bot_color = self.bot.get_embed_color()
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
