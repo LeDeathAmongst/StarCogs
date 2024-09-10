@@ -273,30 +273,7 @@ class VoiceMeister(commands.Cog):
         # Auto-delete temporary channels and manage ownership
         if before.channel and before.channel.id in temp_channels:
             if len(before.channel.members) == 0:
-                # Delete the channel if it's empty
-                await before.channel.delete()
-                del temp_channels[before.channel.id]
-
-                # Delete the linked text channel
-                text_channel_id = linked_channels.pop(before.channel.id, None)
-                if text_channel_id:
-                    text_channel = member.guild.get_channel(text_channel_id)
-                    if text_channel:
-                        await text_channel.delete()
-
-                del owners[str(before.channel.id)]
-                await self.config.guild(member.guild).temp_channels.set(temp_channels)
-                await self.config.guild(member.guild).associated_text_channel.set(linked_channels)
-                await self.config.guild(member.guild).owners.set(owners)
-            elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
-                # Transfer ownership if the owner leaves
-                remaining_members = before.channel.members
-                if remaining_members:
-                    new_owner = remaining_members[0]
-                    owners[str(before.channel.id)] = new_owner.id
-                    new_channel_name = f"{new_owner.display_name}'s Channel"
-                    await before.channel.edit(name=new_channel_name)
-                    await self.config.guild(member.guild).owners.set(owners)
+                await self._process_voicemeister_delete(before.channel, member.guild)
 
     async def _cleanup_voicemeisters(self) -> None:
         """Remove non-existent VoiceMeisters from the config."""
@@ -319,17 +296,19 @@ class VoiceMeister(commands.Cog):
                     )
                 await self.config.channel_from_id(voice_channel_id).clear()
 
-    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel) -> None:
+    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel, guild: discord.Guild) -> None:
         """Process the deletion of an empty VoiceMeister."""
-        if len(voice_channel.members) == 0:
+        try:
             await voice_channel.delete(reason="VoiceMeister: Channel is empty.")
-            linked_channels = await self.config.guild(voice_channel.guild).associated_text_channel()
+            linked_channels = await self.config.guild(guild).associated_text_channel()
             text_channel_id = linked_channels.pop(voice_channel.id, None)
             if text_channel_id:
-                text_channel = voice_channel.guild.get_channel(text_channel_id)
+                text_channel = guild.get_channel(text_channel_id)
                 if text_channel:
                     await text_channel.delete()
-            await self.config.guild(voice_channel.guild).associated_text_channel.set(linked_channels)
+            await self.config.guild(guild).associated_text_channel.set(linked_channels)
+        except Exception as e:
+            print(f"Error deleting VoiceMeister: {e}")
 
     async def get_voicemeister_legacy_text_channel(self, channel_id: Optional[int]) -> Optional[discord.TextChannel]:
         """Get the legacy text channel associated with a VoiceMeister."""
