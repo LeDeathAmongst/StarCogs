@@ -47,21 +47,11 @@ class VoiceMeister(Cog, VoiceMeisterCommands, VoiceMeisterSet, VMInterface):
         self.config.init_custom("VOICEMEISTER_SOURCE", 2)
         self.config.register_custom("VOICEMEISTER_SOURCE", **self.default_voicemeister_source_settings)
         self.config.register_channel(**self.default_channel_settings)
-        self.add_sub_cogs(bot)
+        self.voicemeister_commands = VoiceMeisterCommands(bot)
+        self.voicemeister_set = VoiceMeisterSet(bot)
+        self.vm_interface = VMInterface(bot)
 
         self.template = Template()
-
-    def add_sub_cogs(self, bot: commands.Bot):
-        """Add all sub-cogs to the main VoiceMeister cog."""
-        # Initialize sub-cogs
-        voicemeister_commands_cog = VoiceMeisterCommands(bot, VMInterface)
-        voicemeister_set_cog = VoiceMeisterSet(bot)
-        vm_interface_cog = VMInterface(bot)
-
-        # Add sub-cogs to the bot
-        bot.add_cog(voicemeister_commands_cog)
-        bot.add_cog(voicemeister_set_cog)
-        # VMInterface does not need to be added as a cog since it's used internally
 
     async def initialize(self) -> None:
         """Perform setup actions before loading cog."""
