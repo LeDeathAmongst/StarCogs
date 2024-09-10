@@ -134,7 +134,7 @@ class VoiceMeister(Cog):
             color=discord.Color.blue()
         )
         embed.set_image(url="attachment://interface.png")
-        await ctx.send(embed=embed, file=file, ephemeral=True)
+        await ctx.send(embed=embed, file=file, view=view, ephemeral=True)
 
     async def _generate_interface_image(self, ctx: commands.Context) -> BytesIO:
         """Generate an image for the interface description using Discord emojis."""
@@ -167,10 +167,15 @@ class VoiceMeister(Cog):
         # Create the image with a transparent background
         image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype("arial", 16)  # Use a truetype font for better text rendering
+
+        # Use a default font provided by Pillow
+        try:
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
+        except IOError:
+            font = ImageFont.load_default()
 
         # Set the border color
-        border_color = (255, 255, 255)  # White
+        border_color = ctx.me.color
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
