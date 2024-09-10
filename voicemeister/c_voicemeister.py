@@ -8,7 +8,6 @@ class VoiceMeisterCommands(Cog):
     """Commands for managing existing VoiceMeisters."""
     def __init__(self, bot: commands.Bot, vm_interface):
         self.bot = bot
-        self.vm_interface = vm_interface
         self.voicemeister_cog = bot.get_cog("VoiceMeister")
 
     def _get_current_voice_channel(self, member: discord.Member) -> discord.VoiceChannel:
