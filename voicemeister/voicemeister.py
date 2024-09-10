@@ -174,14 +174,14 @@ class VoiceMeister(Cog):
         except IOError:
             font = ImageFont.load_default()
 
-        # Set the border color
-        border_color = ctx.me.color
+        # Use the bot's color for both border and text
+        bot_color = ctx.me.color.to_rgb()
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
             x = (i % 4) * (box_width + padding)
             y = (i // 4) * (box_height + padding)
-            draw.rectangle([x, y, x + box_width, y + box_height], outline=border_color, width=2)
+            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
@@ -196,7 +196,7 @@ class VoiceMeister(Cog):
             draw.text(
                 (x + 40, y + (box_height - text_height) / 2),
                 name,
-                fill=border_color,
+                fill=bot_color,
                 font=font
             )
 
