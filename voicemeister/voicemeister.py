@@ -437,7 +437,6 @@ class VoiceMeister(commands.Cog):
             embed.add_field(name="Denied Members", value=denied_users_text)
             embed.add_field(name="Bitrate", value=f"{bitrate} kbps")
             embed.add_field(name="Time Created", value=channel.created_at.strftime("%Y-%m-%d %H:%M:%S"))
-            embed.add_field(name="Last Update", value=channel.edited_at.strftime("%Y-%m-%d %H:%M:%S") if channel.edited_at else "Never")
             embed.add_field(name="User Limit", value=user_limit)
             embed.add_field(name="Region", value=rtc_region)
 
