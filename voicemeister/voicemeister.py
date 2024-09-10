@@ -486,12 +486,19 @@ class VoiceMeister(Cog):
         # Generate a detailed report if needed
         details = ""
         if detailed:
-            missing_required = [perm for perm, value in required_perms.items() if not value]
-            missing_optional = [perm for perm, value in optional_perms.items() if not value]
-            details = (
-                f"Missing required permissions: {', '.join(missing_required)}\n"
-                f"Missing optional permissions: {', '.join(missing_optional)}"
-            )
+            missing_required = [
+                perm for perm, value in required_perms.items()
+                if not check_permissions(source_channel, {perm: value}) or not check_permissions(dest_category, {perm: value})
+            ]
+            missing_optional = [
+                perm for perm, value in optional_perms.items()
+                if not check_permissions(source_channel, {perm: value}) or not check_permissions(dest_category, {perm: value})
+            ]
+            if missing_required or missing_optional:
+                details = (
+                    f"Missing required permissions: {', '.join(missing_required)}\n"
+                    f"Missing optional permissions: {', '.join(missing_optional)}"
+                )
 
         return required_check, optional_check, details
 
