@@ -54,7 +54,7 @@ class VoiceMeister(Cog):
     def add_sub_cogs(self, bot: commands.Bot):
         """Add all sub-cogs to the main VoiceMeister cog."""
         # Initialize sub-cogs
-        voicemeister_commands_cog = VoiceMeisterCommands(bot)
+        voicemeister_commands_cog = VoiceMeisterCommands(bot, vm_interface)
         voicemeister_set_cog = VoiceMeisterSet(bot)
         vm_interface_cog = VMInterface(bot)
 
