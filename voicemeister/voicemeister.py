@@ -141,7 +141,7 @@ class VoiceMeister(commands.Cog):
             color=discord.Color.blue()
         )
         embed.set_image(url="attachment://interface.png")
-        await ctx.send(embed=embed, file=file, view=view, ephemeral=True)
+        await ctx.send(embed=embed, file=file, view=view)
 
     async def _generate_interface_image(self, ctx: commands.Context):
         """Generate an image for the interface description using Discord emojis."""
