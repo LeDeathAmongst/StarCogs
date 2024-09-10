@@ -9,7 +9,7 @@ from redbot.core import commands
 from redbot.core.utils.chat_formatting import error, humanize_timedelta
 
 from .abc import MixinMeta
-from .pcx_lib import Perms, SettingDisplay, delete
+from .star_lib import Perms, SettingDisplay, delete
 
 MAX_CHANNEL_NAME_LENGTH = 100
 
