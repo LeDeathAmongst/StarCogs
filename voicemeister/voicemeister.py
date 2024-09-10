@@ -53,7 +53,7 @@ REGION_OPTIONS = [
     ("US West", "us-west"),
 ]
 
-class VoiceMeister(Cog):
+class VoiceMeister(commands.Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     def __init__(self, bot: Red):
@@ -122,11 +122,17 @@ class VoiceMeister(Cog):
         # Initialize loops
         self.loops = []
 
+        # Define the image path
+        self.image_path = "interface.png"
+
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
         """Open the voice interface."""
-        image = await self._generate_interface_image(ctx)
-        file = discord.File(fp=image, filename="interface.png")
+        # Check if the image file already exists
+        if not os.path.exists(self.image_path):
+            await self._generate_interface_image(ctx)
+
+        file = discord.File(fp=self.image_path, filename="interface.png")
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
@@ -136,7 +142,7 @@ class VoiceMeister(Cog):
         embed.set_image(url="attachment://interface.png")
         await ctx.send(embed=embed, file=file, view=view, ephemeral=True)
 
-    async def _generate_interface_image(self, ctx: commands.Context) -> BytesIO:
+    async def _generate_interface_image(self, ctx: commands.Context):
         """Generate an image for the interface description using Discord emojis."""
         actions = [
             ("lock", "Lock"),
@@ -162,7 +168,7 @@ class VoiceMeister(Cog):
         num_rows = (len(actions) + num_columns - 1) // num_columns
         box_width = 100
         box_height = 30
-        padding = 10
+        padding = 7
         total_width = box_width * num_columns + padding * (num_columns - 1)
         total_height = box_height * num_rows + padding * (num_rows - 1)
 
@@ -223,12 +229,8 @@ class VoiceMeister(Cog):
                 font=font
             )
 
-        # Save the image to a BytesIO object
-        image_bytes = BytesIO()
-        image.save(image_bytes, format="PNG")
-        image_bytes.seek(0)
-        return image_bytes
-
+        # Save the image to a file
+        image.save(self.image_path, format="PNG")
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         guild_data = await self.config.guild(member.guild).all()
