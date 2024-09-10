@@ -4,9 +4,9 @@ from redbot.core import errors
 from redbot.core.bot import Red
 from redbot.core.utils import get_end_user_data_statement
 from .voicemeister import VoiceMeister
-#from .c_voicemeister import VoiceMeisterCommands
-#from .c_voicemeisterset import VoiceMeisterSet
-#from .vminterface import VMInterface
+from .c_voicemeister import VoiceMeisterCommands
+from .c_voicemeisterset import VoiceMeisterSet
+from .vminterface import VMInterface
 
 # Ensure Star_Utils is available
 try:
@@ -28,11 +28,11 @@ del Star_Utils
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 async def setup(bot: Red) -> None:
-#    vm_interface = VMInterface(bot)
+    vm_interface = VMInterface(bot)
     voicemeister_cog = VoiceMeister(bot)
-#    voicemeister_commands_cog = VoiceMeisterCommands(bot, vm_interface)
-#    voicemeister_set_cog = VoiceMeisterSet(bot)
+    voicemeister_commands_cog = VoiceMeisterCommands(bot, vm_interface)
+    voicemeister_set_cog = VoiceMeisterSet(bot)
 
     await bot.add_cog(voicemeister_cog)
-#    await bot.add_cog(voicemeister_commands_cog)
-#    await bot.add_cog(voicemeister_set_cog)
+    await bot.add_cog(voicemeister_commands_cog)
+    await bot.add_cog(voicemeister_set_cog)
