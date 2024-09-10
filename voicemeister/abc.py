@@ -12,7 +12,7 @@ from redbot.core.commands import Cog
 from voicemeister.star_template import Template
 
 
-class MixinMeta(ABC, Cog.Meta):
+class MixinMeta(ABC):
     """Base class for well-behaved type hint detection with composite class.
 
     Basically, to keep developers sane when not all attributes are defined in each mixin.
