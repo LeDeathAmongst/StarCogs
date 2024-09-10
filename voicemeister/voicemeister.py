@@ -1,15 +1,18 @@
 from contextlib import suppress
-from typing import Any, ClassVar, Optional, Tuple, List
+from typing import Any, Optional, Tuple, List
 import discord
-from redbot.core import Config, checks, commands
+from discord.ext import commands
+from redbot.core import Config, checks
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_timedelta, success, error, warning, info
+from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
-from Star_Utils import Buttons, Dropdown, Cog, Settings
+from Star_Utils import Buttons, Dropdown, Cog, Settings, Loop
 from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
-import BytesIO
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
+import requests
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
