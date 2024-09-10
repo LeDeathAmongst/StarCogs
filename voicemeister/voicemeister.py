@@ -7,8 +7,6 @@ from redbot.core.utils.chat_formatting import humanize_timedelta, success, error
 from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_lib import Perms, SettingDisplay
-from abc import ABC
-from .abc import MixinMeta
 import datetime
 import asyncio
 
@@ -130,7 +128,7 @@ class VoiceMeister(Cog):
         await ctx.send(embed=embed, view=view, ephemeral=True)
 
     def _fancy_interface_description(self) -> str:
-        """Generate an interface description with each label in a separate box."""
+        """Generate a neatly formatted interface description with a 4x4 grid layout."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
@@ -150,6 +148,10 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
+        # Calculate the maximum width needed for the boxes
+        max_label_length = max(len(f"{DEFAULT_EMOJIS[emoji]} {name}") for emoji, name in actions)
+        box_width = max_label_length + 4  # Add padding for aesthetics
+
         # Define box drawing characters
         top_left = "┌"
         top_right = "┐"
@@ -158,11 +160,8 @@ class VoiceMeister(Cog):
         horizontal = "─"
         vertical = "│"
 
-        # Define the width of each box
-        box_width = 20
-
         description = ""
-        for emoji, name in actions:
+        for i, (emoji, name) in enumerate(actions):
             # Calculate padding for centering the text
             label = f"{DEFAULT_EMOJIS[emoji]} {name}"
             padding = (box_width - len(label)) // 2
@@ -171,11 +170,15 @@ class VoiceMeister(Cog):
                 padded_label += ' ' * (box_width - len(padded_label))
 
             # Construct the box for each label
-            description += (
-                f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
-                f"{vertical}{padded_label}{vertical}\n"
-                f"{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
-            )
+            if i % 4 == 0:
+                if i != 0:
+                    description += f"\n{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
+                description += f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
+
+            description += f"{vertical}{padded_label}{vertical}"
+
+        # Close the last row
+        description += f"\n{bottom_left}{horizontal * (box_width - 2)}{bottom_right}"
 
         return description
 
@@ -397,7 +400,7 @@ class VoiceMeister(Cog):
 
     @staticmethod
     def _get_voicemeister_type(voicemeister: discord.VoiceChannel, role: discord.Role) -> str:
-        """Get the type of access a role has in an VoiceMeister (public, locked, private, etc)."""
+        """Get the type of access a role has in a VoiceMeister (public, locked, private, etc)."""
         view_channel = role.permissions.view_channel
         connect = role.permissions.connect
         if role in voicemeister.overwrites:
@@ -474,6 +477,9 @@ class VoiceMeister(Cog):
             return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
 
         # Check permissions for the source and destination
+        if source_channel.permissions_for(source_channel.guild.me).administrator:
+            return True, True, ""  # If admin, all permissions are implicitly granted
+
         source_required = check_permissions(source_channel, required_perms)
         dest_required = check_permissions(dest_category, required_perms)
         source_optional = check_permissions(source_channel, optional_perms)
@@ -537,48 +543,6 @@ class VoiceMeister(Cog):
             return any(role.permissions.manage_guild for role in who.guild.roles if role.id == who.id)
         return False
 
-    def check_perms_source_dest(
-        self,
-        voicemeister_source: discord.VoiceChannel,
-        category_dest: discord.CategoryChannel,
-        *,
-        with_manage_roles_guild: bool = False,
-        with_legacy_text_channel: bool = False,
-        with_optional_clone_perms: bool = False,
-        detailed: bool = False,
-    ) -> tuple[bool, bool, str | None]:
-        """Check permissions for source and destination channels."""
-        required_perms = {
-            "manage_channels": True,
-            "connect": True,
-            "speak": True
-        }
-        optional_perms = {
-            "manage_roles": with_manage_roles_guild,
-            "send_messages": with_legacy_text_channel,
-            "read_message_history": with_legacy_text_channel
-        }
-
-        def has_permissions(channel, perms):
-            permissions = channel.permissions_for(channel.guild.me)
-            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
-
-        source_required = has_permissions(voicemeister_source, required_perms)
-        dest_required = has_permissions(category_dest, required_perms)
-        source_optional = has_permissions(voicemeister_source, optional_perms)
-        dest_optional = has_permissions(category_dest, optional_perms)
-
-        required_check = source_required and dest_required
-        optional_check = source_optional and dest_optional
-
-        details = None
-        if detailed:
-            details = "Missing required permissions: " + ", ".join(
-                perm for perm, value in required_perms.items() if not value
-            )
-
-        return required_check, optional_check, details
-
     async def get_all_voicemeister_source_configs(
         self, guild: discord.Guild
     ) -> dict[int, dict[str, Any]]:
@@ -635,7 +599,7 @@ class VoiceMeister(Cog):
         """Get roles associated with the bot."""
         bot_roles = await self.config.guild(guild).bot_access()
         return [guild.get_role(role_id) for role_id in bot_roles if guild.get_role(role_id)]
-    
+
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
