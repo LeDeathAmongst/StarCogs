@@ -6,7 +6,7 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
-from .star_template import Template, SettingDisplay
+from .star_template import Template
 from .abc import ABC
 import datetime
 import os
