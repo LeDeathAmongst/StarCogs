@@ -130,7 +130,7 @@ class VoiceMeister(Cog):
         await ctx.send(embed=embed, view=view, ephemeral=True)
 
     def _fancy_interface_description(self) -> str:
-        """Generate a neatly formatted interface description with boxes and emojis."""
+        """Generate an interface description with each label in a separate box."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
@@ -150,14 +150,32 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-    # Create a grid-like structure for better visual appeal
+        # Define box drawing characters
+        top_left = "┌"
+        top_right = "┐"
+        bottom_left = "└"
+        bottom_right = "┘"
+        horizontal = "─"
+        vertical = "│"
+
+        # Define the width of each box
+        box_width = 20
+
         description = ""
-        max_width = 4
-        for i, (emoji, name) in enumerate(actions):
-            if i % max_width == 0 and i != 0:
-                description += "\n"
-            description += f"{DEFAULT_EMOJIS[emoji]} {name:<12}"
-        description += ""
+        for emoji, name in actions:
+            # Calculate padding for centering the text
+            label = f"{DEFAULT_EMOJIS[emoji]} {name}"
+            padding = (box_width - len(label)) // 2
+            padded_label = f"{' ' * padding}{label}{' ' * padding}"
+            if len(padded_label) < box_width:
+                padded_label += ' ' * (box_width - len(padded_label))
+
+            # Construct the box for each label
+            description += (
+                f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
+                f"{vertical}{padded_label}{vertical}\n"
+                f"{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
+            )
 
         return description
 
