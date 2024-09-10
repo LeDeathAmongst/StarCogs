@@ -9,7 +9,7 @@ class VoiceMeisterCommands(Cog):
     def __init__(self, bot: commands.Bot, vm_interface):
         self.bot = bot
         self.vm_interface = vm_interface
-        self.voicemeister_cog = bot.get_cog("VoiceMeister"))
+        self.voicemeister_cog = bot.get_cog("VoiceMeister")
 
     def _get_current_voice_channel(self, member: discord.Member) -> discord.VoiceChannel:
         """Get the member's current voice channel, or None if not in a voice channel."""
