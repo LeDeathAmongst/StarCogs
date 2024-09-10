@@ -127,6 +127,7 @@ class VoiceMeister(Cog):
         """Open the voice interface."""
         image = await self._generate_interface_image(ctx)
         file = discord.File(fp=image, filename="interface.png")
+        view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
             description="Here's your interface:",
@@ -168,7 +169,7 @@ class VoiceMeister(Cog):
         font = ImageFont.load_default()
 
         # Use the bot's color
-        bot_color = ctx.me.color()
+        bot_color = ctx.me.color.to_rgb()
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
