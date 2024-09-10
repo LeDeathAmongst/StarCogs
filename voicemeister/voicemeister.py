@@ -160,7 +160,7 @@ class VoiceMeister(Cog):
         # Calculate dimensions
         num_columns = 4
         num_rows = (len(actions) + num_columns - 1) // num_columns
-        box_width = 150
+        box_width = 100
         box_height = 50
         padding = 10
         total_width = box_width * num_columns + padding * (num_columns - 1)
