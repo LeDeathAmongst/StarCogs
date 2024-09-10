@@ -1,7 +1,6 @@
 import discord
 from redbot.core import commands
 from Star_Utils import Cog
-from .voicemeister import VoiceMeister
 from .vminterface import VMInterface
 
 class VoiceMeisterCommands(Cog):
