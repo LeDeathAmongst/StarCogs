@@ -161,7 +161,7 @@ class VoiceMeister(Cog):
         num_columns = 4
         num_rows = (len(actions) + num_columns - 1) // num_columns
         box_width = 100
-        box_height = 50
+        box_height = 30
         padding = 10
         total_width = box_width * num_columns + padding * (num_columns - 1)
         total_height = box_height * num_rows + padding * (num_rows - 1)
