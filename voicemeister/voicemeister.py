@@ -1,8 +1,7 @@
 from contextlib import suppress
 from typing import Any, Optional, Tuple, List
 import discord
-from discord.ext import commands
-from redbot.core import Config, checks
+from redbot.core import Config, checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
