@@ -161,8 +161,8 @@ class VoiceMeister(Cog):
         box_width = 220
         box_height = 70
         padding = 10
-        total_width = box_width * 4 + padding * 3
-        total_height = box_height * 4 + padding * 3
+        total_width = box_width * 4 + padding
+        total_height = box_height * 4 + padding
 
         # Create the image with a transparent background
         image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
@@ -194,7 +194,7 @@ class VoiceMeister(Cog):
             text_bbox = font.getbbox(name)
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
             draw.text(
-                (x + 20, y + (box_height - text_height) / 2),
+                (x + 40, y + (box_height - text_height) / 2),
                 name,
                 fill=bot_color,
                 font=font
