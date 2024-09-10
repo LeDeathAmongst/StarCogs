@@ -547,14 +547,14 @@ class VoiceMeister(Cog):
         self, guild: discord.Guild
     ) -> dict[int, dict[str, Any]]:
         """Get all VoiceMeister source configurations."""
-        return await self.config.custom("AUTOROOM_SOURCE", str(guild.id)).all()
+        return await self.config.custom("VOICEMEISTER_SOURCE", str(guild.id)).all()
 
     async def get_voicemeister_source_config(
         self, voicemeister_source: discord.VoiceChannel | discord.abc.GuildChannel | None
     ) -> dict[str, Any] | None:
         """Get a specific VoiceMeister source configuration."""
         if voicemeister_source:
-            return await self.config.custom("AUTOROOM_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
+            return await self.config.custom("VOICEMEISTER_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
         return None
 
     async def get_voicemeister_info(
@@ -967,7 +967,7 @@ class VoiceMeister(Cog):
 
         # Save new source
         await self.config.custom(
-            "AUTOROOM_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
+            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
         ).set(new_source)
         await ctx.send(
             success(
@@ -987,7 +987,7 @@ class VoiceMeister(Cog):
         if not ctx.guild:
             return
         await self.config.custom(
-            "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
         ).clear()
         await ctx.send(
             success(
@@ -1011,7 +1011,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).dest_category_id.set(dest_category.id)
             perms_required, perms_optional, details = self.check_perms_source_dest(
                 voicemeister_source, dest_category, detailed=True
@@ -1080,7 +1080,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).room_type.set(room_type)
             await ctx.send(
                 success(
@@ -1176,14 +1176,14 @@ class VoiceMeister(Cog):
                     )
                     return
                 await self.config.custom(
-                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.set(template)
             else:
                 await self.config.custom(
-                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.clear()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).channel_name_type.set(room_type)
             message = (
                 f"New VoiceMeisters created by **{voicemeister_source.mention}** "
@@ -1258,7 +1258,7 @@ class VoiceMeister(Cog):
                 return
 
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.set(hint_text)
 
             await ctx.send(
@@ -1286,7 +1286,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.clear()
             await ctx.send(
                 success(
@@ -1318,10 +1318,10 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels.set(new_config_value)
             await ctx.send(
                 success(
@@ -1344,10 +1344,10 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages.set(new_config_value)
             await ctx.send(
                 success(
@@ -1379,7 +1379,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.set(value=True)
             await ctx.send(
                 success(
@@ -1404,7 +1404,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.clear()
             await ctx.send(
                 success(
@@ -1459,7 +1459,7 @@ class VoiceMeister(Cog):
                 return
 
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.set(topic_text)
 
             await ctx.send(
@@ -1487,7 +1487,7 @@ class VoiceMeister(Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.clear()
             await ctx.send(
                 success(
