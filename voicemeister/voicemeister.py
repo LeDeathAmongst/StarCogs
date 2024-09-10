@@ -1,16 +1,17 @@
 from contextlib import suppress
-from typing import Any, ClassVar, Optional, Tuple, List
+from typing import Any, Optional, Tuple, List
 import discord
 from redbot.core import Config, checks, commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_timedelta, success, error, warning, info
+from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
-from Star_Utils import Buttons, Dropdown, Cog, Settings
+from Star_Utils import Buttons, Dropdown, Cog, Settings, Loop
 from .star_lib import Perms, SettingDisplay
-from abc import ABC
-from .abc import MixinMeta
 import datetime
 import asyncio
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
+import requests
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
@@ -118,19 +119,25 @@ class VoiceMeister(Cog):
             }
         )
 
+        # Initialize loops
+        self.loops = []
+
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
         """Open the voice interface."""
+        image = await self._generate_interface_image(ctx)
+        file = discord.File(fp=image, filename="interface.png")
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
-            description=self._fancy_interface_description(),
+            description="Here's your interface:",
             color=discord.Color.blue()
         )
-        await ctx.send(embed=embed, view=view, ephemeral=True)
+        embed.set_image(url="attachment://interface.png")
+        await ctx.send(embed=embed, file=file, view=view, ephemeral=True)
 
-    def _fancy_interface_description(self) -> str:
-        """Generate an interface description with each label in a separate box."""
+    async def _generate_interface_image(self, ctx: commands.Context) -> BytesIO:
+        """Generate an image for the interface description using Discord emojis."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
@@ -150,34 +157,54 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-        # Define box drawing characters
-        top_left = "┌"
-        top_right = "┐"
-        bottom_left = "└"
-        bottom_right = "┘"
-        horizontal = "─"
-        vertical = "│"
+        # Calculate the size of each box
+        box_width = 220
+        box_height = 70
+        padding = 10
+        total_width = box_width * 4 + padding * 3
+        total_height = box_height * 4 + padding * 3
 
-        # Define the width of each box
-        box_width = 20
+        # Create the image with a transparent background
+        image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
 
-        description = ""
-        for emoji, name in actions:
-            # Calculate padding for centering the text
-            label = f"{DEFAULT_EMOJIS[emoji]} {name}"
-            padding = (box_width - len(label)) // 2
-            padded_label = f"{' ' * padding}{label}{' ' * padding}"
-            if len(padded_label) < box_width:
-                padded_label += ' ' * (box_width - len(padded_label))
+        # Use a default font provided by Pillow
+        try:
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
+        except IOError:
+            font = ImageFont.load_default()
 
-            # Construct the box for each label
-            description += (
-                f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
-                f"{vertical}{padded_label}{vertical}\n"
-                f"{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
+        # Use the bot's color for both border and text
+        bot_color = ctx.me.color.to_rgb()
+
+        # Draw the boxes, emojis, and names
+        for i, (emoji_name, name) in enumerate(actions):
+            x = (i % 4) * (box_width + padding)
+            y = (i // 4) * (box_height + padding)
+            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
+
+            # Fetch emoji image
+            emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
+            emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
+            response = requests.get(emoji_url)
+            emoji_image = Image.open(BytesIO(response.content)).resize((30, 30))
+            image.paste(emoji_image, (x + 5, y + (box_height - 30) // 2), emoji_image)
+
+            # Draw the name next to the emoji
+            text_bbox = font.getbbox(name)
+            text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+            draw.text(
+                (x + 40, y + (box_height - text_height) / 2),
+                name,
+                fill=bot_color,
+                font=font
             )
 
-        return description
+        # Save the image to a BytesIO object
+        image_bytes = BytesIO()
+        image.save(image_bytes, format="PNG")
+        image_bytes.seek(0)
+        return image_bytes
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
@@ -186,6 +213,7 @@ class VoiceMeister(Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
+        owners = guild_data["owners"]
 
         # Check if the user has any banned role
         if after.channel and any(role.id in banned_roles.get(after.channel.id, []) for role in member.roles):
@@ -207,17 +235,31 @@ class VoiceMeister(Cog):
                 name=f"{member.name}'s Channel", overwrites=permissions
             )
             temp_channels[temp_channel.id] = temp_channel.id
+            owners[str(temp_channel.id)] = member.id  # Assign ownership
             await self.config.guild(member.guild).temp_channels.set(temp_channels)
+            await self.config.guild(member.guild).owners.set(owners)
 
             # Move the member to the new channel
             await member.move_to(temp_channel)
 
-        # Auto-delete temporary channels
+        # Auto-delete temporary channels and manage ownership
         if before.channel and before.channel.id in temp_channels:
             if len(before.channel.members) == 0:
+                # Delete the channel if it's empty
                 await before.channel.delete()
                 del temp_channels[before.channel.id]
+                del owners[str(before.channel.id)]
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
+                await self.config.guild(member.guild).owners.set(owners)
+            elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
+                # Transfer ownership if the owner leaves
+                remaining_members = before.channel.members
+                if remaining_members:
+                    new_owner = remaining_members[0]
+                    owners[str(before.channel.id)] = new_owner.id
+                    new_channel_name = f"{new_owner.display_name}'s Channel"
+                    await before.channel.edit(name=new_channel_name)
+                    await self.config.guild(member.guild).owners.set(owners)
 
     async def locked(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Lock your VoiceMeister."""
@@ -382,6 +424,10 @@ class VoiceMeister(Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
+    async def cog_unload(self):
+        for loop in self.loops:
+            loop.stop_all()
+
     def _has_override_permissions(self, user: discord.Member) -> bool:
         """Check if the user has override permissions."""
         if user.guild_permissions.administrator or user.id == user.guild.owner_id:
@@ -397,7 +443,7 @@ class VoiceMeister(Cog):
 
     @staticmethod
     def _get_voicemeister_type(voicemeister: discord.VoiceChannel, role: discord.Role) -> str:
-        """Get the type of access a role has in an VoiceMeister (public, locked, private, etc)."""
+        """Get the type of access a role has in a VoiceMeister (public, locked, private, etc)."""
         view_channel = role.permissions.view_channel
         connect = role.permissions.connect
         if role in voicemeister.overwrites:
@@ -474,6 +520,9 @@ class VoiceMeister(Cog):
             return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
 
         # Check permissions for the source and destination
+        if source_channel.permissions_for(source_channel.guild.me).administrator:
+            return True, True, ""  # If admin, all permissions are implicitly granted
+
         source_required = check_permissions(source_channel, required_perms)
         dest_required = check_permissions(dest_category, required_perms)
         source_optional = check_permissions(source_channel, optional_perms)
@@ -485,23 +534,22 @@ class VoiceMeister(Cog):
 
         # Generate a detailed report if needed
         details = ""
-        if detailed:
-            missing_required = [perm for perm, value in required_perms.items() if not value]
-            missing_optional = [perm for perm, value in optional_perms.items() if not value]
-            details = (
-                f"Missing required permissions: {', '.join(missing_required)}\n"
-                f"Missing optional permissions: {', '.join(missing_optional)}"
-            )
+        if detailed and not required_check:
+            missing_required = [
+                perm for perm, value in required_perms.items()
+                if not check_permissions(source_channel, {perm: value}) or not check_permissions(dest_category, {perm: value})
+            ]
+            missing_optional = [
+                perm for perm, value in optional_perms.items()
+                if not check_permissions(source_channel, {perm: value}) or not check_permissions(dest_category, {perm: value})
+            ]
+            if missing_required or missing_optional:
+                details = (
+                    f"Missing required permissions: {', '.join(missing_required)}\n"
+                    f"Missing optional permissions: {', '.join(missing_optional)}"
+                )
 
         return required_check, optional_check, details
-
-class VoiceMeisterSetCommands(commands.Cog):
-    """The voicemeisterset command."""
-
-    def __init__(self, bot: Red):
-        self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
-        # Initialize any other necessary attributes here
 
     def get_template_data(self, member: discord.Member | discord.User) -> dict[str, str]:
         """Retrieve template data for a member or user."""
@@ -538,60 +586,18 @@ class VoiceMeisterSetCommands(commands.Cog):
             return any(role.permissions.manage_guild for role in who.guild.roles if role.id == who.id)
         return False
 
-    def check_perms_source_dest(
-        self,
-        voicemeister_source: discord.VoiceChannel,
-        category_dest: discord.CategoryChannel,
-        *,
-        with_manage_roles_guild: bool = False,
-        with_legacy_text_channel: bool = False,
-        with_optional_clone_perms: bool = False,
-        detailed: bool = False,
-    ) -> tuple[bool, bool, str | None]:
-        """Check permissions for source and destination channels."""
-        required_perms = {
-            "manage_channels": True,
-            "connect": True,
-            "speak": True
-        }
-        optional_perms = {
-            "manage_roles": with_manage_roles_guild,
-            "send_messages": with_legacy_text_channel,
-            "read_message_history": with_legacy_text_channel
-        }
-
-        def has_permissions(channel, perms):
-            permissions = channel.permissions_for(channel.guild.me)
-            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
-
-        source_required = has_permissions(voicemeister_source, required_perms)
-        dest_required = has_permissions(category_dest, required_perms)
-        source_optional = has_permissions(voicemeister_source, optional_perms)
-        dest_optional = has_permissions(category_dest, optional_perms)
-
-        required_check = source_required and dest_required
-        optional_check = source_optional and dest_optional
-
-        details = None
-        if detailed:
-            details = "Missing required permissions: " + ", ".join(
-                perm for perm, value in required_perms.items() if not value
-            )
-
-        return required_check, optional_check, details
-
     async def get_all_voicemeister_source_configs(
         self, guild: discord.Guild
     ) -> dict[int, dict[str, Any]]:
         """Get all VoiceMeister source configurations."""
-        return await self.config.custom("AUTOROOM_SOURCE", str(guild.id)).all()
+        return await self.config.custom("VOICEMEISTER_SOURCE", str(guild.id)).all()
 
     async def get_voicemeister_source_config(
         self, voicemeister_source: discord.VoiceChannel | discord.abc.GuildChannel | None
     ) -> dict[str, Any] | None:
         """Get a specific VoiceMeister source configuration."""
         if voicemeister_source:
-            return await self.config.custom("AUTOROOM_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
+            return await self.config.custom("VOICEMEISTER_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
         return None
 
     async def get_voicemeister_info(
@@ -636,7 +642,7 @@ class VoiceMeisterSetCommands(commands.Cog):
         """Get roles associated with the bot."""
         bot_roles = await self.config.guild(guild).bot_access()
         return [guild.get_role(role_id) for role_id in bot_roles if guild.get_role(role_id)]
-    
+
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
@@ -1004,7 +1010,7 @@ class VoiceMeisterSetCommands(commands.Cog):
 
         # Save new source
         await self.config.custom(
-            "AUTOROOM_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
+            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(source_voice_channel.id)
         ).set(new_source)
         await ctx.send(
             success(
@@ -1024,7 +1030,7 @@ class VoiceMeisterSetCommands(commands.Cog):
         if not ctx.guild:
             return
         await self.config.custom(
-            "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+            "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
         ).clear()
         await ctx.send(
             success(
@@ -1048,7 +1054,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).dest_category_id.set(dest_category.id)
             perms_required, perms_optional, details = self.check_perms_source_dest(
                 voicemeister_source, dest_category, detailed=True
@@ -1117,7 +1123,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).room_type.set(room_type)
             await ctx.send(
                 success(
@@ -1213,14 +1219,14 @@ class VoiceMeisterSetCommands(commands.Cog):
                     )
                     return
                 await self.config.custom(
-                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.set(template)
             else:
                 await self.config.custom(
-                    "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                    "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
                 ).channel_name_format.clear()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).channel_name_type.set(room_type)
             message = (
                 f"New VoiceMeisters created by **{voicemeister_source.mention}** "
@@ -1295,7 +1301,7 @@ class VoiceMeisterSetCommands(commands.Cog):
                 return
 
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.set(hint_text)
 
             await ctx.send(
@@ -1323,7 +1329,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_hint.clear()
             await ctx.send(
                 success(
@@ -1355,10 +1361,10 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_owner_manage_channels.set(new_config_value)
             await ctx.send(
                 success(
@@ -1381,10 +1387,10 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             new_config_value = not await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages()
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).perm_send_messages.set(new_config_value)
             await ctx.send(
                 success(
@@ -1416,7 +1422,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.set(value=True)
             await ctx.send(
                 success(
@@ -1441,7 +1447,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).legacy_text_channel.clear()
             await ctx.send(
                 success(
@@ -1496,7 +1502,7 @@ class VoiceMeisterSetCommands(commands.Cog):
                 return
 
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.set(topic_text)
 
             await ctx.send(
@@ -1524,7 +1530,7 @@ class VoiceMeisterSetCommands(commands.Cog):
             return
         if await self.get_voicemeister_source_config(voicemeister_source):
             await self.config.custom(
-                "AUTOROOM_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
+                "VOICEMEISTER_SOURCE", str(ctx.guild.id), str(voicemeister_source.id)
             ).text_channel_topic.clear()
             await ctx.send(
                 success(
@@ -1730,7 +1736,8 @@ class DenyAllowSelect(Dropdown):
             placeholder="Select a member",
             options=user_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel, "action": action}
+            function_kwargs={"cog": cog, "channel": channel, "action": action},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel, action):
@@ -1752,7 +1759,8 @@ class TransferOwnershipSelect(Dropdown):
             placeholder="Select a new owner",
             options=member_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
@@ -1772,7 +1780,8 @@ class BitrateSelectView(Dropdown):
             placeholder="Select Bitrate",
             options=bitrate_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
@@ -1864,7 +1873,8 @@ class RegionSelectView(Dropdown):
             placeholder="Select Region",
             options=region_options,
             function=self.on_select,
-            function_kwargs={"cog": cog, "channel": channel}
+            function_kwargs={"cog": cog, "channel": channel},
+            infinity=True
         )
 
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
