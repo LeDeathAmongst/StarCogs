@@ -495,14 +495,6 @@ class VoiceMeister(Cog):
 
         return required_check, optional_check, details
 
-class VoiceMeisterSetCommands(commands.Cog):
-    """The voicemeisterset command."""
-
-    def __init__(self, bot: Red):
-        self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
-        # Initialize any other necessary attributes here
-
     def get_template_data(self, member: discord.Member | discord.User) -> dict[str, str]:
         """Retrieve template data for a member or user."""
         return {
