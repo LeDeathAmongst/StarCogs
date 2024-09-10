@@ -406,8 +406,8 @@ class VoiceMeister(commands.Cog):
         """Provide information about the current voice channel."""
         try:
             owners = await self.config.guild(channel.guild).owners()
-            owner_id = owners.get(str(channel.id))
-            owner = channel.guild.get_member(owner_id)
+            owner_id = await owners.get(str(channel.id))
+            owner = await channel.guild.get_member(owner_id)
             owner_name = await owner.display_name if owner else "None"
             owner_mention = await owner.mention if owner else "None"
 
@@ -1769,7 +1769,7 @@ class DenyAllowSelect(Dropdown):
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel, action):
         try:
             selected_user_id = int(options[0])
-            user = channel.guild.get_member(selected_user_id)
+            user = await channel.guild.get_member(selected_user_id)
 
             if user:
                 permission = True if action == "allow" else False
