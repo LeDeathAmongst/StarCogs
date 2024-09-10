@@ -189,6 +189,7 @@ class VoiceMeister(Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
+        owners = guild_data["owners"]
 
         # Check if the user has any banned role
         if after.channel and any(role.id in banned_roles.get(after.channel.id, []) for role in member.roles):
@@ -210,17 +211,31 @@ class VoiceMeister(Cog):
                 name=f"{member.name}'s Channel", overwrites=permissions
             )
             temp_channels[temp_channel.id] = temp_channel.id
+            owners[str(temp_channel.id)] = member.id  # Assign ownership
             await self.config.guild(member.guild).temp_channels.set(temp_channels)
+            await self.config.guild(member.guild).owners.set(owners)
 
             # Move the member to the new channel
             await member.move_to(temp_channel)
 
-        # Auto-delete temporary channels
+        # Auto-delete temporary channels and manage ownership
         if before.channel and before.channel.id in temp_channels:
             if len(before.channel.members) == 0:
+                # Delete the channel if it's empty
                 await before.channel.delete()
                 del temp_channels[before.channel.id]
+                del owners[str(before.channel.id)]
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
+                await self.config.guild(member.guild).owners.set(owners)
+            elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
+                # Transfer ownership if the owner leaves
+                remaining_members = before.channel.members
+                if remaining_members:
+                    new_owner = remaining_members[0]
+                    owners[str(before.channel.id)] = new_owner.id
+                    new_channel_name = f"{new_owner.display_name}'s Channel"
+                    await before.channel.edit(name=new_channel_name)
+                    await self.config.guild(member.guild).owners.set(owners)
 
     async def locked(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Lock your VoiceMeister."""
