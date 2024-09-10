@@ -166,17 +166,11 @@ class VoiceMeister(Cog):
         total_width = box_width * num_columns + padding * (num_columns - 1)
         total_height = box_height * num_rows + padding * (num_rows - 1)
 
-        # Use the bot's color for both border and text
+        # Use the bot's color for the box background
         bot_color = ctx.me.color.to_rgb()
 
-        # Calculate luminance to determine contrasting background
-        luminance = (0.299 * bot_color[0] + 0.587 * bot_color[1] + 0.114 * bot_color[2]) / 255
-
-        # Choose background color based on luminance
-        background_color = (255, 255, 255) if luminance < 0.5 else (0, 0, 0)
-
-        # Create the image with the chosen background color
-        image = Image.new("RGBA", (total_width, total_height), color=background_color)
+        # Create the image with a transparent background
+        image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
 
         # Use a default font provided by Pillow
@@ -189,7 +183,9 @@ class VoiceMeister(Cog):
         for i, (emoji_name, name) in enumerate(actions):
             x = (i % num_columns) * (box_width + padding)
             y = (i // num_columns) * (box_height + padding)
-            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
+
+            # Draw rectangle with bot's color fill
+            draw.rectangle([x, y, x + box_width, y + box_height], fill=bot_color, outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
@@ -204,7 +200,7 @@ class VoiceMeister(Cog):
             draw.text(
                 (x + 30, y + (box_height - text_height) / 2),
                 name,
-                fill=bot_color,
+                fill=(255, 255, 255),  # White text
                 font=font
             )
 
@@ -390,8 +386,8 @@ class VoiceMeister(Cog):
             owners = await self.config.guild(channel.guild).owners()
             owner_id = owners.get(str(channel.id))
             owner = channel.guild.get_member(owner_id)
-            owner_name = owner.display_name if owner else "None"
-            owner_mention = owner.mention if owner else "None"
+            owner_name = await owner.display_name if owner else "None"
+            owner_mention = await owner.mention if owner else "None"
 
             channel_age = datetime.datetime.utcnow() - channel.created_at.replace(tzinfo=None)
             bitrate = channel.bitrate // 1000  # Convert to kbps
