@@ -1703,16 +1703,30 @@ class VoiceMeisterView(Buttons):
         await interaction.response.send_modal(SetUserLimitModal(self.bot.get_cog("VoiceMeister"), channel))
 
     async def handle_hide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        if channel.overwrites_for(interaction.guild.default_role).view_channel is False:
-            await interaction.response.send_message("The channel is already hidden.", ephemeral=True)
-        else:
-            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "private", channel)
+        """Hide the channel by setting view permissions to False for @everyone."""
+        try:
+            overwrites = channel.overwrites_for(interaction.guild.default_role)
+            if overwrites.view_channel is False:
+                await interaction.response.send_message("The channel is already hidden.", ephemeral=True)
+            else:
+                overwrites.view_channel = False
+                await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+                await interaction.response.send_message("The channel is now hidden.", ephemeral=True)
+        except Exception as e:
+            await self.bot.get_cog("VoiceMeister").handle_error(interaction, e)
 
     async def handle_unhide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        if channel.overwrites_for(interaction.guild.default_role).view_channel is True:
-            await interaction.response.send_message("The channel is already visible.", ephemeral=True)
-        else:
-            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "public", channel)
+        """Unhide the channel by setting view permissions to True for @everyone."""
+        try:
+            overwrites = channel.overwrites_for(interaction.guild.default_role)
+            if overwrites.view_channel is True:
+                await interaction.response.send_message("The channel is already visible.", ephemeral=True)
+            else:
+                overwrites.view_channel = True
+                await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+                await interaction.response.send_message("The channel is now visible.", ephemeral=True)
+        except Exception as e:
+            await self.bot.get_cog("VoiceMeister").handle_error(interaction, e)
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         invite = await channel.create_invite(max_uses=1, unique=True)
