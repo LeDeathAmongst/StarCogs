@@ -158,31 +158,32 @@ class VoiceMeister(Cog):
         ]
 
         # Calculate the size of each box
-        box_width = 200
-        box_height = 50
-        image_width = box_width * 4
-        image_height = box_height * 4
+        box_width = 220
+        box_height = 70
+        padding = 10
+        total_width = box_width * 4 + padding * 3
+        total_height = box_height * 4 + padding * 3
 
         # Create the image with a transparent background
-        image = Image.new("RGBA", (image_width, image_height), color=(0, 0, 0, 0))
+        image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
+        font = ImageFont.truetype("arial", 16)  # Use a truetype font for better text rendering
 
-        # Use the bot's color
-        bot_color = ctx.me.color.to_rgb()
+        # Set the border color
+        border_color = (255, 255, 255)  # White
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
-            x = (i % 4) * box_width
-            y = (i // 4) * box_height
-            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
+            x = (i % 4) * (box_width + padding)
+            y = (i // 4) * (box_height + padding)
+            draw.rectangle([x, y, x + box_width, y + box_height], outline=border_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
             emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
             response = requests.get(emoji_url)
             emoji_image = Image.open(BytesIO(response.content)).resize((30, 30))
-            image.paste(emoji_image, (x + 5, y + 10), emoji_image)
+            image.paste(emoji_image, (x + 5, y + (box_height - 30) // 2), emoji_image)
 
             # Draw the name next to the emoji
             text_bbox = font.getbbox(name)
@@ -190,7 +191,7 @@ class VoiceMeister(Cog):
             draw.text(
                 (x + 40, y + (box_height - text_height) / 2),
                 name,
-                fill=bot_color,
+                fill=border_color,
                 font=font
             )
 
