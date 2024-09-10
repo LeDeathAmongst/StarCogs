@@ -77,7 +77,7 @@ class VoiceMeister(commands.Cog):
         self.settings = Settings(
             bot=bot,
             cog=self,
-            config=None,  # Replace with actual config if needed
+            config=self.config,
             group="guild",
             settings={
                 "lobby_channel": {
