@@ -8,7 +8,7 @@ from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_lib import Perms, SettingDisplay
 from abc import ABC
-from .abc import MixinMeta
+from .abc import 
 import datetime
 import asyncio
 
@@ -477,7 +477,7 @@ class VoiceMeister(Cog):
 
         return required_check, optional_check, details
 
-class VoiceMeisterSetCommands(MixinMeta, commands.Cog):
+class VoiceMeisterSetCommands(commands.Cog):
     """The voicemeisterset command."""
 
     def __init__(self, bot: Red):
