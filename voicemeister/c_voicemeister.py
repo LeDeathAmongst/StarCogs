@@ -4,13 +4,12 @@ from Star_Utils import Cog
 from .voicemeister import VoiceMeister
 from .vminterface import VMInterface
 
-class VoiceMeisterCommands(commands.Cog):
+class VoiceMeisterCommands(Cog):
     """Commands for managing existing VoiceMeisters."""
-
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, vm_interface):
         self.bot = bot
-        self.vm_interface = VMInterface(bot)
-        self.voicemeister_cog = bot.get_cog("VoiceMeister")
+        self.vm_interface = vm_interface
+        self.voicemeister_cog = bot.get_cog("VoiceMeister"))
 
     def _get_current_voice_channel(self, member: discord.Member) -> discord.VoiceChannel:
         """Get the member's current voice channel, or None if not in a voice channel."""
