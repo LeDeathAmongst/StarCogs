@@ -232,6 +232,7 @@ class VoiceMeister(commands.Cog):
 
         # Save the image to a file
         image.save(self.image_path, format="PNG")
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         guild_data = await self.config.guild(member.guild).all()
@@ -239,6 +240,7 @@ class VoiceMeister(commands.Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
+        linked_channels = guild_data["linked_text_channels"]
         owners = guild_data["owners"]
 
         # Check if the user has any banned role
@@ -274,8 +276,17 @@ class VoiceMeister(commands.Cog):
                 # Delete the channel if it's empty
                 await before.channel.delete()
                 del temp_channels[before.channel.id]
+
+                # Delete the linked text channel
+                text_channel_id = linked_channels.pop(before.channel.id, None)
+                if text_channel_id:
+                    text_channel = member.guild.get_channel(text_channel_id)
+                    if text_channel:
+                        await text_channel.delete()
+
                 del owners[str(before.channel.id)]
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
+                await self.config.guild(member.guild).linked_text_channels.set(linked_channels)
                 await self.config.guild(member.guild).owners.set(owners)
             elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
                 # Transfer ownership if the owner leaves
@@ -1768,7 +1779,41 @@ class VoiceMeisterView(Buttons):
         await self.bot.get_cog("VoiceMeister").delete_channel(interaction, channel)
 
     async def handle_create_text(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").create_text_channel(interaction, channel)
+        """Create a temporary text channel linked to the voice channel."""
+        try:
+            cog = self.bot.get_cog("VoiceMeister")
+            linked_channels = await cog.config.guild(channel.guild).linked_text_channels()
+
+            if channel.id in linked_channels:
+                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
+                if existing_text_channel:
+                    await interaction.response.send_message(
+                        f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True
+                    )
+                    return
+
+            category = channel.category
+            if not category:
+                await interaction.response.send_message("The voice channel is not in a category.", ephemeral=True)
+                return
+
+            # Create text channel with permissions matching the voice channel
+            overwrites = channel.overwrites
+            text_channel = await category.create_text_channel(
+                name=f"{channel.name}-text",
+                overwrites=overwrites,
+                topic=f"Temporary text channel for {channel.name}"
+            )
+
+            # Log the linked text channel
+            linked_channels[channel.id] = text_channel.id
+            await cog.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+
+            await interaction.response.send_message(
+                content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True
+            )
+        except Exception as e:
+            await cog.handle_error(interaction, e)
 
 # Select Menus
 
