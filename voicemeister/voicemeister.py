@@ -53,7 +53,7 @@ REGION_OPTIONS = [
     ("US West", "us-west"),
 ]
 
-class VoiceMeister(commands.Cog):
+class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     def __init__(self, bot: Red):
