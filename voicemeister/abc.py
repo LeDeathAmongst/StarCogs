@@ -7,6 +7,7 @@ import discord
 from discord.ext.commands import CooldownMapping
 from redbot.core import Config
 from redbot.core.bot import Red
+from redbot.core.commands import Cog
 
 from voicemeister.star_template import Template
 
