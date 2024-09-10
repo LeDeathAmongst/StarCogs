@@ -4,9 +4,10 @@ from redbot.core import Config, commands
 from redbot.core.bot import Red
 from .star_lib import Perms
 from .star_template import Template
+from Star_Utils import Cog
 import asyncio
 
-class VoiceMeister(commands.Cog):
+class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     default_global_settings: ClassVar[dict[str, int]] = {"schema_version": 0}
