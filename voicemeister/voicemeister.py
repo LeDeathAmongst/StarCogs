@@ -5,8 +5,7 @@ from redbot.core import Config, checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
-from Star_Utils import Buttons, Dropdown, Cog, Settings, Loop
-from .star_lib import Perms, SettingDisplay
+from Star_Utils import Buttons, Dropdown, Cog, Settings
 import datetime
 import asyncio
 import os
@@ -54,7 +53,7 @@ REGION_OPTIONS = [
     ("US West", "us-west"),
 ]
 
-class VoiceMeister(commands.Cog):
+class VoiceMeister(Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     def __init__(self, bot: Red):
@@ -71,15 +70,14 @@ class VoiceMeister(commands.Cog):
             "allowed_users": {},
             "banned_roles": {},
             "allowed_roles": {},
-            "owners": {},
-            "associated_text_channel": {}
+            "owners": {}
         }
         self.config.register_guild(**default_guild)
 
         self.settings = Settings(
             bot=bot,
             cog=self,
-            config=None,  # Replace with actual config if needed
+            config=self.config,
             group="guild",
             settings={
                 "lobby_channel": {
@@ -110,18 +108,8 @@ class VoiceMeister(commands.Cog):
                     "label": "Channel Owners",
                     "description": "Manage channel ownership.",
                 },
-                "associated_text_channel": {
-                    "path": ["associated_text_channel"],
-                    "converter": dict,
-                    "command_name": "linkedtextchannels",
-                    "label": "Linked Text Channels",
-                    "description": "Manage linked text channels.",
-                },
             }
         )
-
-        # Initialize loops
-        self.loops = []
 
         # Define the image path
         self.image_path = "interface.png"
@@ -159,7 +147,7 @@ class VoiceMeister(commands.Cog):
             ("rename", "Rename"),
             ("bitrate", "Bitrate"),
             ("region", "Region"),
-            ("create_text", "Chat"),
+            ("create_text", "WIP"),  # Changed from "Chat" to "WIP"
             ("delete", "Delete"),
             ("invite", "Invite")
         ]
@@ -240,7 +228,6 @@ class VoiceMeister(commands.Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
-        linked_channels = guild_data["associated_text_channel"]
         owners = guild_data["owners"]
 
         # Check if the user has any banned role
@@ -273,30 +260,7 @@ class VoiceMeister(commands.Cog):
         # Auto-delete temporary channels and manage ownership
         if before.channel and before.channel.id in temp_channels:
             if len(before.channel.members) == 0:
-                # Delete the channel if it's empty
-                await before.channel.delete()
-                del temp_channels[before.channel.id]
-
-                # Delete the linked text channel
-                text_channel_id = linked_channels.pop(before.channel.id, None)
-                if text_channel_id:
-                    text_channel = member.guild.get_channel(text_channel_id)
-                    if text_channel:
-                        await text_channel.delete()
-
-                del owners[str(before.channel.id)]
-                await self.config.guild(member.guild).temp_channels.set(temp_channels)
-                await self.config.guild(member.guild).associated_text_channel.set(linked_channels)
-                await self.config.guild(member.guild).owners.set(owners)
-            elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
-                # Transfer ownership if the owner leaves
-                remaining_members = before.channel.members
-                if remaining_members:
-                    new_owner = remaining_members[0]
-                    owners[str(before.channel.id)] = new_owner.id
-                    new_channel_name = f"{new_owner.display_name}'s Channel"
-                    await before.channel.edit(name=new_channel_name)
-                    await self.config.guild(member.guild).owners.set(owners)
+                await self._process_voicemeister_delete(before.channel, member.guild)
 
     async def _cleanup_voicemeisters(self) -> None:
         """Remove non-existent VoiceMeisters from the config."""
@@ -309,33 +273,21 @@ class VoiceMeister(commands.Cog):
                     # Delete VoiceMeister if it is empty
                     await self._process_voicemeister_delete(voice_channel)
             else:
-                # VoiceMeister has already been deleted, clean up legacy text channel if it still exists
-                legacy_text_channel = await self.get_voicemeister_legacy_text_channel(
-                    voice_channel_settings["associated_text_channel"]
-                )
-                if legacy_text_channel:
-                    await legacy_text_channel.delete(
-                        reason="VoiceMeister: Associated voice channel deleted."
-                    )
                 await self.config.channel_from_id(voice_channel_id).clear()
 
-    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel) -> None:
+    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel, guild: discord.Guild) -> None:
         """Process the deletion of an empty VoiceMeister."""
-        if len(voice_channel.members) == 0:
+        try:
             await voice_channel.delete(reason="VoiceMeister: Channel is empty.")
-            linked_channels = await self.config.guild(voice_channel.guild).associated_text_channel()
-            text_channel_id = linked_channels.pop(voice_channel.id, None)
-            if text_channel_id:
-                text_channel = voice_channel.guild.get_channel(text_channel_id)
-                if text_channel:
-                    await text_channel.delete()
-            await self.config.guild(voice_channel.guild).associated_text_channel.set(linked_channels)
+            temp_channels = await self.config.guild(guild).temp_channels()
+            if voice_channel.id in temp_channels:
+                del temp_channels[voice_channel.id]
+                await self.config.guild(guild).temp_channels.set(temp_channels)
+        except Exception as e:
+            print(f"Error deleting VoiceMeister: {e}")
 
-    async def get_voicemeister_legacy_text_channel(self, channel_id: Optional[int]) -> Optional[discord.TextChannel]:
-        """Get the legacy text channel associated with a VoiceMeister."""
-        if channel_id:
-            return self.bot.get_channel(channel_id)
-        return None
+    async def cog_unload(self):
+        pass
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -358,36 +310,6 @@ class VoiceMeister(commands.Cog):
         except Exception as e:
             await self.handle_error(interaction, e)
 
-    async def create_text_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Create a temporary text channel linked to the voice channel."""
-        try:
-            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
-            if channel.id in linked_channels:
-                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
-                if existing_text_channel:
-                    await interaction.response.send_message(f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True)
-                    return
-
-            category = channel.category
-            text_channel = await category.create_text_channel(
-                name=f"{channel.name}-text",
-                topic=f"Voice Channel ID: {channel.id}"
-            )
-            await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
-            for member in channel.members:
-                await text_channel.set_permissions(member, read_messages=True, send_messages=True)
-
-            # Log the linked text channel
-            linked_channels[channel.id] = text_channel.id
-            await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
-
-            await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
-        except discord.errors.HTTPException as e:
-            if "Channel topic contains at least one word that is not allowed" in str(e):
-                await interaction.response.send_message("Failed to set channel topic due to restricted words.", ephemeral=True)
-            else:
-                await self.handle_error(interaction, e)
-
     async def claim(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Claim ownership of the VoiceMeister if there is no current owner, or override if admin/owner."""
         try:
@@ -407,22 +329,16 @@ class VoiceMeister(commands.Cog):
             await self.handle_error(interaction, e)
 
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Delete the voice channel and linked text channel."""
+        """Delete the voice channel."""
         try:
-            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
-            text_channel_id = linked_channels.get(channel.id)
-            if text_channel_id:
-                text_channel = channel.guild.get_channel(text_channel_id)
-                if text_channel:
-                    await text_channel.delete()
-
             await channel.delete()
             await interaction.response.send_message(content="The channel has been deleted.", ephemeral=True)
 
             # Clean up the stored data
-            if channel.id in linked_channels:
-                del linked_channels[channel.id]
-                await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
+            temp_channels = await self.config.guild(channel.guild).temp_channels()
+            if channel.id in temp_channels:
+                del temp_channels[channel.id]
+                await self.config.guild(channel.guild).temp_channels.set(temp_channels)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -434,26 +350,6 @@ class VoiceMeister(commands.Cog):
             await self.config.guild(channel.guild).owners.set(owners)
             await channel.edit(name=f"{new_owner.display_name}'s Channel")
             await interaction.response.send_message(content=f"Ownership transferred to {new_owner.display_name}.", ephemeral=True)
-        except Exception as e:
-            await self.handle_error(interaction, e)
-
-    async def _process_allow_deny(self, interaction: discord.Interaction, action: str, channel: discord.VoiceChannel):
-        """Process allowing or denying users/roles access to the VoiceMeister."""
-        try:
-            text_channel = await self.get_text_channel(channel)
-
-            if action == "allow":
-                await channel.set_permissions(interaction.guild.default_role, connect=True)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, read_messages=True)
-                await interaction.response.send_message(content="The VoiceMeister is now public.", ephemeral=True)
-            elif action == "deny":
-                await channel.set_permissions(interaction.guild.default_role, connect=False)
-                if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, read_messages=False)
-                await interaction.response.send_message(content="The VoiceMeister is now private.", ephemeral=True)
-            else:
-                await interaction.response.send_message(content="Invalid action.", ephemeral=True)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -509,8 +405,7 @@ class VoiceMeister(commands.Cog):
             await self.handle_error(interaction, e)
 
     async def cog_unload(self):
-        for loop in self.loops:
-            loop.stop_all()
+        pass
 
     def _has_override_permissions(self, user: discord.Member) -> bool:
         """Check if the user has override permissions."""
@@ -1707,7 +1602,7 @@ class VoiceMeisterView(Buttons):
             {"emoji": DEFAULT_EMOJIS["rename"], "custom_id": "rename", "row": 2},
             {"emoji": DEFAULT_EMOJIS["bitrate"], "custom_id": "bitrate", "row": 2},
             {"emoji": DEFAULT_EMOJIS["region"], "custom_id": "region", "row": 3},
-            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "create_text", "row": 3},
+            {"emoji": DEFAULT_EMOJIS["create_text"], "custom_id": "wip", "row": 3},  # Changed custom_id to "wip"
             {"emoji": DEFAULT_EMOJIS["delete"], "custom_id": "delete", "row": 3},
             {"emoji": DEFAULT_EMOJIS["invite"], "custom_id": "invite", "row": 3},
         ]
@@ -1732,7 +1627,7 @@ class VoiceMeisterView(Buttons):
             "transfer": self.handle_transfer,
             "info": self.handle_info,
             "delete": self.handle_delete,
-            "create_text": self.handle_create_text,
+            "wip": self.handle_wip,  # Added handler for WIP
         }
         handler = handlers.get(interaction.data["custom_id"])
         if handler:
@@ -1787,7 +1682,7 @@ class VoiceMeisterView(Buttons):
             await self.bot.get_cog("VoiceMeister").handle_error(interaction, e)
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        invite = await channel.create_invite(max_uses=1, unique=True)
+        invite = await channel.create_invite(max_uses=5, unique=True)
         await interaction.response.send_message(content=f"Here is your invite to the voice channel: {invite.url}", ephemeral=True)
 
     async def handle_ban(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
@@ -1822,44 +1717,9 @@ class VoiceMeisterView(Buttons):
     async def handle_delete(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         await self.bot.get_cog("VoiceMeister").delete_channel(interaction, channel)
 
-    async def handle_create_text(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        """Create a temporary text channel linked to the voice channel."""
-        try:
-            cog = self.bot.get_cog("VoiceMeister")
-            linked_channels = await cog.config.guild(channel.guild).associated_text_channel()
-
-            if channel.id in linked_channels:
-                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
-                if existing_text_channel:
-                    await interaction.response.send_message(
-                        f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True
-                    )
-                    return
-
-            category = channel.category
-            if not category:
-                await interaction.response.send_message("The voice channel is not in a category.", ephemeral=True)
-                return
-
-            # Create text channel with permissions matching the voice channel
-            overwrites = channel.overwrites
-            text_channel = await category.create_text_channel(
-                name=f"{channel.name}-text",
-                overwrites=overwrites,
-                topic=f"Temporary text channel for {channel.name}"
-            )
-
-            # Log the linked text channel
-            linked_channels[channel.id] = text_channel.id
-            await cog.config.guild(channel.guild).associated_text_channel.set(linked_channels)
-
-            await interaction.response.send_message(
-                content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True
-            )
-        except Exception as e:
-            await cog.handle_error(interaction, e)
-
-# Select Menus
+    async def handle_wip(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
+        """Handle the WIP button interaction."""
+        await interaction.response.send_message("This item is a Work In Progress! Check back soon!", ephemeral=True)
 
 class DenyAllowSelect(Dropdown):
     def __init__(self, cog, channel, action):
@@ -1924,7 +1784,13 @@ class BitrateSelectView(Dropdown):
         except Exception as e:
             await cog.handle_error(interaction, e)
 
-# Modal Classes
+    async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel):
+        try:
+            selected_bitrate = int(options[0])
+            await channel.edit(bitrate=selected_bitrate * 1000)
+            await interaction.response.send_message(f"Bitrate changed to {selected_bitrate} kbps.", ephemeral=True)
+        except Exception as e:
+            await cog.handle_error(interaction, e)
 
 class ChangeBitrateModal(discord.ui.Modal, title="Change Bitrate"):
     def __init__(self, cog, channel):
@@ -1966,9 +1832,6 @@ class ChangeNameModal(discord.ui.Modal, title="Change Channel Name"):
 
             if self.channel:
                 await self.channel.edit(name=new_name)
-                text_channel = self.cog.get_text_channel(self.channel)
-                if text_channel:
-                    await text_channel.edit(name=f"{new_name}-text")
                 await interaction.followup.send(f"Channel name changed to {new_name}.", ephemeral=True)
         except Exception as e:
             await self.cog.handle_error(interaction, e)
