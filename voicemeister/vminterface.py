@@ -6,6 +6,8 @@ import discord
 from redbot.core.bot import Red
 from Star_Utils import Buttons, Dropdown
 
+MAX_CHANNEL_NAME_LENGTH = 100
+
 DEFAULT_EMOJIS = {
     "lock": "<:Locked:1279848927587467447>",
     "unlock": "<:Unlocked:1279848944570073109>",
