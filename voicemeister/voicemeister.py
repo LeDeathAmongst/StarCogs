@@ -156,37 +156,40 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-        # Calculate the size of the image
-        box_width = 100
-        box_height = 100
+        # Calculate the size of each box
+        box_width = 200
+        box_height = 50
         image_width = box_width * 4
         image_height = box_height * 4
 
-        # Create the image
-        image = Image.new("RGB", (image_width, image_height), color="white")
+        # Create the image with a transparent background
+        image = Image.new("RGBA", (image_width, image_height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
 
-        # Draw the boxes and emojis
+        # Use the bot's color
+        bot_color = ctx.bot.color.to_rgb()
+
+        # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
             x = (i % 4) * box_width
             y = (i // 4) * box_height
-            draw.rectangle([x, y, x + box_width, y + box_height], outline="black", width=2)
+            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
             emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
             response = requests.get(emoji_url)
-            emoji_image = Image.open(BytesIO(response.content)).resize((40, 40))
-            image.paste(emoji_image, (x + 30, y + 10), emoji_image)
+            emoji_image = Image.open(BytesIO(response.content)).resize((30, 30))
+            image.paste(emoji_image, (x + 5, y + 10), emoji_image)
 
-            # Draw the name
+            # Draw the name next to the emoji
             text_bbox = font.getbbox(name)
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
             draw.text(
-                (x + (box_width - text_width) / 2, y + 60),
+                (x + 40, y + (box_height - text_height) / 2),
                 name,
-                fill="black",
+                fill=bot_color,
                 font=font
             )
 
