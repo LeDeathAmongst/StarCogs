@@ -7,6 +7,7 @@ from redbot.core.utils.chat_formatting import success, error, warning, info
 from redbot.core.utils.predicates import MessagePredicate
 from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_template import Template
+from .star_lib import Perms, SettingDisplay, delete
 from .abc import ABC
 import datetime
 import os
@@ -1304,17 +1305,13 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
         banned_words = ["explicit_word1", "explicit_word2", "racist_word1"]
         return not any(banned_word in name.lower() for banned_word in banned_words)
 
-    @commands.group()
+    @commands.group(aliases=["vmset"])
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
     async def voicemeisterset(self, ctx: commands.Context) -> None:
-        """Configure the VoiceMeister cog.
+        """Configure the VoiceMeister cog."""
 
-        For a quick rundown on how to get started with this cog,
-        check out [the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md)
-        """
-
-    @voicemeisterset.command(aliases=["vmset"])
+    @voicemeisterset.command()
     async def settings(self, ctx: commands.Context) -> None:
         """Display current settings."""
         if not ctx.guild:
@@ -1806,7 +1803,7 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
     async def modify_name_username(
         self, ctx: commands.Context, voicemeister_source: discord.VoiceChannel
     ) -> None:
-        """Default format: PhasecoreX's Room.
+        """Default format: Star's Room.
 
         Custom format example:
         `{{username}}'s Room{% if dupenum > 1 %} ({{dupenum}}){% endif %}`
@@ -1871,9 +1868,6 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
                             "Hmm... that doesn't seem to be a valid template:"
                             "\n\n"
                             f"`{rte!s}`"
-                            "\n\n"
-                            "If you need some help, take a look at "
-                            "[the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md)."
                         )
                     )
                     return
@@ -1930,8 +1924,7 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
         """Send a message to the newly generated VoiceMeister text channel.
 
         This can have template variables and statements, which you can learn more
-        about by looking at `[p]voicemeisterset modify name custom`, or by looking at
-        [the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md).
+        about by looking at `[p]voicemeisterset modify name custom`.
 
         The only additional variable that may be useful here is the `mention` variable,
         which will insert the users mention (pinging them).
@@ -1952,9 +1945,6 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
                         "Hmm... that doesn't seem to be a valid template:"
                         "\n\n"
                         f"`{rte!s}`"
-                        "\n\n"
-                        "If you need some help, take a look at "
-                        "[the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md)."
                     )
                 )
                 return
@@ -2153,9 +2143,6 @@ class VoiceMeister(Cog, metaclass=CompositeMetaClass):
                         "Hmm... that doesn't seem to be a valid template:"
                         "\n\n"
                         f"`{rte!s}`"
-                        "\n\n"
-                        "If you need some help, take a look at "
-                        "[the readme](https://github.com/PhasecoreX/PCXCogs/tree/master/voicemeister/README.md)."
                     )
                 )
                 return
