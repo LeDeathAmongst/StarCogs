@@ -468,8 +468,6 @@ class VoiceMeister(Cog):
 
         def check_permissions(channel: discord.abc.GuildChannel, perms: dict) -> bool:
             permissions = channel.permissions_for(channel.guild.me)
-            # Debugging output
-            print(f"Checking permissions for {channel.name}: {permissions}")
             # If the bot has Administrator, it has all permissions
             if permissions.administrator:
                 return True
@@ -487,7 +485,7 @@ class VoiceMeister(Cog):
 
         # Generate a detailed report if needed
         details = ""
-        if detailed:
+        if detailed and not required_check:
             missing_required = [
                 perm for perm, value in required_perms.items()
                 if not check_permissions(source_channel, {perm: value}) or not check_permissions(dest_category, {perm: value})
