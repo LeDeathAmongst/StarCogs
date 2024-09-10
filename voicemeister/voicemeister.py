@@ -10,7 +10,7 @@ from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import requests
 
 MAX_CHANNEL_NAME_LENGTH = 100
@@ -162,7 +162,7 @@ class VoiceMeister(Cog):
         num_rows = (len(actions) + num_columns - 1) // num_columns
         box_width = 150
         box_height = 50
-        padding = 5
+        padding = 10
         total_width = box_width * num_columns + padding * (num_columns - 1)
         total_height = box_height * num_rows + padding * (num_rows - 1)
 
@@ -179,13 +179,32 @@ class VoiceMeister(Cog):
         except IOError:
             font = ImageFont.load_default()
 
+        def draw_rounded_rectangle(draw, xy, radius, fill, outline=None, width=1):
+            """Draw a rounded rectangle."""
+            x1, y1, x2, y2 = xy
+            draw.rectangle([x1 + radius, y1, x2 - radius, y2], fill=fill)
+            draw.rectangle([x1, y1 + radius, x2, y2 - radius], fill=fill)
+            draw.pieslice([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=fill)
+            draw.pieslice([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=fill)
+            if outline:
+                draw.arc([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=outline, width=width)
+                draw.arc([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=outline, width=width)
+                draw.line([x1 + radius, y1, x2 - radius, y1], fill=outline, width=width)
+                draw.line([x1 + radius, y2, x2 - radius, y2], fill=outline, width=width)
+                draw.line([x1, y1 + radius, x1, y2 - radius], fill=outline, width=width)
+                draw.line([x2, y1 + radius, x2, y2 - radius], fill=outline, width=width)
+
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
             x = (i % num_columns) * (box_width + padding)
             y = (i // num_columns) * (box_height + padding)
 
-            # Draw rectangle with bot's color fill
-            draw.rectangle([x, y, x + box_width, y + box_height], fill=bot_color, outline=bot_color, width=2)
+            # Draw rounded rectangle with bot's color fill
+            draw_rounded_rectangle(draw, [x, y, x + box_width, y + box_height], radius=10, fill=bot_color, outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
