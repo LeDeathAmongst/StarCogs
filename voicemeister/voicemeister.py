@@ -9,8 +9,9 @@ from Star_Utils import Buttons, Dropdown, Cog, Settings, Loop
 from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
+import os
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import requests
 
 MAX_CHANNEL_NAME_LENGTH = 100
@@ -53,7 +54,7 @@ REGION_OPTIONS = [
     ("US West", "us-west"),
 ]
 
-class VoiceMeister(Cog):
+class VoiceMeister(commands.Cog):
     """Advanced voice channel control with join-to-create and more."""
 
     def __init__(self, bot: Red):
@@ -71,7 +72,7 @@ class VoiceMeister(Cog):
             "banned_roles": {},
             "allowed_roles": {},
             "owners": {},
-            "linked_text_channels": {}
+            "associated_text_channel": {}
         }
         self.config.register_guild(**default_guild)
 
@@ -109,8 +110,8 @@ class VoiceMeister(Cog):
                     "label": "Channel Owners",
                     "description": "Manage channel ownership.",
                 },
-                "linked_text_channels": {
-                    "path": ["linked_text_channels"],
+                "associated_text_channel": {
+                    "path": ["associated_text_channel"],
                     "converter": dict,
                     "command_name": "linkedtextchannels",
                     "label": "Linked Text Channels",
@@ -122,21 +123,27 @@ class VoiceMeister(Cog):
         # Initialize loops
         self.loops = []
 
+        # Define the image path
+        self.image_path = "interface.png"
+
     @commands.hybrid_command(name="interface", with_app_command=True)
     async def interface(self, ctx: commands.Context):
         """Open the voice interface."""
-        image = await self._generate_interface_image(ctx)
-        file = discord.File(fp=image, filename="interface.png")
+        # Check if the image file already exists
+        if not os.path.exists(self.image_path):
+            await self._generate_interface_image(ctx)
+
+        file = discord.File(fp=self.image_path, filename="interface.png")
         view = VoiceMeisterView(bot=self.bot, author=ctx.author, infinity=True)
         embed = discord.Embed(
             title="Voice Interface",
-            description="Here's your interface:",
+            description="Use these buttons to control your private voice!",
             color=discord.Color.blue()
         )
         embed.set_image(url="attachment://interface.png")
-        await ctx.send(embed=embed, file=file, view=view, ephemeral=True)
+        await ctx.send(embed=embed, file=file, view=view)
 
-    async def _generate_interface_image(self, ctx: commands.Context) -> BytesIO:
+    async def _generate_interface_image(self, ctx: commands.Context):
         """Generate an image for the interface description using Discord emojis."""
         actions = [
             ("lock", "Lock"),
@@ -157,12 +164,17 @@ class VoiceMeister(Cog):
             ("invite", "Invite")
         ]
 
-        # Calculate the size of each box
-        box_width = 220
-        box_height = 70
-        padding = 10
-        total_width = box_width * 4 + padding * 3
-        total_height = box_height * 4 + padding * 3
+        # Calculate dimensions
+        num_columns = 4
+        num_rows = (len(actions) + num_columns - 1) // num_columns
+        box_width = 100
+        box_height = 30
+        padding = 7
+        total_width = box_width * num_columns + padding * (num_columns - 1)
+        total_height = box_height * num_rows + padding * (num_rows - 1)
+
+        # Use the bot's color for the box background
+        bot_color = ctx.me.color.to_rgb()
 
         # Create the image with a transparent background
         image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
@@ -170,41 +182,56 @@ class VoiceMeister(Cog):
 
         # Use a default font provided by Pillow
         try:
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 14)
         except IOError:
             font = ImageFont.load_default()
 
-        # Use the bot's color for both border and text
-        bot_color = ctx.me.color.to_rgb()
+        def draw_rounded_rectangle(draw, xy, radius, fill, outline=None, width=1):
+            """Draw a rounded rectangle."""
+            x1, y1, x2, y2 = xy
+            draw.rectangle([x1 + radius, y1, x2 - radius, y2], fill=fill)
+            draw.rectangle([x1, y1 + radius, x2, y2 - radius], fill=fill)
+            draw.pieslice([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=fill)
+            draw.pieslice([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=fill)
+            draw.pieslice([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=fill)
+            if outline:
+                draw.arc([x1, y1, x1 + 2 * radius, y1 + 2 * radius], 180, 270, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y1, x2, y1 + 2 * radius], 270, 360, fill=outline, width=width)
+                draw.arc([x1, y2 - 2 * radius, x1 + 2 * radius, y2], 90, 180, fill=outline, width=width)
+                draw.arc([x2 - 2 * radius, y2 - 2 * radius, x2, y2], 0, 90, fill=outline, width=width)
+                draw.line([x1 + radius, y1, x2 - radius, y1], fill=outline, width=width)
+                draw.line([x1 + radius, y2, x2 - radius, y2], fill=outline, width=width)
+                draw.line([x1, y1 + radius, x1, y2 - radius], fill=outline, width=width)
+                draw.line([x2, y1 + radius, x2, y2 - radius], fill=outline, width=width)
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
-            x = (i % 4) * (box_width + padding)
-            y = (i // 4) * (box_height + padding)
-            draw.rectangle([x, y, x + box_width, y + box_height], outline=bot_color, width=2)
+            x = (i % num_columns) * (box_width + padding)
+            y = (i // num_columns) * (box_height + padding)
+
+            # Draw rounded rectangle with bot's color fill
+            draw_rounded_rectangle(draw, [x, y, x + box_width, y + box_height], radius=10, fill=bot_color, outline=bot_color, width=2)
 
             # Fetch emoji image
             emoji_id = DEFAULT_EMOJIS[emoji_name].split(":")[2].strip(">")
             emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.png"
             response = requests.get(emoji_url)
-            emoji_image = Image.open(BytesIO(response.content)).resize((30, 30))
-            image.paste(emoji_image, (x + 5, y + (box_height - 30) // 2), emoji_image)
+            emoji_image = Image.open(BytesIO(response.content)).resize((20, 20))
+            image.paste(emoji_image, (x + 5, y + (box_height - 20) // 2), emoji_image)
 
             # Draw the name next to the emoji
             text_bbox = font.getbbox(name)
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
             draw.text(
-                (x + 40, y + (box_height - text_height) / 2),
+                (x + 30, y + (box_height - text_height) / 2),
                 name,
-                fill=bot_color,
+                fill=(255, 255, 255),  # White text
                 font=font
             )
 
-        # Save the image to a BytesIO object
-        image_bytes = BytesIO()
-        image.save(image_bytes, format="PNG")
-        image_bytes.seek(0)
-        return image_bytes
+        # Save the image to a file
+        image.save(self.image_path, format="PNG")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
@@ -213,6 +240,7 @@ class VoiceMeister(Cog):
         category_id = guild_data["category"]
         temp_channels = guild_data["temp_channels"]
         banned_roles = guild_data["banned_roles"]
+        linked_channels = guild_data["associated_text_channel"]
         owners = guild_data["owners"]
 
         # Check if the user has any banned role
@@ -248,8 +276,17 @@ class VoiceMeister(Cog):
                 # Delete the channel if it's empty
                 await before.channel.delete()
                 del temp_channels[before.channel.id]
+
+                # Delete the linked text channel
+                text_channel_id = linked_channels.pop(before.channel.id, None)
+                if text_channel_id:
+                    text_channel = member.guild.get_channel(text_channel_id)
+                    if text_channel:
+                        await text_channel.delete()
+
                 del owners[str(before.channel.id)]
                 await self.config.guild(member.guild).temp_channels.set(temp_channels)
+                await self.config.guild(member.guild).associated_text_channel.set(linked_channels)
                 await self.config.guild(member.guild).owners.set(owners)
             elif str(before.channel.id) in owners and owners[str(before.channel.id)] == member.id:
                 # Transfer ownership if the owner leaves
@@ -260,6 +297,50 @@ class VoiceMeister(Cog):
                     new_channel_name = f"{new_owner.display_name}'s Channel"
                     await before.channel.edit(name=new_channel_name)
                     await self.config.guild(member.guild).owners.set(owners)
+
+    async def _cleanup_voicemeisters(self) -> None:
+        """Remove non-existent VoiceMeisters from the config."""
+        await self.bot.wait_until_ready()
+        voice_channel_dict = await self.config.all_channels()
+        for voice_channel_id, voice_channel_settings in voice_channel_dict.items():
+            voice_channel = self.bot.get_channel(voice_channel_id)
+            if voice_channel:
+                if isinstance(voice_channel, discord.VoiceChannel):
+                    # Delete VoiceMeister if it is empty
+                    await self._process_voicemeister_delete(voice_channel)
+            else:
+                # VoiceMeister has already been deleted, clean up legacy text channel if it still exists
+                legacy_text_channel = await self.get_voicemeister_legacy_text_channel(
+                    voice_channel_settings["associated_text_channel"]
+                )
+                if legacy_text_channel:
+                    await legacy_text_channel.delete(
+                        reason="VoiceMeister: Associated voice channel deleted."
+                    )
+                await self.config.channel_from_id(voice_channel_id).clear()
+
+    async def _process_voicemeister_delete(self, voice_channel: discord.VoiceChannel) -> None:
+        """Process the deletion of an empty VoiceMeister."""
+        if len(voice_channel.members) == 0:
+            await voice_channel.delete(reason="VoiceMeister: Channel is empty.")
+            linked_channels = await self.config.guild(voice_channel.guild).associated_text_channel()
+            text_channel_id = linked_channels.pop(voice_channel.id, None)
+            if text_channel_id:
+                text_channel = voice_channel.guild.get_channel(text_channel_id)
+                if text_channel:
+                    await text_channel.delete()
+            await self.config.guild(voice_channel.guild).associated_text_channel.set(linked_channels)
+
+    async def get_voicemeister_legacy_text_channel(self, channel_id: Optional[int]) -> Optional[discord.TextChannel]:
+        """Get the legacy text channel associated with a VoiceMeister."""
+        if channel_id:
+            return self.bot.get_channel(channel_id)
+        return None
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        """Start cleanup task when the bot is ready."""
+        await self._cleanup_voicemeisters()
 
     async def locked(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Lock your VoiceMeister."""
@@ -280,7 +361,7 @@ class VoiceMeister(Cog):
     async def create_text_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Create a temporary text channel linked to the voice channel."""
         try:
-            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
             if channel.id in linked_channels:
                 existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
                 if existing_text_channel:
@@ -298,7 +379,7 @@ class VoiceMeister(Cog):
 
             # Log the linked text channel
             linked_channels[channel.id] = text_channel.id
-            await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+            await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
 
             await interaction.response.send_message(content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True)
         except discord.errors.HTTPException as e:
@@ -328,7 +409,7 @@ class VoiceMeister(Cog):
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Delete the voice channel and linked text channel."""
         try:
-            linked_channels = await self.config.guild(channel.guild).linked_text_channels()
+            linked_channels = await self.config.guild(channel.guild).associated_text_channel()
             text_channel_id = linked_channels.get(channel.id)
             if text_channel_id:
                 text_channel = channel.guild.get_channel(text_channel_id)
@@ -341,7 +422,7 @@ class VoiceMeister(Cog):
             # Clean up the stored data
             if channel.id in linked_channels:
                 del linked_channels[channel.id]
-                await self.config.guild(channel.guild).linked_text_channels.set(linked_channels)
+                await self.config.guild(channel.guild).associated_text_channel.set(linked_channels)
         except Exception as e:
             await self.handle_error(interaction, e)
 
@@ -359,7 +440,7 @@ class VoiceMeister(Cog):
     async def _process_allow_deny(self, interaction: discord.Interaction, action: str, channel: discord.VoiceChannel):
         """Process allowing or denying users/roles access to the VoiceMeister."""
         try:
-            text_channel = self.get_text_channel(channel)
+            text_channel = await self.get_text_channel(channel)
 
             if action == "allow":
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
@@ -381,10 +462,13 @@ class VoiceMeister(Cog):
         try:
             owners = await self.config.guild(channel.guild).owners()
             owner_id = owners.get(str(channel.id))
-            owner = channel.guild.get_member(owner_id)
+
+            # Fetch member info
+            owner = channel.guild.get_member(owner_id) if owner_id else None
             owner_name = owner.display_name if owner else "None"
             owner_mention = owner.mention if owner else "None"
 
+            # Channel information
             channel_age = datetime.datetime.utcnow() - channel.created_at.replace(tzinfo=None)
             bitrate = channel.bitrate // 1000  # Convert to kbps
             user_limit = channel.user_limit or "Unlimited"
@@ -408,13 +492,13 @@ class VoiceMeister(Cog):
             embed.add_field(name="Denied Members", value=denied_users_text)
             embed.add_field(name="Bitrate", value=f"{bitrate} kbps")
             embed.add_field(name="Time Created", value=channel.created_at.strftime("%Y-%m-%d %H:%M:%S"))
-            embed.add_field(name="Last Update", value=channel.edited_at.strftime("%Y-%m-%d %H:%M:%S") if channel.edited_at else "Never")
             embed.add_field(name="User Limit", value=user_limit)
             embed.add_field(name="Region", value=rtc_region)
 
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
-            await self.handle_error(interaction, e)
+            error_message = f"An error occurred: {str(e)}"
+            await interaction.response.send_message(content=error_message, ephemeral=True)
 
     async def change_region(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Change the region of the voice channel."""
@@ -469,7 +553,7 @@ class VoiceMeister(Cog):
 
     def get_text_channel(self, voice_channel: discord.VoiceChannel) -> Optional[discord.TextChannel]:
         """Find a text channel associated with the voice channel."""
-        linked_channels = self.config.guild(voice_channel.guild).linked_text_channels()
+        linked_channels = self.config.guild(voice_channel.guild).associated_text_channel()
         text_channel_id = linked_channels.get(voice_channel.id)
         return voice_channel.guild.get_channel(text_channel_id)
 
@@ -618,7 +702,7 @@ class VoiceMeister(Cog):
     ) -> discord.TextChannel | None:
         """Get the legacy text channel associated with a VoiceMeister."""
         if isinstance(voicemeister, discord.VoiceChannel):
-            linked_channels = await self.config.guild(voicemeister.guild).linked_text_channels()
+            linked_channels = await self.config.guild(voicemeister.guild).associated_text_channel()
             text_channel_id = linked_channels.get(voicemeister.id)
             return voicemeister.guild.get_channel(text_channel_id)
         return None
@@ -1677,16 +1761,30 @@ class VoiceMeisterView(Buttons):
         await interaction.response.send_modal(SetUserLimitModal(self.bot.get_cog("VoiceMeister"), channel))
 
     async def handle_hide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        if channel.overwrites_for(interaction.guild.default_role).view_channel is False:
-            await interaction.response.send_message("The channel is already hidden.", ephemeral=True)
-        else:
-            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "private", channel)
+        """Hide the channel by setting view permissions to False for @everyone."""
+        try:
+            overwrites = channel.overwrites_for(interaction.guild.default_role)
+            if overwrites.view_channel is False:
+                await interaction.response.send_message("The channel is already hidden.", ephemeral=True)
+            else:
+                overwrites.view_channel = False
+                await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+                await interaction.response.send_message("The channel is now hidden.", ephemeral=True)
+        except Exception as e:
+            await self.bot.get_cog("VoiceMeister").handle_error(interaction, e)
 
     async def handle_unhide(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        if channel.overwrites_for(interaction.guild.default_role).view_channel is True:
-            await interaction.response.send_message("The channel is already visible.", ephemeral=True)
-        else:
-            await self.bot.get_cog("VoiceMeister")._process_allow_deny(interaction, "public", channel)
+        """Unhide the channel by setting view permissions to True for @everyone."""
+        try:
+            overwrites = channel.overwrites_for(interaction.guild.default_role)
+            if overwrites.view_channel is True:
+                await interaction.response.send_message("The channel is already visible.", ephemeral=True)
+            else:
+                overwrites.view_channel = True
+                await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+                await interaction.response.send_message("The channel is now visible.", ephemeral=True)
+        except Exception as e:
+            await self.bot.get_cog("VoiceMeister").handle_error(interaction, e)
 
     async def handle_invite(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         invite = await channel.create_invite(max_uses=1, unique=True)
@@ -1725,7 +1823,41 @@ class VoiceMeisterView(Buttons):
         await self.bot.get_cog("VoiceMeister").delete_channel(interaction, channel)
 
     async def handle_create_text(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
-        await self.bot.get_cog("VoiceMeister").create_text_channel(interaction, channel)
+        """Create a temporary text channel linked to the voice channel."""
+        try:
+            cog = self.bot.get_cog("VoiceMeister")
+            linked_channels = await cog.config.guild(channel.guild).associated_text_channel()
+
+            if channel.id in linked_channels:
+                existing_text_channel = channel.guild.get_channel(linked_channels[channel.id])
+                if existing_text_channel:
+                    await interaction.response.send_message(
+                        f"You already have a linked text channel: {existing_text_channel.mention}.", ephemeral=True
+                    )
+                    return
+
+            category = channel.category
+            if not category:
+                await interaction.response.send_message("The voice channel is not in a category.", ephemeral=True)
+                return
+
+            # Create text channel with permissions matching the voice channel
+            overwrites = channel.overwrites
+            text_channel = await category.create_text_channel(
+                name=f"{channel.name}-text",
+                overwrites=overwrites,
+                topic=f"Temporary text channel for {channel.name}"
+            )
+
+            # Log the linked text channel
+            linked_channels[channel.id] = text_channel.id
+            await cog.config.guild(channel.guild).associated_text_channel.set(linked_channels)
+
+            await interaction.response.send_message(
+                content=f"Temporary text channel {text_channel.mention} created.", ephemeral=True
+            )
+        except Exception as e:
+            await cog.handle_error(interaction, e)
 
 # Select Menus
 
