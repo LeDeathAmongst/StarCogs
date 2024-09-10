@@ -9,6 +9,7 @@ from Star_Utils import Buttons, Dropdown, Cog, Settings
 from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
+import BytesIO
 
 MAX_CHANNEL_NAME_LENGTH = 100
 BITRATE_OPTIONS = [8, 16, 24, 32, 48, 56, 64, 72, 80, 88, 96]  # Bitrate options in kbps
