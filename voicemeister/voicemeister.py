@@ -473,6 +473,145 @@ class VoiceMeister(Cog):
 class VoiceMeisterSetCommands(MixinMeta, ABC):
     """The voicemeisterset command."""
 
+    def __init__(self, bot: Red):
+        self.bot = bot
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        # Initialize any other necessary attributes here
+
+    def get_template_data(self, member: discord.Member | discord.User) -> dict[str, str]:
+        """Retrieve template data for a member or user."""
+        return {
+            "username": member.display_name,
+            "mention": member.mention,
+            "id": str(member.id),
+            "game": member.activity.name if member.activity else "No Game"
+        }
+
+    def format_template_room_name(self, template: str, data: dict, num: int = 1) -> str:
+        """Format a room name based on a template."""
+        try:
+            formatted_name = template.format(**data)
+            if num > 1:
+                formatted_name += f" ({num})"
+            return formatted_name
+        except KeyError as e:
+            raise RuntimeError(f"Template variable {e} not found.")
+
+    async def is_admin_or_admin_role(self, who: discord.Role | discord.Member) -> bool:
+        """Check if a role or member is an admin."""
+        if isinstance(who, discord.Member):
+            return who.guild_permissions.administrator
+        elif isinstance(who, discord.Role):
+            return any(role.permissions.administrator for role in who.guild.roles if role.id == who.id)
+        return False
+
+    async def is_mod_or_mod_role(self, who: discord.Role | discord.Member) -> bool:
+        """Check if a role or member is a moderator."""
+        if isinstance(who, discord.Member):
+            return who.guild_permissions.manage_guild
+        elif isinstance(who, discord.Role):
+            return any(role.permissions.manage_guild for role in who.guild.roles if role.id == who.id)
+        return False
+
+    def check_perms_source_dest(
+        self,
+        voicemeister_source: discord.VoiceChannel,
+        category_dest: discord.CategoryChannel,
+        *,
+        with_manage_roles_guild: bool = False,
+        with_legacy_text_channel: bool = False,
+        with_optional_clone_perms: bool = False,
+        detailed: bool = False,
+    ) -> tuple[bool, bool, str | None]:
+        """Check permissions for source and destination channels."""
+        required_perms = {
+            "manage_channels": True,
+            "connect": True,
+            "speak": True
+        }
+        optional_perms = {
+            "manage_roles": with_manage_roles_guild,
+            "send_messages": with_legacy_text_channel,
+            "read_message_history": with_legacy_text_channel
+        }
+
+        def has_permissions(channel, perms):
+            permissions = channel.permissions_for(channel.guild.me)
+            return all(getattr(permissions, perm, None) == value for perm, value in perms.items())
+
+        source_required = has_permissions(voicemeister_source, required_perms)
+        dest_required = has_permissions(category_dest, required_perms)
+        source_optional = has_permissions(voicemeister_source, optional_perms)
+        dest_optional = has_permissions(category_dest, optional_perms)
+
+        required_check = source_required and dest_required
+        optional_check = source_optional and dest_optional
+
+        details = None
+        if detailed:
+            details = "Missing required permissions: " + ", ".join(
+                perm for perm, value in required_perms.items() if not value
+            )
+
+        return required_check, optional_check, details
+
+    async def get_all_voicemeister_source_configs(
+        self, guild: discord.Guild
+    ) -> dict[int, dict[str, Any]]:
+        """Get all VoiceMeister source configurations."""
+        return await self.config.custom("AUTOROOM_SOURCE", str(guild.id)).all()
+
+    async def get_voicemeister_source_config(
+        self, voicemeister_source: discord.VoiceChannel | discord.abc.GuildChannel | None
+    ) -> dict[str, Any] | None:
+        """Get a specific VoiceMeister source configuration."""
+        if voicemeister_source:
+            return await self.config.custom("AUTOROOM_SOURCE", str(voicemeister_source.guild.id), str(voicemeister_source.id)).all()
+        return None
+
+    async def get_voicemeister_info(
+        self, voicemeister: discord.VoiceChannel | None
+    ) -> dict[str, Any] | None:
+        """Get information about a VoiceMeister channel."""
+        if voicemeister:
+            return {
+                "name": voicemeister.name,
+                "bitrate": voicemeister.bitrate,
+                "user_limit": voicemeister.user_limit,
+                "region": voicemeister.rtc_region
+            }
+        return None
+
+    async def get_voicemeister_legacy_text_channel(
+        self, voicemeister: discord.VoiceChannel | int | None
+    ) -> discord.TextChannel | None:
+        """Get the legacy text channel associated with a VoiceMeister."""
+        if isinstance(voicemeister, discord.VoiceChannel):
+            linked_channels = await self.config.guild(voicemeister.guild).linked_text_channels()
+            text_channel_id = linked_channels.get(voicemeister.id)
+            return voicemeister.guild.get_channel(text_channel_id)
+        return None
+
+    @staticmethod
+    def check_if_member_or_role_allowed(
+        channel: discord.VoiceChannel,
+        member_or_role: discord.Member | discord.Role,
+    ) -> bool:
+        """Check if a member or role is allowed in a channel."""
+        overwrites = channel.overwrites_for(member_or_role)
+        return overwrites.connect is not False
+
+    def get_member_roles(
+        self, voicemeister_source: discord.VoiceChannel
+    ) -> list[discord.Role]:
+        """Get roles that can access a VoiceMeister source."""
+        return [role for role in voicemeister_source.guild.roles if role in voicemeister_source.overwrites]
+
+    async def get_bot_roles(self, guild: discord.Guild) -> list[discord.Role]:
+        """Get roles associated with the bot."""
+        bot_roles = await self.config.guild(guild).bot_access()
+        return [guild.get_role(role_id) for role_id in bot_roles if guild.get_role(role_id)]
+    
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
