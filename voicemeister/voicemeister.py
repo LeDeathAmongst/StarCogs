@@ -9,6 +9,7 @@ from Star_Utils import Buttons, Dropdown, Cog, Settings, Loop
 from .star_lib import Perms, SettingDisplay
 import datetime
 import asyncio
+import os
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import requests
