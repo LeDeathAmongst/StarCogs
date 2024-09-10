@@ -470,7 +470,7 @@ class VoiceMeister(Cog):
 
         return required_check, optional_check, details
 
-class VoiceMeisterSetCommands(MixinMeta, comamnds.Cog):
+class VoiceMeisterSetCommands(MixinMeta, commands.Cog):
     """The voicemeisterset command."""
 
     def __init__(self, bot: Red):
