@@ -18,12 +18,12 @@ for module in modules:
 del Star_Utils
 from redbot.core.bot import Red
 from redbot.core.utils import get_end_user_data_statement
-from .voicemeister import VoiceMeisterSetCommands, VoiceMeister
+from .voicemeister import VoiceMeister
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 
 async def setup(bot: Red) ->None:
     voicemeister_cog = VoiceMeister(bot)
-    voicemeisterset_cog = VoiceMeisterSetCommands(bot)
+    # voicemeisterset_cog = VoiceMeisterSetCommands(bot)
     await bot.add_cog(voicemeister_cog)
-    await bot.add_cog(voicemeisterset_cog)
+    # await bot.add_cog(voicemeisterset_cog)
