@@ -175,7 +175,7 @@ class VoiceMeister(Cog):
             font = ImageFont.load_default()
 
         # Use the bot's color for both border and text
-        bot_color = self.bot.get_embed_color()
+        bot_color = ctx.me.color.to_rgb()
 
         # Draw the boxes, emojis, and names
         for i, (emoji_name, name) in enumerate(actions):
