@@ -406,11 +406,14 @@ class VoiceMeister(commands.Cog):
         """Provide information about the current voice channel."""
         try:
             owners = await self.config.guild(channel.guild).owners()
-            owner_id = await owners.get(str(channel.id))
-            owner = await channel.guild.get_member(owner_id)
-            owner_name = await owner.display_name if owner else "None"
-            owner_mention = await owner.mention if owner else "None"
+            owner_id = owners.get(str(channel.id))
 
+            # Fetch member info
+            owner = channel.guild.get_member(owner_id) if owner_id else None
+            owner_name = owner.display_name if owner else "None"
+            owner_mention = owner.mention if owner else "None"
+
+            # Channel information
             channel_age = datetime.datetime.utcnow() - channel.created_at.replace(tzinfo=None)
             bitrate = channel.bitrate // 1000  # Convert to kbps
             user_limit = channel.user_limit or "Unlimited"
@@ -440,7 +443,8 @@ class VoiceMeister(commands.Cog):
 
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
-            await self.handle_error(interaction, e)
+            error_message = f"An error occurred: {str(e)}"
+            await interaction.response.send_message(content=error_message, ephemeral=True)
 
     async def change_region(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         """Change the region of the voice channel."""
