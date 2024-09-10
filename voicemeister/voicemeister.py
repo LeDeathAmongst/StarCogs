@@ -130,12 +130,12 @@ class VoiceMeister(Cog):
         await ctx.send(embed=embed, view=view, ephemeral=True)
 
     def _fancy_interface_description(self) -> str:
-        """Generate a fancy interface description with boxes and emojis."""
+        """Generate a neatly formatted interface description with boxes and emojis."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
-            ("hide", "Unhide"),
             ("hide", "Hide"),
+            ("unhide", "Unhide"),
             ("limit", "Limit"),
             ("ban", "Ban"),
             ("permit", "Permit"),
@@ -149,9 +149,16 @@ class VoiceMeister(Cog):
             ("delete", "Delete"),
             ("invite", "Invite")
         ]
-        description = ""
-        for emoji, name in actions:
-            description += f"**{DEFAULT_EMOJIS[emoji]} {name}**\n"
+
+    # Create a grid-like structure for better visual appeal
+        description = "```"
+        max_width = 4
+        for i, (emoji, name) in enumerate(actions):
+            if i % max_width == 0 and i != 0:
+                description += "\n"
+            description += f"{DEFAULT_EMOJIS[emoji]} {name:<12}"
+        description += "```"
+
         return description
 
     @commands.Cog.listener()
