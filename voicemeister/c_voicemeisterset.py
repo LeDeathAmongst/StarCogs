@@ -2,7 +2,6 @@ import discord
 from redbot.core import commands, checks
 from redbot.core.utils.chat_formatting import success, error, warning, info
 from Star_Utils import Cog
-from .voicemeister import VoiceMeister
 
 class VoiceMeisterSet(Cog):
     """Configure the VoiceMeister cog."""
