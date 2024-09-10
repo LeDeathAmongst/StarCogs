@@ -130,12 +130,12 @@ class VoiceMeister(Cog):
         await ctx.send(embed=embed, view=view, ephemeral=True)
 
     def _fancy_interface_description(self) -> str:
-        """Generate a fancy interface description with boxes and emojis."""
+        """Generate an interface description with each label in a separate box."""
         actions = [
             ("lock", "Lock"),
             ("unlock", "Unlock"),
-            ("hide", "Unhide"),
             ("hide", "Hide"),
+            ("unhide", "Unhide"),
             ("limit", "Limit"),
             ("ban", "Ban"),
             ("permit", "Permit"),
@@ -149,9 +149,34 @@ class VoiceMeister(Cog):
             ("delete", "Delete"),
             ("invite", "Invite")
         ]
+
+        # Define box drawing characters
+        top_left = "┌"
+        top_right = "┐"
+        bottom_left = "└"
+        bottom_right = "┘"
+        horizontal = "─"
+        vertical = "│"
+
+        # Define the width of each box
+        box_width = 20
+
         description = ""
         for emoji, name in actions:
-            description += f"**{DEFAULT_EMOJIS[emoji]} {name}**\n"
+            # Calculate padding for centering the text
+            label = f"{DEFAULT_EMOJIS[emoji]} {name}"
+            padding = (box_width - len(label)) // 2
+            padded_label = f"{' ' * padding}{label}{' ' * padding}"
+            if len(padded_label) < box_width:
+                padded_label += ' ' * (box_width - len(padded_label))
+
+            # Construct the box for each label
+            description += (
+                f"{top_left}{horizontal * (box_width - 2)}{top_right}\n"
+                f"{vertical}{padded_label}{vertical}\n"
+                f"{bottom_left}{horizontal * (box_width - 2)}{bottom_right}\n"
+            )
+
         return description
 
     @commands.Cog.listener()
@@ -470,7 +495,7 @@ class VoiceMeister(Cog):
 
         return required_check, optional_check, details
 
-class VoiceMeisterSetCommands(MixinMeta, commands.Cog):
+class VoiceMeisterSetCommands(commands.Cog):
     """The voicemeisterset command."""
 
     def __init__(self, bot: Red):
