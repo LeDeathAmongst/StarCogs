@@ -28,10 +28,10 @@ del Star_Utils
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 async def setup(bot: Red) -> None:
-    voicemeister_cog = VoiceMeister(bot)
-    voicemeister_commands_cog = VoiceMeisterCommands(bot)
-    voicemeister_set_cog = VoiceMeisterSet(bot)
     vm_interface = VMInterface(bot)
+    voicemeister_cog = VoiceMeister(bot)
+    voicemeister_commands_cog = VoiceMeisterCommands(bot, vm_interface)
+    voicemeister_set_cog = VoiceMeisterSet(bot)
 
     await bot.add_cog(voicemeister_cog)
     await bot.add_cog(voicemeister_commands_cog)
