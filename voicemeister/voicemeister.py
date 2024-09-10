@@ -50,6 +50,8 @@ class VoiceMeister(Cog):
         self.voicemeister_commands = VoiceMeisterCommands(bot, VMInterface)
         self.voicemeister_set = VoiceMeisterSet(bot)
         self.vm_interface = VMInterface(bot)
+        bot.add_cog(self.voicemeister_commands)
+        bot.add_cog(self.voicemeister_set)
 
         self.template = Template()
 
