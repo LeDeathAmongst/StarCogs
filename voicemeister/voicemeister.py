@@ -385,7 +385,7 @@ class VoiceMeister(commands.Cog):
     async def _process_allow_deny(self, interaction: discord.Interaction, action: str, channel: discord.VoiceChannel):
         """Process allowing or denying users/roles access to the VoiceMeister."""
         try:
-            text_channel = self.get_text_channel(channel)
+            text_channel = await self.get_text_channel(channel)
 
             if action == "allow":
                 await channel.set_permissions(interaction.guild.default_role, connect=True)
@@ -1769,7 +1769,7 @@ class DenyAllowSelect(Dropdown):
     async def on_select(self, view: Dropdown, interaction: discord.Interaction, options: list, cog, channel, action):
         try:
             selected_user_id = int(options[0])
-            user = await channel.guild.get_member(selected_user_id)
+            user = channel.guild.get_member(selected_user_id)
 
             if user:
                 permission = True if action == "allow" else False
