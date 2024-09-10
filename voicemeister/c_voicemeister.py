@@ -3,7 +3,7 @@ from redbot.core import commands
 from Star_Utils import Cog
 from .voicemeister import VoiceMeister
 
-class VoiceMeisterCommands(commands.Cog):
+class VoiceMeisterCommands(Cog):
     """Commands for managing existing VoiceMeisters."""
 
     def __init__(self, bot: commands.Bot):
