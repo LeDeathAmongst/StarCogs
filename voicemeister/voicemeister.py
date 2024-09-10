@@ -10,7 +10,7 @@ from .c_voicemeister import VoiceMeisterCommands
 from .c_voicemeisterset import VoiceMeisterSet
 from .vminterface import VMInterface
 
-class VoiceMeister(Cog):
+class VoiceMeister(Cog, VoiceMeisterCommands, VoiceMeisterSet, VMInterface):
     """Advanced voice channel control with join-to-create and more."""
 
     default_global_settings: ClassVar[dict[str, int]] = {"schema_version": 0}
