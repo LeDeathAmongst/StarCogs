@@ -1,18 +1,36 @@
+import os
+from io import BytesIO
+import requests
+from PIL import Image, ImageDraw, ImageFont
 import discord
 from redbot.core.bot import Red
-from Star_Utils import Buttons, Dropdown, Cog
-from .voicemeister import VoiceMeister
-from .c_voicemeister import VoiceMeisterCommands
-from .c_voicemeisterset import VoiceMeisterSet
+from Star_Utils import Buttons, Dropdown
+
+DEFAULT_EMOJIS = {
+    "lock": "<:Locked:1279848927587467447>",
+    "unlock": "<:Unlocked:1279848944570073109>",
+    "limit": "<:People:1279848931043573790>",
+    "hide": "<:Crossed_Eye:1279848957475819723>",
+    "unhide": "<:Eye:1279848986299076728>",
+    "invite": "<:Invite:1279857570634272818>",
+    "ban": "<:Hammer:1279848987922530365>",
+    "permit": "<:Check_Mark:1279848948491747411>",
+    "rename": "<:Pensil:1279848929126645879>",
+    "bitrate": "<:Headphones:1279848994327232584>",
+    "region": "<:Servers:1279848940786810891>",
+    "claim": "<:Crown:1279848977658810451>",
+    "transfer": "<:Person_With_Rotation:1279848936752021504>",
+    "info": "<:Information:1279848926383702056>",
+    "delete": "<:TrashCan:1279875131136806993>",
+    "create_text": "<:SpeachBubble:1279890650535428198>"
+}
 
 class VMInterface:
     """Interface and button handling for VoiceMeister."""
 
     def __init__(self, bot: Red):
         self.bot = bot
-        self.voicemeister_cog = bot.get_cog("VoiceMeister")
-        self.voicemeister_commands_cog = bot.get_cog("VoiceMeisterCommands")
-        self.voicemeister_set_cog = bot.get_cog("VoiceMeisterSet")
+        self.image_path = "interface.png"
 
     async def interface(self, ctx: discord.ext.commands.Context):
         """Open the voice interface."""
