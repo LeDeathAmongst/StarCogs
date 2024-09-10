@@ -158,11 +158,11 @@ class VoiceMeister(Cog):
         ]
 
         # Calculate the size of each box
-        box_width = 220
+        box_width = 150
         box_height = 70
         padding = 10
-        total_width = box_width * 4 + padding
-        total_height = box_height * 4 + padding
+        total_width = box_width * 4 + padding * 3
+        total_height = box_height * 4 + padding * 3
 
         # Create the image with a transparent background
         image = Image.new("RGBA", (total_width, total_height), color=(0, 0, 0, 0))
