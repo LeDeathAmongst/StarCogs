@@ -285,6 +285,9 @@ class VoiceMeister(commands.Cog):
         except Exception as e:
             print(f"Error deleting VoiceMeister: {e}")
 
+    async def cog_unload(self):
+        pass
+
     @commands.Cog.listener()
     async def on_ready(self):
         """Start cleanup task when the bot is ready."""
