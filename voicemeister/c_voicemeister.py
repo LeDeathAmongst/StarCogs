@@ -5,7 +5,7 @@ from .vminterface import VMInterface
 
 class VoiceMeisterCommands(Cog):
     """Commands for managing existing VoiceMeisters."""
-    def __init__(self, bot: commands.Bot, vm_interface):
+    def __init__(self, bot: commands.Bot, VMInterface):
         self.bot = bot
         self.voicemeister_cog = bot.get_cog("VoiceMeister")
 
