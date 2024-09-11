@@ -47,9 +47,11 @@ class VoiceMeister(Cog):
         self.config.init_custom("VOICEMEISTER_SOURCE", 2)
         self.config.register_custom("VOICEMEISTER_SOURCE", **self.default_voicemeister_source_settings)
         self.config.register_channel(**self.default_channel_settings)
-        self.voicemeister_commands = VoiceMeisterCommands(bot)
+        self.voicemeister_commands = VoiceMeisterCommands(bot, VMInterface)
         self.voicemeister_set = VoiceMeisterSet(bot)
         self.vm_interface = VMInterface(bot)
+        bot.add_cog(self.voicemeister_commands)
+        bot.add_cog(self.voicemeister_set)
 
         self.template = Template()
 
