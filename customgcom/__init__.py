@@ -31,4 +31,3 @@ __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 async def setup(bot: Red) -> None:
     cog = CustomGlobalCommands(bot)
     await bot.add_cog(cog)
->>>>>>> 845e6b14be2c7555d4a776d458d36009ed5af226
