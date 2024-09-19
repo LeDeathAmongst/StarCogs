@@ -1,25 +1,29 @@
 from Star_Utils import Cog
-IGNORE = ['']
+from redbot.core import errors
+import importlib
+import sys
+try:
+    import Star_Utils
+except ModuleNotFoundError:
+    raise errors.CogLoadError(
+        "The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary."
+        )
+modules = sorted([module for module in sys.modules if module.split('.')[0] ==
+    'Star_Utils'], reverse=True)
+for module in modules:
+    try:
+        importlib.reload(sys.modules[module])
+    except ModuleNotFoundError:
+        pass
+del Star_Utils
+from redbot.core.bot import Red
+from redbot.core.utils import get_end_user_data_statement
+from .autodocsite import AutoDocSite, AutoDocs
+__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 
-class CustomCmdFmt:
-
-    def __init__(self, bot, cmd, prefix, replace_botname, extended_info,
-        max_privilege_level, embedding_style, min_privilage_level):
-        self.bot = bot
-        self.cmd = cmd
-        self.prefix = prefix
-        self.replace_botname = replace_botname
-        self.extended_info = extended_info
-        self.max_privilege_level = max_privilege_level
-        self.embedding_style = embedding_style
-        self.min_privilage_level = min_privilage_level
-
-    def get_doc(self):
-        doc = f'### {self.cmd.qualified_name}\n\n'
-        if hasattr(self.cmd, 'help') and self.cmd.help:
-            doc += f'**Description:** {self.cmd.help}\n\n'
-        else:
-            doc += '**Description:** No description provided.\n\n'
-        doc += f'**Usage:** `{self.prefix}{self.cmd.qualified_name}`\n\n'
-        return doc
+async def setup(bot: Red) ->None:
+    autodoc_site_cog = AutoDocSite(bot)
+    autodocs_cog = AutoDocs(bot)
+    await bot.add_cog(autodoc_site_cog)
+    await bot.add_cog(autodocs_cog)
