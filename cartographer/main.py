@@ -31,16 +31,16 @@ class Cartographer(Cog):
     Backup & Restore tools for Discord servers.
 
     This cog can backup & restore the following:
-    - Bans (including reason)
+    - Bans (with reason)
     - Categories (permissions/order)
     - Text channels (permissions/order)
     - Voice channels (permissions/order)
-    - Forum channels  (permissions/order)[Not forum posts]
+    - Forum channels  (permissions/order)[Not posts]
     - Roles (permissions/color/name/icon and what members they're assigned to)
-    - Emojis (name/roles, Very slow and rate limit heavy)
-    - Stickers (name/description, Very slow and rate limit heavy)
+    - Emojis (name/roles)
+    - Stickers (name/description)
     - Members (roles and nicknames)
-    - Messages (Optional, can be disabled)
+    - Messages (Optional)
     - Server icon/banner/splash/discovery splash/description/name
     - All server verification/security settings
     """
