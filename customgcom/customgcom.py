@@ -76,6 +76,7 @@ class CustomGlobalCommands(Cog):
     @commands.group(invoke_without_command=True)
     @checks.is_owner()
     async def agcom(self, ctx, command=None):
+        """Create aliases for Global Custom Commands"""
         if ctx.invoked_subcommand is None:
             if command:
                 await ctx.invoke(self.ls_aliases, command)
@@ -141,6 +142,7 @@ class CustomGlobalCommands(Cog):
     @agcom.command(name='rm')
     @checks.is_owner()
     async def rm_aliases(self, ctx, *aliases):
+        """Remove an alias from a global cc"""
         count = 0
         skipped = []
 
