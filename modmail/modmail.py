@@ -2,6 +2,8 @@ import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog
+import os
+import datetime
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -12,7 +14,8 @@ class ModMail(Cog):
         default_guild = {
             "modmail_channel": None,
             "areply_name": "Support Team",
-            "preconfigured_messages": {}
+            "preconfigured_messages": {},
+            "authorized_users": []
         }
         self.config.register_guild(**default_guild)
 
@@ -31,15 +34,32 @@ class ModMail(Cog):
             if modmail_channel is None:
                 continue
 
-            # Create or get the thread for this user
-            thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.name}", type=discord.ChannelType.public_thread)
-            embed = discord.Embed(
-                title="New ModMail Message",
+            # Ensure only one thread per user
+            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}")
+            if existing_thread:
+                thread = existing_thread
+            else:
+                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}", type=discord.ChannelType.public_thread)
+
+                # Create and send the info embed
+                roles = ', '.join([role.name for role in message.author.roles if role.name != "@everyone"])
+                joined_at = message.author.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+                info_embed = discord.Embed(
+                    title=message.author.display_name,
+                    description=f"User ID: {message.author.id}",
+                    color=discord.Color.blue()
+                )
+                info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
+                info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+                await thread.send(embed=info_embed)
+
+            # Send the message content
+            content_embed = discord.Embed(
                 description=message.content,
                 color=discord.Color.blue()
             )
-            embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
-            await thread.send(embed=embed)
+            content_embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
+            await thread.send(embed=content_embed)
             break
 
     @commands.guild_only()
@@ -53,14 +73,14 @@ class ModMail(Cog):
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
     @commands.command(aliases=["r"])
-    async def reply(self, ctx: commands.Context, user_id: int = None, *, response: str):
-        """Reply to a user via ModMail."""
-        if ctx.channel.type == discord.ChannelType.public_thread and user_id is None:
-            # If the command is used in a modmail thread without a user_id, infer the user from the thread name
-            user_name = ctx.channel.name.split("ModMail-")[-1]
-            user = discord.utils.get(ctx.guild.members, name=user_name)
-        else:
-            user = self.bot.get_user(user_id)
+    async def reply(self, ctx: commands.Context, *, response: str):
+        """Reply to a user via ModMail from within a thread."""
+        if ctx.channel.type != discord.ChannelType.public_thread:
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
+
+        user_id_str = ctx.channel.name.split("ModMail-")[-1]
+        user = self.bot.get_user(int(user_id_str))
 
         if user is None:
             await ctx.send("User not found.")
@@ -68,35 +88,26 @@ class ModMail(Cog):
 
         # Send the response to the user
         embed = discord.Embed(
-            title=ctx.guild.name,
+            title=user.display_name,
             description=response,
             color=discord.Color.green()
         )
         await user.send(embed=embed)
 
         # Log the response in the thread
-        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
-        if modmail_channel_id:
-            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
-            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
-            if thread:
-                await thread.send(f"Reply sent to {user.mention}: {response}")
-            else:
-                await ctx.send("No active thread found for this user.")
-        else:
-            await ctx.send("ModMail channel not set.")
+        await ctx.send(f"Reply sent to {user.mention}: {response}")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
     @commands.command(aliases=["ar"])
-    async def areply(self, ctx: commands.Context, user_id: int = None, *, response: str):
-        """Reply to a user via ModMail with a generic support team title."""
-        if ctx.channel.type == discord.ChannelType.public_thread and user_id is None:
-            # If the command is used in a modmail thread without a user_id, infer the user from the thread name
-            user_name = ctx.channel.name.split("ModMail-")[-1]
-            user = discord.utils.get(ctx.guild.members, name=user_name)
-        else:
-            user = self.bot.get_user(user_id)
+    async def areply(self, ctx: commands.Context, *, response: str):
+        """Reply to a user via ModMail with a generic support team title from within a thread."""
+        if ctx.channel.type != discord.ChannelType.public_thread:
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
+
+        user_id_str = ctx.channel.name.split("ModMail-")[-1]
+        user = self.bot.get_user(int(user_id_str))
 
         if user is None:
             await ctx.send("User not found.")
@@ -113,16 +124,7 @@ class ModMail(Cog):
         await user.send(embed=embed)
 
         # Log the response in the thread
-        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
-        if modmail_channel_id:
-            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
-            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
-            if thread:
-                await thread.send(f"Reply sent to {user.mention}: {response}")
-            else:
-                await ctx.send("No active thread found for this user.")
-        else:
-            await ctx.send("ModMail channel not set.")
+        await ctx.send(f"Reply sent to {user.mention}: {response}")
 
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
@@ -134,64 +136,149 @@ class ModMail(Cog):
 
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
-    @commands.command()
-    async def addmessage(self, ctx: commands.Context, key: str, *, message: str):
-        """Add a pre-configured message."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        preconfigured_messages[key] = message
-        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        await ctx.send(f"Pre-configured message '{key}' added.")
+    @commands.group()
+    async def snippet(self, ctx: commands.Context):
+        """Manage pre-configured message snippets."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Please specify a valid subcommand: add, send, edit, remove.")
 
-    @commands.guild_only()
-    @commands.mod_or_permissions(manage_messages=True)
-    @commands.command()
-    async def sendmessage(self, ctx: commands.Context, user_id: int, key: str):
-        """Send a pre-configured message to a user."""
-        user = self.bot.get_user(user_id)
+    @snippet.command(name="add")
+    async def snippet_add(self, ctx: commands.Context, name: str, *, message: str):
+        """Add a new snippet."""
+        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        preconfigured_messages[name] = message
+        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
+        await ctx.send(f"Snippet '{name}' added.")
+
+    @snippet.command(name="send")
+    async def snippet_send(self, ctx: commands.Context, name: str):
+        """Send a snippet to a user from within a thread."""
+        if ctx.channel.type != discord.ChannelType.public_thread:
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
+
+        user_id_str = ctx.channel.name.split("ModMail-")[-1]
+        user = self.bot.get_user(int(user_id_str))
+
         if user is None:
             await ctx.send("User not found.")
             return
 
         preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if key not in preconfigured_messages:
-            await ctx.send(f"No pre-configured message found with key '{key}'.")
+        if name not in preconfigured_messages:
+            await ctx.send(f"No snippet found with name '{name}'.")
             return
 
-        message = preconfigured_messages[key]
+        message = preconfigured_messages[name]
 
-        # Send the pre-configured message to the user
+        # Send the snippet message to the user
         embed = discord.Embed(
-            title=ctx.guild.name,
+            title=user.display_name,
             description=message,
             color=discord.Color.green()
         )
         await user.send(embed=embed)
 
         # Log the response in the thread
-        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
-        if modmail_channel_id:
-            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
-            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
-            if thread:
-                await thread.send(f"Pre-configured message '{key}' sent to {user.mention}.")
-            else:
-                await ctx.send("No active thread found for this user.")
-        else:
-            await ctx.send("ModMail channel not set.")
+        await ctx.send(f"Snippet '{name}' sent to {user.mention}.")
+
+    @snippet.command(name="edit")
+    async def snippet_edit(self, ctx: commands.Context, name: str, *, new_content: str):
+        """Edit an existing snippet."""
+        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        if name not in preconfigured_messages:
+            await ctx.send(f"No snippet found with name '{name}'.")
+            return
+
+        preconfigured_messages[name] = new_content
+        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
+        await ctx.send(f"Snippet '{name}' updated.")
+
+    @snippet.command(name="remove")
+    async def snippet_remove(self, ctx: commands.Context, name: str):
+        """Remove a snippet."""
+        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        if name not in preconfigured_messages:
+            await ctx.send(f"No snippet found with name '{name}'.")
+            return
+
+        del preconfigured_messages[name]
+        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
+        await ctx.send(f"Snippet '{name}' removed.")
 
     @commands.guild_only()
+    @commands.group()
+    async def thread(self, ctx: commands.Context):
+        """Manage threads."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Please specify a valid subcommand: close, open, add.")
+
+    @thread.command(name="close")
     @commands.mod_or_permissions(manage_messages=True)
-    @commands.command()
-    async def close_thread(self, ctx: commands.Context, user_id: int):
-        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
-        if modmail_channel_id:
-            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
-            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{ctx.author.display_name}")
-            if thread:
-                await thread.send("This thread is now closed.")
-                await thread.delete()
-                await ctx.send("Thread closed successfully.")
-            else:
-                await ctx.send("No active thread found for this user.")
-        else:
-            await ctx.send("ModMail channel not set.")
+    async def thread_close(self, ctx: commands.Context):
+        """Close the modmail thread and generate a log."""
+        if ctx.channel.type != discord.ChannelType.public_thread:
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
+
+        # Generate log
+        messages = await ctx.channel.history(oldest_first=True).flatten()
+        log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
+        log_filename = f"modmail_log_{ctx.channel.name}.txt"
+        with open(log_filename, "w", encoding="utf-8") as log_file:
+            log_file.write(log_content)
+
+        await ctx.send("This thread is now closed.")
+        await ctx.channel.delete()
+
+    @thread.command(name="open")
+    async def thread_open(self, ctx: commands.Context):
+        """Open a modmail thread with the server."""
+        if ctx.channel.type != discord.DMChannel:
+            await ctx.send("This command can only be used in DMs with the bot.")
+            return
+
+        for guild in self.bot.guilds:
+            modmail_channel_id = await self.config.guild(guild).modmail_channel()
+            if not modmail_channel_id:
+                continue
+
+            modmail_channel = guild.get_channel(modmail_channel_id)
+            if modmail_channel is None:
+                continue
+
+            # Ensure only one thread per user
+            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{ctx.author.id}")
+            if existing_thread:
+                await ctx.send("You already have an open thread.")
+                return
+
+            thread = await modmail_channel.create_thread(name=f"ModMail-{ctx.author.id}", type=discord.ChannelType.public_thread)
+
+            # Create and send the info embed
+            roles = ', '.join([role.name for role in ctx.author.roles if role.name != "@everyone"])
+            joined_at = ctx.author.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+            info_embed = discord.Embed(
+                title=ctx.author.display_name,
+                description=f"User ID: {ctx.author.id}",
+                color=discord.Color.blue()
+            )
+            info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
+            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+            await thread.send(embed=info_embed)
+
+            await ctx.send("Your modmail thread has been opened.")
+            break
+
+    @thread.command(name="add")
+    @commands.mod_or_permissions(manage_messages=True)
+    async def thread_add(self, ctx: commands.Context, user: discord.User):
+        """Add a user to receive replies for threads in the DMs."""
+        authorized_users = await self.config.guild(ctx.guild).authorized_users()
+        if user.id in authorized_users:
+            await ctx.send(f"{user.display_name} is already authorized to receive thread replies.")
+            return
+
+        authorized_users.append(user.id)
+        await self.config.guild(ctx.guild).authorized_users.set(authorized_users)
+        await ctx.send(f"{user.display_name} has been added to receive thread replies.")
