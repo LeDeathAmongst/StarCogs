@@ -29,19 +29,15 @@ from .utils import (
     has_hybrid_permissions,
 )
 
-log: logging.Logger = logging.getLogger("red.seina.purge")
+log: logging.Logger = logging.getLogger("red.star.purge")
 
 
 class Purge(Cog):
     __doc__ = CleanupCog.__doc__
 
-    __author__: Final[List[str]] = ["inthedark.org"]
-    __version__: Final[str] = "0.1.3"
-
     def __init__(self, bot: Red) -> None:
-        super().__init__()
-        self.bot: Red = bot
-
+        super().__init__(bot)
+        self.bot = bot
         self.task: asyncio.Task[Any] = self._create_task(self._initialize())
 
     @staticmethod
@@ -72,16 +68,6 @@ class Purge(Cog):
         task = asyncio.create_task(coroutine, name=name)
         task.add_done_callback(self._task_done_callback)
         return task
-
-    def format_help_for_context(self, ctx: commands.Context) -> str:
-        pre_processed = super().format_help_for_context(ctx) or ""
-        n = "\n" if "\n\n" not in pre_processed else ""
-        text = [
-            f"{pre_processed}{n}",
-            f"Version: **{self.__version__}**",
-            f"Author: **{humanize_list(self.__author__)}**",
-        ]
-        return "\n".join(text)
 
     async def _initialize(self) -> None:
         await self.bot.wait_until_red_ready()
