@@ -1,154 +1,95 @@
-"""
-ModMail module
-"""
-
 import discord
-import asyncio
-from redbot.core import commands
-from redbot.core import Config as config
-from discord.ext.commands import has_permissions, MissingPermissions, BadArgument
+from redbot.core import commands, Config
+from redbot.core.bot import Red
 from Star_Utils import Cog
 
 class ModMail(Cog):
-    def __init__(self, bot):
+    """A modmail cog for Red-DiscordBot."""
+
+    def __init__(self, bot: Red):
         self.bot = bot
-
-    @commands.command()
-    @commands.guild_only()
-    @has_permissions(administrator=True)
-    async def setup(self, ctx):
-        await asyncio.sleep(2)
-        channel = discord.utils.get(ctx.guild.channels, name=config.mails_channel_name)
-        if channel is None:
-            guild = ctx.guild
-            overwrites = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                guild.me: discord.PermissionOverwrite(read_messages=True)
-            }
-
-            mod_channel = await guild.create_text_channel(config.mails_channel_name, overwrites=overwrites)
-            embed = discord.Embed(
-                title='Setup completed',
-                description=f"{mod_channel.name} is created.",
-                color = discord.Color.green(),
-            )
-        else:
-            mod_channel = channel
-            embed = discord.Embed(
-                title='Setup completed',
-                description=f"{mod_channel.name} exists",
-                color = discord.Color.blue(),
-            )
-        
-        await ctx.send(embed=embed)
-
-        overwrites2 = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            guild.me: discord.PermissionOverwrite(read_messages=True)
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        default_guild = {
+            "modmail_channel": None
         }
-        try:
-            mod_logs = await guild.create_text_channel("mod-logs", overwrites=overwrites2)
-        except:
-            print("couldn't create a mod-logs channel, maybe it exists")
-
-    @setup.error
-    async def setup_error(self, ctx, error):
-        if isinstance(error, MissingPermissions):
-            embed = discord.Embed(
-                title='Setup',
-                description="You don't have permissions to manage mod mails",
-                color = discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
-        # else:
-        #     embed = discord.Embed(
-        #         title='Server Only Command',
-        #         description="You can't use this command here",
-        #         color = discord.Color.red(),
-        #     )
-        #     await ctx.send(embed=embed)
+        self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        #print(f"{message.author} sent : {message.content}")
-        if not message.content.startswith('[]'):
-            if isinstance(message.channel, discord.channel.DMChannel) and message.author != self.bot.user:
-                try:
-                    # send to server
-                    embed_to = discord.Embed(
-                        title='Mod Mail Received',
-                        description=f"sent by: {message.author} \nmessage: {message.content} \nuser id: {message.author.id}",
-                        color = discord.Color.blue(),
-                    )
-                    embed_to.set_footer(text="use reply <id> <message>")
-                    await config.mails_channel.send(embed=embed_to)
+    async def on_message(self, message: discord.Message):
+        if message.author.bot or not isinstance(message.channel, discord.DMChannel):
+            return
 
-                    # report result to user
-                    embed_reply = discord.Embed(
-                        title='Mail sent',
-                        description=f"Your message has been sent to moderators",
-                        color = discord.Color.green(),
-                    )
-                    await message.author.send(embed=embed_reply)
-                except:
-                    # report result to user
-                    embed_reply = discord.Embed(
-                        title='Sorry 😔',
-                        description=f"I couldn't send your message to moderators",
-                        color = discord.Color.red(),
-                    )
-                    await message.author.send(embed=embed_reply)
+        # User sent a DM to the bot
+        for guild in self.bot.guilds:
+            modmail_channel_id = await self.config.guild(guild).modmail_channel()
+            if not modmail_channel_id:
+                continue
 
-    @commands.command()
+            modmail_channel = guild.get_channel(modmail_channel_id)
+            if modmail_channel is None:
+                continue
+
+            # Create or get the thread for this user
+            thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.name}", type=discord.ChannelType.public_thread)
+            embed = discord.Embed(
+                title="New ModMail Message",
+                description=message.content,
+                color=discord.Color.blue()
+            )
+            embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
+            await thread.send(embed=embed)
+            break
+
     @commands.guild_only()
-    async def reply(self, ctx, id: int = 0, *, msg: str = "moderator is replying..."):
-        await ctx.trigger_typing()
-        message = msg
-        user = self.bot.get_user(id)
-        if user is not None:
-            # EMBED report result to user
-            embed_reply = discord.Embed(
-                title='Reply from Moderator',
-                # title=f'Replied by {ctx.author.name}',
-                description=f"{message}",
-                color = discord.Color.blue(),
-            )
-            await user.send(embed=embed_reply)
+    @commands.admin_or_permissions(administrator=True)
+    @commands.command()
+    async def setmodmail(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the modmail channel for this server."""
+        await self.config.guild(ctx.guild).modmail_channel.set(channel.id)
+        await ctx.send(f"ModMail channel set to {channel.mention}")
 
-            # EMBED show results to author
-            embed_result= discord.Embed(
-                title='Message sent succesfully',
-                description=f"message sent to {user.name}",
-                color = discord.Color.green(),
-            )
-            await ctx.send(embed=embed_result)
-        elif user is None:
-            # EMBED show results to author
-            embed_result = discord.Embed(
-                title='Failed to send message',
-                description=f"can't find user with the id {id}",
-                color = discord.Color.red(),
-            )
-            await ctx.send(embed=embed_result)
+    @commands.guild_only()
+    @commands.mod_or_permissions(manage_messages=True)
+    @commands.command()
+    async def reply(self, ctx: commands.Context, user_id: int, *, response: str):
+        user = self.bot.get_user(user_id)
+        if user is None:
+            await ctx.send("User not found.")
+            return
 
-    @reply.error
-    async def reply_error(self, ctx, error):
-        if isinstance(error, BadArgument):
-            embed = discord.Embed(
-                title="That's not how you use it",
-                description="the correct format is <prefix>reply <id> <message>",
-                color = discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
+        # Send the response to the user
+        embed = discord.Embed(
+            title="ModMail Reply",
+            description=response,
+            color=discord.Color.green()
+        )
+        await user.send(embed=embed)
+
+        # Log the response in the thread
+        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
+        if modmail_channel_id:
+            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
+            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
+            if thread:
+                await thread.send(f"Reply sent to {user.mention}: {response}")
+            else:
+                await ctx.send("No active thread found for this user.")
         else:
-            embed = discord.Embed(
-                title='Syntax error',
-                description="recheck your command.\nsee help module of the command for details",
-                color = discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
+            await ctx.send("ModMail channel not set.")
 
-#===================================== ADD COG ======================================#
-
-def setup(bot): # a extension must have a setup function
-	bot.add_cog(ModMail(bot))
+    @commands.guild_only()
+    @commands.mod_or_permissions(manage_messages=True)
+    @commands.command()
+    async def close_thread(self, ctx: commands.Context, user_id: int):
+        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
+        if modmail_channel_id:
+            modmail_channel = ctx.guild.get_channel(modmail_channel_id)
+            thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{ctx.author.display_name}")
+            if thread:
+                await thread.send("This thread is now closed.")
+                await thread.delete()
+                await ctx.send("Thread closed successfully.")
+            else:
+                await ctx.send("No active thread found for this user.")
+        else:
+            await ctx.send("ModMail channel not set.")
