@@ -16,7 +16,6 @@ class ModMail(Cog):
     @commands.guild_only()
     @has_permissions(administrator=True)
     async def setup(self, ctx):
-        await ctx.trigger_typing()
         await asyncio.sleep(2)
         channel = discord.utils.get(ctx.guild.channels, name=config.mails_channel_name)
         if channel is None:
