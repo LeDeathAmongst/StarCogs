@@ -1,3 +1,4 @@
+import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
