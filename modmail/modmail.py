@@ -275,12 +275,20 @@ class ModMail(Cog):
             await ctx.send("This command can only be used within a modmail thread.")
             return
 
-        # Collect messages from the async generator
-        messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
-        log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
-        log_filename = f"modmail_log_{ctx.channel.name}.txt"
-        with open(log_filename, "w", encoding="utf-8") as log_file:
-            log_file.write(log_content)
+        # Get the log channel ID from the config
+        log_channel_id = await self.config.guild(ctx.guild).log_channel()
+        log_channel = ctx.guild.get_channel(log_channel_id) if log_channel_id else None
+
+        if log_channel:
+            # Collect messages from the async generator
+            messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
+            log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
+
+            # Create a file-like object for the log content
+            log_file = discord.File(fp=log_content.encode('utf-8'), filename=f"modmail-{ctx.channel.name}.txt")
+
+            # Send the log file to the log channel
+            await log_channel.send(content=f"Log for {ctx.channel.name}", file=log_file)
 
         await ctx.send("This thread is now closed.")
         await ctx.channel.delete()
@@ -350,3 +358,61 @@ class ModMail(Cog):
         authorized_users.append(user.id)
         await self.config.guild(ctx.guild).authorized_users.set(authorized_users)
         await ctx.send(f"{user.display_name} has been added to receive thread replies.")
+
+    @commands.guild_only()
+    @commands.admin_or_permissions(administrator=True)
+    @commands.command()
+    async def setup(self, ctx: commands.Context):
+        """Setup the modmail system with initial configuration."""
+        questions = [
+            "What channel for the threads?",
+            "What channel for the logs? (Type `None` for no logs)",
+            "What name for areply embed? (Type `None` for default 'Support Team')"
+        ]
+        answers = []
+
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        await ctx.send("Let's set up your ModMail system. Type `cancel` at any time to stop the setup.")
+
+        for question in questions:
+            await ctx.send(question)
+            try:
+                message = await self.bot.wait_for('message', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.send("Setup timed out. Please try again.")
+                return
+
+            if message.content.lower() == "cancel":
+                await ctx.send("Setup has been cancelled.")
+                return
+
+            answers.append(message.content)
+
+        # Process answers
+        try:
+            # Set modmail channel
+            modmail_channel = discord.utils.get(ctx.guild.channels, mention=answers[0]) or ctx.guild.get_channel(int(answers[0]))
+            if not modmail_channel or not isinstance(modmail_channel, discord.TextChannel):
+                await ctx.send("Invalid channel for threads. Setup failed.")
+                return
+            await self.config.guild(ctx.guild).modmail_channel.set(modmail_channel.id)
+
+            # Set log channel
+            if answers[1].lower() != "none":
+                log_channel = discord.utils.get(ctx.guild.channels, mention=answers[1]) or ctx.guild.get_channel(int(answers[1]))
+                if not log_channel or not isinstance(log_channel, discord.TextChannel):
+                    await ctx.send("Invalid channel for logs. Setup failed.")
+                    return
+                await self.config.guild(ctx.guild).log_channel.set(log_channel.id)
+            else:
+                await self.config.guild(ctx.guild).log_channel.set(None)
+
+            # Set areply name
+            areply_name = answers[2] if answers[2].lower() != "none" else "Support Team"
+            await self.config.guild(ctx.guild).areply_name.set(areply_name)
+
+            await ctx.send("ModMail setup complete!")
+        except Exception as e:
+            await ctx.send(f"An error occurred during setup: {e}")
