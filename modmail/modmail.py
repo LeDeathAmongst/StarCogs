@@ -232,11 +232,14 @@ class ModMail(Cog):
         await ctx.channel.delete()
 
     @thread.command(name="open")
-    async def thread_open(self, ctx: commands.Context, user: discord.User):
+    async def thread_open(self, ctx: commands.Context, user: discord.Member = None):
         """Open a modmail thread with the server."""
         if ctx.channel.type != discord.ChannelType.text:
             await ctx.send("This command can only be used in a server text channel.")
             return
+
+        if user is None:
+            user = ctx.author
 
         modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
         if not modmail_channel_id:
