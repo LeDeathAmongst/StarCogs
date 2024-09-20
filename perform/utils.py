@@ -31,7 +31,9 @@ async def has_webhook_perms(ctx: commands.Context) -> bool:
 
 async def has_embed_perms(ctx: commands.Context) -> bool:
     if isinstance(ctx.channel, discord.DMChannel):
-        return True  # Allow embeds in DMs
+        return True  # Assume embed permissions are allowed in DMs
+    if ctx.channel.guild is None:
+        return False  # If there's no guild, assume no permissions
     perm = ctx.channel.permissions_for(ctx.channel.guild.me).embed_links
     return perm is True
 
