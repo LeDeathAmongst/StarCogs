@@ -4,7 +4,6 @@ from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
 from datetime import datetime
-import pdfkit
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -394,35 +393,34 @@ class ModMail(Cog):
             # Create HTML content
             html_content = "<html><head><title>ModMail Transcript</title></head><body>"
             html_content += f"<h2>Transcript for {ctx.channel.name}</h2>"
+            html_content += "<ul>"
 
             for msg in messages:
                 timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S")
                 author = msg.author.display_name
                 content = msg.content.replace('\n', '<br>')
 
-                html_content += f"<div><strong>{timestamp} - {author}:</strong> {content}</div>"
+                html_content += f"<li><strong>{timestamp} - {author}:</strong> {content}</li>"
 
                 for embed in msg.embeds:
-                    html_content += "<div style='margin-left: 20px;'><strong>Embed:</strong><div>"
+                    html_content += "<li><strong>Embed:</strong><ul>"
                     if embed.title:
-                        html_content += f"<div><strong>Title:</strong> {embed.title}</div>"
+                        html_content += f"<li><strong>Title:</strong> {embed.title}</li>"
                     if embed.description:
-                        html_content += f"<div><strong>Description:</strong> {embed.description}</div>"
+                        html_content += f"<li><strong>Description:</strong> {embed.description}</li>"
                     for field in embed.fields:
-                        html_content += f"<div><strong>{field.name}:</strong> {field.value}</div>"
+                        html_content += f"<li><strong>{field.name}:</strong> {field.value}</li>"
                     if embed.footer.text:
-                        html_content += f"<div><strong>Footer:</strong> {embed.footer.text}</div>"
-                    html_content += "</div></div>"
+                        html_content += f"<li><strong>Footer:</strong> {embed.footer.text}</li>"
+                    html_content += "</ul></li>"
 
-            html_content += "</body></html>"
+            html_content += "</ul></body></html>"
 
-            # Convert HTML to PDF
-            pdf_output = io.BytesIO()
-            pdfkit.from_string(html_content, pdf_output, options={"quiet": ""})
+            # Use io.BytesIO to create a file-like object
+            log_file = io.BytesIO(html_content.encode('utf-8'))
 
-            # Send the PDF file to the log channel
-            pdf_output.seek(0)
-            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=pdf_output, filename=f"modmail-{ctx.channel.name}.pdf"))
+            # Send the log file to the log channel
+            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
         await ctx.send("This thread is now closed.")
         await ctx.channel.delete()
