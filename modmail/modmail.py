@@ -4,11 +4,11 @@ ModMail module
 
 import discord
 import asyncio
-from discord.ext import commands
+from redbot.core import commands
 from discord.ext.commands import has_permissions, MissingPermissions, BadArgument
+from Starry_Utils import Cog
 
-
-class ModMail(commands.Cog):
+class ModMail(Cog):
     def __init__(self, bot):
         self.bot = bot
 
