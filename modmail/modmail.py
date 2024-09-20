@@ -221,8 +221,8 @@ class ModMail(Cog):
             await ctx.send("This command can only be used within a modmail thread.")
             return
 
-        # Generate log
-        messages = await ctx.channel.history(oldest_first=True).flatten()
+        # Collect messages from the async generator
+        messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
         log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
         log_filename = f"modmail_log_{ctx.channel.name}.txt"
         with open(log_filename, "w", encoding="utf-8") as log_file:
