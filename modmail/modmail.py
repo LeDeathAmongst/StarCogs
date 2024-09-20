@@ -63,11 +63,11 @@ class ModMail(Cog):
                 continue
 
             # Ensure only one thread per user
-            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}")
+            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.display_name}")
             if existing_thread:
                 thread = existing_thread
             else:
-                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}", type=discord.ChannelType.public_thread)
+                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.display_name}", type=discord.ChannelType.public_thread)
 
                 # Create and send the info embed
                 roles = ', '.join([role.name for role in message.author.roles if role.name != "@everyone"])
@@ -86,7 +86,8 @@ class ModMail(Cog):
                 description=message.content,
                 color=discord.Color.blue()
             )
-            content_embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
+            # Set the author's name and ID in the title, and their profile picture as the thumbnail
+            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
             await thread.send(embed=content_embed)
             break
 
@@ -137,6 +138,14 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
+        # Set thumbnail to moderator's profile picture
+        embed.set_thumbnail(url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+
+        # Add footer with user's highest hoisted role
+        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+        footer_text = highest_role.name if highest_role else "No role"
+        embed.set_footer(text=footer_text)
+
         await user.send(embed=embed)
 
         # Log the response in the thread
@@ -166,6 +175,14 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
+        # Set thumbnail to server's icon
+        embed.set_thumbnail(url=ctx.guild.icon.url)
+
+        # Add footer with user's highest hoisted role and "Moderator/Admin"
+        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+        footer_text = f"{highest_role.name if highest_role else 'No role'} - Moderator/Admin"
+        embed.set_footer(text=footer_text)
+
         await user.send(embed=embed)
 
         # Log the response in the thread
@@ -289,12 +306,12 @@ class ModMail(Cog):
             return
 
         # Ensure only one thread per user
-        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.id}")
+        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
         if existing_thread:
             await ctx.send(f"{user.display_name} already has an open thread.")
             return
 
-        thread = await modmail_channel.create_thread(name=f"ModMail-{user.id}", type=discord.ChannelType.public_thread)
+        thread = await modmail_channel.create_thread(name=f"ModMail-{user.display_name}", type=discord.ChannelType.public_thread)
 
         # Create and send the info embed
         roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
