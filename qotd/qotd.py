@@ -1,10 +1,12 @@
+from Star_Utils import Cog
 import discord
 from redbot.core import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import requests
 from datetime import datetime
 
-class QOTD(commands.Cog):
+
+class QOTD(Cog):
     """
     A cog that posts a random question of the day to a designated channel.
     """
@@ -12,10 +14,11 @@ class QOTD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.scheduler = AsyncIOScheduler()
-        self.scheduler.add_job(self.post_question_of_the_day, 'cron', hour=6)  # Schedule the job to run daily at 6:00 AM
+        self.scheduler.add_job(self.post_question_of_the_day, 'cron', hour=6)
         self.scheduler.start()
-        self.question_channels = {}  # Dictionary to store question channels per server
-        self.api_endpoint = "https://opentdb.com/api.php?amount=1&type=multiple"  # Open Trivia Database endpoint
+        self.question_channels = {}
+        self.api_endpoint = (
+            'https://opentdb.com/api.php?amount=1&type=multiple')
 
     def get_random_question(self):
         """
@@ -27,10 +30,10 @@ class QOTD(commands.Cog):
         response = requests.get(self.api_endpoint)
         if response.status_code == 200:
             question_data = response.json()
-            if question_data["results"]:
-                question = question_data["results"][0].get("question")  # Assuming the API returns a list of questions
+            if question_data['results']:
+                question = question_data['results'][0].get('question')
                 return question
-        return "No question available today. Check back tomorrow!"
+        return 'No question available today. Check back tomorrow!'
 
     async def post_question_of_the_day(self):
         """
@@ -41,16 +44,24 @@ class QOTD(commands.Cog):
                 try:
                     question = self.get_random_question()
                     if question:
-                        embed = discord.Embed(title="Question of the Day", color=0x00f0ff)
-                        embed.add_field(name="Question", value=question)
-                        embed.add_field(name="Answer this question in the attached field!", value="Join the thread to share your answer!")
-                        message = await channel.send(embed=embed)  # Ensure channel is a discord.TextChannel
-                        thread_name = f"QOTD Answers {datetime.now().strftime('%Y-%m-%d')}"
-                        await message.create_thread(name=thread_name, content="Welcome to the thread for answering today's Question of the Day!")
+                        embed = discord.Embed(title='Question of the Day',
+                            color=61695)
+                        embed.add_field(name='Question', value=question)
+                        embed.add_field(name=
+                            'Answer this question in the attached field!',
+                            value='Join the thread to share your answer!')
+                        message = await channel.send(embed=embed)
+                        thread_name = (
+                            f"QOTD Answers {datetime.now().strftime('%Y-%m-%d')}"
+                            )
+                        await message.create_thread(name=thread_name,
+                            content=
+                            "Welcome to the thread for answering today's Question of the Day!"
+                            )
                 except AttributeError as e:
-                    print(f"Error sending message to channel: {e}")
+                    print(f'Error sending message to channel: {e}')
             else:
-                print(f"No valid channel set for guild ID {guild_id}.")
+                print(f'No valid channel set for guild ID {guild_id}.')
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
@@ -62,8 +73,10 @@ class QOTD(commands.Cog):
             ctx (commands.Context): The context of the command.
             hour (int): The hour (0-23) to post the question.
         """
-        self.scheduler.reschedule_job(self.post_question_of_the_day, trigger='cron', hour=hour)
-        await ctx.send(f"Question of the Day posting time set to {hour}:00", delete_after=5)
+        self.scheduler.reschedule_job(self.post_question_of_the_day,
+            trigger='cron', hour=hour)
+        await ctx.send(f'Question of the Day posting time set to {hour}:00',
+            delete_after=5)
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
@@ -77,7 +90,8 @@ class QOTD(commands.Cog):
         """
         self.question_channels[ctx.guild.id] = channel
         await ctx.message.delete()
-        await ctx.send(f"Question of the Day channel set to {channel.mention}", delete_after=5)
+        await ctx.send(f'Question of the Day channel set to {channel.mention}',
+            delete_after=5)
 
     @setqotdchannel.error
     async def setqotdchannel_error(self, ctx, error):
@@ -89,7 +103,10 @@ class QOTD(commands.Cog):
             error (Exception): The error that occurred.
         """
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Please mention a text channel to set as the question channel.", delete_after=5)
+            await ctx.send(
+                'Please mention a text channel to set as the question channel.'
+                , delete_after=5)
+
 
 async def setup(bot):
     """

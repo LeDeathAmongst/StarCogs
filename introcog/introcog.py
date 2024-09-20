@@ -3,7 +3,6 @@ import discord
 from redbot.core import commands, Config, checks
 from redbot.core.bot import Red
 
-
 class IntroCog(Cog):
 
     def __init__(self, bot: Red):

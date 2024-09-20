@@ -38,7 +38,6 @@ class Purge(Cog):
     def __init__(self, bot: Red) -> None:
         super().__init__(bot)
         self.bot = bot
-
         self.task: asyncio.Task[Any] = self._create_task(self._initialize())
 
     @staticmethod

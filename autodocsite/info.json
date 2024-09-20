@@ -1,0 +1,22 @@
+{
+    "author": ["Star"],
+    "name": "AutoDocSite",
+    "install_msg": "Thank you for installing the AutoDocSite cog!\n\nThis cog automatically generates a documentation site for your bot's cogs using GitHub Pages and MkDocs. If you want to help translate, go to my [crowdin](<https://crowdin.com/project/Star-Cogs>)\nIf you like my work, [donate me!](<https://ko-fi.com/starcogs>)\n\n```txt\nUse `[p]autodocsite setup` for detailed setup instructions.```",
+    "short": "Automatically generates documentation site",
+    "description": "Automatic generation of documentation using GH-Pages and MkDocs.",
+    "tags": [
+        "auto_doc_gen"
+    ],
+    "requirements": [
+        "git+https://github.com/LeDeathAmongst/Star_Utils.git",
+        "mkdocs",
+        "mkdocs-dracula-theme",
+        "pandas",
+        "aiocache",
+        "pyyaml",
+        "numpy==2.0.0"
+    ],
+    "min_bot_version": "3.5.11",
+    "end_user_data_statement": "",
+    "hidden": false
+}
