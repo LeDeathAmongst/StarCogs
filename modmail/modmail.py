@@ -3,6 +3,7 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
+from datetime import datetime
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -326,13 +327,38 @@ class ModMail(Cog):
         if log_channel:
             # Collect messages from the async generator
             messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
-            log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
+
+            # Create HTML content
+            html_content = "<html><head><title>ModMail Transcript</title></head><body>"
+            html_content += f"<h2>Transcript for {ctx.channel.name}</h2>"
+            html_content += "<ul>"
+
+            for msg in messages:
+                timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                author = msg.author.display_name
+                content = msg.content.replace('\n', '<br>')
+
+                html_content += f"<li><strong>{timestamp} - {author}:</strong> {content}</li>"
+
+                for embed in msg.embeds:
+                    html_content += "<li><strong>Embed:</strong><ul>"
+                    if embed.title:
+                        html_content += f"<li><strong>Title:</strong> {embed.title}</li>"
+                    if embed.description:
+                        html_content += f"<li><strong>Description:</strong> {embed.description}</li>"
+                    for field in embed.fields:
+                        html_content += f"<li><strong>{field.name}:</strong> {field.value}</li>"
+                    if embed.footer.text:
+                        html_content += f"<li><strong>Footer:</strong> {embed.footer.text}</li>"
+                    html_content += "</ul></li>"
+
+            html_content += "</ul></body></html>"
 
             # Use io.BytesIO to create a file-like object
-            log_file = io.BytesIO(log_content.encode('utf-8'))
+            log_file = io.BytesIO(html_content.encode('utf-8'))
 
             # Send the log file to the log channel
-            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.txt"))
+            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
         await ctx.send("This thread is now closed.")
         await ctx.channel.delete()
