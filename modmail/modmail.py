@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
+import io
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -327,11 +328,11 @@ class ModMail(Cog):
             messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
             log_content = "\n".join([f"{msg.created_at} - {msg.author}: {msg.content}" for msg in messages])
 
-            # Create a file-like object for the log content
-            log_file = discord.File(fp=log_content.encode('utf-8'), filename=f"modmail-{ctx.channel.name}.txt")
+            # Use io.BytesIO to create a file-like object
+            log_file = io.BytesIO(log_content.encode('utf-8'))
 
             # Send the log file to the log channel
-            await log_channel.send(content=f"Log for {ctx.channel.name}", file=log_file)
+            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.txt"))
 
         await ctx.send("This thread is now closed.")
         await ctx.channel.delete()
