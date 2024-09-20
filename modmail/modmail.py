@@ -232,43 +232,43 @@ class ModMail(Cog):
         await ctx.channel.delete()
 
     @thread.command(name="open")
-    async def thread_open(self, ctx: commands.Context):
+    async def thread_open(self, ctx: commands.Context, user: discord.User):
         """Open a modmail thread with the server."""
-        if ctx.channel.type != discord.DMChannel:
-            await ctx.send("This command can only be used in DMs with the bot.")
+        if ctx.channel.type != discord.ChannelType.text:
+            await ctx.send("This command can only be used in a server text channel.")
             return
 
-        for guild in self.bot.guilds:
-            modmail_channel_id = await self.config.guild(guild).modmail_channel()
-            if not modmail_channel_id:
-                continue
+        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
+        if not modmail_channel_id:
+            await ctx.send("ModMail channel is not set for this server.")
+            return
 
-            modmail_channel = guild.get_channel(modmail_channel_id)
-            if modmail_channel is None:
-                continue
+        modmail_channel = ctx.guild.get_channel(modmail_channel_id)
+        if modmail_channel is None:
+            await ctx.send("ModMail channel not found.")
+            return
 
-            # Ensure only one thread per user
-            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{ctx.author.id}")
-            if existing_thread:
-                await ctx.send("You already have an open thread.")
-                return
+        # Ensure only one thread per user
+        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.id}")
+        if existing_thread:
+            await ctx.send(f"{user.display_name} already has an open thread.")
+            return
 
-            thread = await modmail_channel.create_thread(name=f"ModMail-{ctx.author.id}", type=discord.ChannelType.public_thread)
+        thread = await modmail_channel.create_thread(name=f"ModMail-{user.id}", type=discord.ChannelType.public_thread)
 
-            # Create and send the info embed
-            roles = ', '.join([role.name for role in ctx.author.roles if role.name != "@everyone"])
-            joined_at = ctx.author.joined_at.strftime("%Y-%m-%d %H:%M:%S")
-            info_embed = discord.Embed(
-                title=ctx.author.display_name,
-                description=f"User ID: {ctx.author.id}",
-                color=discord.Color.blue()
-            )
-            info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
-            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-            await thread.send(embed=info_embed)
+        # Create and send the info embed
+        roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
+        joined_at = user.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+        info_embed = discord.Embed(
+            title=user.display_name,
+            description=f"User ID: {user.id}",
+            color=discord.Color.blue()
+        )
+        info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
+        info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+        await thread.send(embed=info_embed)
 
-            await ctx.send("Your modmail thread has been opened.")
-            break
+        await ctx.send(f"Modmail thread for {user.display_name} has been opened.")
 
     @thread.command(name="add")
     @commands.mod_or_permissions(manage_messages=True)
