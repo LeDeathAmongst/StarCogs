@@ -145,7 +145,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def cuddle(self, ctx: commands.Context, user: discord.Member):
         """
         Cuddle a user!
@@ -469,7 +469,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="confuse", aliases=["confused"])
-    @commands.guild_only()
+
     async def confuse(self, ctx: commands.Context):
         """
         Act confused!
@@ -484,7 +484,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="amazed", aliases=["amazing"])
-    @commands.guild_only()
+
     async def amazed(self, ctx: commands.Context):
         """
         Act amazed!
@@ -499,7 +499,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def highfive(self, ctx: commands.Context, user: discord.Member):
         """
         Highfive a user!
@@ -527,7 +527,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="plead")
-    @commands.guild_only()
+
     async def plead(self, ctx: commands.Context, user: discord.Member):
         """
         Plead to a user!
@@ -548,7 +548,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="clap")
-    @commands.guild_only()
+
     async def clap(self, ctx: commands.Context):
         """
         Clap for someone!
@@ -563,7 +563,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="facepalm")
-    @commands.guild_only()
+
     async def facepalm(self, ctx: commands.Context):
         """
         Do a facepalm!
@@ -578,7 +578,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="headdesk", aliases=["facedesk"])
-    @commands.guild_only()
+
     async def facedesk(self, ctx: commands.Context):
         """
         Do a facedesk!
@@ -593,7 +593,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def kill(self, ctx: commands.Context, user: discord.Member):
         """
         Kill a user!
@@ -614,7 +614,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def love(self, ctx: commands.Context, user: discord.Member):
         """
         Love a user!
@@ -635,7 +635,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="hide")
-    @commands.guild_only()
+
     async def hide(self, ctx: commands.Context):
         """
         Hide yourself!
@@ -650,7 +650,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="laugh")
-    @commands.guild_only()
+
     async def laugh(self, ctx: commands.Context):
         """
         Start laughing!
@@ -665,7 +665,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="peek", aliases=["lurk"])
-    @commands.guild_only()
+
     async def lurk(self, ctx: commands.Context):
         """
         Start lurking!
@@ -680,7 +680,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def bite(self, ctx: commands.Context, user: discord.Member):
         """
         Bite a user!
@@ -701,7 +701,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="dance")
-    @commands.guild_only()
+
     async def dance(self, ctx: commands.Context):
         """
         Start dancing!
@@ -716,7 +716,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def yeet(self, ctx: commands.Context, user: discord.Member):
         """
         Yeet someone!
@@ -737,7 +737,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="dodge")
-    @commands.guild_only()
+
     async def dodge(self, ctx: commands.Context):
         """
         Dodge something!
@@ -752,7 +752,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="happy")
-    @commands.guild_only()
+
     async def happy(self, ctx: commands.Context):
         """
         Act happy!
@@ -767,7 +767,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="cute")
-    @commands.guild_only()
+
     async def cute(self, ctx: commands.Context):
         """
         Act cute!
@@ -782,7 +782,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="lonely", aliases=["alone"])
-    @commands.guild_only()
+
     async def lonely(self, ctx: commands.Context):
         """
         Act lonely!
@@ -797,7 +797,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="mad", aliases=["angry"])
-    @commands.guild_only()
+
     async def mad(self, ctx: commands.Context):
         """
         Act angry!
@@ -812,7 +812,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="nosebleed")
-    @commands.guild_only()
+
     async def nosebleed(self, ctx: commands.Context):
         """
         Start bleeding from nose!
@@ -827,7 +827,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def protect(self, ctx: commands.Context, user: discord.Member):
         """
         Protech someone!
@@ -855,7 +855,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="run")
-    @commands.guild_only()
+
     async def run(self, ctx: commands.Context):
         """
         Start running!
@@ -870,7 +870,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="scared")
-    @commands.guild_only()
+
     async def scared(self, ctx: commands.Context):
         """
         Act scared!
@@ -885,7 +885,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="shrug")
-    @commands.guild_only()
+
     async def shrug(self, ctx: commands.Context):
         """
         Start shrugging!
@@ -900,7 +900,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="scream")
-    @commands.guild_only()
+
     async def scream(self, ctx: commands.Context):
         """
         Start screaming!
@@ -915,7 +915,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="stare")
-    @commands.guild_only()
+
     async def stare(self, ctx: commands.Context):
         """
         Stare someone!
@@ -930,7 +930,7 @@ class Perform(Cog):
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
-    @commands.guild_only()
+
     async def wave(self, ctx: commands.Context, user: discord.Member):
         """
         Wave to someone!
@@ -1007,7 +1007,7 @@ class Perform(Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["rstats", "pstats", "roleplaystats"])
-    @commands.guild_only()
+
     @commands.bot_has_permissions(embed_links=True)
     async def performstats(
         self, ctx: commands.Context, action: str, user: Optional[discord.User]
