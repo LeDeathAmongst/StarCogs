@@ -5,6 +5,7 @@ ModMail module
 import discord
 import asyncio
 from redbot.core import commands
+from redbot.core import Config as config
 from discord.ext.commands import has_permissions, MissingPermissions, BadArgument
 from Star_Utils import Cog
 
