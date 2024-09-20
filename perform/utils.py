@@ -29,7 +29,7 @@ async def has_webhook_perms(ctx: commands.Context) -> bool:
 
 async def has_embed_perms(ctx: commands.Context) -> bool:
     if isinstance(ctx.channel, discord.DMChannel):
-        return False
+        return True  # Allow embeds in DMs
     perm = ctx.channel.permissions_for(ctx.channel.guild.me).embed_links
     return perm is True
 
@@ -40,6 +40,13 @@ async def send_embed(
     embed: discord.Embed,
     user: Optional[discord.Member] = None,
 ):
+    if isinstance(ctx.channel, discord.DMChannel):
+        if user:
+            await ctx.send(embed=embed, content=user.mention)
+        else:
+            await ctx.send(embed=embed)
+        return
+
     if await has_webhook_perms(ctx):
         try:
             if user:
@@ -70,7 +77,7 @@ async def kawaiiembed(
 ) -> Union[discord.Embed, str]:
     api_key = (await self.bot.get_shared_api_tokens("perform")).get("api_key")
     if not api_key:
-        return "Set a API token before using this command. If you are the bot owner, then use `[p]performapi` to see how to add the API."
+        return "Set an API token before using this command. If you are the bot owner, then use `[p]performapi` to see how to add the API."
     if user is None:
         embed = discord.Embed(
             description=f"**{ctx.author.mention}** {action}",
@@ -109,7 +116,6 @@ async def add_footer(
         embed.set_footer(text=f"{ctx.author.display_name}'s total {word1}: {used + 1}")
 
 
-# Thanks epic
 async def get_hook(self, ctx: commands.Context):
     if isinstance(ctx.channel, discord.Thread):
         channel = ctx.channel.parent
