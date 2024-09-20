@@ -64,8 +64,14 @@ class ModMail(Cog):
             """Send a snippet message."""
             if ctx.guild.id != guild_id:
                 return
-            user_id_str = ctx.channel.name.split("ModMail-")[-1]
-            user = self.bot.get_user(int(user_id_str))
+
+            try:
+                user_id_str = ctx.channel.name.split("ModMail-")[-1]
+                user_id = int(user_id_str)
+                user = self.bot.get_user(user_id)
+            except (ValueError, TypeError):
+                await ctx.send("Could not determine the user for this thread. Please ensure the thread name contains a valid user ID.")
+                return
 
             if user is None:
                 await ctx.send("User not found.")
