@@ -1,9 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog
-import os
-import datetime
+from Star_Utils import Cog, CogsUtils, Settings
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -13,11 +11,41 @@ class ModMail(Cog):
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         default_guild = {
             "modmail_channel": None,
+            "log_channel": None,
             "areply_name": "Support Team",
             "preconfigured_messages": {},
             "authorized_users": []
         }
         self.config.register_guild(**default_guild)
+
+        # Initialize logger
+        self.logger = CogsUtils.get_logger(cog=self)
+
+        # Initialize settings
+        settings_dict = {
+            "modmail_channel": {
+                "path": ["modmail_channel"],
+                "converter": discord.TextChannel,
+                "description": "Set the modmail channel for this server.",
+                "usage": "channel",
+                "command_name": "modmailchannel"
+            },
+            "log_channel": {
+                "path": ["log_channel"],
+                "converter": discord.TextChannel,
+                "description": "Set the log channel for this server.",
+                "usage": "channel",
+                "command_name": "logchannel"
+            },
+            "areply_name": {
+                "path": ["areply_name"],
+                "converter": str,
+                "description": "Set the areply title name.",
+                "usage": "title",
+                "command_name": "areplyname"
+            }
+        }
+        self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -63,12 +91,29 @@ class ModMail(Cog):
             break
 
     @commands.guild_only()
-    @commands.admin_or_permissions(administrator=True)
-    @commands.command()
-    async def setmodmail(self, ctx: commands.Context, channel: discord.TextChannel):
+    @commands.group()
+    async def config(self, ctx: commands.Context):
+        """Configuration commands for modmail."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Please specify a valid subcommand: channel, log, title.")
+
+    @config.command(name="channel")
+    async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the modmail channel for this server."""
         await self.config.guild(ctx.guild).modmail_channel.set(channel.id)
         await ctx.send(f"ModMail channel set to {channel.mention}")
+
+    @config.command(name="log")
+    async def config_log(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the log channel for this server."""
+        await self.config.guild(ctx.guild).log_channel.set(channel.id)
+        await ctx.send(f"Log channel set to {channel.mention}")
+
+    @config.command(name="title")
+    async def config_title(self, ctx: commands.Context, *, title: str):
+        """Set the areply title name."""
+        await self.config.guild(ctx.guild).areply_name.set(title)
+        await ctx.send(f"Areply title name set to {title}")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
@@ -125,14 +170,6 @@ class ModMail(Cog):
 
         # Log the response in the thread
         await ctx.send(f"Reply sent to {user.mention}: {response}")
-
-    @commands.guild_only()
-    @commands.admin_or_permissions(administrator=True)
-    @commands.command()
-    async def setareplyname(self, ctx: commands.Context, *, name: str):
-        """Set the name used for areply responses."""
-        await self.config.guild(ctx.guild).areply_name.set(name)
-        await ctx.send(f"Areply name set to {name}")
 
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
@@ -270,6 +307,17 @@ class ModMail(Cog):
         info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
         info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
         await thread.send(embed=info_embed)
+
+        # Send DM to the user
+        try:
+            dm_embed = discord.Embed(
+                title="Thread Opened",
+                description=f"You opened a thread in `{ctx.guild.name}`. Please state your concerns here.",
+                color=discord.Color.green()
+            )
+            await user.send(embed=dm_embed)
+        except discord.HTTPException:
+            await ctx.send(f"Could not send a DM to {user.display_name}.")
 
         await ctx.send(f"Modmail thread for {user.display_name} has been opened.")
 
