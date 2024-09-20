@@ -1,9 +1,9 @@
-import io
-from datetime import datetime
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
+import io
+from datetime import datetime
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -104,7 +104,7 @@ class ModMail(Cog):
                     description=message,
                     color=discord.Color.green()
                 )
-                embed.set_thumbnail(url=ctx.guild.icon.url)
+                embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
                 footer_text = "Moderator/Admin"
             else:
                 embed = discord.Embed(
@@ -112,7 +112,7 @@ class ModMail(Cog):
                     description=message,
                     color=discord.Color.green()
                 )
-                embed.set_thumbnail(url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+                embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
                 highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
                 footer_text = highest_role.name if highest_role else "No role"
 
@@ -242,8 +242,8 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
-        # Set thumbnail to moderator's profile picture
-        embed.set_thumbnail(url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+        # Set the author's icon for the embed
+        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
 
         # Add footer with user's highest hoisted role
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
@@ -279,8 +279,8 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
-        # Set thumbnail to server's icon
-        embed.set_thumbnail(url=ctx.guild.icon.url)
+        # Set the author's icon for the embed
+        embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
 
         # Add footer with user's highest hoisted role and "Moderator/Admin"
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
