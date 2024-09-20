@@ -1,19 +1,3 @@
-"""
-Copyright 2021 Onii-chan.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 import logging
 from random import randint
 from typing import Optional
@@ -21,13 +5,14 @@ from typing import Optional
 import discord
 from redbot.core import Config, commands
 from redbot.core.bot import Red
+from Star_Utils import Cog
 
 from .utils import add_footer, kawaiiembed, rstats_embed, send_embed
 
-log = logging.getLogger("red.sravan.perform")
+log = logging.getLogger("star.perform")
 
 
-class Perform(commands.Cog):
+class Perform(Cog):
     """
     Perform different actions, like cuddle, poke etc.
     """
@@ -157,15 +142,6 @@ class Perform(commands.Cog):
 
         self.COMMANDS = [i.rstrip("_r") for i in default_target if i.endswith("_r")]
 
-    __author__ = ["Onii-chan", "sravan"]
-    __version__ = "5.8.5"
-
-    def format_help_for_context(self, ctx: commands.Context) -> str:
-        """
-        Thanks Sinbad!
-        """
-        pre_processed = super().format_help_for_context(ctx)
-        return f"{pre_processed}\n\nAuthors: {', '.join(self.__author__)}\nCog Version: {self.__version__}"
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
