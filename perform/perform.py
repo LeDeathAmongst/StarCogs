@@ -165,7 +165,7 @@ class Perform(Cog):
         )
 
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.command(name="poke")
+    @commands.command(name="pokes")
     @commands.bot_has_permissions(embed_links=True)
     async def poke(self, ctx: commands.Context, user: discord.Member):
         """
