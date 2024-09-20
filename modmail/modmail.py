@@ -1,9 +1,9 @@
+import io
+from datetime import datetime
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
-import io
-from datetime import datetime
 
 class ModMail(Cog):
     """A modmail cog for Red-DiscordBot."""
@@ -16,7 +16,8 @@ class ModMail(Cog):
             "log_channel": None,
             "areply_name": "Support Team",
             "preconfigured_messages": {},
-            "authorized_users": []
+            "authorized_users": [],
+            "snippet_reply_method": "reply"  # Default method for snippets
         }
         self.config.register_guild(**default_guild)
 
@@ -45,6 +46,13 @@ class ModMail(Cog):
                 "description": "Set the areply title name.",
                 "usage": "title",
                 "command_name": "areplyname"
+            },
+            "snippet_reply_method": {
+                "path": ["snippet_reply_method"],
+                "converter": str,
+                "description": "Set the method for sending snippets (reply/areply).",
+                "usage": "method",
+                "command_name": "snippetmethod"
             }
         }
         self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
@@ -87,11 +95,28 @@ class ModMail(Cog):
                 await ctx.send("User not found in this thread.")
                 return
 
-            embed = discord.Embed(
-                title=user.display_name,
-                description=message,
-                color=discord.Color.green()
-            )
+            # Determine the method for sending the snippet
+            snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
+            if snippet_method == "areply":
+                areply_name = await self.config.guild(ctx.guild).areply_name()
+                embed = discord.Embed(
+                    title=areply_name,
+                    description=message,
+                    color=discord.Color.green()
+                )
+                embed.set_thumbnail(url=ctx.guild.icon.url)
+                footer_text = "Moderator/Admin"
+            else:
+                embed = discord.Embed(
+                    title=ctx.author.display_name,
+                    description=message,
+                    color=discord.Color.green()
+                )
+                embed.set_thumbnail(url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+                highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+                footer_text = highest_role.name if highest_role else "No role"
+
+            embed.set_footer(text=footer_text)
             await user.send(embed=embed)
             await ctx.send(f"Snippet '{name}' sent to {user.mention}.")
 
@@ -166,7 +191,7 @@ class ModMail(Cog):
     async def config(self, ctx: commands.Context):
         """Configuration commands for modmail."""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: channel, log, title.")
+            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod.")
 
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
@@ -185,6 +210,15 @@ class ModMail(Cog):
         """Set the areply title name."""
         await self.config.guild(ctx.guild).areply_name.set(title)
         await ctx.send(f"Areply title name set to {title}")
+
+    @config.command(name="snippetmethod")
+    async def config_snippet_method(self, ctx: commands.Context, method: str):
+        """Set the method for sending snippets (reply/areply)."""
+        if method not in ["reply", "areply"]:
+            await ctx.send("Invalid method. Please choose either 'reply' or 'areply'.")
+            return
+        await self.config.guild(ctx.guild).snippet_reply_method.set(method)
+        await ctx.send(f"Snippet sending method set to {method}.")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
