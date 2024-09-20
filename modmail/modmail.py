@@ -67,16 +67,20 @@ class ModMail(Cog):
             if ctx.guild.id != guild_id:
                 return
 
-            try:
-                user_id_str = ctx.channel.name.split("ModMail-")[-1]
-                user_id = int(user_id_str)
-                user = self.bot.get_user(user_id)
-            except (ValueError, TypeError):
-                await ctx.send("Could not determine the user for this thread. Please ensure the thread name contains a valid user ID.")
+            # Get the user from the thread participants
+            thread = ctx.channel
+            if not isinstance(thread, discord.Thread):
+                await ctx.send("This command can only be used within a modmail thread.")
                 return
 
+            user = None
+            async for member in thread.fetch_members():
+                if not member.bot:
+                    user = member
+                    break
+
             if user is None:
-                await ctx.send("User not found.")
+                await ctx.send("User not found in this thread.")
                 return
 
             embed = discord.Embed(
@@ -256,12 +260,16 @@ class ModMail(Cog):
     async def snippet(self, ctx: commands.Context):
         """Manage pre-configured message snippets."""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: add, list, edit, remove.")
+            await ctx.send("Please specify a valid subcommand: add, list, edit, remove, view.")
 
     @snippet.command(name="add")
     async def snippet_add(self, ctx: commands.Context, name: str, *, message: str):
         """Add a new snippet."""
         preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        if name in preconfigured_messages:
+            await ctx.send("That snippet name is already in use. You can change it or use the existing one.")
+            return
+
         preconfigured_messages[name] = message
         await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
         self.add_snippet_command(name, message, ctx.guild.id)
@@ -304,6 +312,22 @@ class ModMail(Cog):
         await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
         await self.remove_snippet_command(name)
         await ctx.send(f"Snippet '{name}' removed.")
+
+    @snippet.command(name="view")
+    async def snippet_view(self, ctx: commands.Context, name: str):
+        """View a snippet's content."""
+        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        if name not in preconfigured_messages:
+            await ctx.send(f"No snippet found with name '{name}'.")
+            return
+
+        message = preconfigured_messages[name]
+        embed = discord.Embed(
+            title=f"Snippet `{name}`",
+            description=message,
+            color=discord.Color.blue()
+        )
+        await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.group()
