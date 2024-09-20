@@ -30,13 +30,14 @@ async def has_webhook_perms(ctx: commands.Context) -> bool:
 
 
 async def has_embed_perms(ctx: commands.Context) -> bool:
-    if isinstance(ctx.channel, discord.DMChannel):
-        return True  # Assume embed permissions are allowed in DMs
-    if ctx.channel.guild is None:
-        return False  # If there's no guild, assume no permissions
-    perm = ctx.channel.permissions_for(ctx.channel.guild.me).embed_links
-    return perm is True
-
+    # Allow embeds in DMs and group chats
+    if isinstance(ctx.channel, (discord.DMChannel, discord.GroupChannel)):
+        return True
+    # Check permissions in server channels
+    if ctx.guild is not None:
+        perm = ctx.channel.permissions_for(ctx.guild.me).embed_links
+        return perm is True
+    return False  # Default to False if the context is unexpected
 
 async def send_embed(
     self,
@@ -44,13 +45,15 @@ async def send_embed(
     embed: discord.Embed,
     user: Optional[discord.Member] = None,
 ):
-    if isinstance(ctx.channel, discord.DMChannel):
+    # Handle DMs and group chats
+    if isinstance(ctx.channel, (discord.DMChannel, discord.GroupChannel)):
         if user:
             await ctx.send(embed=embed, content=user.mention)
         else:
             await ctx.send(embed=embed)
         return
 
+    # Handle server channels
     if await has_webhook_perms(ctx):
         try:
             if user:
