@@ -76,8 +76,9 @@ class ModMail(Cog):
             user = None
             # Await the coroutine to get the members
             members = await thread.fetch_members()
-            for member in members:
-                if not member.bot:
+            for thread_member in members:
+                member = thread_member.member
+                if member is not None and not member.bot:
                     user = member
                     break
 
