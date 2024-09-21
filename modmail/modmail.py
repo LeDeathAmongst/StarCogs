@@ -5,6 +5,7 @@ from Star_Utils import Cog, CogsUtils, Settings
 import io
 from datetime import datetime
 import re
+import asyncio  # Import asyncio for delay functionality
 
 class ModMail(Cog):
     """A basic ModMail cog"""
@@ -19,7 +20,8 @@ class ModMail(Cog):
             "preconfigured_messages": {},
             "authorized_users": [],
             "snippet_reply_method": "reply",  # Default method for snippets
-            "modmail_enabled": True  # ModMail enabled by default
+            "modmail_enabled": True,  # ModMail enabled by default
+            "close_embed": None  # Configurable embed for thread closure
         }
         self.config.register_guild(**default_guild)
 
@@ -55,6 +57,13 @@ class ModMail(Cog):
                 "description": "Set the method for sending snippets (reply/areply).",
                 "usage": "method",
                 "command_name": "snippetmethod"
+            },
+            "close_embed": {
+                "path": ["close_embed"],
+                "converter": str,
+                "description": "Set the embed message for thread closure.",
+                "usage": "embed",
+                "command_name": "closeembed"
             }
         }
         self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
@@ -258,7 +267,7 @@ class ModMail(Cog):
     async def config(self, ctx: commands.Context):
         """Configuration commands for modmail."""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod, toggle.")
+            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod, toggle, closeembed.")
 
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
@@ -295,6 +304,12 @@ class ModMail(Cog):
         await self.config.guild(ctx.guild).modmail_enabled.set(new_state)
         state_text = "enabled" if new_state else "disabled"
         await ctx.send(f"ModMail has been {state_text} for this server.")
+
+    @config.command(name="closeembed")
+    async def config_close_embed(self, ctx: commands.Context, *, embed_message: str):
+        """Set the embed message for thread closure."""
+        await self.config.guild(ctx.guild).close_embed.set(embed_message)
+        await ctx.send("Close embed message set.")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
@@ -457,8 +472,8 @@ class ModMail(Cog):
 
     @thread.command(name="close")
     @commands.mod_or_permissions(manage_messages=True)
-    async def thread_close(self, ctx: commands.Context):
-        """Close the modmail thread and generate a log."""
+    async def thread_close(self, ctx: commands.Context, delay: int = 0):
+        """Close the modmail thread and generate a log. Optionally delay the closure."""
         if ctx.channel.type != discord.ChannelType.public_thread:
             await ctx.send("This command can only be used within a modmail thread.")
             return
@@ -503,7 +518,17 @@ class ModMail(Cog):
             # Send the log file to the log channel
             await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
-        await ctx.send("This thread is now closed.")
+        close_embed_message = await self.config.guild(ctx.guild).close_embed()
+        if close_embed_message:
+            close_embed = discord.Embed(description=close_embed_message, color=discord.Color.red())
+            await ctx.send(embed=close_embed)
+
+        if delay > 0:
+            await ctx.send(f"This thread will close in {delay} seconds.")
+            await asyncio.sleep(delay)
+        else:
+            await ctx.send("This thread is now closed.")
+
         await ctx.channel.delete()
 
     @thread.command(name="open")
@@ -580,7 +605,8 @@ class ModMail(Cog):
         questions = [
             "What channel for the threads?",
             "What channel for the logs? (Type `None` for no logs)",
-            "What name for areply embed? (Type `None` for default 'Support Team')"
+            "What name for areply embed? (Type `None` for default 'Support Team')",
+            "What message to display on thread closure? (Type `None` for no message)"
         ]
         answers = []
 
@@ -625,6 +651,10 @@ class ModMail(Cog):
             # Set areply name
             areply_name = answers[2] if answers[2].lower() != "none" else "Support Team"
             await self.config.guild(ctx.guild).areply_name.set(areply_name)
+
+            # Set close embed message
+            close_embed_message = answers[3] if answers[3].lower() != "none" else None
+            await self.config.guild(ctx.guild).close_embed.set(close_embed_message)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
