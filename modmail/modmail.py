@@ -6,7 +6,7 @@ import io
 from datetime import datetime
 import re
 import asyncio
-from typing import List, Dict, Union, Literal
+import typing
 import random
 
 class SnippetError(Exception):
