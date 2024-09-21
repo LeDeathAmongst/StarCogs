@@ -151,34 +151,23 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to cuddle!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** cuddled {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "cuddled", "cuddle", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).cuddle_r()
             used = await self.config.user(ctx.author).cuddle_s()
             await add_footer(
-                self, ctx, embed, used, "cuddles", target=target, word2="cuddled", user=user
+                self, ctx, embed, used, "cuddles", target=target, word2="cuddled", users=users
             )
             await self.config.user(ctx.author).cuddle_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).cuddle_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.command(name="pokes")
+    @commands.command(name="poke")
     @commands.bot_has_permissions(embed_links=True)
     async def poke(self, ctx: commands.Context, *users: discord.Member):
         """
@@ -187,31 +176,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to poke!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** poked {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "poked", "poke", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).poke_r()
             used = await self.config.user(ctx.author).poke_s()
             await add_footer(
-                self, ctx, embed, used, "pokes", target=target, word2="poked", user=user
+                self, ctx, embed, used, "pokes", target=target, word2="poked", users=users
             )
             await self.config.user(ctx.author).poke_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).poke_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="kiss")
@@ -223,31 +201,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to kiss!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** kissed {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "kissed", "kiss", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).kiss_r()
             used = await self.config.user(ctx.author).kiss_s()
             await add_footer(
-                self, ctx, embed, used, "kisses", target=target, word2="kissed", user=user
+                self, ctx, embed, used, "kisses", target=target, word2="kissed", users=users
             )
             await self.config.user(ctx.author).kiss_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).kiss_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="hug")
@@ -259,31 +226,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to hug!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** hugged {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "hugged", "hug", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).hug_r()
             used = await self.config.user(ctx.author).hug_s()
             await add_footer(
-                self, ctx, embed, used, "hugs", target=target, word2="hugged", user=user
+                self, ctx, embed, used, "hugs", target=target, word2="hugged", users=users
             )
             await self.config.user(ctx.author).hug_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).hug_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="pat")
@@ -295,31 +251,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to pat!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** patted {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "patted", "pat", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).pat_r()
             used = await self.config.user(ctx.author).pat_s()
             await add_footer(
-                self, ctx, embed, used, "pats", target=target, word2="patted", user=user
+                self, ctx, embed, used, "pats", target=target, word2="patted", users=users
             )
             await self.config.user(ctx.author).pat_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).pat_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="tickle")
@@ -331,31 +276,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to tickle!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** tickled {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "tickled", "tickle", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).tickle_r()
             used = await self.config.user(ctx.author).tickle_s()
             await add_footer(
-                self, ctx, embed, used, "tickles", target=target, word2="tickled", user=user
+                self, ctx, embed, used, "tickles", target=target, word2="tickled", users=users
             )
             await self.config.user(ctx.author).tickle_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).tickle_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="smug")
@@ -382,31 +316,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to lick!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** licked {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "licked", "lick", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).lick_r()
             used = await self.config.user(ctx.author).lick_s()
             await add_footer(
-                self, ctx, embed, used, "licks", target=target, word2="licked", user=user
+                self, ctx, embed, used, "licks", target=target, word2="licked", users=users
             )
             await self.config.user(ctx.author).lick_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).lick_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="slap")
@@ -418,31 +341,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to slap!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** slapped {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "slapped", "slap", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).slap_r()
             used = await self.config.user(ctx.author).slap_s()
             await add_footer(
-                self, ctx, embed, used, "slaps", target=target, word2="slapped", user=user
+                self, ctx, embed, used, "slaps", target=target, word2="slapped", users=users
             )
             await self.config.user(ctx.author).slap_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).slap_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="cry")
@@ -484,31 +396,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to spank!")
 
-        images = await self.config.spank()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** spanked {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "spanked", "spank", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).spank_r()
             used = await self.config.user(ctx.author).spank_s()
             await add_footer(
-                self, ctx, embed, used, "spanks", target=target, word2="spanked", user=user
+                self, ctx, embed, used, "spanks", target=target, word2="spanked", users=users
             )
             await self.config.user(ctx.author).spank_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).spank_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="pout")
@@ -550,31 +451,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to feed!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** fed {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "fed", "feed", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).feed_r()
             used = await self.config.user(ctx.author).feed_s()
             await add_footer(
-                self, ctx, embed, used, "feeds", target=target, word2="fed", user=user
+                self, ctx, embed, used, "feeds", target=target, word2="fed", users=users
             )
             await self.config.user(ctx.author).feed_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).feed_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="punch")
@@ -586,31 +476,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to punch!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** punched {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "punched", "punch", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).punch_r()
             used = await self.config.user(ctx.author).punch_s()
             await add_footer(
-                self, ctx, embed, used, "punches", target=target, word2="punched", user=user
+                self, ctx, embed, used, "punches", target=target, word2="punched", users=users
             )
             await self.config.user(ctx.author).punch_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).punch_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="confuse", aliases=["confused"])
@@ -649,31 +528,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to highfive!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** highfived {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "highfived", "highfive", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).highfive_r()
             used = await self.config.user(ctx.author).highfive_s()
             await add_footer(
-                self, ctx, embed, used, "highfives", target=target, word2="highfived", user=user
+                self, ctx, embed, used, "highfives", target=target, word2="highfived", users=users
             )
             await self.config.user(ctx.author).highfive_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).highfive_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="plead")
@@ -684,31 +552,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to plead!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** pleaded to {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "pleaded to", "plead", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).plead_r()
             used = await self.config.user(ctx.author).plead_s()
             await add_footer(
-                self, ctx, embed, used, "pleads", target=target, word2="pleaded", user=user
+                self, ctx, embed, used, "pleads", target=target, word2="pleaded", users=users
             )
             await self.config.user(ctx.author).plead_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).plead_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="clap")
@@ -761,31 +618,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to kill!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** killed {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "killed", "kill", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).kill_r()
             used = await self.config.user(ctx.author).kill_s()
             await add_footer(
-                self, ctx, embed, used, "kills", target=target, word2="killed", user=user
+                self, ctx, embed, used, "kills", target=target, word2="killed", users=users
             )
             await self.config.user(ctx.author).kill_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).kill_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
@@ -796,31 +642,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to love!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** loved {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "loved", "love", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).love_r()
             used = await self.config.user(ctx.author).love_s()
             await add_footer(
-                self, ctx, embed, used, "loves", target=target, word2="loved", user=user
+                self, ctx, embed, used, "loves", target=target, word2="loved", users=users
             )
             await self.config.user(ctx.author).love_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).love_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="hide")
@@ -873,31 +708,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to bite!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** bit {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "bit", "bite", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).bite_r()
             used = await self.config.user(ctx.author).bite_s()
             await add_footer(
-                self, ctx, embed, used, "bites", target=target, word2="bit", user=user
+                self, ctx, embed, used, "bites", target=target, word2="bit", users=users
             )
             await self.config.user(ctx.author).bite_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).bite_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="dance")
@@ -922,31 +746,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to yeet!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** yeeted {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "yeeted", "yeet", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).yeet_r()
             used = await self.config.user(ctx.author).yeet_s()
             await add_footer(
-                self, ctx, embed, used, "yeets", target=target, word2="yeeted", user=user
+                self, ctx, embed, used, "yeets", target=target, word2="yeeted", users=users
             )
             await self.config.user(ctx.author).yeet_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).yeet_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="dodge")
@@ -1041,31 +854,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to protect!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** protected {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "protected", "protect", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).protect_r()
             used = await self.config.user(ctx.author).protect_s()
             await add_footer(
-                self, ctx, embed, used, "protects", target=target, word2="protected", user=user
+                self, ctx, embed, used, "protects", target=target, word2="protected", users=users
             )
             await self.config.user(ctx.author).protect_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).protect_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="run")
@@ -1146,31 +948,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to wave to!")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** waved at {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "waved at", "wave", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).wave_r()
             used = await self.config.user(ctx.author).wave_s()
             await add_footer(
-                self, ctx, embed, used, "waves", target=target, word2="waved", user=user
+                self, ctx, embed, used, "waves", target=target, word2="waved", users=users
             )
             await self.config.user(ctx.author).wave_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).wave_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="nutkick", aliases=["kicknuts"])
@@ -1182,31 +973,20 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to kick!")
 
-        images = await self.config.nut()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
-        mentions = ", ".join(user.mention for user in users)
-
-        embed = discord.Embed(
-            colour=discord.Colour.random(),
-            description=f"**{ctx.author.mention}** kicked nuts of {mentions}!",
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
-        )
-        embed.set_image(url=images[i])
+        embed = await kawaiiembed(self, ctx, "kicked nuts of", "nut", users)
+        if not isinstance(embed, discord.Embed):
+            return await ctx.send(embed)
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).nut_r()
             used = await self.config.user(ctx.author).nut_s()
             await add_footer(
-                self, ctx, embed, used, "nutkicks", target=target, word2="nutkicked", user=user
+                self, ctx, embed, used, "nutkicks", target=target, word2="nutkicked", users=users
             )
             await self.config.user(ctx.author).nut_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).nut_r.set(target + 1)
 
-        await send_embed(self, ctx, embed)
+        await send_embed(self, ctx, embed, users)
 
     @commands.is_owner()
     @commands.command()
