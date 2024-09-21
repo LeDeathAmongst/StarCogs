@@ -609,6 +609,9 @@ class ModMail(Cog):
             reason=f"ModMail for {user} ({user.id})"
         )
 
+        # Store the thread reference
+        self.user_guild_selection[user.id] = ctx.guild
+
         # Create and send the info embed
         roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
         joined_at = user.joined_at.strftime("%Y-%m-%d %H:%M:%S")
