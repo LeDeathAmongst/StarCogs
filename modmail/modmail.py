@@ -1,4 +1,3 @@
-
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
@@ -59,6 +58,9 @@ class ModMail(Cog):
             }
         }
         self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
+
+        # Temporary storage for user-server selections
+        self.user_guild_selection = {}
 
     async def cog_load(self):
         # Load snippet commands on cog load
@@ -156,64 +158,100 @@ class ModMail(Cog):
         if message.author.bot or not isinstance(message.channel, discord.DMChannel):
             return
 
-        # Check if ModMail is enabled
-        for guild in self.bot.guilds:
-            modmail_enabled = await self.config.guild(guild).modmail_enabled()
-            if not modmail_enabled:
-                continue
+        user_id = message.author.id
 
-            modmail_channel_id = await self.config.guild(guild).modmail_channel()
-            if not modmail_channel_id:
-                continue
+        # Check if the user has already selected a server
+        if user_id in self.user_guild_selection:
+            selected_guild = self.user_guild_selection[user_id]
+            await self.handle_modmail_message(message, selected_guild)
+            return
 
-            modmail_channel = guild.get_channel(modmail_channel_id)
-            if modmail_channel is None:
-                continue
+        # Ask the user to select a server if they are in multiple shared servers
+        shared_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id)]
+        if not shared_guilds:
+            return
 
-            # Ensure only one thread per user
-            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
-            if existing_thread:
-                thread = existing_thread
-            else:
-                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
+        if len(shared_guilds) == 1:
+            # If there's only one shared server, use it automatically
+            self.user_guild_selection[user_id] = shared_guilds[0]
+            await self.handle_modmail_message(message, shared_guilds[0])
+        else:
+            # Ask the user to choose a server
+            guild_names = '\n'.join(f"{i+1}. {guild.name}" for i, guild in enumerate(shared_guilds))
+            await message.author.send(f"Please select the server you want to contact by replying with the number:\n{guild_names}")
 
-                # Fetch the Member object
-                member = guild.get_member(message.author.id)
-                if member:
-                    roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
-                    joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+            def check(m):
+                return m.author == message.author and m.channel == message.channel
+
+            try:
+                response = await self.bot.wait_for('message', check=check, timeout=60.0)
+                selected_index = int(response.content) - 1
+                if 0 <= selected_index < len(shared_guilds):
+                    selected_guild = shared_guilds[selected_index]
+                    self.user_guild_selection[user_id] = selected_guild
+                    await self.handle_modmail_message(message, selected_guild)
                 else:
-                    roles = "No roles"
-                    joined_at = "Unknown"
+                    await message.author.send("Invalid selection. Please try again.")
+            except (ValueError, asyncio.TimeoutError):
+                await message.author.send("You did not respond in time or entered an invalid number. Please try again.")
 
-                # Create and send the info embed
-                info_embed = discord.Embed(
-                    title=message.author.display_name,
-                    description=f"User ID: {message.author.id}",
-                    color=discord.Color.blue()
-                )
-                info_embed.add_field(name="Roles", value=roles, inline=False)
-                info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-                await thread.send(embed=info_embed)
+    async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
+        """Handle incoming ModMail messages for a specific guild."""
+        modmail_enabled = await self.config.guild(guild).modmail_enabled()
+        if not modmail_enabled:
+            return
 
-            # Send the message content
-            content_embed = discord.Embed(
-                description=message.content,
+        modmail_channel_id = await self.config.guild(guild).modmail_channel()
+        if not modmail_channel_id:
+            return
+
+        modmail_channel = guild.get_channel(modmail_channel_id)
+        if modmail_channel is None:
+            return
+
+        # Ensure only one thread per user
+        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
+        if existing_thread:
+            thread = existing_thread
+        else:
+            thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
+
+            # Fetch the Member object
+            member = guild.get_member(message.author.id)
+            if member:
+                roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
+                joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                roles = "No roles"
+                joined_at = "Unknown"
+
+            # Create and send the info embed
+            info_embed = discord.Embed(
+                title=message.author.display_name,
+                description=f"User ID: {message.author.id}",
                 color=discord.Color.blue()
             )
-            # Set the author's name and ID in the title, and their profile picture as the thumbnail
-            if message.author.avatar:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
-            else:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
+            info_embed.add_field(name="Roles", value=roles, inline=False)
+            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+            await thread.send(embed=info_embed)
 
-            # Find and set image from Imgur link
-            imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
-            if imgur_links:
-                content_embed.set_image(url=imgur_links[0])
+        # Send the message content
+        content_embed = discord.Embed(
+            description=message.content,
+            color=discord.Color.blue()
+        )
+        # Set the author's name and ID in the title, and their profile picture as the thumbnail
+        if message.author.avatar:
+            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
+        else:
+            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
 
-            await thread.send(embed=content_embed)
-            break
+        # Find and set image from Imgur link
+        imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
+        if imgur_links:
+            content_embed.set_image(url=imgur_links[0])
+
+        await thread.send(embed=content_embed)
 
     @commands.guild_only()
     @commands.group()
