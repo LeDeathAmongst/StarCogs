@@ -134,6 +134,7 @@ class ModMail(Cog):
                 "command_name": "openembed",
                 "label": "Open Embed Message",
                 "description": "Set the embed message for opening a modmail thread.",
+                "default": "Thank you for contacting {server_name}! Staff will be with you shortly!"
             },
             "snippets": {
                 "path": ["snippets"],
@@ -335,10 +336,41 @@ class ModMail(Cog):
                         # Delete the selection message
                         await selection_message.delete()
 
+                        # Create the modmail thread
+                        modmail_channel_id = await self.settings.get_raw("modmail_channel", selected_guild)
+                        modmail_channel = selected_guild.get_channel(modmail_channel_id)
+                        if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
+                            await message.author.send("The modmail channel is not set or invalid for this server.")
+                            return
+
+                        # Check if a thread already exists for this user
+                        thread_name = f"modmail-{message.author.id}"
+                        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
+                        if not existing_thread:
+                            # Create a new thread under the specified channel
+                            thread = await modmail_channel.create_thread(
+                                name=thread_name,
+                                type=discord.ChannelType.public_thread,
+                                reason=f"ModMail for {message.author} ({message.author.id})"
+                            )
+
+                            # Create and send the info embed
+                            member = selected_guild.get_member(message.author.id)
+                            roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
+                            joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
+                            info_embed = discord.Embed(
+                                title=message.author.display_name,
+                                description=f"User ID: {message.author.id}",
+                                color=discord.Color.blue()
+                            )
+                            info_embed.add_field(name="Roles", value=roles, inline=False)
+                            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+                            await thread.send(embed=info_embed)
+
                         # Send opening message if configured, otherwise send default message
                         open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
                         if open_embed_message:
-                            open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+                            open_embed = discord.Embed(description=open_embed_message.format(server_name=selected_guild.name), color=discord.Color.green())
                         else:
                             open_embed = discord.Embed(
                                 description=f"Thank you for contacting {selected_guild.name}! Staff will be with you shortly!",
@@ -346,7 +378,6 @@ class ModMail(Cog):
                             )
                         await message.author.send(embed=open_embed)
 
-                        await self.handle_modmail_message(message, selected_guild)
                     else:
                         await message.author.send("Invalid selection. Please try again.")
                 except asyncio.TimeoutError:
@@ -659,7 +690,7 @@ class ModMail(Cog):
         # Send the configured opening message to the user
         open_embed_message = await self.settings.get_raw("open_embed", ctx.guild)
         if open_embed_message:
-            open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+            open_embed = discord.Embed(description=open_embed_message.format(server_name=ctx.guild.name), color=discord.Color.green())
             try:
                 await user.send(embed=open_embed)
             except discord.HTTPException:
