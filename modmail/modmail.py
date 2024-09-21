@@ -60,159 +60,73 @@ class ModMail(Cog):
         self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
 
     async def cog_load(self):
-        # Load snippet commands on cog load
-        for guild in self.bot.guilds:
-            await self.load_snippet_commands(guild)
+        pass  # No need to load commands globally
 
-    async def load_snippet_commands(self, guild: discord.Guild):
-        """Load snippet commands for a specific guild."""
-        preconfigured_messages = await self.config.guild(guild).preconfigured_messages()
-        for name, message in preconfigured_messages.items():
-            self.add_snippet_command(name, message, guild.id)
+    async def send_snippet(self, ctx: commands.Context, name: str):
+        """Send a snippet message dynamically."""
+        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
+        message = preconfigured_messages.get(name)
 
-    def add_snippet_command(self, name: str, message: str, guild_id: int):
-        """Dynamically add a snippet command."""
-        async def snippet_command(ctx: commands.Context):
-            """Send a snippet message."""
-            if ctx.guild.id != guild_id:
-                return
+        if not message:
+            await ctx.send(f"No snippet found with name '{name}'.")
+            return
 
-            # Get the user from the thread participants
-            thread = ctx.channel
-            if not isinstance(thread, discord.Thread):
-                await ctx.send("This command can only be used within a modmail thread.")
-                return
+        # Get the user from the thread participants
+        thread = ctx.channel
+        if not isinstance(thread, discord.Thread):
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
 
-            user = None
-            # Await the coroutine to get the members
-            members = await thread.fetch_members()
-            for thread_member in members:
-                # Fetch the user associated with the ThreadMember
-                member = await self.bot.fetch_user(thread_member.id)
-                if not member.bot:
-                    user = member
-                    break
+        user = None
+        members = await thread.fetch_members()
+        for thread_member in members:
+            member = await self.bot.fetch_user(thread_member.id)
+            if not member.bot:
+                user = member
+                break
 
-            if user is None:
-                await ctx.send("User not found in this thread.")
-                return
+        if user is None:
+            await ctx.send("User not found in this thread.")
+            return
 
-            # Determine the method for sending the snippet
-            snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
-            if snippet_method == "areply":
-                areply_name = await self.config.guild(ctx.guild).areply_name()
-                embed = discord.Embed(
-                    title=areply_name,
-                    description=message,
-                    color=discord.Color.green()
-                )
-                if ctx.guild.icon:
-                    embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=areply_name)
-                footer_text = "Moderator/Admin"
+        # Determine the method for sending the snippet
+        snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
+        if snippet_method == "areply":
+            areply_name = await self.config.guild(ctx.guild).areply_name()
+            embed = discord.Embed(
+                title=areply_name,
+                description=message,
+                color=discord.Color.green()
+            )
+            if ctx.guild.icon:
+                embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
             else:
-                embed = discord.Embed(
-                    title=ctx.author.display_name,
-                    description=message,
-                    color=discord.Color.green()
-                )
-                if ctx.author.avatar:
-                    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
-                else:
-                    embed.set_author(name=ctx.author.display_name)
-                highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-                footer_text = highest_role.name if highest_role else "No role"
+                embed.set_author(name=areply_name)
+            footer_text = "Moderator/Admin"
+        else:
+            embed = discord.Embed(
+                title=ctx.author.display_name,
+                description=message,
+                color=discord.Color.green()
+            )
+            if ctx.author.avatar:
+                embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
+            else:
+                embed.set_author(name=ctx.author.display_name)
+            highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+            footer_text = highest_role.name if highest_role else "No role"
 
-            embed.set_footer(text=footer_text)
-            await user.send(embed=embed)
-            await ctx.send(f"Snippet '{name}' sent to {user.mention}.")
-
-        # Add the command to the bot
-        snippet_command.__name__ = f"snippet_{name}"
-        command = commands.command(name=name)(snippet_command)
-        self.bot.add_command(command)
-
-    async def remove_snippet_command(self, name: str):
-        """Remove a snippet command."""
-        command_name = f"snippet_{name}"
-        command = self.bot.get_command(command_name)
-        if command:
-            self.bot.remove_command(command_name)
+        embed.set_footer(text=footer_text)
+        await user.send(embed=embed)
+        await ctx.send(f"Snippet '{name}' sent to {user.mention}.")
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        await self.load_snippet_commands(guild)
+        pass  # No need to load commands globally
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
-        preconfigured_messages = await self.config.guild(guild).preconfigured_messages()
-        for name in preconfigured_messages:
-            await self.remove_snippet_command(name)
-
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot or not isinstance(message.channel, discord.DMChannel):
-            return
-
-        # Check if ModMail is enabled
-        for guild in self.bot.guilds:
-            modmail_enabled = await self.config.guild(guild).modmail_enabled()
-            if not modmail_enabled:
-                continue
-
-            modmail_channel_id = await self.config.guild(guild).modmail_channel()
-            if not modmail_channel_id:
-                continue
-
-            modmail_channel = guild.get_channel(modmail_channel_id)
-            if modmail_channel is None:
-                continue
-
-            # Ensure only one thread per user
-            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
-            if existing_thread:
-                thread = existing_thread
-            else:
-                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
-
-                # Fetch the Member object
-                member = guild.get_member(message.author.id)
-                if member:
-                    roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
-                    joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
-                else:
-                    roles = "No roles"
-                    joined_at = "Unknown"
-
-                # Create and send the info embed
-                info_embed = discord.Embed(
-                    title=message.author.display_name,
-                    description=f"User ID: {message.author.id}",
-                    color=discord.Color.blue()
-                )
-                info_embed.add_field(name="Roles", value=roles, inline=False)
-                info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-                await thread.send(embed=info_embed)
-
-            # Send the message content
-            content_embed = discord.Embed(
-                description=message.content,
-                color=discord.Color.blue()
-            )
-            # Set the author's name and ID in the title, and their profile picture as the thumbnail
-            if message.author.avatar:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
-            else:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
-
-            # Find and set image from Imgur link
-            imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
-            if imgur_links:
-                content_embed.set_image(url=imgur_links[0])
-
-            await thread.send(embed=content_embed)
-            break
+        pass  # No need to remove commands globally
 
     @commands.guild_only()
     @commands.group()
@@ -258,83 +172,6 @@ class ModMail(Cog):
         await ctx.send(f"ModMail has been {state_text} for this server.")
 
     @commands.guild_only()
-    @commands.mod_or_permissions(manage_messages=True)
-    @commands.command(aliases=["r"])
-    async def reply(self, ctx: commands.Context, *, response: str):
-        """Reply to a user via ModMail from within a thread."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
-            return
-
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
-        user = self.bot.get_user(int(user_id_str))
-
-        if user is None:
-            await ctx.send("User not found.")
-            return
-
-        # Send the response to the user
-        embed = discord.Embed(
-            title=user.display_name,
-            description=response,
-            color=discord.Color.green()
-        )
-        # Set the author's icon for the embed
-        if ctx.author.avatar:
-            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
-        else:
-            embed.set_author(name=ctx.author.display_name)
-
-        # Add footer with user's highest hoisted role
-        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-        footer_text = highest_role.name if highest_role else "No role"
-        embed.set_footer(text=footer_text)
-
-        await user.send(embed=embed)
-
-        # Log the response in the thread
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
-
-    @commands.guild_only()
-    @commands.mod_or_permissions(manage_messages=True)
-    @commands.command(aliases=["ar"])
-    async def areply(self, ctx: commands.Context, *, response: str):
-        """Reply to a user via ModMail with a generic support team title from within a thread."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
-            return
-
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
-        user = self.bot.get_user(int(user_id_str))
-
-        if user is None:
-            await ctx.send("User not found.")
-            return
-
-        areply_name = await self.config.guild(ctx.guild).areply_name()
-
-        # Send the response to the user
-        embed = discord.Embed(
-            title=areply_name,
-            description=response,
-            color=discord.Color.green()
-        )
-        # Set the author's icon for the embed if the guild has an icon
-        if ctx.guild.icon:
-            embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
-        else:
-            embed.set_author(name=areply_name)
-
-        # Set footer to "Moderator/Admin" only
-        footer_text = "Moderator/Admin"
-        embed.set_footer(text=footer_text)
-
-        await user.send(embed=embed)
-
-        # Log the response in the thread
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
-
-    @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
     @commands.group()
     async def snippet(self, ctx: commands.Context):
@@ -352,7 +189,6 @@ class ModMail(Cog):
 
         preconfigured_messages[name] = message
         await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        self.add_snippet_command(name, message, ctx.guild.id)
         await ctx.send(f"Snippet '{name}' added.")
 
     @snippet.command(name="list")
@@ -376,8 +212,6 @@ class ModMail(Cog):
 
         preconfigured_messages[name] = new_content
         await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        await self.remove_snippet_command(name)
-        self.add_snippet_command(name, new_content, ctx.guild.id)
         await ctx.send(f"Snippet '{name}' updated.")
 
     @snippet.command(name="remove")
@@ -390,7 +224,6 @@ class ModMail(Cog):
 
         del preconfigured_messages[name]
         await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        await self.remove_snippet_command(name)
         await ctx.send(f"Snippet '{name}' removed.")
 
     @snippet.command(name="view")
@@ -408,6 +241,70 @@ class ModMail(Cog):
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot or not isinstance(message.channel, discord.DMChannel):
+            return
+
+        # Check if ModMail is enabled
+        for guild in self.bot.guilds:
+            modmail_enabled = await self.config.guild(guild).modmail_enabled()
+            if not modmail_enabled:
+                continue
+
+            modmail_channel_id = await self.config.guild(guild).modmail_channel()
+            if not modmail_channel_id:
+                continue
+
+            modmail_channel = guild.get_channel(modmail_channel_id)
+            if modmail_channel is None:
+                continue
+
+            # Check for existing thread
+            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
+            if existing_thread:
+                thread = existing_thread
+            else:
+                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
+
+                # Fetch the Member object
+                member = guild.get_member(message.author.id)
+                if member:
+                    roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
+                    joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    roles = "No roles"
+                    joined_at = "Unknown"
+
+                # Create and send the info embed
+                info_embed = discord.Embed(
+                    title=message.author.display_name,
+                    description=f"User ID: {message.author.id}",
+                    color=discord.Color.blue()
+                )
+                info_embed.add_field(name="Roles", value=roles, inline=False)
+                info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+                await thread.send(embed=info_embed)
+
+            # Send the message content
+            content_embed = discord.Embed(
+                description=message.content,
+                color=discord.Color.blue()
+            )
+            # Set the author's name and ID in the title, and their profile picture as the thumbnail
+            if message.author.avatar:
+                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
+            else:
+                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
+
+            # Find and set image from Imgur link
+            imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
+            if imgur_links:
+                content_embed.set_image(url=imgur_links[0])
+
+            await thread.send(embed=content_embed)
+            break
 
     @commands.guild_only()
     @commands.group()
