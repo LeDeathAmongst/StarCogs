@@ -654,7 +654,7 @@ class ModMail(Cog):
 
         if str(user_id) in active_channels:
             del active_channels[str(user_id)]
-            await self.settings.set_raw("active_channels", ctx.guild, value=active_channels)
+            await self.settings.set_raw("active_channels", active_channels, _object=ctx.guild)
 
         await ctx.channel.delete()
         await self.log_action(ctx.guild, f"ModMail channel closed: {ctx.channel.name}.")
