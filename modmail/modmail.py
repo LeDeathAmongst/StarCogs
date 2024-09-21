@@ -284,67 +284,73 @@ class ModMail(Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot or not isinstance(message.channel, discord.DMChannel):
+        if message.author.bot:
             return
 
-        user_id = message.author.id
+        if isinstance(message.channel, discord.DMChannel):
+            user_id = message.author.id
 
-        # Check if the user has already selected a server
-        if user_id in self.user_guild_selection:
-            selected_guild = self.user_guild_selection[user_id]
-            await self.handle_modmail_message(message, selected_guild)
-            return
+            # Check if the user has already selected a server
+            if user_id in self.user_guild_selection:
+                selected_guild = self.user_guild_selection[user_id]
+                await self.handle_modmail_message(message, selected_guild)
+                return
 
-        # Filter for configured guilds only
-        configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.settings.get_raw("modmail_channel", guild)]
+            # Filter for configured guilds only
+            configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.settings.get_raw("modmail_channel", guild)]
 
-        if not configured_guilds:
-            return
+            if not configured_guilds:
+                return
 
-        if len(configured_guilds) == 1:
-            # If there's only one configured server, use it automatically
-            self.user_guild_selection[user_id] = configured_guilds[0]
-            await self.handle_modmail_message(message, configured_guilds[0])
-        else:
-            # Ask the user to choose a server with reactions
-            embed = discord.Embed(
-                title="Select a Server",
-                description="React with the corresponding number to select a server for ModMail.",
-                color=discord.Color.blue()
-            )
-            for i, guild in enumerate(configured_guilds):
-                embed.add_field(name=f"{i+1}. {guild.name}", value="\u200b", inline=False)
+            if len(configured_guilds) == 1:
+                # If there's only one configured server, use it automatically
+                self.user_guild_selection[user_id] = configured_guilds[0]
+                await self.handle_modmail_message(message, configured_guilds[0])
+            else:
+                # Ask the user to choose a server with reactions
+                embed = discord.Embed(
+                    title="Select a Server",
+                    description="React with the corresponding number to select a server for ModMail.",
+                    color=discord.Color.blue()
+                )
+                for i, guild in enumerate(configured_guilds):
+                    embed.add_field(name=f"{i+1}. {guild.name}", value="\u200b", inline=False)
 
-            selection_message = await message.author.send(embed=embed)
+                selection_message = await message.author.send(embed=embed)
 
-            # Add reactions for selection
-            for i in range(len(configured_guilds)):
-                await selection_message.add_reaction(f"{i+1}\u20e3")
+                # Add reactions for selection
+                for i in range(len(configured_guilds)):
+                    await selection_message.add_reaction(f"{i+1}\u20e3")
 
-            def check_reaction(reaction, user):
-                return user == message.author and reaction.message.id == selection_message.id
+                def check_reaction(reaction, user):
+                    return user == message.author and reaction.message.id == selection_message.id
 
-            try:
-                reaction, user = await self.bot.wait_for('reaction_add', check=check_reaction, timeout=60.0)
-                selected_index = int(reaction.emoji[0]) - 1
-                if 0 <= selected_index < len(configured_guilds):
-                    selected_guild = configured_guilds[selected_index]
-                    self.user_guild_selection[user_id] = selected_guild
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', check=check_reaction, timeout=60.0)
+                    selected_index = int(reaction.emoji[0]) - 1
+                    if 0 <= selected_index < len(configured_guilds):
+                        selected_guild = configured_guilds[selected_index]
+                        self.user_guild_selection[user_id] = selected_guild
 
-                    # Remove all reactions from the selection message
-                    await selection_message.clear_reactions()
+                        # Delete the selection message
+                        await selection_message.delete()
 
-                    # Send opening message if configured
-                    open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
-                    if open_embed_message:
-                        open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+                        # Send opening message if configured, otherwise send default message
+                        open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
+                        if open_embed_message:
+                            open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+                        else:
+                            open_embed = discord.Embed(
+                                description=f"Thank you for contacting {selected_guild.name}! Staff will be with you shortly!",
+                                color=discord.Color.green()
+                            )
                         await message.author.send(embed=open_embed)
 
-                    await self.handle_modmail_message(message, selected_guild)
-                else:
-                    await message.author.send("Invalid selection. Please try again.")
-            except asyncio.TimeoutError:
-                await message.author.send("You did not respond in time. Please try again.")
+                        await self.handle_modmail_message(message, selected_guild)
+                    else:
+                        await message.author.send("Invalid selection. Please try again.")
+                except asyncio.TimeoutError:
+                    await message.author.send("You did not respond in time. Please try again.")
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
