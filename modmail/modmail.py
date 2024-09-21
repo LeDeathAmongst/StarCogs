@@ -6,7 +6,7 @@ import io
 from datetime import datetime
 
 class ModMail(Cog):
-    """A modmail cog for Red-DiscordBot."""
+    """A basic ModMail cog"""
 
     def __init__(self, bot: Red):
         self.bot = bot
