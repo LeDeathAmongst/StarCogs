@@ -277,8 +277,7 @@ class ModMail(Cog):
     @commands.group()
     async def config(self, ctx: commands.Context):
         """Configuration commands for modmail."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod, toggle, closeembed.")
+        pass
 
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
@@ -404,8 +403,7 @@ class ModMail(Cog):
     @commands.group()
     async def snippet(self, ctx: commands.Context):
         """Manage pre-configured message snippets."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: add, list, edit, remove, view.")
+        pass
 
     @snippet.command(name="add")
     async def snippet_add(self, ctx: commands.Context, name: str, *, message: str):
@@ -478,8 +476,7 @@ class ModMail(Cog):
     @commands.group()
     async def thread(self, ctx: commands.Context):
         """Manage threads."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: close, open, add.")
+        pass
 
     @thread.command(name="close")
     @commands.mod_or_permissions(manage_messages=True)
