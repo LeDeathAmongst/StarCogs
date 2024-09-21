@@ -3,7 +3,6 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
-from datetime import datetime
 import re
 import asyncio  # Import asyncio for delay functionality
 
@@ -618,6 +617,9 @@ class ModMail(Cog):
             await ctx.send(f"Could not send a DM to {user.display_name}.")
 
         await ctx.send(f"Modmail thread for {user.display_name} has been opened.")
+
+        # Automatically set the selected guild for the user
+        self.user_guild_selection[user.id] = ctx.guild
 
     @thread.command(name="add")
     @commands.mod_or_permissions(manage_messages=True)
