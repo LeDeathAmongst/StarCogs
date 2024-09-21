@@ -128,6 +128,13 @@ class ModMail(Cog):
                 "label": "Close Embed Message",
                 "description": "Set the embed message for channel closure.",
             },
+            "open_embed": {
+                "path": ["open_embed"],
+                "converter": str,
+                "command_name": "openembed",
+                "label": "Open Embed Message",
+                "description": "Set the embed message for opening a modmail thread.",
+            },
             "snippets": {
                 "path": ["snippets"],
                 "converter": dict,
@@ -323,6 +330,16 @@ class ModMail(Cog):
                 if 0 <= selected_index < len(configured_guilds):
                     selected_guild = configured_guilds[selected_index]
                     self.user_guild_selection[user_id] = selected_guild
+
+                    # Remove all reactions from the selection message
+                    await selection_message.clear_reactions()
+
+                    # Send opening message if configured
+                    open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
+                    if open_embed_message:
+                        open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+                        await message.author.send(embed=open_embed)
+
                     await self.handle_modmail_message(message, selected_guild)
                 else:
                     await message.author.send("Invalid selection. Please try again.")
@@ -416,6 +433,12 @@ class ModMail(Cog):
         """Set the embed message for channel closure."""
         await self.settings.set_raw("close_embed", embed_message, ctx.guild)
         await ctx.send("Close embed message set.")
+
+    @config.command(name="openembed")
+    async def config_open_embed(self, ctx: commands.Context, *, embed_message: str):
+        """Set the embed message for opening a modmail thread."""
+        await self.settings.set_raw("open_embed", embed_message, ctx.guild)
+        await ctx.send("Open embed message set.")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
@@ -562,9 +585,13 @@ class ModMail(Cog):
             await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
         close_embed_message = await self.settings.get_raw("close_embed", ctx.guild)
-        if close_embed_message:
+
+        user_id_str = ctx.channel.name.split("modmail-")[1]
+        user = self.bot.get_user(int(user_id_str))
+
+        if close_embed_message and user:
             close_embed = discord.Embed(description=close_embed_message, color=discord.Color.red())
-            await ctx.send(embed=close_embed)
+            await user.send(embed=close_embed)
 
         if delay_seconds > 0:
             await ctx.send(f"This channel will close in {delay_seconds} seconds.")
@@ -573,7 +600,6 @@ class ModMail(Cog):
             await ctx.send("This channel is now closed.")
 
         # Forget the user's selected server
-        user_id_str = ctx.channel.name.split("modmail-")[1]
         user_id = int(user_id_str)
         if user_id in self.user_guild_selection:
             del self.user_guild_selection[user_id]
@@ -624,17 +650,16 @@ class ModMail(Cog):
         info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
         await thread.send(embed=info_embed)
 
-        # Send DM to the user
-        try:
-            dm_embed = discord.Embed(
-                title="Thread Opened",
-                description=f"You opened a thread in `{ctx.guild.name}`. Please state your concerns here.",
-                color=discord.Color.green()
-            )
-            await user.send(embed=dm_embed)
-        except discord.HTTPException:
-            await ctx.send(f"Could not send a DM to {user.display_name}.")
+        # Send the configured opening message to the user
+        open_embed_message = await self.settings.get_raw("open_embed", ctx.guild)
+        if open_embed_message:
+            open_embed = discord.Embed(description=open_embed_message, color=discord.Color.green())
+            try:
+                await user.send(embed=open_embed)
+            except discord.HTTPException:
+                await ctx.send(f"Could not send the opening message to {user.display_name}.")
 
+        # Notify the server that the thread has been opened
         await ctx.send(f"Modmail thread for {user.display_name} has been opened.")
 
     @thread.command(name="add")
@@ -659,7 +684,8 @@ class ModMail(Cog):
             "What channel for the threads?",
             "What channel for the logs? (Type `None` for no logs)",
             "What name for areply embed? (Type `None` for default 'Support Team')",
-            "What message to display on channel closure? (Type `None` for no message)"
+            "What message to display on channel closure? (Type `None` for no message)",
+            "What message to display when a modmail is opened? (Type `None` for no message)"
         ]
         answers = []
 
@@ -708,6 +734,10 @@ class ModMail(Cog):
             # Set close embed message
             close_embed_message = answers[3] if answers[3].lower() != "none" else None
             await self.settings.set_raw("close_embed", close_embed_message, ctx.guild)
+
+            # Set open embed message
+            open_embed_message = answers[4] if answers[4].lower() != "none" else None
+            await self.settings.set_raw("open_embed", open_embed_message, ctx.guild)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
