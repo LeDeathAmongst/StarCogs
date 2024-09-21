@@ -17,7 +17,8 @@ class ModMail(Cog):
             "areply_name": "Support Team",
             "preconfigured_messages": {},
             "authorized_users": [],
-            "snippet_reply_method": "reply"  # Default method for snippets
+            "snippet_reply_method": "reply",  # Default method for snippets
+            "modmail_enabled": True  # ModMail enabled by default
         }
         self.config.register_guild(**default_guild)
 
@@ -104,7 +105,10 @@ class ModMail(Cog):
                     description=message,
                     color=discord.Color.green()
                 )
-                embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
+                if ctx.guild.icon:
+                    embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
+                else:
+                    embed.set_author(name=areply_name)
                 footer_text = "Moderator/Admin"
             else:
                 embed = discord.Embed(
@@ -112,7 +116,10 @@ class ModMail(Cog):
                     description=message,
                     color=discord.Color.green()
                 )
-                embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+                if ctx.author.avatar:
+                    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
+                else:
+                    embed.set_author(name=ctx.author.display_name)
                 highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
                 footer_text = highest_role.name if highest_role else "No role"
 
@@ -147,8 +154,12 @@ class ModMail(Cog):
         if message.author.bot or not isinstance(message.channel, discord.DMChannel):
             return
 
-        # User sent a DM to the bot
+        # Check if ModMail is enabled
         for guild in self.bot.guilds:
+            modmail_enabled = await self.config.guild(guild).modmail_enabled()
+            if not modmail_enabled:
+                continue
+
             modmail_channel_id = await self.config.guild(guild).modmail_channel()
             if not modmail_channel_id:
                 continue
@@ -189,7 +200,10 @@ class ModMail(Cog):
                 color=discord.Color.blue()
             )
             # Set the author's name and ID in the title, and their profile picture as the thumbnail
-            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
+            if message.author.avatar:
+                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
+            else:
+                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
             await thread.send(embed=content_embed)
             break
 
@@ -198,7 +212,7 @@ class ModMail(Cog):
     async def config(self, ctx: commands.Context):
         """Configuration commands for modmail."""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod.")
+            await ctx.send("Please specify a valid subcommand: channel, log, title, snippetmethod, toggle.")
 
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
@@ -227,6 +241,15 @@ class ModMail(Cog):
         await self.config.guild(ctx.guild).snippet_reply_method.set(method)
         await ctx.send(f"Snippet sending method set to {method}.")
 
+    @config.command(name="toggle")
+    async def config_toggle(self, ctx: commands.Context):
+        """Toggle the ModMail system on or off for this server."""
+        current_state = await self.config.guild(ctx.guild).modmail_enabled()
+        new_state = not current_state
+        await self.config.guild(ctx.guild).modmail_enabled.set(new_state)
+        state_text = "enabled" if new_state else "disabled"
+        await ctx.send(f"ModMail has been {state_text} for this server.")
+
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
     @commands.command(aliases=["r"])
@@ -250,7 +273,10 @@ class ModMail(Cog):
             color=discord.Color.green()
         )
         # Set the author's icon for the embed
-        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.guild.icon.url)
+        if ctx.author.avatar:
+            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
+        else:
+            embed.set_author(name=ctx.author.display_name)
 
         # Add footer with user's highest hoisted role
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
@@ -286,8 +312,11 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
-        # Set the author's icon for the embed
-        embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
+        # Set the author's icon for the embed if the guild has an icon
+        if ctx.guild.icon:
+            embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
+        else:
+            embed.set_author(name=areply_name)
 
         # Add footer with user's highest hoisted role and "Moderator/Admin"
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
