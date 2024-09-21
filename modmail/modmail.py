@@ -8,7 +8,6 @@ import re
 import asyncio
 from typing import List, Dict, Union
 import random
-import typing
 
 class SnippetError(Exception):
     pass
@@ -29,11 +28,12 @@ class SnippetObj:
         self.db = self.config.guild
 
     async def get_snippets(self, guild: discord.Guild) -> dict:
+        # Use get_raw to access snippets
         _snippets = await self.db(guild).get_raw("snippets", default={})
         return {k: v for k, v in _snippets.items() if _snippets[k]}
 
     async def create_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
-        if await self.db(ctx.guild).snippets.get_raw(name, default=None):
+        if await self.db(ctx.guild).get_raw("snippets", name, default=None):
             raise SnippetAlreadyExists()
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
@@ -45,10 +45,10 @@ class SnippetObj:
             "name": name,
             "response": response,
         }
-        await self.db(ctx.guild).snippets.set_raw(name, value=snippet_info)
+        await self.db(ctx.guild).set_raw("snippets", name, value=snippet_info)
 
     async def edit_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
-        snippet_info = await self.db(ctx.guild).snippets.get_raw(name, default=None)
+        snippet_info = await self.db(ctx.guild).get_raw("snippets", name, default=None)
         if not snippet_info:
             raise SnippetNotFound()
 
@@ -58,12 +58,12 @@ class SnippetObj:
             raise SnippetResponseTooLong()
 
         snippet_info["response"] = response
-        await self.db(ctx.guild).snippets.set_raw(name, value=snippet_info)
+        await self.db(ctx.guild).set_raw("snippets", name, value=snippet_info)
 
     async def delete_snippet(self, ctx: commands.Context, name: str):
-        if not await self.db(ctx.guild).snippets.get_raw(name, default=None):
+        if not await self.db(ctx.guild).get_raw("snippets", name, default=None):
             raise SnippetNotFound()
-        await self.db(ctx.guild).snippets.set_raw(name, value=None)
+        await self.db(ctx.guild).set_raw("snippets", name, value=None)
 
     async def get_responses(self, ctx):
         await ctx.send("Enter responses for the snippet. Type `exit()` to finish.")
@@ -83,18 +83,6 @@ class ModMail(Cog):
 
     def __init__(self, bot: Red):
         self.bot = bot
-
-        default_guild = {
-            "modmail_channel": None,
-            "log_channel": None,
-            "areply_name": "Support Team",
-            "snippet_reply_method": "reply",
-            "modmail_enabled": True,
-            "close_embed": None,
-            "snippets": {}  # Ensure this is registered
-        }
-
-        self.config.register_guild(**default_guild)
 
         # Define the settings structure
         settings = {
@@ -146,7 +134,7 @@ class ModMail(Cog):
                 "command_name": "snippets",
                 "label": "Snippets",
                 "description": "Manage snippets.",
-                "default": {} 
+                "default": {}  # Ensure there's a default value
             }
         }
 
