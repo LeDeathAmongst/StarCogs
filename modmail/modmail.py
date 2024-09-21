@@ -834,7 +834,6 @@ class ModMail(Cog):
         await self.settings.set_raw("authorized_users", ctx.guild, value=authorized_users)
         await ctx.send(f"{user.display_name} has been added to receive channel replies.")
 
-    @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
     @commands.command()
     async def setup(self, ctx: commands.Context):
@@ -874,7 +873,7 @@ class ModMail(Cog):
             if not modmail_channel or not isinstance(modmail_channel, discord.TextChannel):
                 await ctx.send("Invalid channel for threads. Setup failed.")
                 return
-            await self.settings.set_raw("modmail_channel", ctx.guild, value=modmail_channel.id)
+            await self.settings.set_raw("modmail_channel", modmail_channel.id, _object=ctx.guild)
 
             # Set log channel
             if answers[1].lower() != "none":
@@ -882,24 +881,24 @@ class ModMail(Cog):
                 if not log_channel or not isinstance(log_channel, discord.TextChannel):
                     await ctx.send("Invalid channel for logs. Setup failed.")
                     return
-                await self.settings.set_raw("log_channel", ctx.guild, value=log_channel.id)
+                await self.settings.set_raw("log_channel", log_channel.id, _object=ctx.guild)
             else:
-                await self.settings.set_raw("log_channel", ctx.guild, value=None)
+                await self.settings.set_raw("log_channel", None, _object=ctx.guild)
 
             # Set areply name
             areply_name = answers[2] if answers[2].lower() != "none" else "Support Team"
-            await self.settings.set_raw("areply_name", ctx.guild, value=areply_name)
+            await self.settings.set_raw("areply_name", areply_name, _object=ctx.guild)
 
             # Set close embed message
             close_embed_message = answers[3] if answers[3].lower() != "none" else None
-            await self.settings.set_raw("close_embed", ctx.guild, value=close_embed_message)
+            await self.settings.set_raw("close_embed", close_embed_message, _object=ctx.guild)
 
             # Set modmail category
             modmail_category = discord.utils.get(ctx.guild.categories, mention=answers[4]) or ctx.guild.get_channel(int(answers[4]))
             if not modmail_category or not isinstance(modmail_category, discord.CategoryChannel):
                 await ctx.send("Invalid category for modmail channels. Setup failed.")
                 return
-            await self.settings.set_raw("modmail_category", ctx.guild, value=modmail_category.id)
+            await self.settings.set_raw("modmail_category", modmail_category.id, _object=ctx.guild)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
