@@ -29,7 +29,6 @@ class SnippetObj:
         self.db = self.config.guild
 
     async def get_snippets(self, guild: discord.Guild) -> dict:
-        # Use get_raw to access snippets
         _snippets = await self.db(guild).get_raw("snippets", default={})
         return {k: v for k, v in _snippets.items() if _snippets[k]}
 
@@ -110,7 +109,7 @@ class ModMail(Cog):
             },
             "snippet_reply_method": {
                 "path": ["snippet_reply_method"],
-                "converter": typing.Literal["reply", "areply"],
+                "converter": Literal["reply", "areply"],
                 "command_name": "snippetmethod",
                 "label": "Snippet Reply Method",
                 "description": "Set the method for sending snippets (reply/areply).",
@@ -127,7 +126,7 @@ class ModMail(Cog):
                 "converter": str,
                 "command_name": "closeembed",
                 "label": "Close Embed Message",
-                "description": "Set the embed message for thread closure.",
+                "description": "Set the embed message for channel closure.",
             },
             "snippets": {
                 "path": ["snippets"],
@@ -135,7 +134,14 @@ class ModMail(Cog):
                 "command_name": "snippets",
                 "label": "Snippets",
                 "description": "Manage snippets.",
-                "default": {}  # Ensure there's a default value
+                "default": {}
+            },
+            "modmail_category": {
+                "path": ["modmail_category"],
+                "converter": discord.CategoryChannel,
+                "command_name": "category",
+                "label": "ModMail Category",
+                "description": "Set the category for modmail channels.",
             }
         }
 
@@ -336,31 +342,32 @@ class ModMail(Cog):
         if not modmail_enabled:
             return
 
-        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
-        if not modmail_channel_id:
+        modmail_category_id = await self.settings.get_raw("modmail_category", guild)
+        modmail_category = guild.get_channel(modmail_category_id)
+        if modmail_category is None or not isinstance(modmail_category, discord.CategoryChannel):
             return
 
-        modmail_channel = guild.get_channel(modmail_channel_id)
-        if modmail_channel is None:
-            return
-
-        # Ensure only one thread per user
-        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
-        if existing_thread:
-            thread = existing_thread
+        # Check if a channel already exists for this user
+        channel_name = f"modmail-{message.author.id}"
+        existing_channel = discord.utils.get(guild.text_channels, name=channel_name)
+        if existing_channel:
+            channel = existing_channel
         else:
-            thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
+            # Create a new channel under the specified category
+            channel = await guild.create_text_channel(
+                name=channel_name,
+                category=modmail_category,
+                topic=f"ModMail for {message.author} ({message.author.id})"
+            )
 
-            # Fetch the Member object
+            # Sync permissions with the category
+            await channel.edit(sync_permissions=True)
+
+            # Send an info embed in the new channel
             member = guild.get_member(message.author.id)
-            if member:
-                roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
-                joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
-            else:
-                roles = "No roles"
-                joined_at = "Unknown"
+            roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
+            joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
 
-            # Create and send the info embed
             info_embed = discord.Embed(
                 title=message.author.display_name,
                 description=f"User ID: {message.author.id}",
@@ -368,25 +375,23 @@ class ModMail(Cog):
             )
             info_embed.add_field(name="Roles", value=roles, inline=False)
             info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-            await thread.send(embed=info_embed)
+            await channel.send(embed=info_embed)
 
         # Send the message content
         content_embed = discord.Embed(
             description=message.content,
             color=discord.Color.blue()
         )
-        # Set the author's name and ID in the title, and their profile picture as the thumbnail
         if message.author.avatar:
             content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
         else:
             content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
 
-        # Find and set image from Imgur link
         imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
         if imgur_links:
             content_embed.set_image(url=imgur_links[0])
 
-        await thread.send(embed=content_embed)
+        await channel.send(embed=content_embed)
 
     @commands.guild_only()
     @commands.group()
@@ -432,20 +437,26 @@ class ModMail(Cog):
 
     @config.command(name="closeembed")
     async def config_close_embed(self, ctx: commands.Context, *, embed_message: str):
-        """Set the embed message for thread closure."""
+        """Set the embed message for channel closure."""
         await self.settings.set_raw("close_embed", embed_message, ctx.guild)
         await ctx.send("Close embed message set.")
+
+    @config.command(name="category")
+    async def config_category(self, ctx: commands.Context, category: discord.CategoryChannel):
+        """Set the category for modmail channels."""
+        await self.settings.set_raw("modmail_category", category.id, ctx.guild)
+        await ctx.send(f"ModMail category set to {category.name}")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
     @commands.command(aliases=["r"])
     async def reply(self, ctx: commands.Context, *, response: str):
-        """Reply to a user via ModMail from within a thread."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
+        """Reply to a user via ModMail from within a channel."""
+        if not ctx.channel.name.startswith("modmail-"):
+            await ctx.send("This command can only be used within a modmail channel.")
             return
 
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
+        user_id_str = ctx.channel.name.split("modmail-")[1]
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -458,32 +469,30 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
-        # Set the author's icon for the embed
         if ctx.author.avatar:
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         else:
             embed.set_author(name=ctx.author.display_name)
 
-        # Add footer with user's highest hoisted role
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
         footer_text = highest_role.name if highest_role else "No role"
         embed.set_footer(text=footer_text)
 
         await user.send(embed=embed)
 
-        # Log the response in the thread
+        # Log the response in the channel
         await ctx.send(f"Reply sent to {user.mention}: {response}")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
     @commands.command(aliases=["ar"])
     async def areply(self, ctx: commands.Context, *, response: str):
-        """Reply to a user via ModMail with a generic support team title from within a thread."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
+        """Reply to a user via ModMail with a generic support team title from within a channel."""
+        if not ctx.channel.name.startswith("modmail-"):
+            await ctx.send("This command can only be used within a modmail channel.")
             return
 
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
+        user_id_str = ctx.channel.name.split("modmail-")[1]
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -498,33 +507,31 @@ class ModMail(Cog):
             description=response,
             color=discord.Color.green()
         )
-        # Set the author's icon for the embed if the guild has an icon
         if ctx.guild.icon:
             embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
         else:
             embed.set_author(name=areply_name)
 
-        # Set footer to "Moderator/Admin" only
         footer_text = "Moderator/Admin"
         embed.set_footer(text=footer_text)
 
         await user.send(embed=embed)
 
-        # Log the response in the thread
+        # Log the response in the channel
         await ctx.send(f"Reply sent to {user.mention}: {response}")
 
     @commands.guild_only()
     @commands.group()
     async def thread(self, ctx: commands.Context):
-        """Manage threads."""
+        """Manage modmail channels."""
         pass
 
     @thread.command(name="close")
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_close(self, ctx: commands.Context, delay: str = None):
-        """Close the modmail thread and generate a log. Optionally delay the closure with format like 10s, 10m, 10h."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
+        """Close the modmail channel and generate a log. Optionally delay the closure with format like 10s, 10m, 10h."""
+        if not ctx.channel.name.startswith("modmail-"):
+            await ctx.send("This command can only be used within a modmail channel.")
             return
 
         # Parse the delay argument
@@ -590,13 +597,13 @@ class ModMail(Cog):
             await ctx.send(embed=close_embed)
 
         if delay_seconds > 0:
-            await ctx.send(f"This thread will close in {delay_seconds} seconds.")
+            await ctx.send(f"This channel will close in {delay_seconds} seconds.")
             await asyncio.sleep(delay_seconds)
         else:
-            await ctx.send("This thread is now closed.")
+            await ctx.send("This channel is now closed.")
 
         # Forget the user's selected server
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
+        user_id_str = ctx.channel.name.split("modmail-")[1]
         user_id = int(user_id_str)
         if user_id in self.user_guild_selection:
             del self.user_guild_selection[user_id]
@@ -605,7 +612,7 @@ class ModMail(Cog):
 
     @thread.command(name="open")
     async def thread_open(self, ctx: commands.Context, user: discord.Member = None):
-        """Open a modmail thread with the server."""
+        """Open a modmail channel with the server."""
         if ctx.channel.type != discord.ChannelType.text:
             await ctx.send("This command can only be used in a server text channel.")
             return
@@ -613,23 +620,27 @@ class ModMail(Cog):
         if user is None:
             user = ctx.author
 
-        modmail_channel_id = await self.settings.get_raw("modmail_channel", ctx.guild)
-        if not modmail_channel_id:
-            await ctx.send("ModMail channel is not set for this server.")
+        modmail_category_id = await self.settings.get_raw("modmail_category", ctx.guild)
+        modmail_category = ctx.guild.get_channel(modmail_category_id)
+        if modmail_category is None or not isinstance(modmail_category, discord.CategoryChannel):
+            await ctx.send("ModMail category is not set or invalid for this server.")
             return
 
-        modmail_channel = ctx.guild.get_channel(modmail_channel_id)
-        if modmail_channel is None:
-            await ctx.send("ModMail channel not found.")
+        # Check if a channel already exists for this user
+        channel_name = f"modmail-{user.id}"
+        existing_channel = discord.utils.get(ctx.guild.text_channels, name=channel_name)
+        if existing_channel:
+            await ctx.send(f"{user.display_name} already has an open channel.")
             return
 
-        # Ensure only one thread per user
-        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.id}-{user.display_name}")
-        if existing_thread:
-            await ctx.send(f"{user.display_name} already has an open thread.")
-            return
+        channel = await ctx.guild.create_text_channel(
+            name=channel_name,
+            category=modmail_category,
+            topic=f"ModMail for {user} ({user.id})"
+        )
 
-        thread = await modmail_channel.create_thread(name=f"ModMail-{user.id}-{user.display_name}", type=discord.ChannelType.public_thread)
+        # Sync permissions with the category
+        await channel.edit(sync_permissions=True)
 
         # Create and send the info embed
         roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
@@ -641,33 +652,33 @@ class ModMail(Cog):
         )
         info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
         info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-        await thread.send(embed=info_embed)
+        await channel.send(embed=info_embed)
 
         # Send DM to the user
         try:
             dm_embed = discord.Embed(
-                title="Thread Opened",
-                description=f"You opened a thread in `{ctx.guild.name}`. Please state your concerns here.",
+                title="Channel Opened",
+                description=f"You opened a channel in `{ctx.guild.name}`. Please state your concerns here.",
                 color=discord.Color.green()
             )
             await user.send(embed=dm_embed)
         except discord.HTTPException:
             await ctx.send(f"Could not send a DM to {user.display_name}.")
 
-        await ctx.send(f"Modmail thread for {user.display_name} has been opened.")
+        await ctx.send(f"Modmail channel for {user.display_name} has been opened.")
 
     @thread.command(name="add")
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_add(self, ctx: commands.Context, user: discord.User):
-        """Add a user to receive replies for threads in the DMs."""
+        """Add a user to receive replies for channels in the DMs."""
         authorized_users = await self.settings.get_raw("authorized_users", ctx.guild)
         if user.id in authorized_users:
-            await ctx.send(f"{user.display_name} is already authorized to receive thread replies.")
+            await ctx.send(f"{user.display_name} is already authorized to receive channel replies.")
             return
 
         authorized_users.append(user.id)
         await self.settings.set_raw("authorized_users", authorized_users, ctx.guild)
-        await ctx.send(f"{user.display_name} has been added to receive thread replies.")
+        await ctx.send(f"{user.display_name} has been added to receive channel replies.")
 
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
@@ -678,7 +689,8 @@ class ModMail(Cog):
             "What channel for the threads?",
             "What channel for the logs? (Type `None` for no logs)",
             "What name for areply embed? (Type `None` for default 'Support Team')",
-            "What message to display on thread closure? (Type `None` for no message)"
+            "What message to display on channel closure? (Type `None` for no message)",
+            "What category for modmail channels?"
         ]
         answers = []
 
@@ -727,6 +739,13 @@ class ModMail(Cog):
             # Set close embed message
             close_embed_message = answers[3] if answers[3].lower() != "none" else None
             await self.settings.set_raw("close_embed", close_embed_message, ctx.guild)
+
+            # Set modmail category
+            modmail_category = discord.utils.get(ctx.guild.categories, mention=answers[4]) or ctx.guild.get_channel(int(answers[4]))
+            if not modmail_category or not isinstance(modmail_category, discord.CategoryChannel):
+                await ctx.send("Invalid category for modmail channels. Setup failed.")
+                return
+            await self.settings.set_raw("modmail_category", modmail_category.id, ctx.guild)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
