@@ -175,34 +175,46 @@ class ModMail(Cog):
             await self.handle_modmail_message(message, selected_guild)
             return
 
-        # Ask the user to select a server if they are in multiple shared servers
-        shared_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id)]
-        if not shared_guilds:
+        # Filter for configured guilds only
+        configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.config.guild(guild).modmail_channel()]
+
+        if not configured_guilds:
             return
 
-        if len(shared_guilds) == 1:
-            # If there's only one shared server, use it automatically
-            self.user_guild_selection[user_id] = shared_guilds[0]
-            await self.handle_modmail_message(message, shared_guilds[0])
+        if len(configured_guilds) == 1:
+            # If there's only one configured server, use it automatically
+            self.user_guild_selection[user_id] = configured_guilds[0]
+            await self.handle_modmail_message(message, configured_guilds[0])
         else:
-            # Ask the user to choose a server
-            guild_names = '\n'.join(f"{i+1}. {guild.name}" for i, guild in enumerate(shared_guilds))
-            await message.author.send(f"Please select the server you want to contact by replying with the number:\n{guild_names}")
+            # Ask the user to choose a server with reactions
+            embed = discord.Embed(
+                title="Select a Server",
+                description="React with the corresponding number to select a server for ModMail.",
+                color=discord.Color.blue()
+            )
+            for i, guild in enumerate(configured_guilds):
+                embed.add_field(name=f"{i+1}. {guild.name}", value="\u200b", inline=False)
 
-            def check(m):
-                return m.author == message.author and m.channel == message.channel
+            selection_message = await message.author.send(embed=embed)
+
+            # Add reactions for selection
+            for i in range(len(configured_guilds)):
+                await selection_message.add_reaction(f"{i+1}\u20e3")
+
+            def check_reaction(reaction, user):
+                return user == message.author and reaction.message.id == selection_message.id
 
             try:
-                response = await self.bot.wait_for('message', check=check, timeout=60.0)
-                selected_index = int(response.content) - 1
-                if 0 <= selected_index < len(shared_guilds):
-                    selected_guild = shared_guilds[selected_index]
+                reaction, user = await self.bot.wait_for('reaction_add', check=check_reaction, timeout=60.0)
+                selected_index = int(reaction.emoji[0]) - 1
+                if 0 <= selected_index < len(configured_guilds):
+                    selected_guild = configured_guilds[selected_index]
                     self.user_guild_selection[user_id] = selected_guild
                     await self.handle_modmail_message(message, selected_guild)
                 else:
                     await message.author.send("Invalid selection. Please try again.")
-            except (ValueError, asyncio.TimeoutError):
-                await message.author.send("You did not respond in time or entered an invalid number. Please try again.")
+            except asyncio.TimeoutError:
+                await message.author.send("You did not respond in time. Please try again.")
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
@@ -472,11 +484,28 @@ class ModMail(Cog):
 
     @thread.command(name="close")
     @commands.mod_or_permissions(manage_messages=True)
-    async def thread_close(self, ctx: commands.Context, delay: int = 0):
-        """Close the modmail thread and generate a log. Optionally delay the closure."""
+    async def thread_close(self, ctx: commands.Context, delay: str = None):
+        """Close the modmail thread and generate a log. Optionally delay the closure with format like 10s, 10m, 10h."""
         if ctx.channel.type != discord.ChannelType.public_thread:
             await ctx.send("This command can only be used within a modmail thread.")
             return
+
+        # Parse the delay argument
+        delay_seconds = 0
+        if delay:
+            match = re.match(r"(\d+)([smh])", delay)
+            if match:
+                amount = int(match.group(1))
+                unit = match.group(2)
+                if unit == 's':
+                    delay_seconds = amount
+                elif unit == 'm':
+                    delay_seconds = amount * 60
+                elif unit == 'h':
+                    delay_seconds = amount * 3600
+            else:
+                await ctx.send("Invalid delay format. Please use formats like 10s, 10m, 10h.")
+                return
 
         # Get the log channel ID from the config
         log_channel_id = await self.config.guild(ctx.guild).log_channel()
@@ -523,11 +552,17 @@ class ModMail(Cog):
             close_embed = discord.Embed(description=close_embed_message, color=discord.Color.red())
             await ctx.send(embed=close_embed)
 
-        if delay > 0:
-            await ctx.send(f"This thread will close in {delay} seconds.")
-            await asyncio.sleep(delay)
+        if delay_seconds > 0:
+            await ctx.send(f"This thread will close in {delay_seconds} seconds.")
+            await asyncio.sleep(delay_seconds)
         else:
             await ctx.send("This thread is now closed.")
+
+        # Forget the user's selected server
+        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
+        user_id = int(user_id_str)
+        if user_id in self.user_guild_selection:
+            del self.user_guild_selection[user_id]
 
         await ctx.channel.delete()
 
