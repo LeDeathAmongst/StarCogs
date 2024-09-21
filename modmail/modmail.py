@@ -663,8 +663,11 @@ class ModMail(Cog):
             await ctx.send("ModMail category is not set or invalid for this server.")
             return
 
-        # Check if a channel already exists for this user
-        active_channels = await self.settings.get_raw("active_channels", ctx.guild, default={})
+        try:
+            active_channels = await self.settings.get_raw("active_channels", ctx.guild)
+        except KeyError:
+            active_channels = {}
+
         existing_channel_id = active_channels.get(str(user.id))
         existing_channel = ctx.guild.get_channel(existing_channel_id) if existing_channel_id else None
         if existing_channel:
