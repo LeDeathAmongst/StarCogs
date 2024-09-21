@@ -158,21 +158,28 @@ class ModMail(Cog):
                 continue
 
             # Ensure only one thread per user
-            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.display_name}")
+            existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{message.author.id}-{message.author.display_name}")
             if existing_thread:
                 thread = existing_thread
             else:
-                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.display_name}", type=discord.ChannelType.public_thread)
+                thread = await modmail_channel.create_thread(name=f"ModMail-{message.author.id}-{message.author.display_name}", type=discord.ChannelType.public_thread)
+
+                # Fetch the Member object
+                member = guild.get_member(message.author.id)
+                if member:
+                    roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"])
+                    joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    roles = "No roles"
+                    joined_at = "Unknown"
 
                 # Create and send the info embed
-                roles = ', '.join([role.name for role in message.author.roles if role.name != "@everyone"])
-                joined_at = message.author.joined_at.strftime("%Y-%m-%d %H:%M:%S")
                 info_embed = discord.Embed(
                     title=message.author.display_name,
                     description=f"User ID: {message.author.id}",
                     color=discord.Color.blue()
                 )
-                info_embed.add_field(name="Roles", value=roles or "No roles", inline=False)
+                info_embed.add_field(name="Roles", value=roles, inline=False)
                 info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
                 await thread.send(embed=info_embed)
 
@@ -229,7 +236,7 @@ class ModMail(Cog):
             await ctx.send("This command can only be used within a modmail thread.")
             return
 
-        user_id_str = ctx.channel.name.split("ModMail-")[-1]
+        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -264,7 +271,7 @@ class ModMail(Cog):
             await ctx.send("This command can only be used within a modmail thread.")
             return
 
-        user_id_str = ctx.channel.name.split("ModMail-")[-1]
+        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -446,12 +453,12 @@ class ModMail(Cog):
             return
 
         # Ensure only one thread per user
-        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.display_name}")
+        existing_thread = discord.utils.get(modmail_channel.threads, name=f"ModMail-{user.id}-{user.display_name}")
         if existing_thread:
             await ctx.send(f"{user.display_name} already has an open thread.")
             return
 
-        thread = await modmail_channel.create_thread(name=f"ModMail-{user.display_name}", type=discord.ChannelType.public_thread)
+        thread = await modmail_channel.create_thread(name=f"ModMail-{user.id}-{user.display_name}", type=discord.ChannelType.public_thread)
 
         # Create and send the info embed
         roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
