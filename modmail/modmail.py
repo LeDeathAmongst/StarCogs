@@ -29,7 +29,7 @@ class SnippetObj:
         self.db = self.config.guild
 
     async def get_snippets(self, guild: discord.Guild) -> dict:
-        _snippets = await self.db(guild).snippets()
+        _snippets = await self.db(guild).get_raw("snippets", default={})
         return {k: v for k, v in _snippets.items() if _snippets[k]}
 
     async def create_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
@@ -83,6 +83,18 @@ class ModMail(Cog):
 
     def __init__(self, bot: Red):
         self.bot = bot
+
+        default_guild = {
+            "modmail_channel": None,
+            "log_channel": None,
+            "areply_name": "Support Team",
+            "snippet_reply_method": "reply",
+            "modmail_enabled": True,
+            "close_embed": None,
+            "snippets": {}  # Ensure this is registered
+        }
+
+        self.config.register_guild(**default_guild)
 
         # Define the settings structure
         settings = {
