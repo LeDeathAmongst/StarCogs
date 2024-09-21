@@ -14,7 +14,7 @@ log = logging.getLogger("star.perform")
 
 class Perform(Cog):
     """
-    Perform different actions, like cuddle, poke etc.
+    Perform different actions, like cuddle, poke, etc.
     """
 
     def __init__(self, bot: Red):
@@ -142,6 +142,13 @@ class Perform(Cog):
 
         self.COMMANDS = [i.rstrip("_r") for i in default_target if i.endswith("_r")]
 
+    def get_random_image(self, action: str) -> str:
+        """Get a random image URL for the specified action."""
+        images = getattr(self.config, action, [])
+        if not images:
+            return ""
+        return images[randint(0, len(images) - 1)]
+
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
     async def cuddle(self, ctx: commands.Context, *users: discord.Member):
@@ -158,10 +165,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("feed"))
+
+        used = await self.config.user(ctx.author).cuddle_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).cuddle_r()
-            used = await self.config.user(ctx.author).cuddle_s()
             await self.config.user(ctx.author).cuddle_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).cuddle_r.set(target + 1)
 
@@ -185,10 +194,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("poke"))
+
+        used = await self.config.user(ctx.author).poke_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).poke_r()
-            used = await self.config.user(ctx.author).poke_s()
             await self.config.user(ctx.author).poke_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).poke_r.set(target + 1)
 
@@ -212,10 +223,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("kiss"))
+
+        used = await self.config.user(ctx.author).kiss_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).kiss_r()
-            used = await self.config.user(ctx.author).kiss_s()
             await self.config.user(ctx.author).kiss_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).kiss_r.set(target + 1)
 
@@ -239,10 +252,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("hug"))
+
+        used = await self.config.user(ctx.author).hug_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).hug_r()
-            used = await self.config.user(ctx.author).hug_s()
             await self.config.user(ctx.author).hug_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).hug_r.set(target + 1)
 
@@ -266,10 +281,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("pat"))
+
+        used = await self.config.user(ctx.author).pat_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).pat_r()
-            used = await self.config.user(ctx.author).pat_s()
             await self.config.user(ctx.author).pat_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).pat_r.set(target + 1)
 
@@ -293,10 +310,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("tickle"))
+
+        used = await self.config.user(ctx.author).tickle_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).tickle_r()
-            used = await self.config.user(ctx.author).tickle_s()
             await self.config.user(ctx.author).tickle_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).tickle_r.set(target + 1)
 
@@ -335,10 +354,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("lick"))
+
+        used = await self.config.user(ctx.author).lick_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).lick_r()
-            used = await self.config.user(ctx.author).lick_s()
             await self.config.user(ctx.author).lick_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).lick_r.set(target + 1)
 
@@ -362,10 +383,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("slap"))
+
+        used = await self.config.user(ctx.author).slap_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).slap_r()
-            used = await self.config.user(ctx.author).slap_s()
             await self.config.user(ctx.author).slap_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).slap_r.set(target + 1)
 
@@ -412,10 +435,6 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to spank.")
 
-        images = await self.config.spank()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
         description = f"**{ctx.author.mention}** spanks "
         description += ", ".join(f"**{user.mention}**" for user in users) + "!"
 
@@ -423,11 +442,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
-        embed.set_image(url=images[i])
+        embed.set_image(url=self.get_random_image("spank"))
+
+        used = await self.config.user(ctx.author).spank_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).spank_r()
-            used = await self.config.user(ctx.author).spank_s()
             await self.config.user(ctx.author).spank_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).spank_r.set(target + 1)
 
@@ -474,10 +494,6 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to feed.")
 
-        images = await self.config.feed()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
         description = f"**{ctx.author.mention}** feeds "
         description += ", ".join(f"**{user.mention}**" for user in users) + "!"
 
@@ -485,11 +501,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
-        embed.set_image(url=images[i])
+        embed.set_image(url=self.get_random_image("feed"))
+
+        used = await self.config.user(ctx.author).feed_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).feed_r()
-            used = await self.config.user(ctx.author).feed_s()
             await self.config.user(ctx.author).feed_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).feed_r.set(target + 1)
 
@@ -513,10 +530,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("punch"))
+
+        used = await self.config.user(ctx.author).punch_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).punch_r()
-            used = await self.config.user(ctx.author).punch_s()
             await self.config.user(ctx.author).punch_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).punch_r.set(target + 1)
 
@@ -567,10 +586,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("highfive"))
+
+        used = await self.config.user(ctx.author).highfive_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).highfive_r()
-            used = await self.config.user(ctx.author).highfive_s()
             await self.config.user(ctx.author).highfive_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).highfive_r.set(target + 1)
 
@@ -593,10 +614,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("plead"))
+
+        used = await self.config.user(ctx.author).plead_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).plead_r()
-            used = await self.config.user(ctx.author).plead_s()
             await self.config.user(ctx.author).plead_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).plead_r.set(target + 1)
 
@@ -661,10 +684,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("kill"))
+
+        used = await self.config.user(ctx.author).kill_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).kill_r()
-            used = await self.config.user(ctx.author).kill_s()
             await self.config.user(ctx.author).kill_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).kill_r.set(target + 1)
 
@@ -687,10 +712,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("love"))
+
+        used = await self.config.user(ctx.author).love_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).love_r()
-            used = await self.config.user(ctx.author).love_s()
             await self.config.user(ctx.author).love_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).love_r.set(target + 1)
 
@@ -755,10 +782,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("bite"))
+
+        used = await self.config.user(ctx.author).bite_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).bite_r()
-            used = await self.config.user(ctx.author).bite_s()
             await self.config.user(ctx.author).bite_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).bite_r.set(target + 1)
 
@@ -795,10 +824,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("yeet"))
+
+        used = await self.config.user(ctx.author).yeet_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).yeet_r()
-            used = await self.config.user(ctx.author).yeet_s()
             await self.config.user(ctx.author).yeet_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).yeet_r.set(target + 1)
 
@@ -905,10 +936,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("protect"))
+
+        used = await self.config.user(ctx.author).protect_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).protect_r()
-            used = await self.config.user(ctx.author).protect_s()
             await self.config.user(ctx.author).protect_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).protect_r.set(target + 1)
 
@@ -1001,10 +1034,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
+        embed.set_image(url=self.get_random_image("wave"))
+
+        used = await self.config.user(ctx.author).wave_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).wave_r()
-            used = await self.config.user(ctx.author).wave_s()
             await self.config.user(ctx.author).wave_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).wave_r.set(target + 1)
 
@@ -1021,10 +1056,6 @@ class Perform(Cog):
         if not users:
             return await ctx.send("You need to mention at least one user to kick in the nuts.")
 
-        images = await self.config.nut()
-        mn = len(images)
-        i = randint(0, mn - 1)
-
         description = f"**{ctx.author.mention}** kicks nuts of "
         description += ", ".join(f"**{user.mention}**" for user in users) + "!"
 
@@ -1032,11 +1063,12 @@ class Perform(Cog):
             colour=discord.Colour.random(),
             description=description
         )
-        embed.set_image(url=images[i])
+        embed.set_image(url=self.get_random_image("nut"))
+
+        used = await self.config.user(ctx.author).nut_s()
 
         for user in users:
             target = await self.config.custom("Target", ctx.author.id, user.id).nut_r()
-            used = await self.config.user(ctx.author).nut_s()
             await self.config.user(ctx.author).nut_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).nut_r.set(target + 1)
 
@@ -1094,16 +1126,8 @@ class Perform(Cog):
             await ctx.send("Footers will now be shown")
 
     def cog_unload(self):
-        global hug
-        if hug:
-            try:
-                self.bot.remove_command("hug")
-            except Exception as e:
-                log.info(e)
-            self.bot.add_command(hug)
+        pass
 
 
 async def setup(bot: Red):
-    global hug
-    hug = bot.remove_command("hug")
     await bot.add_cog(Perform(bot))
