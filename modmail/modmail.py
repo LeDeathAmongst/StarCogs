@@ -4,7 +4,7 @@ from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
 import re
-import asyncio  # Import asyncio for delay functionality
+import asyncio 
 
 class ModMail(Cog):
     """A basic ModMail cog"""
@@ -18,9 +18,9 @@ class ModMail(Cog):
             "areply_name": "Support Team",
             "preconfigured_messages": {},
             "authorized_users": [],
-            "snippet_reply_method": "reply",  # Default method for snippets
-            "modmail_enabled": True,  # ModMail enabled by default
-            "close_embed": None  # Configurable embed for thread closure
+            "snippet_reply_method": "reply", 
+            "modmail_enabled": True, 
+            "close_embed": None 
         }
         self.config.register_guild(**default_guild)
 
@@ -337,66 +337,63 @@ class ModMail(Cog):
             await ctx.send("User not found.")
             return
 
-        # Send the response to the user
+        # Send the response to the user and authorized users
         embed = discord.Embed(
             title=user.display_name,
             description=response,
             color=discord.Color.green()
         )
-        # Set the author's icon for the embed
         if ctx.author.avatar:
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
         else:
             embed.set_author(name=ctx.author.display_name)
 
-        # Add footer with user's highest hoisted role
         highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
         footer_text = highest_role.name if highest_role else "No role"
         embed.set_footer(text=footer_text)
 
+        # Send to main user
         await user.send(embed=embed)
 
-        # Log the response in the thread
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
-
-    @commands.guild_only()
-    @commands.mod_or_permissions(manage_messages=True)
-    @commands.command(aliases=["ar"])
-    async def areply(self, ctx: commands.Context, *, response: str):
-        """Reply to a user via ModMail with a generic support team title from within a thread."""
-        if ctx.channel.type != discord.ChannelType.public_thread:
-            await ctx.send("This command can only be used within a modmail thread.")
-            return
-
-        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
-        user = self.bot.get_user(int(user_id_str))
-
-        if user is None:
-            await ctx.send("User not found.")
-            return
-
-        areply_name = await self.config.guild(ctx.guild).areply_name()
-
-        # Send the response to the user
-        embed = discord.Embed(
-            title=areply_name,
-            description=response,
-            color=discord.Color.green()
-        )
-        # Set the author's icon for the embed if the guild has an icon
-        if ctx.guild.icon:
-            embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
-        else:
-            embed.set_author(name=areply_name)
-
-        # Set footer to "Moderator/Admin" only
-        footer_text = "Moderator/Admin"
-        embed.set_footer(text=footer_text)
-
-        await user.send(embed=embed)
+        # Send to authorized users
+        authorized_users = await self.config.guild(ctx.guild).authorized_users()
+        for user_id in authorized_users:
+            mod_user = self.bot.get_user(user_id)
+            if mod_user:
+                await mod_user.send(embed=embed)
 
         # Log the response in the thread
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
+        await ctx.send(f"Reply sent to {user.mention} and authorized users.")
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+
+        # Handle DM messages from authorized users
+        if isinstance(message.channel, discord.DMChannel):
+            for guild in self.bot.guilds:
+                authorized_users = await self.config.guild(guild).authorized_users()
+                if message.author.id in authorized_users:
+                    modmail_channel_id = await self.config.guild(guild).modmail_channel()
+                    if modmail_channel_id:
+                        modmail_channel = guild.get_channel(modmail_channel_id)
+                        if modmail_channel:
+                            # Find the thread by name
+                            thread_name = f"ModMail-{message.author.id}-{message.author.display_name}"
+                            thread = discord.utils.get(modmail_channel.threads, name=thread_name)
+                            if thread:
+                                content_embed = discord.Embed(
+                                    description=message.content,
+                                    color=discord.Color.blue()
+                                )
+                                if message.author.avatar:
+                                    content_embed.set_author(name=f"{message.author.display_name}", icon_url=message.author.avatar.url)
+                                else:
+                                    content_embed.set_author(name=f"{message.author.display_name}")
+
+                                await thread.send(embed=content_embed)
+                                break
 
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
