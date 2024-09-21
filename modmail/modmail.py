@@ -417,11 +417,13 @@ class ModMail(Cog):
             description=message.content,
             color=discord.Color.blue()
         )
+        # Set the author's name and ID in the title, and their profile picture as the thumbnail
         if message.author.avatar:
             content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
         else:
             content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
 
+        # Find and set image from Imgur link
         imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
         if imgur_links:
             content_embed.set_image(url=imgur_links[0])
