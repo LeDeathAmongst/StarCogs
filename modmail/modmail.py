@@ -4,6 +4,7 @@ from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
 from datetime import datetime
+import re
 
 class ModMail(Cog):
     """A basic ModMail cog"""
