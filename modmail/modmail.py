@@ -687,7 +687,7 @@ class ModMail(Cog):
 
         # Store the current channel as the communication channel
         active_channels[str(user.id)] = ctx.channel.id
-        await self.settings.set_raw("active_channels", ctx.guild, value=active_channels)
+        await self.settings.set_raw("active_channels", active_channels, _object=ctx.guild)
 
         # Create and send the info embed
         roles = ', '.join([role.name for role in user.roles if role.name != "@everyone"])
