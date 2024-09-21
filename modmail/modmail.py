@@ -318,9 +318,8 @@ class ModMail(Cog):
         else:
             embed.set_author(name=areply_name)
 
-        # Add footer with user's highest hoisted role and "Moderator/Admin"
-        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-        footer_text = f"{highest_role.name if highest_role else 'No role'} - Moderator/Admin"
+        # Set footer to "Moderator/Admin" only
+        footer_text = "Moderator/Admin"
         embed.set_footer(text=footer_text)
 
         await user.send(embed=embed)
