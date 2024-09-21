@@ -37,7 +37,7 @@ class SnippetObj:
             raise SnippetAlreadyExists()
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
         snippet_info = {
@@ -54,7 +54,7 @@ class SnippetObj:
 
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
         snippet_info["response"] = response
@@ -164,67 +164,61 @@ class ModMail(Cog):
         # Temporary storage for user-server selections
         self.user_guild_selection = {}
 
-    async def cog_load(self):
-        # Load snippet commands on cog load
-        for guild in self.bot.guilds:
-            await self.load_snippet_commands(guild)
+    async def send_snippet(self, ctx: commands.Context, name: str):
+        """Send a snippet response to the user's DM."""
+        snippets = await self.snippetobj.get_snippets(ctx.guild)
+        snippet_info = snippets.get(name)
+        if not snippet_info:
+            await ctx.send("Snippet not found.")
+            return
 
-    async def load_snippet_commands(self, guild: discord.Guild):
-        snippets = await self.snippetobj.get_snippets(guild)
-        for name, snippet_info in snippets.items():
-            self.add_snippet_command(name, snippet_info["response"], guild.id)
+        response = random.choice(snippet_info["response"]) if isinstance(snippet_info["response"], list) else snippet_info["response"]
 
-    def add_snippet_command(self, name: str, responses: Union[str, List[str]], guild_id: int):
-        """Dynamically add a snippet command."""
-        async def snippet_command(ctx: commands.Context):
-            """Send a snippet response."""
-            if ctx.guild.id != guild_id:
-                return
+        # Extract user ID from the channel name
+        if ctx.channel.name.startswith("modmail-"):
+            user_id_str = ctx.channel.name.split("modmail-")[1]
+            user = self.bot.get_user(int(user_id_str))
 
-            # Determine the response
-            if isinstance(responses, list):
-                response = random.choice(responses)
-            else:
-                response = responses
+            if user:
+                try:
+                    # Create the embed for the snippet response
+                    embed = discord.Embed(
+                        description=response,
+                        color=discord.Color.green()
+                    )
 
-            # Extract user ID from the channel name
-            if ctx.channel.name.startswith("modmail-"):
-                user_id_str = ctx.channel.name.split("modmail-")[1]
-                user = self.bot.get_user(int(user_id_str))
-
-                if user:
-                    try:
-                        # Create the embed for the snippet response
-                        embed = discord.Embed(
-                            description=response,
-                            color=discord.Color.green()
-                        )
-
-                        # Set the title and footer based on the context
+                    # Determine the snippet reply method
+                    snippet_method = await self.settings.get_raw("snippet_reply_method", ctx.guild)
+                    if snippet_method == "areply":
                         areply_name = await self.settings.get_raw("areply_name", ctx.guild)
                         embed.set_author(name=areply_name)
                         footer_text = "Moderator/Admin"
-                        embed.set_footer(text=footer_text)
+                    else:
+                        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+                        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+                        footer_text = highest_role.name if highest_role else "No role"
 
-                        # Send the embed to the user's DM
-                        await user.send(embed=embed)
-                        await ctx.send(f"Snippet sent to {user.display_name}.")
-                    except discord.HTTPException:
-                        await ctx.send("Failed to send snippet to the user's DM.")
-                else:
-                    await ctx.send("User not found.")
+                    embed.set_footer(text=footer_text)
+
+                    # Send the embed to the user's DM
+                    await user.send(embed=embed)
+                    await ctx.send(f"Snippet '{name}' sent to {user.display_name}.")
+                except discord.HTTPException:
+                    await ctx.send("Failed to send snippet to the user's DM.")
             else:
-                await ctx.send("This command can only be used within a modmail thread channel.")
-
-        # Add the command to the bot
-        snippet_command.__name__ = f"snippet_{name}"
-        command = commands.command(name=name)(snippet_command)
-        self.bot.add_command(command)
+                await ctx.send("User not found.")
+        else:
+            await ctx.send("This command can only be used within a modmail thread channel.")
 
     @commands.group()
     async def snippet(self, ctx: commands.Context):
         """Manage snippets."""
         pass
+
+    @snippet.command(name="send")
+    async def snippet_send(self, ctx: commands.Context, name: str):
+        """Send a snippet to the user's DM."""
+        await self.send_snippet(ctx, name)
 
     @snippet.command(name="create")
     async def snippet_create(self, ctx: commands.Context, name: str):
@@ -235,7 +229,6 @@ class ModMail(Cog):
             return
         try:
             await self.snippetobj.create_snippet(ctx, name=name, response=responses)
-            self.add_snippet_command(name, responses, ctx.guild.id)
             await ctx.send(f"Snippet '{name}' created successfully.")
         except SnippetAlreadyExists:
             await ctx.send("A snippet with this name already exists.")
@@ -251,8 +244,6 @@ class ModMail(Cog):
             return
         try:
             await self.snippetobj.edit_snippet(ctx, name=name, response=responses)
-            await self.remove_snippet_command(name)
-            self.add_snippet_command(name, responses, ctx.guild.id)
             await ctx.send(f"Snippet '{name}' edited successfully.")
         except SnippetNotFound:
             await ctx.send("Snippet not found.")
@@ -264,7 +255,6 @@ class ModMail(Cog):
         """Delete a snippet."""
         try:
             await self.snippetobj.delete_snippet(ctx, name=name)
-            await self.remove_snippet_command(name)
             await ctx.send(f"Snippet '{name}' deleted successfully.")
         except SnippetNotFound:
             await ctx.send("Snippet not found.")
@@ -293,16 +283,6 @@ class ModMail(Cog):
         else:
             response_text = responses
         await ctx.send(f"Snippet '{name}' responses:\n{response_text}")
-
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild: discord.Guild):
-        await self.load_snippet_commands(guild)
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild: discord.Guild):
-        snippets = await self.snippetobj.get_snippets(guild)
-        for name in snippets:
-            await self.remove_snippet_command(name)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
