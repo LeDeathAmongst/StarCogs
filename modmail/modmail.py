@@ -204,6 +204,12 @@ class ModMail(Cog):
                 content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
             else:
                 content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
+
+            # Find and set image from Imgur link
+            imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
+            if imgur_links:
+                content_embed.set_image(url=imgur_links[0])
+
             await thread.send(embed=content_embed)
             break
 
