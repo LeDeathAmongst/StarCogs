@@ -360,7 +360,7 @@ class ModMail(Cog):
         if not modmail_enabled:
             return
 
-        active_channels = await self.settings.get_raw("active_channels", guild)
+        active_channels = await self.settings.get_raw("active_channels", guild, default={})
         channel_id = active_channels.get(str(message.author.id))
         channel = guild.get_channel(channel_id) if channel_id else None
 
@@ -372,11 +372,12 @@ class ModMail(Cog):
                 return
 
             # Create a new channel under the specified category
-            channel_name = f"modmail-{message.author.id}"
+            channel_name = f"mm-{message.author.display_name}"
+            channel_topic = f"User ID: {message.author.id}"
             channel = await guild.create_text_channel(
                 name=channel_name,
                 category=modmail_category,
-                topic=f"ModMail for {message.author} ({message.author.id})"
+                topic=channel_topic
             )
 
             # Sync permissions with the category
@@ -485,11 +486,11 @@ class ModMail(Cog):
     @commands.command(aliases=["r"])
     async def reply(self, ctx: commands.Context, *, response: str):
         """Reply to a user via ModMail from within a channel."""
-        if not ctx.channel.name.startswith("modmail-"):
+        if not ctx.channel.name.startswith("mm-"):
             await ctx.send("This command can only be used within a modmail channel.")
             return
 
-        user_id_str = ctx.channel.name.split("modmail-")[1]
+        user_id_str = ctx.channel.topic.split("User ID: ")[1].strip()
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -521,11 +522,11 @@ class ModMail(Cog):
     @commands.command(aliases=["ar"])
     async def areply(self, ctx: commands.Context, *, response: str):
         """Reply to a user via ModMail with a generic support team title from within a channel."""
-        if not ctx.channel.name.startswith("modmail-"):
+        if not ctx.channel.name.startswith("mm-"):
             await ctx.send("This command can only be used within a modmail channel.")
             return
 
-        user_id_str = ctx.channel.name.split("modmail-")[1]
+        user_id_str = ctx.channel.topic.split("User ID: ")[1].strip()
         user = self.bot.get_user(int(user_id_str))
 
         if user is None:
@@ -563,7 +564,7 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_close(self, ctx: commands.Context, delay: str = None):
         """Close the modmail channel and generate a log. Optionally delay the closure with format like 10s, 10m, 10h."""
-        if not ctx.channel.name.startswith("modmail-"):
+        if not ctx.channel.name.startswith("mm-"):
             await ctx.send("This command can only be used within a modmail channel.")
             return
 
@@ -636,9 +637,9 @@ class ModMail(Cog):
             await ctx.send("This channel is now closed.")
 
         # Forget the user's selected server
-        user_id_str = ctx.channel.name.split("modmail-")[1]
+        user_id_str = ctx.channel.topic.split("User ID: ")[1].strip()
         user_id = int(user_id_str)
-        active_channels = await self.settings.get_raw("active_channels", ctx.guild)
+        active_channels = await self.settings.get_raw("active_channels", ctx.guild, default={})
         if str(user_id) in active_channels:
             del active_channels[str(user_id)]
             await self.settings.set_raw("active_channels", value=active_channels, guild=ctx.guild)
@@ -663,7 +664,7 @@ class ModMail(Cog):
             return
 
         # Check if a channel already exists for this user
-        active_channels = await self.settings.get_raw("active_channels", ctx.guild)
+        active_channels = await self.settings.get_raw("active_channels", ctx.guild, default={})
         existing_channel_id = active_channels.get(str(user.id))
         existing_channel = ctx.guild.get_channel(existing_channel_id) if existing_channel_id else None
         if existing_channel:
@@ -704,7 +705,7 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_channels=True)
     async def thread_move(self, ctx: commands.Context, *, category: Union[discord.CategoryChannel, str]):
         """Move the modmail channel to the specified category."""
-        if not ctx.channel.name.startswith("modmail-"):
+        if not ctx.channel.name.startswith("mm-"):
             await ctx.send("This command can only be used within a modmail channel.")
             return
 
@@ -724,7 +725,7 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_add(self, ctx: commands.Context, user: discord.User):
         """Add a user to receive replies for channels in the DMs."""
-        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild)
+        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild, default=[])
         if user.id in authorized_users:
             await ctx.send(f"{user.display_name} is already authorized to receive channel replies.")
             return
