@@ -365,6 +365,45 @@ class ModMail(Cog):
         # Log the response in the thread
         await ctx.send(f"Reply sent to {user.mention} and authorized users.")
 
+    @commands.guild_only()
+    @commands.mod_or_permissions(manage_messages=True)
+    @commands.command(aliases=["ar"])
+    async def areply(self, ctx: commands.Context, *, response: str):
+        """Reply to a user via ModMail with a generic support team title from within a thread."""
+        if ctx.channel.type != discord.ChannelType.public_thread:
+            await ctx.send("This command can only be used within a modmail thread.")
+            return
+
+        user_id_str = ctx.channel.name.split("ModMail-")[1].split('-')[0]
+        user = self.bot.get_user(int(user_id_str))
+
+        if user is None:
+            await ctx.send("User not found.")
+            return
+
+        areply_name = await self.config.guild(ctx.guild).areply_name()
+
+        # Send the response to the user
+        embed = discord.Embed(
+            title=areply_name,
+            description=response,
+            color=discord.Color.green()
+        )
+        # Set the author's icon for the embed if the guild has an icon
+        if ctx.guild.icon:
+            embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
+        else:
+            embed.set_author(name=areply_name)
+
+        # Set footer to "Moderator/Admin" only
+        footer_text = "Moderator/Admin"
+        embed.set_footer(text=footer_text)
+
+        await user.send(embed=embed)
+
+        # Log the response in the thread
+        await ctx.send(f"Reply sent to {user.mention}: {response}")
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot:
