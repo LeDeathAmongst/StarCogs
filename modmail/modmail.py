@@ -368,6 +368,7 @@ class ModMail(Cog):
         except KeyError:
             active_channels = {}
 
+        # Get the channel ID for the user if it exists
         channel_id = active_channels.get(str(message.author.id))
         channel = guild.get_channel(channel_id) if channel_id else None
 
@@ -392,7 +393,7 @@ class ModMail(Cog):
 
             # Store the channel ID
             active_channels[str(message.author.id)] = channel.id
-            await self.settings.set_raw("active_channels", guild, value=active_channels)
+            await self.settings.set_raw("active_channels", active_channels, _object=guild)
 
             # Log the creation of the channel
             await self.log_action(guild, f"ModMail channel created: {channel.mention} for {message.author}.")
@@ -411,7 +412,7 @@ class ModMail(Cog):
             info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
             await channel.send(embed=info_embed)
 
-        # Send the message content
+        # Send the message content to the channel
         content_embed = discord.Embed(
             description=message.content,
             color=discord.Color.blue()
