@@ -1,5 +1,5 @@
 import contextlib
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import aiohttp
 import discord
@@ -39,16 +39,18 @@ async def has_embed_perms(ctx: commands.Context) -> bool:
         return perm is True
     return False  # Default to False if the context is unexpected
 
+
 async def send_embed(
     self,
     ctx: commands.Context,
     embed: discord.Embed,
-    user: Optional[discord.Member] = None,
+    users: Optional[List[discord.Member]] = None,
 ):
     # Handle DMs and group chats
     if isinstance(ctx.channel, (discord.DMChannel, discord.GroupChannel)):
-        if user:
-            await ctx.send(embed=embed, content=user.mention)
+        if users:
+            mentions = " ".join(user.mention for user in users)
+            await ctx.send(embed=embed, content=mentions)
         else:
             await ctx.send(embed=embed)
         return
@@ -56,8 +58,8 @@ async def send_embed(
     # Handle server channels
     if await has_webhook_perms(ctx):
         try:
-            if user:
-                await print_it(self, ctx, embed, user)
+            if users:
+                await print_it(self, ctx, embed, users)
             else:
                 await print_it(self, ctx, embed)
         except discord.Forbidden:
@@ -65,36 +67,41 @@ async def send_embed(
                 return await ctx.send(
                     "I need the `Embed Links` permission to send embeds in this channel."
                 )
-            if user:
-                await ctx.reply(embed=embed, content=user.mention, mention_author=False)
+            if users:
+                mentions = " ".join(user.mention for user in users)
+                await ctx.reply(embed=embed, content=mentions, mention_author=False)
             else:
                 await ctx.reply(embed=embed, mention_author=False)
     elif not await has_embed_perms(ctx):
         return await ctx.send(
             "I need the `Embed Links` permission to send embeds in this channel."
         )
-    elif user:
-        await ctx.reply(embed=embed, content=user.mention, mention_author=False)
+    elif users:
+        mentions = " ".join(user.mention for user in users)
+        await ctx.reply(embed=embed, content=mentions, mention_author=False)
     else:
         await ctx.reply(embed=embed, mention_author=False)
 
 
 async def kawaiiembed(
-    self, ctx: commands.Context, action: str, endpoint: str, user=None
+    self, ctx: commands.Context, action: str, endpoint: str, users=None
 ) -> Union[discord.Embed, str]:
     api_key = (await self.bot.get_shared_api_tokens("perform")).get("api_key")
     if not api_key:
         return "Set an API token before using this command. If you are the bot owner, then use `[p]performapi` to see how to add the API."
-    if user is None:
+
+    if users is None:
         embed = discord.Embed(
             description=f"**{ctx.author.mention}** {action}",
             color=discord.Colour.random(),
         )
     else:
+        mentions = " ".join(f"**{user.mention}**" for user in users)
         embed = discord.Embed(
-            description=f"**{ctx.author.mention}** {action} **{str(user.mention)}**!",
+            description=f"**{ctx.author.mention}** {action} {mentions}!",
             color=discord.Colour.random(),
         )
+
     embed.set_author(
         name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar
     )
@@ -114,10 +121,11 @@ async def add_footer(
         return
     target = kwargs.get("target")
     word2 = kwargs.get("word2")
-    user = kwargs.get("user")
-    if (target is not None) and (word2 is not None) and (user is not None):
+    users = kwargs.get("users")
+    if (target is not None) and (word2 is not None) and (users is not None):
+        mentions = ", ".join(user.display_name for user in users)
         embed.set_footer(
-            text=f"{ctx.author.display_name}'s total {word1}: {used + 1} | {ctx.author.display_name} has {word2} {user.display_name} {target + 1} times"
+            text=f"{ctx.author.display_name}'s total {word1}: {used + 1} | {ctx.author.display_name} has {word2} {mentions} {target + 1} times"
         )
     else:
         embed.set_footer(text=f"{ctx.author.display_name}'s total {word1}: {used + 1}")
@@ -151,17 +159,18 @@ async def print_it(
     self,
     ctx: commands.Context,
     embed: discord.Embed,
-    user: Optional[discord.User] = None,
+    users: Optional[List[discord.User]] = None,
     retried: bool = False,
 ):
     hook = await get_hook(self, ctx)
     try:
-        if user:
+        if users:
+            mentions = " ".join(user.mention for user in users)
             await hook.send(
                 username=ctx.message.author.display_name,
                 avatar_url=ctx.message.author.display_avatar,
                 embed=embed,
-                content=user.mention,
+                content=mentions,
                 thread=(
                     ctx.channel
                     if isinstance(ctx.channel, discord.Thread)
@@ -187,7 +196,7 @@ async def print_it(
             if isinstance(ctx.channel, discord.Thread)
             else ctx.channel.id
         )
-        await print_it(self, ctx, embed, retried=True)
+        await print_it(self, ctx, embed, users, retried=True)
 
 
 async def rstats_embed(
