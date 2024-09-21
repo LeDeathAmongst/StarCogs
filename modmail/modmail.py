@@ -5,68 +5,151 @@ from Star_Utils import Cog, CogsUtils, Settings
 import io
 from datetime import datetime
 import re
-import asyncio  # Import asyncio for delay functionality
+import asyncio
+from typing import List, Dict, Union
+import random
+
+class SnippetError(Exception):
+    pass
+
+class SnippetAlreadyExists(SnippetError):
+    pass
+
+class SnippetNotFound(SnippetError):
+    pass
+
+class SnippetResponseTooLong(SnippetError):
+    pass
+
+class SnippetObj:
+    def __init__(self, **kwargs):
+        self.config = kwargs.get("config")
+        self.bot = kwargs.get("bot")
+        self.db = self.config.guild
+
+    async def get_snippets(self, guild: discord.Guild) -> dict:
+        _snippets = await self.db(guild).snippets()
+        return {k: v for k, v in _snippets.items() if _snippets[k]}
+
+    async def create_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
+        if await self.db(ctx.guild).snippets.get_raw(name, default=None):
+            raise SnippetAlreadyExists()
+        if isinstance(response, str) and len(response) > 2000:
+            raise SnippetResponseTooLong()
+        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+            raise SnippetResponseTooLong()
+
+        snippet_info = {
+            "author": {"id": ctx.author.id, "name": str(ctx.author)},
+            "name": name,
+            "response": response,
+        }
+        await self.db(ctx.guild).snippets.set_raw(name, value=snippet_info)
+
+    async def edit_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
+        snippet_info = await self.db(ctx.guild).snippets.get_raw(name, default=None)
+        if not snippet_info:
+            raise SnippetNotFound()
+
+        if isinstance(response, str) and len(response) > 2000:
+            raise SnippetResponseTooLong()
+        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+            raise SnippetResponseTooLong()
+
+        snippet_info["response"] = response
+        await self.db(ctx.guild).snippets.set_raw(name, value=snippet_info)
+
+    async def delete_snippet(self, ctx: commands.Context, name: str):
+        if not await self.db(ctx.guild).snippets.get_raw(name, default=None):
+            raise SnippetNotFound()
+        await self.db(ctx.guild).snippets.set_raw(name, value=None)
+
+    async def get_responses(self, ctx):
+        await ctx.send("Enter responses for the snippet. Type `exit()` to finish.")
+        responses = []
+        while True:
+            msg = await self.bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
+            if msg.content.lower() == "exit()":
+                break
+            elif len(msg.content) > 2000:
+                await ctx.send("Response is too long. Please enter a response under 2000 characters.")
+                continue
+            responses.append(msg.content)
+        return responses
 
 class ModMail(Cog):
-    """A basic ModMail cog"""
+    """A basic ModMail cog with snippet management"""
 
     def __init__(self, bot: Red):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
-        default_guild = {
-            "modmail_channel": None,
-            "log_channel": None,
-            "areply_name": "Support Team",
-            "preconfigured_messages": {},
-            "authorized_users": [],
-            "snippet_reply_method": "reply",  # Default method for snippets
-            "modmail_enabled": True,  # ModMail enabled by default
-            "close_embed": None  # Configurable embed for thread closure
-        }
-        self.config.register_guild(**default_guild)
 
-        # Initialize logger
-        self.logger = CogsUtils.get_logger(cog=self)
-
-        # Initialize settings
-        settings_dict = {
+        # Define the settings structure
+        settings = {
             "modmail_channel": {
                 "path": ["modmail_channel"],
                 "converter": discord.TextChannel,
+                "command_name": "channel",
+                "label": "ModMail Channel",
                 "description": "Set the modmail channel for this server.",
-                "usage": "channel",
-                "command_name": "modmailchannel"
             },
             "log_channel": {
                 "path": ["log_channel"],
                 "converter": discord.TextChannel,
+                "command_name": "log",
+                "label": "Log Channel",
                 "description": "Set the log channel for this server.",
-                "usage": "channel",
-                "command_name": "logchannel"
             },
             "areply_name": {
                 "path": ["areply_name"],
                 "converter": str,
+                "command_name": "title",
+                "label": "Areply Name",
                 "description": "Set the areply title name.",
-                "usage": "title",
-                "command_name": "areplyname"
             },
             "snippet_reply_method": {
                 "path": ["snippet_reply_method"],
-                "converter": str,
+                "converter": typing.Literal["reply", "areply"],
+                "command_name": "snippetmethod",
+                "label": "Snippet Reply Method",
                 "description": "Set the method for sending snippets (reply/areply).",
-                "usage": "method",
-                "command_name": "snippetmethod"
+            },
+            "modmail_enabled": {
+                "path": ["modmail_enabled"],
+                "converter": bool,
+                "command_name": "toggle",
+                "label": "ModMail Enabled",
+                "description": "Toggle the ModMail system on or off for this server.",
             },
             "close_embed": {
                 "path": ["close_embed"],
                 "converter": str,
+                "command_name": "closeembed",
+                "label": "Close Embed Message",
                 "description": "Set the embed message for thread closure.",
-                "usage": "embed",
-                "command_name": "closeembed"
+            },
+            "snippets": {
+                "path": ["snippets"],
+                "converter": dict,
+                "command_name": "snippets",
+                "label": "Snippets",
+                "description": "Manage snippets.",
             }
         }
-        self.settings = Settings(bot=self.bot, cog=self, config=self.config, group=Config.GUILD, settings=settings_dict, guild_specific=True)
+
+        # Initialize Settings
+        self.settings = Settings(
+            bot=self.bot,
+            cog=self,
+            config=Config.get_conf(self, identifier=1234567890, force_registration=True),
+            group=Config.GUILD,
+            settings=settings,
+            guild_specific=True
+        )
+
+        self.snippetobj = SnippetObj(config=self.settings.config, bot=self.bot)
+
+        # Initialize logger
+        self.logger = CogsUtils.get_logger(cog=self)
 
         # Temporary storage for user-server selections
         self.user_guild_selection = {}
@@ -77,68 +160,23 @@ class ModMail(Cog):
             await self.load_snippet_commands(guild)
 
     async def load_snippet_commands(self, guild: discord.Guild):
-        """Load snippet commands for a specific guild."""
-        preconfigured_messages = await self.config.guild(guild).preconfigured_messages()
-        for name, message in preconfigured_messages.items():
-            self.add_snippet_command(name, message, guild.id)
+        snippets = await self.snippetobj.get_snippets(guild)
+        for name, snippet_info in snippets.items():
+            self.add_snippet_command(name, snippet_info["response"], guild.id)
 
-    def add_snippet_command(self, name: str, message: str, guild_id: int):
+    def add_snippet_command(self, name: str, responses: Union[str, List[str]], guild_id: int):
         """Dynamically add a snippet command."""
         async def snippet_command(ctx: commands.Context):
-            """Send a snippet message."""
+            """Send a snippet response."""
             if ctx.guild.id != guild_id:
                 return
 
-            # Get the user from the thread participants
-            thread = ctx.channel
-            if not isinstance(thread, discord.Thread):
-                await ctx.send("This command can only be used within a modmail thread.")
-                return
-
-            user = None
-            # Await the coroutine to get the members
-            members = await thread.fetch_members()
-            for thread_member in members:
-                # Fetch the user associated with the ThreadMember
-                member = await self.bot.fetch_user(thread_member.id)
-                if not member.bot:
-                    user = member
-                    break
-
-            if user is None:
-                await ctx.send("User not found in this thread.")
-                return
-
-            # Determine the method for sending the snippet
-            snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
-            if snippet_method == "areply":
-                areply_name = await self.config.guild(ctx.guild).areply_name()
-                embed = discord.Embed(
-                    title=areply_name,
-                    description=message,
-                    color=discord.Color.green()
-                )
-                if ctx.guild.icon:
-                    embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=areply_name)
-                footer_text = "Moderator/Admin"
+            if isinstance(responses, list):
+                response = random.choice(responses)
             else:
-                embed = discord.Embed(
-                    title=ctx.author.display_name,
-                    description=message,
-                    color=discord.Color.green()
-                )
-                if ctx.author.avatar:
-                    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
-                else:
-                    embed.set_author(name=ctx.author.display_name)
-                highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-                footer_text = highest_role.name if highest_role else "No role"
+                response = responses
 
-            embed.set_footer(text=footer_text)
-            await user.send(embed=embed)
-            await ctx.send(f"Snippet '{name}' sent to {user.mention}.")
+            await ctx.send(response)
 
         # Add the command to the bot
         snippet_command.__name__ = f"snippet_{name}"
@@ -152,14 +190,87 @@ class ModMail(Cog):
         if command:
             self.bot.remove_command(command_name)
 
+    @commands.group()
+    async def snippet(self, ctx: commands.Context):
+        """Manage snippets."""
+        pass
+
+    @snippet.command(name="create")
+    async def snippet_create(self, ctx: commands.Context, name: str):
+        """Create a new snippet."""
+        responses = await self.snippetobj.get_responses(ctx)
+        if not responses:
+            await ctx.send("Snippet creation cancelled.")
+            return
+        try:
+            await self.snippetobj.create_snippet(ctx, name=name, response=responses)
+            self.add_snippet_command(name, responses, ctx.guild.id)
+            await ctx.send(f"Snippet '{name}' created successfully.")
+        except SnippetAlreadyExists:
+            await ctx.send("A snippet with this name already exists.")
+        except SnippetResponseTooLong:
+            await ctx.send("One of the responses is too long.")
+
+    @snippet.command(name="edit")
+    async def snippet_edit(self, ctx: commands.Context, name: str):
+        """Edit an existing snippet."""
+        responses = await self.snippetobj.get_responses(ctx)
+        if not responses:
+            await ctx.send("Snippet editing cancelled.")
+            return
+        try:
+            await self.snippetobj.edit_snippet(ctx, name=name, response=responses)
+            await self.remove_snippet_command(name)
+            self.add_snippet_command(name, responses, ctx.guild.id)
+            await ctx.send(f"Snippet '{name}' edited successfully.")
+        except SnippetNotFound:
+            await ctx.send("Snippet not found.")
+        except SnippetResponseTooLong:
+            await ctx.send("One of the responses is too long.")
+
+    @snippet.command(name="delete")
+    async def snippet_delete(self, ctx: commands.Context, name: str):
+        """Delete a snippet."""
+        try:
+            await self.snippetobj.delete_snippet(ctx, name=name)
+            await self.remove_snippet_command(name)
+            await ctx.send(f"Snippet '{name}' deleted successfully.")
+        except SnippetNotFound:
+            await ctx.send("Snippet not found.")
+
+    @snippet.command(name="list")
+    async def snippet_list(self, ctx: commands.Context):
+        """List all snippets."""
+        snippets = await self.snippetobj.get_snippets(ctx.guild)
+        if not snippets:
+            await ctx.send("No snippets found.")
+            return
+        snippet_list = "\n".join(snippets.keys())
+        await ctx.send(f"Snippets:\n{snippet_list}")
+
+    @snippet.command(name="show")
+    async def snippet_show(self, ctx: commands.Context, name: str):
+        """Show a snippet's responses."""
+        snippets = await self.snippetobj.get_snippets(ctx.guild)
+        snippet_info = snippets.get(name)
+        if not snippet_info:
+            await ctx.send("Snippet not found.")
+            return
+        responses = snippet_info["response"]
+        if isinstance(responses, list):
+            response_text = "\n".join(responses)
+        else:
+            response_text = responses
+        await ctx.send(f"Snippet '{name}' responses:\n{response_text}")
+
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         await self.load_snippet_commands(guild)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
-        preconfigured_messages = await self.config.guild(guild).preconfigured_messages()
-        for name in preconfigured_messages:
+        snippets = await self.snippetobj.get_snippets(guild)
+        for name in snippets:
             await self.remove_snippet_command(name)
 
     @commands.Cog.listener()
@@ -176,7 +287,7 @@ class ModMail(Cog):
             return
 
         # Filter for configured guilds only
-        configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.config.guild(guild).modmail_channel()]
+        configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.settings.get_raw("modmail_channel", guild)]
 
         if not configured_guilds:
             return
@@ -218,11 +329,11 @@ class ModMail(Cog):
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
-        modmail_enabled = await self.config.guild(guild).modmail_enabled()
+        modmail_enabled = await self.settings.get_raw("modmail_enabled", guild)
         if not modmail_enabled:
             return
 
-        modmail_channel_id = await self.config.guild(guild).modmail_channel()
+        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
         if not modmail_channel_id:
             return
 
@@ -283,19 +394,19 @@ class ModMail(Cog):
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the modmail channel for this server."""
-        await self.config.guild(ctx.guild).modmail_channel.set(channel.id)
+        await self.settings.set_raw("modmail_channel", channel.id, ctx.guild)
         await ctx.send(f"ModMail channel set to {channel.mention}")
 
     @config.command(name="log")
     async def config_log(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the log channel for this server."""
-        await self.config.guild(ctx.guild).log_channel.set(channel.id)
+        await self.settings.set_raw("log_channel", channel.id, ctx.guild)
         await ctx.send(f"Log channel set to {channel.mention}")
 
     @config.command(name="title")
     async def config_title(self, ctx: commands.Context, *, title: str):
         """Set the areply title name."""
-        await self.config.guild(ctx.guild).areply_name.set(title)
+        await self.settings.set_raw("areply_name", title, ctx.guild)
         await ctx.send(f"Areply title name set to {title}")
 
     @config.command(name="snippetmethod")
@@ -304,22 +415,22 @@ class ModMail(Cog):
         if method not in ["reply", "areply"]:
             await ctx.send("Invalid method. Please choose either 'reply' or 'areply'.")
             return
-        await self.config.guild(ctx.guild).snippet_reply_method.set(method)
+        await self.settings.set_raw("snippet_reply_method", method, ctx.guild)
         await ctx.send(f"Snippet sending method set to {method}.")
 
     @config.command(name="toggle")
     async def config_toggle(self, ctx: commands.Context):
         """Toggle the ModMail system on or off for this server."""
-        current_state = await self.config.guild(ctx.guild).modmail_enabled()
+        current_state = await self.settings.get_raw("modmail_enabled", ctx.guild)
         new_state = not current_state
-        await self.config.guild(ctx.guild).modmail_enabled.set(new_state)
+        await self.settings.set_raw("modmail_enabled", new_state, ctx.guild)
         state_text = "enabled" if new_state else "disabled"
         await ctx.send(f"ModMail has been {state_text} for this server.")
 
     @config.command(name="closeembed")
     async def config_close_embed(self, ctx: commands.Context, *, embed_message: str):
         """Set the embed message for thread closure."""
-        await self.config.guild(ctx.guild).close_embed.set(embed_message)
+        await self.settings.set_raw("close_embed", embed_message, ctx.guild)
         await ctx.send("Close embed message set.")
 
     @commands.guild_only()
@@ -376,7 +487,7 @@ class ModMail(Cog):
             await ctx.send("User not found.")
             return
 
-        areply_name = await self.config.guild(ctx.guild).areply_name()
+        areply_name = await self.settings.get_raw("areply_name", ctx.guild)
 
         # Send the response to the user
         embed = discord.Embed(
@@ -398,80 +509,6 @@ class ModMail(Cog):
 
         # Log the response in the thread
         await ctx.send(f"Reply sent to {user.mention}: {response}")
-
-    @commands.guild_only()
-    @commands.admin_or_permissions(administrator=True)
-    @commands.group()
-    async def snippet(self, ctx: commands.Context):
-        """Manage pre-configured message snippets."""
-        pass
-
-    @snippet.command(name="add")
-    async def snippet_add(self, ctx: commands.Context, name: str, *, message: str):
-        """Add a new snippet."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if name in preconfigured_messages:
-            await ctx.send("That snippet name is already in use. You can change it or use the existing one.")
-            return
-
-        preconfigured_messages[name] = message
-        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        self.add_snippet_command(name, message, ctx.guild.id)
-        await ctx.send(f"Snippet '{name}' added.")
-
-    @snippet.command(name="list")
-    async def snippet_list(self, ctx: commands.Context):
-        """List all snippets for the current server."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if not preconfigured_messages:
-            await ctx.send("No snippets found for this server.")
-            return
-
-        snippet_list = "\n".join(preconfigured_messages.keys())
-        await ctx.send(f"Snippets for this server:\n{snippet_list}")
-
-    @snippet.command(name="edit")
-    async def snippet_edit(self, ctx: commands.Context, name: str, *, new_content: str):
-        """Edit an existing snippet."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if name not in preconfigured_messages:
-            await ctx.send(f"No snippet found with name '{name}'.")
-            return
-
-        preconfigured_messages[name] = new_content
-        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        await self.remove_snippet_command(name)
-        self.add_snippet_command(name, new_content, ctx.guild.id)
-        await ctx.send(f"Snippet '{name}' updated.")
-
-    @snippet.command(name="remove")
-    async def snippet_remove(self, ctx: commands.Context, name: str):
-        """Remove a snippet."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if name not in preconfigured_messages:
-            await ctx.send(f"No snippet found with name '{name}'.")
-            return
-
-        del preconfigured_messages[name]
-        await self.config.guild(ctx.guild).preconfigured_messages.set(preconfigured_messages)
-        await self.remove_snippet_command(name)
-        await ctx.send(f"Snippet '{name}' removed.")
-
-    @snippet.command(name="view")
-    async def snippet_view(self, ctx: commands.Context, name: str):
-        """View a snippet's content."""
-        preconfigured_messages = await self.config.guild(ctx.guild).preconfigured_messages()
-        if name not in preconfigured_messages:
-            await ctx.send(f"No snippet found with name '{name}'.")
-            return
-
-        message = preconfigured_messages[name]
-        embed = discord.Embed(
-            title=f"Snippet `{name}`",
-            description=message,
-            color=discord.Color.blue()
-        )
-        await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.group()
@@ -504,8 +541,8 @@ class ModMail(Cog):
                 await ctx.send("Invalid delay format. Please use formats like 10s, 10m, 10h.")
                 return
 
-        # Get the log channel ID from the config
-        log_channel_id = await self.config.guild(ctx.guild).log_channel()
+        # Get the log channel ID from the settings
+        log_channel_id = await self.settings.get_raw("log_channel", ctx.guild)
         log_channel = ctx.guild.get_channel(log_channel_id) if log_channel_id else None
 
         if log_channel:
@@ -544,7 +581,7 @@ class ModMail(Cog):
             # Send the log file to the log channel
             await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
-        close_embed_message = await self.config.guild(ctx.guild).close_embed()
+        close_embed_message = await self.settings.get_raw("close_embed", ctx.guild)
         if close_embed_message:
             close_embed = discord.Embed(description=close_embed_message, color=discord.Color.red())
             await ctx.send(embed=close_embed)
@@ -573,7 +610,7 @@ class ModMail(Cog):
         if user is None:
             user = ctx.author
 
-        modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
+        modmail_channel_id = await self.settings.get_raw("modmail_channel", ctx.guild)
         if not modmail_channel_id:
             await ctx.send("ModMail channel is not set for this server.")
             return
@@ -620,13 +657,13 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_add(self, ctx: commands.Context, user: discord.User):
         """Add a user to receive replies for threads in the DMs."""
-        authorized_users = await self.config.guild(ctx.guild).authorized_users()
+        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild)
         if user.id in authorized_users:
             await ctx.send(f"{user.display_name} is already authorized to receive thread replies.")
             return
 
         authorized_users.append(user.id)
-        await self.config.guild(ctx.guild).authorized_users.set(authorized_users)
+        await self.settings.set_raw("authorized_users", authorized_users, ctx.guild)
         await ctx.send(f"{user.display_name} has been added to receive thread replies.")
 
     @commands.guild_only()
@@ -668,7 +705,7 @@ class ModMail(Cog):
             if not modmail_channel or not isinstance(modmail_channel, discord.TextChannel):
                 await ctx.send("Invalid channel for threads. Setup failed.")
                 return
-            await self.config.guild(ctx.guild).modmail_channel.set(modmail_channel.id)
+            await self.settings.set_raw("modmail_channel", modmail_channel.id, ctx.guild)
 
             # Set log channel
             if answers[1].lower() != "none":
@@ -676,17 +713,17 @@ class ModMail(Cog):
                 if not log_channel or not isinstance(log_channel, discord.TextChannel):
                     await ctx.send("Invalid channel for logs. Setup failed.")
                     return
-                await self.config.guild(ctx.guild).log_channel.set(log_channel.id)
+                await self.settings.set_raw("log_channel", log_channel.id, ctx.guild)
             else:
-                await self.config.guild(ctx.guild).log_channel.set(None)
+                await self.settings.set_raw("log_channel", None, ctx.guild)
 
             # Set areply name
             areply_name = answers[2] if answers[2].lower() != "none" else "Support Team"
-            await self.config.guild(ctx.guild).areply_name.set(areply_name)
+            await self.settings.set_raw("areply_name", areply_name, ctx.guild)
 
             # Set close embed message
             close_embed_message = answers[3] if answers[3].lower() != "none" else None
-            await self.config.guild(ctx.guild).close_embed.set(close_embed_message)
+            await self.settings.set_raw("close_embed", close_embed_message, ctx.guild)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
