@@ -261,8 +261,8 @@ class Perform(Cog):
             await self.config.user(ctx.author).hug_s.set(used + 1)
             await self.config.custom("Target", ctx.author.id, user.id).hug_r.set(target + 1)
 
-        await add_footer(self, ctx, embed, used, "hugs", target=target, word2="hugged", user=users[0])
-        await send_embed(self, ctx, embed, users[0])
+        await add_footer(self, ctx, embed, used, "hugs", target=target, word2="hugged", users=users)
+        await send_embed(self, ctx, embed, users)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="pat")
