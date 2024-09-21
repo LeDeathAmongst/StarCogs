@@ -157,7 +157,7 @@ class ModMail(Cog):
         self.settings = Settings(
             bot=self.bot,
             cog=self,
-            config=Config.get_conf(self, identifier=1234567890, force_registration=True),
+            config=Config.get_conf(self, identifier=159096775493115543881107426517572342387, force_registration=True),
             group=Config.GUILD,
             settings=settings,
             guild_specific=True
