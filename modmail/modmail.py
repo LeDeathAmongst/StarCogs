@@ -3,7 +3,6 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
-from datetime import datetime
 import re
 import typing
 import asyncio
@@ -413,22 +412,33 @@ class ModMail(Cog):
             await channel.send(embed=info_embed)
 
         # Send the message content to the channel
-        content_embed = discord.Embed(
-            description=message.content,
-            color=discord.Color.blue()
+        embeds = [discord.Embed(description=message.content)]
+        embeds[0].set_author(
+            name=f"{message.author} | {message.author.id}",
+            icon_url=message.author.display_avatar.url,
         )
-        # Set the author's name and ID in the title, and their profile picture as the thumbnail
-        if message.author.avatar:
-            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
-        else:
-            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
+        embeds = self._append_attachments(message, embeds)
+        embeds[-1].timestamp = message.created_at
 
-        # Find and set image from Imgur link
-        imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
-        if imgur_links:
-            content_embed.set_image(url=imgur_links[0])
+        for embed in embeds:
+            await channel.send(embed=embed)
 
-        await channel.send(embed=content_embed)
+    @staticmethod
+    def _append_attachments(message: discord.Message, embeds: list):
+        attachments_urls = []
+        for attachment in message.attachments:
+            if any(attachment.filename.endswith(imageext) for imageext in ["jpg", "png", "gif"]):
+                if embeds[0].image:
+                    embed = discord.Embed()
+                    embed.set_image(url=attachment.url)
+                    embeds.append(embed)
+                else:
+                    embeds[0].set_image(url=attachment.url)
+            else:
+                attachments_urls.append(f"[{attachment.filename}]({attachment.url})")
+        if attachments_urls:
+            embeds[0].add_field(name="Attachments", value="\n".join(attachments_urls))
+        return embeds
 
     async def log_action(self, guild: discord.Guild, message: str):
         """Log actions to the modmail log channel."""
