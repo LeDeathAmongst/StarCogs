@@ -181,24 +181,45 @@ class ModMail(Cog):
             if ctx.guild.id != guild_id:
                 return
 
+            # Determine the response
             if isinstance(responses, list):
                 response = random.choice(responses)
             else:
                 response = responses
 
-            await ctx.send(response)
+            # Extract user ID from the channel name
+            if ctx.channel.name.startswith("modmail-"):
+                user_id_str = ctx.channel.name.split("modmail-")[1]
+                user = self.bot.get_user(int(user_id_str))
+
+                if user:
+                    try:
+                        # Create the embed for the snippet response
+                        embed = discord.Embed(
+                            description=response,
+                            color=discord.Color.green()
+                        )
+
+                        # Set the title and footer based on the context
+                        areply_name = await self.settings.get_raw("areply_name", ctx.guild)
+                        embed.set_author(name=areply_name)
+                        footer_text = "Moderator/Admin"
+                        embed.set_footer(text=footer_text)
+
+                        # Send the embed to the user's DM
+                        await user.send(embed=embed)
+                        await ctx.send(f"Snippet sent to {user.display_name}.")
+                    except discord.HTTPException:
+                        await ctx.send("Failed to send snippet to the user's DM.")
+                else:
+                    await ctx.send("User not found.")
+            else:
+                await ctx.send("This command can only be used within a modmail thread channel.")
 
         # Add the command to the bot
         snippet_command.__name__ = f"snippet_{name}"
         command = commands.command(name=name)(snippet_command)
         self.bot.add_command(command)
-
-    async def remove_snippet_command(self, name: str):
-        """Remove a snippet command."""
-        command_name = f"snippet_{name}"
-        command = self.bot.get_command(command_name)
-        if command:
-            self.bot.remove_command(command_name)
 
     @commands.group()
     async def snippet(self, ctx: commands.Context):
