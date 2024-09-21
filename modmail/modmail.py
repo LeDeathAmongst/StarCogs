@@ -657,7 +657,7 @@ class ModMail(Cog):
         if user is None:
             user = ctx.author
 
-        modmail_category_id = await self.settings.get_raw("modmail_category", ctx.guild)
+        modmail_category_id = await self.settings.get_raw("modmail_category")
         modmail_category = ctx.guild.get_channel(modmail_category_id)
         if modmail_category is None or not isinstance(modmail_category, discord.CategoryChannel):
             await ctx.send("ModMail category is not set or invalid for this server.")
