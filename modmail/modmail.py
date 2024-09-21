@@ -485,7 +485,7 @@ class ModMail(Cog):
     @config.command(name="category")
     async def config_category(self, ctx: commands.Context, category: discord.CategoryChannel):
         """Set the category for modmail channels."""
-        await self.settings.set_raw("modmail_category", ctx.guild, value=category.id)
+        await self.settings.set_raw("modmail_category", category.id, _object=ctx.guild)
         await ctx.send(f"ModMail category set to {category.name}")
 
     @commands.guild_only()
