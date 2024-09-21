@@ -134,6 +134,7 @@ class ModMail(Cog):
                 "command_name": "snippets",
                 "label": "Snippets",
                 "description": "Manage snippets.",
+                "default": {} 
             }
         }
 
