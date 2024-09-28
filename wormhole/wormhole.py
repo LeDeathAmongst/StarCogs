@@ -2,8 +2,7 @@ import discord
 from redbot.core import commands, Config
 from datetime import datetime, timedelta
 import re
-from Star_Utils import Cog
-from .settings import Settings  # Assuming settings.py is in the same directory
+from Star_Utils import Cog, Settings 
 
 class WormHole(Cog):
     def __init__(self, bot):
