@@ -1,4 +1,3 @@
-
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
@@ -38,7 +37,7 @@ class SnippetObj:
             raise SnippetAlreadyExists()
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
         snippet_info = {
@@ -55,7 +54,7 @@ class SnippetObj:
 
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
+        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
         snippet_info["response"] = response
@@ -182,24 +181,52 @@ class ModMail(Cog):
             if ctx.guild.id != guild_id:
                 return
 
+            # Determine the response
             if isinstance(responses, list):
                 response = random.choice(responses)
             else:
                 response = responses
 
-            await ctx.send(response)
+            # Extract user ID from the channel name
+            if ctx.channel.name.startswith("modmail-"):
+                user_id_str = ctx.channel.name.split("modmail-")[1]
+                user = self.bot.get_user(int(user_id_str))
+
+                if user:
+                    try:
+                        # Create the embed for the snippet response
+                        embed = discord.Embed(
+                            description=response,
+                            color=discord.Color.green()
+                        )
+
+                        # Determine the snippet reply method
+                        snippet_method = await self.settings.get_raw("snippet_reply_method", ctx.guild)
+                        if snippet_method == "areply":
+                            areply_name = await self.settings.get_raw("areply_name", ctx.guild)
+                            embed.set_author(name=areply_name)
+                            footer_text = "Moderator/Admin"
+                        else:
+                            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+                            highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
+                            footer_text = highest_role.name if highest_role else "No role"
+
+                        embed.set_footer(text=footer_text)
+
+                        # Send the embed to the user's DM
+                        await user.send(embed=embed)
+                        await ctx.send(f"Snippet '{name}' sent to {user.display_name}.")
+                    except discord.HTTPException:
+                        await ctx.send("Failed to send snippet to the user's DM.")
+                else:
+                    await ctx.send("User not found.")
+            else:
+                await ctx.send("This command can only be used within a modmail thread channel.")
 
         # Add the command to the bot
         snippet_command.__name__ = f"snippet_{name}"
         command = commands.command(name=name)(snippet_command)
         self.bot.add_command(command)
-
-    async def remove_snippet_command(self, name: str):
-        """Remove a snippet command."""
-        command_name = f"snippet_{name}"
-        command = self.bot.get_command(command_name)
-        if command:
-            self.bot.remove_command(command_name)
 
     @commands.group()
     async def snippet(self, ctx: commands.Context):
@@ -238,6 +265,13 @@ class ModMail(Cog):
             await ctx.send("Snippet not found.")
         except SnippetResponseTooLong:
             await ctx.send("One of the responses is too long.")
+
+    async def remove_snippet_command(self, name: str):
+        """Remove a snippet command."""
+        command_name = f"snippet_{name}"
+        command = self.bot.get_command(command_name)
+        if command:
+            self.bot.remove_command(command_name)
 
     @snippet.command(name="delete")
     async def snippet_delete(self, ctx: commands.Context, name: str):
@@ -304,6 +338,19 @@ class ModMail(Cog):
             if not configured_guilds:
                 return
 
+            # Check for existing threads in configured guilds
+            for guild in configured_guilds:
+                modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+                modmail_channel = guild.get_channel(modmail_channel_id)
+                if modmail_channel:
+                    thread_name = f"modmail-{user_id}"
+                    existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
+                    if existing_thread:
+                        self.user_guild_selection[user_id] = guild
+                        await self.handle_modmail_message(message, guild)
+                        return
+
+            # If no existing thread, ask the user to choose a server
             if len(configured_guilds) == 1:
                 # If there's only one configured server, use it automatically
                 self.user_guild_selection[user_id] = configured_guilds[0]
@@ -337,48 +384,8 @@ class ModMail(Cog):
                         # Delete the selection message
                         await selection_message.delete()
 
-                        # Create the modmail thread
-                        modmail_channel_id = await self.settings.get_raw("modmail_channel", selected_guild)
-                        modmail_channel = selected_guild.get_channel(modmail_channel_id)
-                        if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
-                            await message.author.send("The modmail channel is not set or invalid for this server.")
-                            return
-
-                        # Check if a thread already exists for this user
-                        thread_name = f"modmail-{message.author.id}"
-                        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
-                        if not existing_thread:
-                            # Create a new thread under the specified channel
-                            thread = await modmail_channel.create_thread(
-                                name=thread_name,
-                                type=discord.ChannelType.public_thread,
-                                reason=f"ModMail for {message.author} ({message.author.id})"
-                            )
-
-                            # Create and send the info embed
-                            member = selected_guild.get_member(message.author.id)
-                            roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
-                            joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
-                            info_embed = discord.Embed(
-                                title=message.author.display_name,
-                                description=f"User ID: {message.author.id}",
-                                color=discord.Color.blue()
-                            )
-                            info_embed.add_field(name="Roles", value=roles, inline=False)
-                            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-                            await thread.send(embed=info_embed)
-
-                        # Send opening message if configured, otherwise send default message
-                        open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
-                        if open_embed_message:
-                            open_embed = discord.Embed(description=open_embed_message.format(server_name=selected_guild.name), color=discord.Color.green())
-                        else:
-                            open_embed = discord.Embed(
-                                description=f"Thank you for contacting {selected_guild.name}! Staff will be with you shortly!",
-                                color=discord.Color.green()
-                            )
-                        await message.author.send(embed=open_embed)
-
+                        # Handle the modmail message
+                        await self.handle_modmail_message(message, selected_guild)
                     else:
                         await message.author.send("Invalid selection. Please try again.")
                 except asyncio.TimeoutError:
