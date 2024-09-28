@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils, Settings
+from Star_Utils import Cog, CogsUtils
 import io
 import re
 import asyncio
@@ -82,104 +82,26 @@ class ModMail(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
 
-        # Define the settings structure
-        settings = {
-            "modmail_channel": {
-                "path": ["modmail_channel"],
-                "converter": discord.TextChannel,
-                "command_name": "channel",
-                "label": "ModMail Channel",
-                "description": "Set the modmail channel for this server.",
-                "default": None
-            },
-            "log_channel": {
-                "path": ["log_channel"],
-                "converter": discord.TextChannel,
-                "command_name": "log",
-                "label": "Log Channel",
-                "description": "Set the log channel for this server.",
-                "default": None
-            },
-            "areply_name": {
-                "path": ["areply_name"],
-                "converter": str,
-                "command_name": "title",
-                "label": "Areply Name",
-                "description": "Set the areply title name.",
-                "default": "Support Team"
-            },
-            "snippet_reply_method": {
-                "path": ["snippet_reply_method"],
-                "converter": Literal["reply", "areply"],
-                "command_name": "snippetmethod",
-                "label": "Snippet Reply Method",
-                "description": "Set the method for sending snippets (reply/areply).",
-                "default": "reply"
-            },
-            "modmail_enabled": {
-                "path": ["modmail_enabled"],
-                "converter": bool,
-                "command_name": "toggle",
-                "label": "ModMail Enabled",
-                "description": "Toggle the ModMail system on or off for this server.",
-                "default": True
-            },
-            "close_embed": {
-                "path": ["close_embed"],
-                "converter": str,
-                "command_name": "closeembed",
-                "label": "Close Embed Message",
-                "description": "Set the embed message for channel closure.",
-                "default": None
-            },
-            "open_embed": {
-                "path": ["open_embed"],
-                "converter": str,
-                "command_name": "openembed",
-                "label": "Open Embed Message",
-                "description": "Set the embed message for opening a modmail thread.",
-                "default": "Thank you for contacting {server_name}! Staff will be with you shortly!"
-            },
-            "snippets": {
-                "path": ["snippets"],
-                "converter": dict,
-                "command_name": "snippets",
-                "label": "Snippets",
-                "description": "Manage snippets.",
-                "default": {}
-            }
+        # Initialize Config
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        default_guild = {
+            "modmail_channel": None,
+            "log_channel": None,
+            "areply_name": "Support Team",
+            "snippet_reply_method": "reply",
+            "modmail_enabled": True,
+            "close_embed": None,
+            "open_embed": "Thank you for contacting {server_name}! Staff will be with you shortly!",
+            "snippets": {}
         }
+        self.config.register_guild(**default_guild)
 
-        # Initialize Settings
-        self.settings = Settings(
-            bot=self.bot,
-            cog=self,
-            config=Config.get_conf(self, identifier=1234567890, force_registration=True),
-            group=Config.GUILD,
-            settings=settings,
-            guild_specific=True
-        )
+        self.snippetobj = SnippetObj(config=self.config, bot=self.bot)
 
-        self.snippetobj = SnippetObj(config=self.settings.config, bot=self.bot)
-
-        # Initialize logger
-        self.logger = CogsUtils.get_logger(cog=self)
-
-        # Temporary storage for user-server selections
-        self.user_guild_selection = {}
+        # Initialize CogsUtils for logging
+        self.logs = CogsUtils.get_logger(cog=self)
 
     async def cog_load(self):
-        # Initialize settings for all guilds
-        for guild in self.bot.guilds:
-            await self.settings.set_raw("modmail_enabled", True, guild=guild)
-            await self.settings.set_raw("modmail_channel", None, guild=guild)
-            await self.settings.set_raw("log_channel", None, guild=guild)
-            await self.settings.set_raw("areply_name", "Support Team", guild=guild)
-            await self.settings.set_raw("snippet_reply_method", "reply", guild=guild)
-            await self.settings.set_raw("close_embed", None, guild=guild)
-            await self.settings.set_raw("open_embed", "Thank you for contacting {server_name}! Staff will be with you shortly!", guild=guild)
-            await self.settings.set_raw("snippets", {}, guild=guild)
-
         # Load snippet commands on cog load
         for guild in self.bot.guilds:
             await self.load_snippet_commands(guild)
@@ -216,9 +138,9 @@ class ModMail(Cog):
                         )
 
                         # Determine the snippet reply method
-                        snippet_method = await self.settings.get_raw("snippet_reply_method", ctx.guild)
+                        snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
                         if snippet_method == "areply":
-                            areply_name = await self.settings.get_raw("areply_name", ctx.guild)
+                            areply_name = await self.config.guild(ctx.guild).areply_name()
                             embed.set_author(name=areply_name)
                             footer_text = "Moderator/Admin"
                         else:
@@ -345,7 +267,7 @@ class ModMail(Cog):
             for guild in self.bot.guilds:
                 if guild.get_member(user_id):
                     try:
-                        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+                        modmail_channel_id = await self.config.guild(guild).modmail_channel()
                         modmail_channel = guild.get_channel(modmail_channel_id)
                         if modmail_channel:
                             thread_name = f"modmail-{user_id}"
@@ -400,15 +322,12 @@ class ModMail(Cog):
                     await message.author.send("You did not respond in time. Please try again.")
 
     async def is_guild_configured(self, guild: discord.Guild) -> bool:
-        try:
-            modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
-            return modmail_channel_id is not None
-        except KeyError:
-            return False
+        modmail_channel_id = await self.config.guild(guild).modmail_channel()
+        return modmail_channel_id is not None
 
     async def open_thread(self, message: discord.Message, guild: discord.Guild):
         """Open a modmail thread and send the initial message."""
-        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+        modmail_channel_id = await self.config.guild(guild).modmail_channel()
         modmail_channel = guild.get_channel(modmail_channel_id)
         if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
             await message.author.send("The modmail channel is not set or invalid for this server.")
@@ -434,7 +353,7 @@ class ModMail(Cog):
         await thread.send(embed=info_embed)
 
         # Send opening message if configured, otherwise send default message
-        open_embed_message = await self.settings.get_raw("open_embed", guild)
+        open_embed_message = await self.config.guild(guild).open_embed()
         if open_embed_message:
             open_embed = discord.Embed(description=open_embed_message.format(server_name=guild.name), color=discord.Color.green())
         else:
@@ -449,11 +368,11 @@ class ModMail(Cog):
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
-        modmail_enabled = await self.settings.get_raw("modmail_enabled", guild)
+        modmail_enabled = await self.config.guild(guild).modmail_enabled()
         if not modmail_enabled:
             return
 
-        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+        modmail_channel_id = await self.config.guild(guild).modmail_channel()
         modmail_channel = guild.get_channel(modmail_channel_id)
         if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
             return
@@ -496,19 +415,19 @@ class ModMail(Cog):
     @config.command(name="channel")
     async def config_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the modmail channel for this server."""
-        await self.settings.set_raw("modmail_channel", channel.id, ctx.guild)
+        await self.config.guild(ctx.guild).modmail_channel.set(channel.id)
         await ctx.send(f"ModMail channel set to {channel.mention}")
 
     @config.command(name="log")
     async def config_log(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the log channel for this server."""
-        await self.settings.set_raw("log_channel", channel.id, ctx.guild)
+        await self.config.guild(ctx.guild).log_channel.set(channel.id)
         await ctx.send(f"Log channel set to {channel.mention}")
 
     @config.command(name="title")
     async def config_title(self, ctx: commands.Context, *, title: str):
         """Set the areply title name."""
-        await self.settings.set_raw("areply_name", title, ctx.guild)
+        await self.config.guild(ctx.guild).areply_name.set(title)
         await ctx.send(f"Areply title name set to {title}")
 
     @config.command(name="snippetmethod")
@@ -517,28 +436,28 @@ class ModMail(Cog):
         if method not in ["reply", "areply"]:
             await ctx.send("Invalid method. Please choose either 'reply' or 'areply'.")
             return
-        await self.settings.set_raw("snippet_reply_method", method, ctx.guild)
+        await self.config.guild(ctx.guild).snippet_reply_method.set(method)
         await ctx.send(f"Snippet sending method set to {method}.")
 
     @config.command(name="toggle")
     async def config_toggle(self, ctx: commands.Context):
         """Toggle the ModMail system on or off for this server."""
-        current_state = await self.settings.get_raw("modmail_enabled", ctx.guild)
+        current_state = await self.config.guild(ctx.guild).modmail_enabled()
         new_state = not current_state
-        await self.settings.set_raw("modmail_enabled", new_state, ctx.guild)
+        await self.config.guild(ctx.guild).modmail_enabled.set(new_state)
         state_text = "enabled" if new_state else "disabled"
         await ctx.send(f"ModMail has been {state_text} for this server.")
 
     @config.command(name="closeembed")
     async def config_close_embed(self, ctx: commands.Context, *, embed_message: str):
         """Set the embed message for channel closure."""
-        await self.settings.set_raw("close_embed", embed_message, ctx.guild)
+        await self.config.guild(ctx.guild).close_embed.set(embed_message)
         await ctx.send("Close embed message set.")
 
     @config.command(name="openembed")
     async def config_open_embed(self, ctx: commands.Context, *, embed_message: str):
         """Set the embed message for opening a modmail thread."""
-        await self.settings.set_raw("open_embed", embed_message, ctx.guild)
+        await self.config.guild(ctx.guild).open_embed.set(embed_message)
         await ctx.send("Open embed message set.")
 
     @commands.guild_only()
@@ -594,7 +513,7 @@ class ModMail(Cog):
             await ctx.send("User not found.")
             return
 
-        areply_name = await self.settings.get_raw("areply_name", ctx.guild)
+        areply_name = await self.config.guild(ctx.guild).areply_name()
 
         # Send the response to the user
         embed = discord.Embed(
@@ -648,7 +567,7 @@ class ModMail(Cog):
                 return
 
         # Get the log channel ID from the settings
-        log_channel_id = await self.settings.get_raw("log_channel", ctx.guild)
+        log_channel_id = await self.config.guild(ctx.guild).log_channel()
         log_channel = ctx.guild.get_channel(log_channel_id) if log_channel_id else None
 
         if log_channel:
@@ -687,7 +606,7 @@ class ModMail(Cog):
             # Send the log file to the log channel
             await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
 
-        close_embed_message = await self.settings.get_raw("close_embed", ctx.guild)
+        close_embed_message = await self.config.guild(ctx.guild).close_embed()
 
         user_id_str = ctx.channel.name.split("modmail-")[1]
         user = self.bot.get_user(int(user_id_str))
@@ -720,7 +639,7 @@ class ModMail(Cog):
             user = ctx.author
 
         try:
-            modmail_channel_id = await self.settings.get_raw("modmail_channel", ctx.guild)
+            modmail_channel_id = await self.config.guild(ctx.guild).modmail_channel()
             modmail_channel = ctx.guild.get_channel(modmail_channel_id)
             if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
                 await ctx.send("ModMail channel is not set or invalid for this server.")
@@ -755,7 +674,7 @@ class ModMail(Cog):
             await thread.send(embed=info_embed)
 
             # Send the configured opening message to the user
-            open_embed_message = await self.settings.get_raw("open_embed", ctx.guild)
+            open_embed_message = await self.config.guild(ctx.guild).open_embed()
             if open_embed_message:
                 open_embed = discord.Embed(description=open_embed_message.format(server_name=ctx.guild.name), color=discord.Color.green())
                 try:
@@ -772,13 +691,13 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_add(self, ctx: commands.Context, user: discord.User):
         """Add a user to receive replies for channels in the DMs."""
-        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild, default=[])
+        authorized_users = await self.config.guild(ctx.guild).authorized_users()
         if user.id in authorized_users:
             await ctx.send(f"{user.display_name} is already authorized to receive channel replies.")
             return
 
         authorized_users.append(user.id)
-        await self.settings.set_raw("authorized_users", authorized_users, ctx.guild)
+        await self.config.guild(ctx.guild).authorized_users.set(authorized_users)
         await ctx.send(f"{user.display_name} has been added to receive channel replies.")
 
     @commands.guild_only()
@@ -821,7 +740,7 @@ class ModMail(Cog):
             if not modmail_channel or not isinstance(modmail_channel, discord.TextChannel):
                 await ctx.send("Invalid channel for threads. Setup failed.")
                 return
-            await self.settings.set_raw("modmail_channel", modmail_channel.id, ctx.guild)
+            await self.config.guild(ctx.guild).modmail_channel.set(modmail_channel.id)
 
             # Set log channel
             if answers[1].lower() != "none":
@@ -829,21 +748,21 @@ class ModMail(Cog):
                 if not log_channel or not isinstance(log_channel, discord.TextChannel):
                     await ctx.send("Invalid channel for logs. Setup failed.")
                     return
-                await self.settings.set_raw("log_channel", log_channel.id, ctx.guild)
+                await self.config.guild(ctx.guild).log_channel.set(log_channel.id)
             else:
-                await self.settings.set_raw("log_channel", None, ctx.guild)
+                await self.config.guild(ctx.guild).log_channel.set(None)
 
             # Set areply name
             areply_name = answers[2] if answers[2].lower() != "none" else "Support Team"
-            await self.settings.set_raw("areply_name", areply_name, ctx.guild)
+            await self.config.guild(ctx.guild).areply_name.set(areply_name)
 
             # Set close embed message
             close_embed_message = answers[3] if answers[3].lower() != "none" else None
-            await self.settings.set_raw("close_embed", close_embed_message, ctx.guild)
+            await self.config.guild(ctx.guild).close_embed.set(close_embed_message)
 
             # Set open embed message
             open_embed_message = answers[4] if answers[4].lower() != "none" else None
-            await self.settings.set_raw("open_embed", open_embed_message, ctx.guild)
+            await self.config.guild(ctx.guild).open_embed.set(open_embed_message)
 
             await ctx.send("ModMail setup complete!")
         except Exception as e:
