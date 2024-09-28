@@ -2,20 +2,19 @@ import discord
 from redbot.core import commands, Config
 from datetime import datetime, timedelta
 import re
-from Star_Utils import Cog, Settings
+from Star_Utils import Cog, Settings  
 
 class WormHole(Cog):
     def __init__(self, bot):
-        super().__init__(bot)  # Initialize the parent class
+        super().__init__(bot)
         self.bot = bot
-        self.config = Config.get_conf(self, identifier="wormhole", force_registration=True)
         self.webhook_cache = {}
 
         # Initialize settings using Settings class
         self.settings = Settings(
             bot=self.bot,
             cog=self,
-            config=self.config,
+            config=Config.get_conf(self, identifier="wormhole", force_registration=True),
             group=Config.GLOBAL,
             settings={
                 "linked_channels_list": {
@@ -134,6 +133,34 @@ class WormHole(Cog):
             embed = discord.Embed(title="ErRoR 404", description="This channel is not part of the wormhole.")
             await ctx.send(embed=embed)
 
+    @wormhole.command(name="webhook")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_webhook(self, ctx, toggle: bool):
+        """Enable or disable the use of webhooks."""
+        await self.settings.set_raw("use_webhooks", toggle)
+        status = "enabled" if toggle else "disabled"
+        await ctx.send(f"Webhooks have been {status} for wormhole.")
+
+    @wormhole.command(name="image")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_image(self, ctx, mode: str):
+        """Set the image mode for webhooks. Options: user, server"""
+        if mode in ["user", "server"]:
+            await self.settings.set_raw("image_mode", mode)
+            await ctx.send(f"Image mode set to {mode}.")
+        else:
+            await ctx.send("Invalid mode. Choose either 'user' or 'server'.")
+
+    @wormhole.command(name="name")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_name(self, ctx, mode: str):
+        """Set the name mode for webhooks. Options: user, server, both"""
+        if mode in ["user", "server", "both"]:
+            await self.settings.set_raw("name_mode", mode)
+            await ctx.send(f"Name mode set to {mode}.")
+        else:
+            await ctx.send("Invalid mode. Choose either 'user', 'server', or 'both'.")
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.guild:
@@ -160,7 +187,7 @@ class WormHole(Cog):
                 await message.delete()
                 return
 
-            money_regex = r"[\$\€\£\¥\₹\₽\₩\₪\₫\฿\₴\₦\₲\₱\₡\₭\₮\₳\₵\₸\₼\₿\₠\₢\₣\₤\₥\₧\₨\₩\₰\₯\₶\₷\₸\₺\₻\₼\₽\₾\₿]\d+(\.\d{1,2})?"
+            money_regex = r"[\$\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\]\d+(\.\d{1,2})?"
             if re.search(money_regex, message.content):
                 try:
                     await message.author.kick(reason="Messages contained possible scam.")
@@ -336,3 +363,93 @@ class WormHole(Cog):
         now = datetime.utcnow()
         cutoff = now - timedelta(hours=24)
         self.recent_messages = {msg_id: data for msg_id, data in self.recent_messages.items() if data['timestamp'] > cutoff}
+
+    @wormhole.command(name="globalblacklist")
+    async def wormhole_globalblacklist(self, ctx, user: discord.User):
+        """Prevent specific members from sending messages through the wormhole globally."""
+        if await self.bot.is_owner(ctx.author):
+            global_blacklist = await self.settings.get_raw("global_blacklist")
+            if user.id not in global_blacklist:
+                global_blacklist.append(user.id)
+                await self.settings.set_raw("global_blacklist", global_blacklist)
+                embed = discord.Embed(title="Success!", description=f"{user.display_name} has been added to the global wormhole blacklist.")
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title="ErRoR 404", description=f"{user.display_name} is already in the global wormhole blacklist.")
+                await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="ErRoR 404", description="You must be the bot owner to use this command.")
+            await ctx.send(embed=embed)
+
+    @wormhole.command(name="unglobalblacklist")
+    async def wormhole_unglobalblacklist(self, ctx, user: discord.User):
+        """Command to remove a user from the global wormhole blacklist (Bot Owner Only)."""
+        if await self.bot.is_owner(ctx.author):
+            global_blacklist = await self.settings.get_raw("global_blacklist")
+            if user.id in global_blacklist:
+                global_blacklist.remove(user.id)
+                await self.settings.set_raw("global_blacklist", global_blacklist)
+                embed = discord.Embed(title="Success!", description=f"{user.display_name} has been removed from the global wormhole blacklist.")
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title="ErRoR 404", description=f"{user.display_name} is not in the global wormhole blacklist.")
+                await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="ErRoR 404", description="You must be the bot owner to use this command.")
+            await ctx.send(embed=embed)
+
+    @wormhole.command(name="addwordfilter")
+    async def wormhole_addwordfilter(self, ctx, *, word: str):
+        """Add a word to the wormhole word filter."""
+        if await self.bot.is_owner(ctx.author):
+            word_filters = await self.settings.get_raw("word_filters")
+            if word not in word_filters:
+                word_filters.append(word)
+                await self.settings.set_raw("word_filters", word_filters)
+                embed = discord.Embed(title="Success!", description=f"`{word}` has been added to the wormhole word filter.")
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title="ErRoR 404", description=f"`{word}` is already in the wormhole word filter.")
+                await ctx.send(embed=embed)
+
+    @wormhole.command(name="removewordfilter")
+    async def wormhole_removewordfilter(self, ctx, *, word: str):
+        """Remove a word from the wormhole word filter."""
+        if await self.bot.is_owner(ctx.author):
+            word_filters = await self.settings.get_raw("word_filters")
+            if word in word_filters:
+                word_filters.remove(word)
+                await self.settings.set_raw("word_filters", word_filters)
+                embed = discord.Embed(title="Success!", description=f"`{word}` has been removed from the wormhole word filter.")
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title="ErRoR 404", description=f"`{word}` is not in the wormhole word filter.")
+                await ctx.send(embed=embed)
+
+    @wormhole.command(name="addmentionbypass")
+    @commands.is_owner()
+    async def wormhole_addmentionbypass(self, ctx, user: discord.User):
+        """Allow a user to bypass the mention filter."""
+        mention_bypass_users = await self.settings.get_raw("mention_bypass_users")
+        if user.id not in mention_bypass_users:
+            mention_bypass_users.append(user.id)
+            await self.settings.set_raw("mention_bypass_users", mention_bypass_users)
+            embed = discord.Embed(title="Success!", description=f"{user.display_name} has been allowed to bypass the mention filter.")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="ErRoR 404", description=f"{user.display_name} is already allowed to bypass the mention filter.")
+            await ctx.send(embed=embed)
+
+    @wormhole.command(name="removementionbypass")
+    @commands.is_owner()
+    async def wormhole_removementionbypass(self, ctx, user: discord.User):
+        """Remove a user's bypass for the mention filter."""
+        mention_bypass_users = await self.settings.get_raw("mention_bypass_users")
+        if user.id in mention_bypass_users:
+            mention_bypass_users.remove(user.id)
+            await self.settings.set_raw("mention_bypass_users", mention_bypass_users)
+            embed = discord.Embed(title="Success!", description=f"{user.display_name} is no longer allowed to bypass the mention filter.")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="ErRoR 404", description=f"{user.display_name} is not allowed to bypass the mention filter.")
+            await ctx.send(embed=embed)
