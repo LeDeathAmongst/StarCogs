@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils
+from Star_Utils import Cog, CogsUtils, Views
 import io
 import re
 import asyncio
@@ -133,28 +133,16 @@ class ModMail(Cog):
                     try:
                         # Create the embed for the snippet response
                         embed = discord.Embed(
+                            title=f"{ctx.author.display_name} issued a snippet",
                             description=response,
                             color=discord.Color.green()
                         )
+                        embed.set_footer(text=f"Sent at {ctx.message.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
-                        # Determine the snippet reply method
-                        snippet_method = await self.config.guild(ctx.guild).snippet_reply_method()
-                        if snippet_method == "areply":
-                            areply_name = await self.config.guild(ctx.guild).areply_name()
-                            embed.set_author(name=areply_name)
-                            footer_text = "Moderator/Admin"
-                        else:
-                            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
-                            highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-                            footer_text = highest_role.name if highest_role else "No role"
-
-                        embed.set_footer(text=footer_text)
-
-                        # Send the embed to the user's DM
-                        await user.send(embed=embed)
-                        await ctx.send(f"Snippet '{name}' sent to {user.display_name}.")
+                        # Send the embed to the channel
+                        await ctx.send(embed=embed)
                     except discord.HTTPException:
-                        await ctx.send("Failed to send snippet to the user's DM.")
+                        await ctx.send("Failed to send snippet to the channel.")
                 else:
                     await ctx.send("User not found.")
             else:
@@ -478,22 +466,15 @@ class ModMail(Cog):
 
         # Send the response to the user
         embed = discord.Embed(
-            title=user.display_name,
+            title=f"{ctx.author.display_name} issued a reply",
             description=response,
             color=discord.Color.green()
         )
-        if ctx.author.avatar:
-            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
-        else:
-            embed.set_author(name=ctx.author.display_name)
-
-        highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-        footer_text = highest_role.name if highest_role else "No role"
-        embed.set_footer(text=footer_text)
+        embed.set_footer(text=f"Sent at {ctx.message.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
         try:
             await user.send(embed=embed)
-            await ctx.send(f"Reply sent to {user.mention}: {response}")
+            await ctx.send(embed=embed)
         except discord.HTTPException:
             await ctx.send("Failed to send the reply to the user's DM.")
 
@@ -517,21 +498,15 @@ class ModMail(Cog):
 
         # Send the response to the user
         embed = discord.Embed(
-            title=areply_name,
+            title=f"{areply_name} issued a reply",
             description=response,
             color=discord.Color.green()
         )
-        if ctx.guild.icon:
-            embed.set_author(name=areply_name, icon_url=ctx.guild.icon.url)
-        else:
-            embed.set_author(name=areply_name)
-
-        footer_text = "Moderator/Admin"
-        embed.set_footer(text=footer_text)
+        embed.set_footer(text=f"Sent at {ctx.message.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
         try:
             await user.send(embed=embed)
-            await ctx.send(f"Reply sent to {user.mention}: {response}")
+            await ctx.send(embed=embed)
         except discord.HTTPException:
             await ctx.send("Failed to send the reply to the user's DM.")
 
