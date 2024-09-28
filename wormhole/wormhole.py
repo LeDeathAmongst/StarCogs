@@ -160,7 +160,7 @@ class WormHole(Cog):
                 await message.delete()
                 return
 
-            money_regex = r"[\$\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\]\d+(\.\d{1,2})?"
+            money_regex = r"[\$\€\£\¥\₹\₽\₩\₪\₫\฿\₴\₦\₲\₱\₡\₭\₮\₳\₵\₸\₼\₿\₠\₢\₣\₤\₥\₧\₨\₩\₰\₯\₶\₷\₸\₺\₻\₼\₽\₾\₿]\d+(\.\d{1,2})?"
             if re.search(money_regex, message.content):
                 try:
                     await message.author.kick(reason="Messages contained possible scam.")
