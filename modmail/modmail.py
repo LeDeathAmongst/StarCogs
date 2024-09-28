@@ -442,46 +442,43 @@ class ModMail(Cog):
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
-        try:
-            modmail_enabled = await self.settings.get_raw("modmail_enabled", guild)
-            if not modmail_enabled:
-                return
+        modmail_enabled = await self.settings.get_raw("modmail_enabled", guild)
+        if not modmail_enabled:
+            return
 
-            modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
-            modmail_channel = guild.get_channel(modmail_channel_id)
-            if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
-                return
+        modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+        modmail_channel = guild.get_channel(modmail_channel_id)
+        if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
+            return
 
-            # Check if a thread already exists for this user
-            thread_name = f"modmail-{message.author.id}"
-            existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
-            if existing_thread:
-                thread = existing_thread
-            else:
-                # Create a new thread under the specified channel
-                thread = await modmail_channel.create_thread(
-                    name=thread_name,
-                    type=discord.ChannelType.public_thread,
-                    reason=f"ModMail for {message.author} ({message.author.id})"
-                )
-
-            # Send the message content
-            content_embed = discord.Embed(
-                description=message.content,
-                color=discord.Color.blue()
+        # Check if a thread already exists for this user
+        thread_name = f"modmail-{message.author.id}"
+        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
+        if existing_thread:
+            thread = existing_thread
+        else:
+            # Create a new thread under the specified channel
+            thread = await modmail_channel.create_thread(
+                name=thread_name,
+                type=discord.ChannelType.public_thread,
+                reason=f"ModMail for {message.author} ({message.author.id})"
             )
-            if message.author.avatar:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
-            else:
-                content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
 
-            imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
-            if imgur_links:
-                content_embed.set_image(url=imgur_links[0])
+        # Send the message content
+        content_embed = discord.Embed(
+            description=message.content,
+            color=discord.Color.blue()
+        )
+        if message.author.avatar:
+            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})", icon_url=message.author.avatar.url)
+        else:
+            content_embed.set_author(name=f"{message.author.display_name} ({message.author.id})")
 
-            await thread.send(embed=content_embed)
-        except KeyError:
-            pass
+        imgur_links = re.findall(r'(https?://i\.imgur\.com/\S+\.(?:jpg|jpeg|png|gif))', message.content)
+        if imgur_links:
+            content_embed.set_image(url=imgur_links[0])
+
+        await thread.send(embed=content_embed)
 
     @commands.guild_only()
     @commands.group()
