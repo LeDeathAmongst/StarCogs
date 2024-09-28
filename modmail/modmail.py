@@ -464,7 +464,7 @@ class ModMail(Cog):
                 reason=f"ModMail for {message.author} ({message.author.id})"
             )
 
-        # Send the message content
+        # Send the message content to the server thread
         content_embed = discord.Embed(
             description=message.content,
             color=discord.Color.blue()
@@ -565,10 +565,11 @@ class ModMail(Cog):
         footer_text = highest_role.name if highest_role else "No role"
         embed.set_footer(text=footer_text)
 
-        await user.send(embed=embed)
-
-        # Log the response in the channel
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
+        try:
+            await user.send(embed=embed)
+            await ctx.send(f"Reply sent to {user.mention}: {response}")
+        except discord.HTTPException:
+            await ctx.send("Failed to send the reply to the user's DM.")
 
     @commands.guild_only()
     @commands.mod_or_permissions(manage_messages=True)
@@ -602,10 +603,11 @@ class ModMail(Cog):
         footer_text = "Moderator/Admin"
         embed.set_footer(text=footer_text)
 
-        await user.send(embed=embed)
-
-        # Log the response in the channel
-        await ctx.send(f"Reply sent to {user.mention}: {response}")
+        try:
+            await user.send(embed=embed)
+            await ctx.send(f"Reply sent to {user.mention}: {response}")
+        except discord.HTTPException:
+            await ctx.send("Failed to send the reply to the user's DM.")
 
     @commands.guild_only()
     @commands.group()
