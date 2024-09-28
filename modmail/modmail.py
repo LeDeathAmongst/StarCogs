@@ -3,12 +3,10 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils, Settings
 import io
-from datetime import datetime
 import re
 import asyncio
-import typing
-from typing import List, Dict, Union, Literal
 import random
+from typing import List, Union, Literal
 
 class SnippetError(Exception):
     pass
@@ -92,6 +90,7 @@ class ModMail(Cog):
                 "command_name": "channel",
                 "label": "ModMail Channel",
                 "description": "Set the modmail channel for this server.",
+                "default": None
             },
             "log_channel": {
                 "path": ["log_channel"],
@@ -99,6 +98,7 @@ class ModMail(Cog):
                 "command_name": "log",
                 "label": "Log Channel",
                 "description": "Set the log channel for this server.",
+                "default": None
             },
             "areply_name": {
                 "path": ["areply_name"],
@@ -106,6 +106,7 @@ class ModMail(Cog):
                 "command_name": "title",
                 "label": "Areply Name",
                 "description": "Set the areply title name.",
+                "default": "Support Team"
             },
             "snippet_reply_method": {
                 "path": ["snippet_reply_method"],
@@ -113,6 +114,7 @@ class ModMail(Cog):
                 "command_name": "snippetmethod",
                 "label": "Snippet Reply Method",
                 "description": "Set the method for sending snippets (reply/areply).",
+                "default": "reply"
             },
             "modmail_enabled": {
                 "path": ["modmail_enabled"],
@@ -120,6 +122,7 @@ class ModMail(Cog):
                 "command_name": "toggle",
                 "label": "ModMail Enabled",
                 "description": "Toggle the ModMail system on or off for this server.",
+                "default": True
             },
             "close_embed": {
                 "path": ["close_embed"],
@@ -127,6 +130,7 @@ class ModMail(Cog):
                 "command_name": "closeembed",
                 "label": "Close Embed Message",
                 "description": "Set the embed message for channel closure.",
+                "default": None
             },
             "open_embed": {
                 "path": ["open_embed"],
@@ -165,6 +169,17 @@ class ModMail(Cog):
         self.user_guild_selection = {}
 
     async def cog_load(self):
+        # Initialize settings for all guilds
+        for guild in self.bot.guilds:
+            await self.settings.set_raw("modmail_enabled", True, guild=guild)
+            await self.settings.set_raw("modmail_channel", None, guild=guild)
+            await self.settings.set_raw("log_channel", None, guild=guild)
+            await self.settings.set_raw("areply_name", "Support Team", guild=guild)
+            await self.settings.set_raw("snippet_reply_method", "reply", guild=guild)
+            await self.settings.set_raw("close_embed", None, guild=guild)
+            await self.settings.set_raw("open_embed", "Thank you for contacting {server_name}! Staff will be with you shortly!", guild=guild)
+            await self.settings.set_raw("snippets", {}, guild=guild)
+
         # Load snippet commands on cog load
         for guild in self.bot.guilds:
             await self.load_snippet_commands(guild)
@@ -326,48 +341,33 @@ class ModMail(Cog):
         if isinstance(message.channel, discord.DMChannel):
             user_id = message.author.id
 
-            # Check if the user has already selected a server
-            if user_id in self.user_guild_selection:
-                selected_guild = self.user_guild_selection[user_id]
-                await self.handle_modmail_message(message, selected_guild)
-                return
-
-            # Filter for configured guilds only
-            configured_guilds = []
+            # Check for existing threads in configured guilds
             for guild in self.bot.guilds:
                 if guild.get_member(user_id):
                     try:
                         modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
-                        if modmail_channel_id is not None:
-                            configured_guilds.append(guild)
+                        modmail_channel = guild.get_channel(modmail_channel_id)
+                        if modmail_channel:
+                            thread_name = f"modmail-{user_id}"
+                            existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
+                            if existing_thread:
+                                await self.handle_modmail_message(message, guild)
+                                return
                     except KeyError:
                         continue
+
+            # If no existing thread, ask the user to choose a server
+            configured_guilds = [
+                guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.is_guild_configured(guild)
+            ]
 
             if not configured_guilds:
                 await message.author.send("No servers are configured for ModMail.")
                 return
 
-            # Check for existing threads in configured guilds
-            for guild in configured_guilds:
-                try:
-                    modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
-                    modmail_channel = guild.get_channel(modmail_channel_id)
-                    if modmail_channel:
-                        thread_name = f"modmail-{user_id}"
-                        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
-                        if existing_thread:
-                            self.user_guild_selection[user_id] = guild
-                            await self.handle_modmail_message(message, guild)
-                            return
-                except KeyError:
-                    continue
-
-            # If no existing thread, ask the user to choose a server
             if len(configured_guilds) == 1:
                 # If there's only one configured server, use it automatically
-                selected_guild = configured_guilds[0]
-                self.user_guild_selection[user_id] = selected_guild
-                await self.open_thread(message, selected_guild)
+                await self.open_thread(message, configured_guilds[0])
             else:
                 # Ask the user to choose a server with reactions
                 embed = discord.Embed(
@@ -392,54 +392,19 @@ class ModMail(Cog):
                     selected_index = int(reaction.emoji[0]) - 1
                     if 0 <= selected_index < len(configured_guilds):
                         selected_guild = configured_guilds[selected_index]
-                        self.user_guild_selection[user_id] = selected_guild
-
-                        # Delete the selection message
                         await selection_message.delete()
-
-                        modmail_channel_id = await self.settings.get_raw("modmail_channel", selected_guild)
-                        modmail_channel = selected_guild.get_channel(modmail_channel_id)
-                        if modmail_channel is None or not isinstance(modmail_channel, discord.TextChannel):
-                            await message.author.send("The modmail channel is not set or invalid for this server.")
-                            return
-                        # Check if a thread already exists for this user
-                        thread_name = f"modmail-{message.author.id}"
-                        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
-                        if not existing_thread:
-                            # Create a new thread under the specified channel
-                            thread = await modmail_channel.create_thread(
-                                name=thread_name,
-                                type=discord.ChannelType.public_thread,
-                                reason=f"ModMail for {message.author} ({message.author.id})"
-                            )
-                            # Create and send the info embed
-                            member = selected_guild.get_member(message.author.id)
-                            roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
-                            joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
-                            info_embed = discord.Embed(
-                                title=message.author.display_name,
-                                description=f"User ID: {message.author.id}",
-                                color=discord.Color.blue()
-                            )
-                            info_embed.add_field(name="Roles", value=roles, inline=False)
-                            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-                            await thread.send(embed=info_embed)
-                        # Send opening message if configured, otherwise send default message
-                        open_embed_message = await self.settings.get_raw("open_embed", selected_guild)
-                        if open_embed_message:
-                            open_embed = discord.Embed(description=open_embed_message.format(server_name=selected_guild.name), color=discord.Color.green())
-                        else:
-                            open_embed = discord.Embed(
-                                description=f"Thank you for contacting {selected_guild.name}! Staff will be with you shortly!",
-                                color=discord.Color.green()
-                            )
-                        await message.author.send(embed=open_embed)
-                        # Handle the modmail message
-                        await self.handle_modmail_message(message, selected_guild)
+                        await self.open_thread(message, selected_guild)
                     else:
                         await message.author.send("Invalid selection. Please try again.")
                 except asyncio.TimeoutError:
                     await message.author.send("You did not respond in time. Please try again.")
+
+    async def is_guild_configured(self, guild: discord.Guild) -> bool:
+        try:
+            modmail_channel_id = await self.settings.get_raw("modmail_channel", guild)
+            return modmail_channel_id is not None
+        except KeyError:
+            return False
 
     async def open_thread(self, message: discord.Message, guild: discord.Guild):
         """Open a modmail thread and send the initial message."""
@@ -450,42 +415,37 @@ class ModMail(Cog):
             return
 
         thread_name = f"modmail-{message.author.id}"
-        existing_thread = discord.utils.get(modmail_channel.threads, name=thread_name)
-        if not existing_thread:
-            # Create a new thread under the specified channel
-            thread = await modmail_channel.create_thread(
-                name=thread_name,
-                type=discord.ChannelType.public_thread,
-                reason=f"ModMail for {message.author} ({message.author.id})"
-            )
-            # Create and send the info embed
-            member = guild.get_member(message.author.id)
-            roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
-            joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
-            info_embed = discord.Embed(
-                title=message.author.display_name,
-                description=f"User ID: {message.author.id}",
-                color=discord.Color.blue()
-            )
-            info_embed.add_field(name="Roles", value=roles, inline=False)
-            info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
-            await thread.send(embed=info_embed)
+        thread = await modmail_channel.create_thread(
+            name=thread_name,
+            type=discord.ChannelType.public_thread,
+            reason=f"ModMail for {message.author} ({message.author.id})"
+        )
+        # Create and send the info embed
+        member = guild.get_member(message.author.id)
+        roles = ', '.join([role.name for role in member.roles if role.name != "@everyone"]) if member else "No roles"
+        joined_at = member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member else "Unknown"
+        info_embed = discord.Embed(
+            title=message.author.display_name,
+            description=f"User ID: {message.author.id}",
+            color=discord.Color.blue()
+        )
+        info_embed.add_field(name="Roles", value=roles, inline=False)
+        info_embed.add_field(name="Joined The Server", value=joined_at, inline=False)
+        await thread.send(embed=info_embed)
 
-            # Send opening message if configured, otherwise send default message
-            open_embed_message = await self.settings.get_raw("open_embed", guild)
-            if open_embed_message:
-                open_embed = discord.Embed(description=open_embed_message.format(server_name=guild.name), color=discord.Color.green())
-            else:
-                open_embed = discord.Embed(
-                    description=f"Thank you for contacting {guild.name}! Staff will be with you shortly!",
-                    color=discord.Color.green()
-                )
-            await message.author.send(embed=open_embed)
-
-            # Send the initial message from the user to the thread
-            await self.handle_modmail_message(message, guild)
+        # Send opening message if configured, otherwise send default message
+        open_embed_message = await self.settings.get_raw("open_embed", guild)
+        if open_embed_message:
+            open_embed = discord.Embed(description=open_embed_message.format(server_name=guild.name), color=discord.Color.green())
         else:
-            await self.handle_modmail_message(message, guild)
+            open_embed = discord.Embed(
+                description=f"Thank you for contacting {guild.name}! Staff will be with you shortly!",
+                color=discord.Color.green()
+            )
+        await message.author.send(embed=open_embed)
+
+        # Send the initial message from the user to the thread
+        await self.handle_modmail_message(message, guild)
 
     async def handle_modmail_message(self, message: discord.Message, guild: discord.Guild):
         """Handle incoming ModMail messages for a specific guild."""
