@@ -179,6 +179,7 @@ class WormHole(Cog):
         if message.channel.id in linked_channels:
             global_blacklist = await self.settings.get_raw("global_blacklist")
             word_filters = await self.settings.get_raw("word_filters")
+            mention_bypass_users = await self.settings.get_raw("mention_bypass_users")
 
             if message.author.id in global_blacklist:
                 return
@@ -188,6 +189,13 @@ class WormHole(Cog):
                 await message.channel.send(embed=embed)
                 await message.delete()
                 return
+
+            if message.author.id not in mention_bypass_users:
+                if re.search(r"@everyone|@here|<@&\d+>", message.content):
+                    embed = discord.Embed(title="ErRoR 404", description="Mentions are not allowed.")
+                    await message.channel.send(embed=embed)
+                    await message.delete()
+                    return
 
             money_regex = r"[\$\€\£\¥\₹\₽\₩\₪\₫\฿\₴\₦\₲\₱\₡\₭\₮\₳\₵\₸\₼\₿\₠\₢\₣\₤\₥\₧\₨\₩\₰\₯\₶\₷\₸\₺\₻\₼\₽\₾\₿]\d+(\.\d{1,2})?"
             if re.search(money_regex, message.content):
