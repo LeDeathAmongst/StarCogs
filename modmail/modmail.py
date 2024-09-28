@@ -1,3 +1,4 @@
+
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
@@ -37,7 +38,7 @@ class SnippetObj:
             raise SnippetAlreadyExists()
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
+        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
             raise SnippetResponseTooLong()
 
         snippet_info = {
@@ -54,7 +55,7 @@ class SnippetObj:
 
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
-        elif isinstance(response, list) and any(len(i) > 2000 for i in response):
+        elif isinstance(response, list) and any([len(i) > 2000 for i in response]):
             raise SnippetResponseTooLong()
 
         snippet_info["response"] = response
@@ -181,52 +182,24 @@ class ModMail(Cog):
             if ctx.guild.id != guild_id:
                 return
 
-            # Determine the response
             if isinstance(responses, list):
                 response = random.choice(responses)
             else:
                 response = responses
 
-            # Extract user ID from the channel name
-            if ctx.channel.name.startswith("modmail-"):
-                user_id_str = ctx.channel.name.split("modmail-")[1]
-                user = self.bot.get_user(int(user_id_str))
-
-                if user:
-                    try:
-                        # Create the embed for the snippet response
-                        embed = discord.Embed(
-                            description=response,
-                            color=discord.Color.green()
-                        )
-
-                        # Determine the snippet reply method
-                        snippet_method = await self.settings.get_raw("snippet_reply_method", ctx.guild)
-                        if snippet_method == "areply":
-                            areply_name = await self.settings.get_raw("areply_name", ctx.guild)
-                            embed.set_author(name=areply_name)
-                            footer_text = "Moderator/Admin"
-                        else:
-                            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
-                            highest_role = max(ctx.author.roles, key=lambda r: r.position, default=None)
-                            footer_text = highest_role.name if highest_role else "No role"
-
-                        embed.set_footer(text=footer_text)
-
-                        # Send the embed to the user's DM
-                        await user.send(embed=embed)
-                        await ctx.send(f"Snippet '{name}' sent to {user.display_name}.")
-                    except discord.HTTPException:
-                        await ctx.send("Failed to send snippet to the user's DM.")
-                else:
-                    await ctx.send("User not found.")
-            else:
-                await ctx.send("This command can only be used within a modmail thread channel.")
+            await ctx.send(response)
 
         # Add the command to the bot
         snippet_command.__name__ = f"snippet_{name}"
         command = commands.command(name=name)(snippet_command)
         self.bot.add_command(command)
+
+    async def remove_snippet_command(self, name: str):
+        """Remove a snippet command."""
+        command_name = f"snippet_{name}"
+        command = self.bot.get_command(command_name)
+        if command:
+            self.bot.remove_command(command_name)
 
     @commands.group()
     async def snippet(self, ctx: commands.Context):
@@ -265,13 +238,6 @@ class ModMail(Cog):
             await ctx.send("Snippet not found.")
         except SnippetResponseTooLong:
             await ctx.send("One of the responses is too long.")
-
-    async def remove_snippet_command(self, name: str):
-        """Remove a snippet command."""
-        command_name = f"snippet_{name}"
-        command = self.bot.get_command(command_name)
-        if command:
-            self.bot.remove_command(command_name)
 
     @snippet.command(name="delete")
     async def snippet_delete(self, ctx: commands.Context, name: str):
