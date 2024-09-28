@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands, Config
 from datetime import datetime, timedelta
 import re
-from Star_Utils import Cog, Settings 
+from Star_Utils import Cog, Settings
 
 class WormHole(Cog):
     def __init__(self, bot):
@@ -135,6 +135,34 @@ class WormHole(Cog):
             embed = discord.Embed(title="ErRoR 404", description="This channel is not part of the wormhole.")
             await ctx.send(embed=embed)
 
+    @wormhole.command(name="webhook")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_webhook(self, ctx, toggle: bool):
+        """Enable or disable the use of webhooks."""
+        await self.settings.set_raw("use_webhooks", toggle)
+        status = "enabled" if toggle else "disabled"
+        await ctx.send(f"Webhooks have been {status} for wormhole.")
+
+    @wormhole.command(name="image")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_image(self, ctx, mode: str):
+        """Set the image mode for webhooks. Options: user, server"""
+        if mode in ["user", "server"]:
+            await self.settings.set_raw("image_mode", mode)
+            await ctx.send(f"Image mode set to {mode}.")
+        else:
+            await ctx.send("Invalid mode. Choose either 'user' or 'server'.")
+
+    @wormhole.command(name="name")
+    @commands.has_permissions(administrator=True)
+    async def wormhole_name(self, ctx, mode: str):
+        """Set the name mode for webhooks. Options: user, server, both"""
+        if mode in ["user", "server", "both"]:
+            await self.settings.set_raw("name_mode", mode)
+            await ctx.send(f"Name mode set to {mode}.")
+        else:
+            await ctx.send("Invalid mode. Choose either 'user', 'server', or 'both'.")
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.guild:
@@ -161,7 +189,7 @@ class WormHole(Cog):
                 await message.delete()
                 return
 
-            money_regex = r"[\$\€\£\¥\₹\₽\₩\₪\₫\฿\₴\₦\₲\₱\₡\₭\₮\₳\₵\₸\₼\₿\₠\₢\₣\₤\₥\₧\₨\₩\₰\₯\₶\₷\₸\₺\₻\₼\₽\₾\₿]\d+(\.\d{1,2})?"
+            money_regex = r"[\$\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\]\d+(\.\d{1,2})?"
             if re.search(money_regex, message.content):
                 try:
                     await message.author.kick(reason="Messages contained possible scam.")
@@ -211,8 +239,11 @@ class WormHole(Cog):
 
             if message.reference and message.reference.message_id in self.recent_messages:
                 original_message_data = self.recent_messages[message.reference.message_id]
-                reply_link = f"[Jump to message]({message.reference.jump_url})"
-                content = f"*Replying to:* {reply_link}\n{content}"
+                reply_embed = discord.Embed(
+                    title="",
+                    description=f"**Replying to:** {original_message_data['author_name']}"
+                )
+                content = reply_embed
 
             if use_webhooks:
                 for channel_id in linked_channels:
