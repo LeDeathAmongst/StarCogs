@@ -1,7 +1,8 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils, Views
+from Star_Utils import Cog, CogsUtils
+import chat_exporter
 import io
 import re
 import asyncio
@@ -27,27 +28,25 @@ class SnippetObj:
         self.db = self.config.guild
 
     async def get_snippets(self, guild: discord.Guild) -> dict:
-        _snippets = await self.db(guild).get_raw("snippets", default={})
-        return {k: v for k, v in _snippets.items() if _snippets[k]}
+        return await self.db(guild).get_raw("snippets", default={})
 
-    async def create_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
-        if await self.db(ctx.guild).get_raw("snippets", name, default=None):
+    async def create_snippet(self, guild: discord.Guild, name: str, response: Union[str, List[str]]):
+        snippets = await self.get_snippets(guild)
+        if name in snippets:
             raise SnippetAlreadyExists()
         if isinstance(response, str) and len(response) > 2000:
             raise SnippetResponseTooLong()
         elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
-        snippet_info = {
-            "author": {"id": ctx.author.id, "name": str(ctx.author)},
-            "name": name,
+        snippets[name] = {
             "response": response,
         }
-        await self.db(ctx.guild).set_raw("snippets", name, value=snippet_info)
+        await self.db(guild).set_raw("snippets", value=snippets)
 
-    async def edit_snippet(self, ctx: commands.Context, name: str, response: Union[str, List[str]]):
-        snippet_info = await self.db(ctx.guild).get_raw("snippets", name, default=None)
-        if not snippet_info:
+    async def edit_snippet(self, guild: discord.Guild, name: str, response: Union[str, List[str]]):
+        snippets = await self.get_snippets(guild)
+        if name not in snippets:
             raise SnippetNotFound()
 
         if isinstance(response, str) and len(response) > 2000:
@@ -55,13 +54,15 @@ class SnippetObj:
         elif isinstance(response, list) and any(len(i) > 2000 for i in response):
             raise SnippetResponseTooLong()
 
-        snippet_info["response"] = response
-        await self.db(ctx.guild).set_raw("snippets", name, value=snippet_info)
+        snippets[name]["response"] = response
+        await self.db(guild).set_raw("snippets", value=snippets)
 
-    async def delete_snippet(self, ctx: commands.Context, name: str):
-        if not await self.db(ctx.guild).get_raw("snippets", name, default=None):
+    async def delete_snippet(self, guild: discord.Guild, name: str):
+        snippets = await self.get_snippets(guild)
+        if name not in snippets:
             raise SnippetNotFound()
-        await self.db(ctx.guild).set_raw("snippets", name, value=None)
+        del snippets[name]
+        await self.db(guild).set_raw("snippets", value=snippets)
 
     async def get_responses(self, ctx):
         await ctx.send("Enter responses for the snippet. Type `exit()` to finish.")
@@ -101,6 +102,9 @@ class ModMail(Cog):
         # Initialize CogsUtils for logging
         self.logs = CogsUtils.get_logger(cog=self)
 
+        # Initialize user_guild_selection to store user selections
+        self.user_guild_selection = {}
+
     async def cog_load(self):
         # Load snippet commands on cog load
         for guild in self.bot.guilds:
@@ -109,13 +113,13 @@ class ModMail(Cog):
     async def load_snippet_commands(self, guild: discord.Guild):
         snippets = await self.snippetobj.get_snippets(guild)
         for name, snippet_info in snippets.items():
-            self.add_snippet_command(name, snippet_info["response"], guild.id)
+            self.add_snippet_command(name, snippet_info["response"], guild)
 
-    def add_snippet_command(self, name: str, responses: Union[str, List[str]], guild_id: int):
+    def add_snippet_command(self, name: str, responses: Union[str, List[str]], guild: discord.Guild):
         """Dynamically add a snippet command."""
         async def snippet_command(ctx: commands.Context):
             """Send a snippet response."""
-            if ctx.guild.id != guild_id:
+            if ctx.guild != guild:
                 return
 
             # Determine the response
@@ -133,16 +137,20 @@ class ModMail(Cog):
                     try:
                         # Create the embed for the snippet response
                         embed = discord.Embed(
-                            title=f"{ctx.author.display_name} issued a snippet",
                             description=response,
                             color=discord.Color.green()
                         )
+                        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
                         embed.set_footer(text=f"Sent at {ctx.message.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
-                        # Send the embed to the channel
+                        # Send the embed to the user's DM
+                        await user.send(embed=embed)
+
+                        # Send the embed to the server thread for tracking
                         await ctx.send(embed=embed)
+
                     except discord.HTTPException:
-                        await ctx.send("Failed to send snippet to the channel.")
+                        await ctx.send("Failed to send snippet to the user's DM.")
                 else:
                     await ctx.send("User not found.")
             else:
@@ -150,7 +158,7 @@ class ModMail(Cog):
 
         # Add the command to the bot
         snippet_command.__name__ = f"snippet_{name}"
-        command = commands.command(name=name)(snippet_command)
+        command = commands.guild_only()(commands.command(name=name)(snippet_command))
         self.bot.add_command(command)
 
     @commands.group()
@@ -166,8 +174,8 @@ class ModMail(Cog):
             await ctx.send("Snippet creation cancelled.")
             return
         try:
-            await self.snippetobj.create_snippet(ctx, name=name, response=responses)
-            self.add_snippet_command(name, responses, ctx.guild.id)
+            await self.snippetobj.create_snippet(ctx.guild, name=name, response=responses)
+            self.add_snippet_command(name, responses, ctx.guild)
             await ctx.send(f"Snippet '{name}' created successfully.")
         except SnippetAlreadyExists:
             await ctx.send("A snippet with this name already exists.")
@@ -182,9 +190,9 @@ class ModMail(Cog):
             await ctx.send("Snippet editing cancelled.")
             return
         try:
-            await self.snippetobj.edit_snippet(ctx, name=name, response=responses)
+            await self.snippetobj.edit_snippet(ctx.guild, name=name, response=responses)
             await self.remove_snippet_command(name)
-            self.add_snippet_command(name, responses, ctx.guild.id)
+            self.add_snippet_command(name, responses, ctx.guild)
             await ctx.send(f"Snippet '{name}' edited successfully.")
         except SnippetNotFound:
             await ctx.send("Snippet not found.")
@@ -202,7 +210,7 @@ class ModMail(Cog):
     async def snippet_delete(self, ctx: commands.Context, name: str):
         """Delete a snippet."""
         try:
-            await self.snippetobj.delete_snippet(ctx, name=name)
+            await self.snippetobj.delete_snippet(ctx.guild, name=name)
             await self.remove_snippet_command(name)
             await ctx.send(f"Snippet '{name}' deleted successfully.")
         except SnippetNotFound:
@@ -546,40 +554,20 @@ class ModMail(Cog):
         log_channel = ctx.guild.get_channel(log_channel_id) if log_channel_id else None
 
         if log_channel:
-            # Collect messages from the async generator
-            messages = [msg async for msg in ctx.channel.history(oldest_first=True)]
-
-            # Create HTML content
-            html_content = "<html><head><title>ModMail Transcript</title></head><body>"
-            html_content += f"<h2>Transcript for {ctx.channel.name}</h2>"
-            html_content += "<ul>"
-
-            for msg in messages:
-                timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S")
-                author = msg.author.display_name
-                content = msg.content.replace('\n', '<br>')
-
-                html_content += f"<li><strong>{timestamp} - {author}:</strong> {content}</li>"
-
-                for embed in msg.embeds:
-                    html_content += "<li><strong>Embed:</strong><ul>"
-                    if embed.title:
-                        html_content += f"<li><strong>Title:</strong> {embed.title}</li>"
-                    if embed.description:
-                        html_content += f"<li><strong>Description:</strong> {embed.description}</li>"
-                    for field in embed.fields:
-                        html_content += f"<li><strong>{field.name}:</strong> {field.value}</li>"
-                    if embed.footer.text:
-                        html_content += f"<li><strong>Footer:</strong> {embed.footer.text}</li>"
-                    html_content += "</ul></li>"
-
-            html_content += "</ul></body></html>"
-
-            # Use io.BytesIO to create a file-like object
-            log_file = io.BytesIO(html_content.encode('utf-8'))
-
-            # Send the log file to the log channel
-            await log_channel.send(content=f"Log for {ctx.channel.name}", file=discord.File(fp=log_file, filename=f"modmail-{ctx.channel.name}.html"))
+            # Generate a transcript using chat_exporter
+            transcript = await chat_exporter.export(
+                channel=ctx.channel,
+                limit=None,
+                tz_info="UTC",
+                guild=ctx.guild,
+                bot=self.bot,
+            )
+            if transcript is not None:
+                log_file = discord.File(
+                    io.BytesIO(transcript.encode()),
+                    filename=f"transcript-{ctx.channel.name}.html",
+                )
+                await log_channel.send(content=f"Log for {ctx.channel.name}", file=log_file)
 
         close_embed_message = await self.config.guild(ctx.guild).close_embed()
 
