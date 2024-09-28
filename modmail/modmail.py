@@ -333,7 +333,12 @@ class ModMail(Cog):
                 return
 
             # Filter for configured guilds only
-            configured_guilds = [guild for guild in self.bot.guilds if guild.get_member(user_id) and await self.settings.get_raw("modmail_channel", guild)]
+            configured_guilds = []
+            for guild in self.bot.guilds:
+                if guild.get_member(user_id):
+                    modmail_channel_id = await self.settings.get_raw("modmail_channel", guild, default=None)
+                    if modmail_channel_id is not None:
+                        configured_guilds.append(guild)
 
             if not configured_guilds:
                 return
@@ -711,7 +716,7 @@ class ModMail(Cog):
     @commands.mod_or_permissions(manage_messages=True)
     async def thread_add(self, ctx: commands.Context, user: discord.User):
         """Add a user to receive replies for channels in the DMs."""
-        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild)
+        authorized_users = await self.settings.get_raw("authorized_users", ctx.guild, default=[])
         if user.id in authorized_users:
             await ctx.send(f"{user.display_name} is already authorized to receive channel replies.")
             return
