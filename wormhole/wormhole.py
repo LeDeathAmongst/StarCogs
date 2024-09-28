@@ -16,7 +16,7 @@ class WormHole(Cog):
             bot=self.bot,
             cog=self,
             config=self.config,
-            group="global",
+            group=Config.GLOBAL
             settings={
                 "linked_channels_list": {
                     "path": ["linked_channels_list"],
