@@ -4,7 +4,6 @@ from discord.ext import commands, tasks
 from redbot.core import commands, Config
 from .dashboard_integration import DashboardIntegration
 
-
 class COC(DashboardIntegration, Cog):
 
     def __init__(self, bot):

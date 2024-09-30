@@ -5,7 +5,6 @@ from redbot.core.bot import Red
 from typing import List, Dict
 import asyncio
 
-
 class AFK(Cog):
     """AFK Cog for Red-DiscordBot"""
 

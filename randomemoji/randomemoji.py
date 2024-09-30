@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 from redbot.core import commands
 import random
+from Star_Utils import Cog
 
-class RandomEmoji(commands.Cog):
+class RandomEmoji(Cog):
     def __init__(self, bot):
         self.bot = bot
 

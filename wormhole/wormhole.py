@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import re
 from Star_Utils import Cog, Settings
 
-class WormHole(Cog):
+class Wormhole(Cog):
     def __init__(self, bot):
         super().__init__(bot)
         self.bot = bot

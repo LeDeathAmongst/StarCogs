@@ -1,8 +1,9 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
+from Star_Utils import Cog
 
-class DMAffiliates(commands.Cog):
+class DMAffiliates(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=9876543210)  # Replace with a unique identifier

@@ -4,7 +4,6 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from typing import Optional
 
-
 class BotJoinMessage(Cog):
     """Cog to send a configurable message to the server owner when the bot joins a server."""
 

@@ -3,7 +3,6 @@ import discord
 from redbot.core import commands, Config
 import asyncio
 
-
 class Jail(Cog):
 
     def __init__(self, bot):

@@ -1,8 +1,9 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
+from Star_Utils import Cog
 
-class LinkStorage(commands.Cog):
+class LinkStorage(Cog):
     """A cog to store and retrieve links by name."""
 
     def __init__(self, bot: Red):

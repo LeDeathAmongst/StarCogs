@@ -1,11 +1,10 @@
-from Star_Utils import Cog
+from Star_Utils import Cog, Settings
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 import discord
 import typing
 import asyncio
-from AAA3A_utils.settings import Settings
 from .dashboard_integration import DashboardIntegration
 _: Translator = Translator('EventLogger', __file__)
 

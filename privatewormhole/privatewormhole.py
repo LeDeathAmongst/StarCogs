@@ -1,9 +1,9 @@
-
 import discord
 import os
 from redbot.core import commands, Config
+from Star_Utils import Cog
 
-class PrivateWormHole(commands.Cog):
+class PrivateWormhole(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier="private_wormhole", force_registration=True)

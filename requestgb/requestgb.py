@@ -3,8 +3,9 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 import asyncio
 from datetime import datetime
+from Star_Utils import Cog
 
-class RequestGB(commands.Cog):
+class RequestGB(Cog):
     """Cog for handling global ban requests."""
 
     def __init__(self, bot: Red):

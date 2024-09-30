@@ -3,8 +3,9 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from datetime import datetime
 import traceback
+from Star_Utils import Cog
 
-class GlobalLogger(commands.Cog):
+class GlobalLogger(Cog):
     """A cog for global logging of commands and errors"""
 
     def __init__(self, bot: Red):

@@ -12,7 +12,6 @@ from redbot.core.utils.views import ConfirmView
 from typing import Dict, List, Union
 _ = T_ = Translator('GuildManager', __file__)
 
-
 @cog_i18n(_)
 class GuildManager(Cog):
     """Guild management tools."""

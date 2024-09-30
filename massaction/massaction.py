@@ -1,8 +1,9 @@
 from redbot.core import commands, checks, Config
 import discord
 from datetime import timedelta
+from Star_Utils import Cog
 
-class MassAction(commands.Cog):
+class MassAction(Cog):
     """Cog for mass banning, kicking, muting, and timing out members in a role."""
 
     def __init__(self, bot):
@@ -17,8 +18,7 @@ class MassAction(commands.Cog):
     @checks.admin_or_permissions(administrator=True)
     async def mass(self, ctx):
         """Group command for mass actions."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Invalid mass command. Use `mass ban`, `mass kick`, `mass mute`, or `mass timeout`.")
+        pass
 
     @mass.command(name="ban")
     @checks.admin_or_permissions(ban_members=True)

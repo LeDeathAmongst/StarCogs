@@ -4,8 +4,9 @@ import asyncio
 import random
 from redbot.core import commands, Config, checks
 from redbot.core.bot import Red
+from Star_Utils import Cog
 
-class RandomTopic(commands.Cog):
+class RandomTopic(Cog):
     """A cog to send random topics at configurable intervals."""
 
     def __init__(self, bot: Red):

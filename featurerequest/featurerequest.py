@@ -4,7 +4,6 @@ import uuid
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 
-
 class FeatureRequest(Cog):
     """Cog to handle feature requests."""
 
