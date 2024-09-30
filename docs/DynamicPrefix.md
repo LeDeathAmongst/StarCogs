@@ -1,2 +1,0 @@
-# DynamicPrefix Help
-
