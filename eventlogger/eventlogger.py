@@ -28,7 +28,7 @@ class EventLogger(DashboardIntegration, commands.Cog):
     @commands.guild_only()
     @commands.is_owner()
     @commands.bot_has_permissions(manage_channels=True)
-    @commands.hybrid_group(name='setlog')
+    @commands.hybrid_group(name='setlog', invoke_without_command=True)
     async def setlog(self, ctx: commands.Context, event: str, channel: discord.TextChannel) -> None:
         """Set the logging channel for a specific event"""
         async with self.config.guild(ctx.guild).channels() as channels:
