@@ -9,6 +9,8 @@ import os
 import wtforms
 from redbot.core.utils.chat_formatting import humanize_list
 
+_: Translator = Translator("EmbedUtils", __file__)
+
 def dashboard_page(*args, **kwargs):
     def decorator(func: t.Callable):
         func.__dashboard_decorator_params__ = (args, kwargs)
