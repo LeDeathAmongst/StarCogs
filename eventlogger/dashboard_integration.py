@@ -1,11 +1,17 @@
+from Star_Utils import CogsUtils
 from redbot.core import commands, Config
 from redbot.core.bot import Red
+from redbot.core.i18n import Translator
 import discord
 import typing as t
+import os
+
+import wtforms
+from redbot.core.utils.chat_formatting import humanize_list
 
 def dashboard_page(*args, **kwargs):
     def decorator(func: t.Callable):
-        func.__dashboard_decorator_params__ = args, kwargs
+        func.__dashboard_decorator_params__ = (args, kwargs)
         return func
     return decorator
 
@@ -51,9 +57,9 @@ class DashboardIntegration(commands.Cog):
             for channel in guild.text_channels
         )
 
-        source = f"""
+        source = """
         <h3>Logging Configuration</h3>
-        <form method="post" action="{{{{ request_url }}}}">
+        <form method="post" action="{{ request_url }}">
           <label for="event">Event:</label>
           <select id="event" name="event" required>
             {event_options}
@@ -75,7 +81,8 @@ class DashboardIntegration(commands.Cog):
             <li>Command Log: {{ command_log_channel.mention }}</li>
           {% endif %}
         </ul>
-        """
+        """.format(event_options=event_options, channel_options=channel_options)
+
         return {
             'status': 0,
             'web_content': {
