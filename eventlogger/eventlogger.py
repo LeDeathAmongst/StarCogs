@@ -38,7 +38,7 @@ class EventLogger(DashboardIntegration, commands.Cog):
     @commands.guild_only()
     @commands.is_owner()
     @commands.bot_has_permissions(manage_channels=True)
-    @commands.hybrid_group(name='seteventlogger')
+    @commands.hybrid_group(name='seteventlogger', invoke_without_command=True)
     async def configuration(self, ctx: commands.Context) -> None:
         """Configure EventLogger for your server."""
         pass
