@@ -11,7 +11,7 @@ def dashboard_page(*args, **kwargs):
 
 class DashboardIntegration(commands.Cog):
     def __init__(self, bot: Red):
-        super().__init__(bot)
+        super().__init__()
         self.bot = bot
         self.config: Config = Config.get_conf(self, identifier=1234567891, force_registration=True)
         self.config.register_guild(channels={}, command_log_channel=None)
@@ -30,13 +30,40 @@ class DashboardIntegration(commands.Cog):
         channels = await self.config.guild(guild).channels()
         command_log_channel_id = await self.config.guild(guild).command_log_channel()
         command_log_channel = guild.get_channel(command_log_channel_id) if command_log_channel_id else None
-        source = """
+
+        # Define event categories
+        event_categories = {
+            'app': ['integration_create', 'integration_delete', 'integration_update'],
+            'automod': ['automod_rule_create', 'automod_rule_delete', 'automod_rule_update'],
+            'ban': ['member_ban', 'member_unban'],
+            # Add more categories as needed
+        }
+
+        # Generate event options
+        event_options = ''.join(
+            f'<option value="{event}">{event.replace("_", " ").title()}</option>'
+            for category in event_categories.values() for event in category
+        )
+
+        # Generate channel options
+        channel_options = ''.join(
+            f'<option value="{channel.id}">{channel.name}</option>'
+            for channel in guild.text_channels
+        )
+
+        source = f"""
         <h3>Logging Configuration</h3>
-        <form method="post" action="{{ request_url }}">
+        <form method="post" action="{{{{ request_url }}}}">
           <label for="event">Event:</label>
-          <input type="text" id="event" name="event" required>
+          <select id="event" name="event" required>
+            {event_options}
+          </select>
+
           <label for="channel">Channel:</label>
-          <input type="number" id="channel" name="channel" required>
+          <select id="channel" name="channel" required>
+            {channel_options}
+          </select>
+
           <button type="submit">Set Logging Channel</button>
         </form>
         <h3>Current Configuration</h3>
