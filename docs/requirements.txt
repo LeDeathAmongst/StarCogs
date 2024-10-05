@@ -1,4 +1,4 @@
 sphinx_rtd_theme
 furo
 myst-parser
-renku-sphinx-theme
+git+https://github.com/LeDeathAmongst/topos-theme
