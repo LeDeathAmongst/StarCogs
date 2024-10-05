@@ -12,7 +12,7 @@ html_context = {
 
 master_doc = "index"
 html_theme = "furo"
-source_suffix = ".rst"
+source_suffix = ".md"
 master_doc = "index"
 exclude_patterns = []
 add_function_parentheses = True
