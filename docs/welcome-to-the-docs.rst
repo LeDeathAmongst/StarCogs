@@ -3,6 +3,10 @@
 Welcome to the Docs
 ===================
 
+.. note::
+
+   Starfire Docs are made in part of ReadTheDocs.io, with code made by the team at Topo's Theme (present theme) and Star (owner)
+
 Welcome to the official documentation site for **Starfire**! This site provides comprehensive information on how to use and configure the various features and commands available in the bot.
 
 Introduction
@@ -77,8 +81,8 @@ Ready to dive in?
 -----------------
 
 Go to the main file below for more information:
+
 .. toctree::
-    :caption: Dive in
     :maxdepth: 1
 
     index
