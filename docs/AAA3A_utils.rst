@@ -147,5 +147,3 @@ Extended Arg Info
 > ```
 > A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
 > ```
-
-

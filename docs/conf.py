@@ -7,13 +7,13 @@ copyright = "2023 - Present | Star"
 
 # -- General configuration ---------------------------------------------------
 
-extensions = ["myst_parser"]
+extensions = ["myst_parser","sphinx_rtd_theme"]
 templates_path = ["_templates"]
 exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_css_files = ["literals.css"]
 
 # GitHub integration
