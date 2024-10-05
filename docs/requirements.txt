@@ -1,3 +1,4 @@
+sphinx_rtd_theme
 topos-theme
 furo
 myst-parser
