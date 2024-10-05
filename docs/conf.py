@@ -21,7 +21,12 @@ html_context = {
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
     "github_version": "main",
-    "style": "literal.css"
+    "style": "literal.css",
+    "site_name": 'Starfire Docs',
+    "bot_name": 'Starfire',
+    "prefix": ',',
+    "invite_link": 'https://discord.com/oauth2/authorize?client_id=1275521742961508432',
+    "support_server": 'https://discord.gg/HXdan6NnfJ',
 }
 
 # Source file suffix
