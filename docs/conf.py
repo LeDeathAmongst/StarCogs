@@ -16,14 +16,24 @@ exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 html_theme = "renku"
 html_title = "Starfire Docs"
 
-# GitHub integration
 html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    # Toc options
+    'collapse_navigation': True,
+    'includehidden': false,
+    'titles_only': False,
     "display_github": True,
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
-    "github_version": "main",
-    "style": "literal.css",
+    "github_version": "master",
     "description": "Starfire Documentations site"
+}
+
+html_context = {
+    "style": "literal.css"
 #    "site_name": 'Starfire Docs',
 #    "bot_name": 'Starfire',
 #    "prefix": ',',
