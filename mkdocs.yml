@@ -1,300 +1,40 @@
-extra:
-  footer: Created by [Rosie](https://github.com/PBOwner) with <3
-nav:
-- Home: index.md
-- Cogs:
-  - AAA3A_utils: AAA3A_utils.md
-  - Activities: Activities.md
-  - AddImage: AddImage.md
-  - Admin: Admin.md
-  - AdminToggle: AdminToggle.md
-  - AdvancedBlacklist: AdvancedBlacklist.md
-  - Adventure: Adventure.md
-  - AdventureAlert: AdventureAlert.md
-  - AdWarn: AdWarn.md
-  - AFK: AFK.md
-  - AIEmote: AIEmote.md
-  - AIUser: AIUser.md
-  - Aki: Aki.md
-  - Aliases: Aliases.md
-  - AltDentifier: AltDentifier.md
-  - AltMarker: AltMarker.md
-  - AnonReporter: AnonReporter.md
-  - AntiLinks: AntiLinks.md
-  - AntiPhishing: AntiPhishing.md
-  - AntiSpam: AntiSpam.md
-  - Assistant: Assistant.md
-  - AssistantUtils: AssistantUtils.md
-  - Audio: Audio.md
-  - AutoBan: AutoBan.md
-  - AutoConfigCleaner: AutoConfigCleaner.md
-  - AutoDelete: AutoDelete.md
-  - AutoDocs: AutoDocs.md
-  - AutoDocSite: AutoDocSite.md
-  - AutoGist: AutoGist.md
-  - AutoMod: AutoMod.md
-  - Automuter: Automuter.md
-  - AutoPublisher: AutoPublisher.md
-  - Autoreact: Autoreact.md
-  - AutoRoom: AutoRoom.md
-  - AutoTraceback: AutoTraceback.md
-  - Avatar: Avatar.md
-  - Away: Away.md
-  - Backup: Backup.md
-  - Badges: Badges.md
-  - Banana: Banana.md
-  - BanAppeal: BanAppeal.md
-  - BanChart: BanChart.md
-  - BankBackup: BankBackup.md
-  - BankEvents: BankEvents.md
-  - BannedCount: BannedCount.md
-  - Banner: Banner.md
-  - BetterUptime: BetterUptime.md
-  - Bingo: Bingo.md
-  - Bl: Bl.md
-  - BoostUtils: BoostUtils.md
-  - BotLogger: BotLogger.md
-  - BrainfuckCog: BrainfuckCog.md
-  - Bumper: Bumper.md
-  - ButtonPoll: ButtonPoll.md
-  - Captcha: Captcha.md
-  - CardsAgainstHumanity: CardsAgainstHumanity.md
-  - Cartographer: Cartographer.md
-  - CaseInsensitive: CaseInsensitive.md
-  - Casino: Casino.md
-  - Chatchart: Chatchart.md
-  - ChessGame: ChessGame.md
-  - Chest: Chest.md
-  - Choose: Choose.md
-  - ClearChannel: ClearChannel.md
-  - COC: COC.md
-  - CodeSnippets: CodeSnippets.md
-  - CogManagerUI: CogManagerUI.md
-  - Color: Color.md
-  - CommandsButtons: CommandsButtons.md
-  - ConsoleClearer: ConsoleClearer.md
-  - Cooldown: Cooldown.md
-  - Core: Core.md
-  - Counter: Counter.md
-  - Coupon: Coupon.md
-  - Crafter: Crafter.md
-  - CtrlZ: CtrlZ.md
-  - CustomHelp: CustomHelp.md
-  - CycleStatus: CycleStatus.md
-  - DallE: DallE.md
-  - Dashboard: Dashboard.md
-  - Defender: Defender.md
-  - Dev: Dev.md
-  - DevUtils: DevUtils.md
-  - DiscordEdit: DiscordEdit.md
-  - DiscordModals: DiscordModals.md
-  - DiscordSearch: DiscordSearch.md
-  - DisurlVotesTracker: DisurlVotesTracker.md
-  - DMAffiliates: DMAffiliates.md
-  - DontPingStaff: DontPingStaff.md
-  - Downloader: Downloader.md
-  - DynamicPrefix: DynamicPrefix.md
-  - Economy: Economy.md
-  - EconomyTrickle: EconomyTrickle.md
-  - eep: eep.md
-  - EmbedCreator: EmbedCreator.md
-  - EmbedUtils: EmbedUtils.md
-  - EmojiInfo: EmojiInfo.md
-  - EmojiTools: EmojiTools.md
-  - Encoding: Encoding.md
-  - ErrorLogs: ErrorLogs.md
-  - Events: Events.md
-  - ExclusiveRoles: ExclusiveRoles.md
-  - ExtendedEconomy: ExtendedEconomy.md
-  - ExtendedModLog: ExtendedModLog.md
-  - FakeMod: FakeMod.md
-  - FastClickGame: FastClickGame.md
-  - FeatureRequest: FeatureRequest.md
-  - FIFO: FIFO.md
-  - Filter: Filter.md
-  - Fluent: Fluent.md
-  - FluxImgGen: FluxImgGen.md
-  - Forward: Forward.md
-  - Freshmeat: Freshmeat.md
-  - GistsHandler: GistsHandler.md
-  - GitHub: GitHub.md
-  - Giveaways: Giveaways.md
-  - GlobalBan: GlobalBan.md
-  - Gmail: Gmail.md
-  - GuildID: GuildID.md
-  - GuildManager: GuildManager.md
-  - Gulag: Gulag.md
-  - Hellohook: Hellohook.md
-  - HidePing: HidePing.md
-  - Hider: Hider.md
-  - HitOrMiss: HitOrMiss.md
-  - HostInfo: HostInfo.md
-  - Hue: Hue.md
-  - Hunting: Hunting.md
-  - IdeaBoard: IdeaBoard.md
-  - ImageScanner: ImageScanner.md
-  - ImgurUploader: ImgurUploader.md
-  - Index: Index.md
-  - InfoChannel: InfoChannel.md
-  - InstaDelete: InstaDelete.md
-  - Insult: Insult.md
-  - IntroCog: IntroCog.md
-  - InviteBlocklist: InviteBlocklist.md
-  - Invites: Invites.md
-  - InviteSettings: InviteSettings.md
-  - IsItDown: IsItDown.md
-  - Jail: Jail.md
-  - JoinPing: JoinPing.md
-  - Jokes: Jokes.md
-  - KoFiTracker: KoFiTracker.md
-  - LastPing: LastPing.md
-  - Leaver: Leaver.md
-  - Lenny: Lenny.md
-  - LevelUp: LevelUp.md
-  - LinkQuoter: LinkQuoter.md
-  - LinkStorage: LinkStorage.md
-  - LinkWarner: LinkWarner.md
-  - Lock: Lock.md
-  - Lockdown: Lockdown.md
-  - LuigiPoker: LuigiPoker.md
-  - MadTranslate: MadTranslate.md
-  - Maintenance: Maintenance.md
-  - MemberCount: MemberCount.md
-  - MemberHistory: MemberHistory.md
-  - MemberPrefix: MemberPrefix.md
-  - MemoryGame: MemoryGame.md
-  - MessageCounter: MessageCounter.md
-  - Minecraft: Minecraft.md
-  - Mod: Mod.md
-  - ModLog: ModLog.md
-  - ModManager: ModManager.md
-  - Move: Move.md
-  - MultiCommands: MultiCommands.md
-  - NameChanger: NameChanger.md
-  - NetSpeed: NetSpeed.md
-  - NickNamer: NickNamer.md
-  - NoBot: NoBot.md
-  - NoDMs: NoDMs.md
-  - NoNuke: NoNuke.md
-  - NoSpoiler: NoSpoiler.md
-  - OnConnect: OnConnect.md
-  - OnEdit: OnEdit.md
-  - OnlyAllow: OnlyAllow.md
-  - Otherbot: Otherbot.md
-  - OwnerProtection: OwnerProtection.md
-  - Paginator: Paginator.md
-  - PartyCrash: PartyCrash.md
-  - PayDay: PayDay.md
-  - Perform: Perform.md
-  - Permissions: Permissions.md
-  - PersonalReact: PersonalReact.md
-  - PhenUtils: PhenUtils.md
-  - Pinboard: Pinboard.md
-  - Pingtime: Pingtime.md
-  - Pokecord: Pokecord.md
-  - Pokemon: Pokemon.md
-  - PokemonDuel: PokemonDuel.md
-  - Praise: Praise.md
-  - Prefix: Prefix.md
-  - PrivateWormHole: PrivateWormHole.md
-  - Pupper: Pupper.md
-  - Purge: Purge.md
-  - PyPi: PyPi.md
-  - QR: QR.md
-  - QRInvite: QRInvite.md
-  - Quarantine: Quarantine.md
-  - Quiz: Quiz.md
-  - Race: Race.md
-  - Raffle: Raffle.md
-  - RandomEmoji: RandomEmoji.md
-  - RandomTopic: RandomTopic.md
-  - ReactRestrict: ReactRestrict.md
-  - ReactToCommand: ReactToCommand.md
-  - Reminders: Reminders.md
-  - RepoList: RepoList.md
-  - Reports: Reports.md
-  - RequestGB: RequestGB.md
-  - RestartMsg: RestartMsg.md
-  - ReTrigger: ReTrigger.md
-  - ReviewsCog: ReviewsCog.md
-  - RoleBoards: RoleBoards.md
-  - RolePlay: RolePlay.md
-  - RoleRequests: RoleRequests.md
-  - RolesButtons: RolesButtons.md
-  - RoleTools: RoleTools.md
-  - RoleUtils: RoleUtils.md
-  - RolloutGame: RolloutGame.md
-  - Roomer: Roomer.md
-  - RunCode: RunCode.md
-  - Say: Say.md
-  - Search: Search.md
-  - SecureInv: SecureInv.md
-  - Seen: Seen.md
-  - SeinaTools: SeinaTools.md
-  - SelfAssign: SelfAssign.md
-  - SentryIO: SentryIO.md
-  - ServerBlocker: ServerBlocker.md
-  - Shell: Shell.md
-  - Shop: Shop.md
-  - SimpleSanction: SimpleSanction.md
-  - Simulator: Simulator.md
-  - Skyrim: Skyrim.md
-  - SlashRequest: SlashRequest.md
-  - SlashSync: SlashSync.md
-  - SlashTags: SlashTags.md
-  - SlowMode: SlowMode.md
-  - SmartReact: SmartReact.md
-  - Snipe: Snipe.md
-  - SplitOrStealGame: SplitOrStealGame.md
-  - Spoop: Spoop.md
-  - StaffApps: StaffApps.md
-  - Star_Utils: Star_Utils.md
-  - StickBugged: StickBugged.md
-  - Sticky: Sticky.md
-  - StickyMember: StickyMember.md
-  - Streams: Streams.md
-  - Strikes: Strikes.md
-  - Sudo: Sudo.md
-  - System: System.md
-  - Tags: Tags.md
-  - Talk: Talk.md
-  - TarotReading: TarotReading.md
-  - TellMe: TellMe.md
-  - TempRoles: TempRoles.md
-  - ThreadOpener: ThreadOpener.md
-  - TicketTool: TicketTool.md
-  - Ticks: Ticks.md
-  - TimeChannel: TimeChannel.md
-  - TimeoutSelf: TimeoutSelf.md
-  - TimeStamps: TimeStamps.md
-  - TongueTwisters: TongueTwisters.md
-  - TransferChannel: TransferChannel.md
-  - TrickOrTreat: TrickOrTreat.md
-  - Trigger: Trigger.md
-  - Triggered: Triggered.md
-  - Trivia: Trivia.md
-  - TTT: TTT.md
-  - UnbanAll: UnbanAll.md
-  - Unbelievaboat: Unbelievaboat.md
-  - UpdateRed: UpdateRed.md
-  - UptimeResponder: UptimeResponder.md
-  - UrlButtons: UrlButtons.md
-  - UselessFacts: UselessFacts.md
-  - Verifyer: Verifyer.md
-  - VirusTotal: VirusTotal.md
-  - VoiceTools: VoiceTools.md
-  - VrtUtils: VrtUtils.md
-  - Webhook: Webhook.md
-  - Welcome: Welcome.md
-  - WelcomeCount: WelcomeCount.md
-  - Werewolf: Werewolf.md
-  - WordScramble: WordScramble.md
-  - WormHole: WormHole.md
-  - XTools: XTools.md
-  - YTDownloader: YTDownloader.md
-  - Zalgo: Zalgo.md
-site_name: Starfire's Documentation
-site_url: https://docs.prismbot.icu/
+site_name: StarCogs Docs
+site_url: https://starcogs.readthedocs.io
+site_author: Star
+site_description: >-
+  StarCogs Documentations for Starfire bot
+
+# Repository
+repo_name: StarCogs
+repo_url: https://github.com/LeDeathAmongst/StarCogs
+
+# Copyright
+copyright: Copyright &copy; 2023 - present Star
+
+# Theme
 theme:
   name: dracula
-use_directory_urls: false
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.tooltips
+    - navigation.sections
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
