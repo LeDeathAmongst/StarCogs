@@ -1,26 +1,27 @@
-.. _main:
-
-==========
-StarCogs
-==========
+# StarCogs
 
 This documentation is here for the support of my redbot cogs. Everything should be here that you need.
 
-============
-Useful Links
-============
+## Useful Links
 
-* `Github Repository <https://github.com/LeDeathAmongst/StarCogs>`_
+- [Github Repository](https://github.com/LeDeathAmongst/StarCogs)
 
-.. toctree::
-    :caption: Repository
-    :maxdepth: 2
+## Repository
 
-    repo_installation
-    repo_license
-    repo_support
-    repo_telemetry
+```{toctree}
+:maxdepth: 2
+:caption: Repository
+:glob:
 
-.. toctree::
-    :caption: Cogs documentations
-    :maxdepth: 1
+repo_*
+```
+
+## Cogs Documentations
+
+```{toctree}
+:maxdepth: 1
+:caption: Cogs documentations
+:glob:
+
+*.md
+```
