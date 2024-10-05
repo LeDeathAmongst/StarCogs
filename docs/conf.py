@@ -22,7 +22,8 @@ html_context = {
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
     "github_version": "main",
-    "style": "literal.css"
+    "style": "literal.css",
+    "description": "Starfire Documentations site"
 #    "site_name": 'Starfire Docs',
 #    "bot_name": 'Starfire',
 #    "prefix": ',',
