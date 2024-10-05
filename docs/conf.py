@@ -25,7 +25,7 @@ html_context = {
 }
 
 # Source file suffix
-source_suffix = ".md"
+source_suffix = ".rst"
 
 # Master document
 master_doc = "index"

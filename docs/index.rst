@@ -22,5 +22,8 @@ Useful Links
     repo_telemetry
 
 .. toctree::
-    :caption: Cogs documentations
+    :caption: Starfire Docs
     :maxdepth: 1
+    :glob:
+
+    *.rst
