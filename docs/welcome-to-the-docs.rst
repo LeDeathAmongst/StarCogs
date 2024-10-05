@@ -72,3 +72,13 @@ Support
 If you need assistance or have any questions, please join our `Support Server <|support_server|>`_.
 
 Thank you for using **|bot_name|**! We hope you enjoy all the features and functionality it has to offer.
+
+Ready to dive in?
+-----------------
+
+Go to the main file below for more information:
+.. toctree::
+    :caption: Dive in
+    :maxdepth: 1
+
+    index
