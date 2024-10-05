@@ -17,7 +17,7 @@ html_theme = "renku"
 html_title = "Starfire Docs"
 
 # GitHub integration
-html_context = {
+html_theme_options = {
     "display_github": True,
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
