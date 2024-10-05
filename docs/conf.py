@@ -21,6 +21,7 @@ html_context = {
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
     "github_version": "main",
+    "style": "literal.css"
 }
 
 # Source file suffix
