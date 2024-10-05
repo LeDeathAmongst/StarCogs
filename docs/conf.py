@@ -42,4 +42,4 @@ rst_epilog = """
 source_suffix = ".rst"
 
 # Master document
-master_doc = "index"
+master_doc = "welcome-to-the-docs"
