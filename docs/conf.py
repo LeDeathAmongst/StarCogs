@@ -1,4 +1,4 @@
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".venv", "venv"]
+exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 html_css_files = ["literals.css"]
 extensions = ["myst_parser"]
 templates_path = ["_templates"]
