@@ -23,7 +23,7 @@ html_theme_options = {
     'style_external_links': False,
     # Toc options
     'collapse_navigation': True,
-    'includehidden': false,
+    'includehidden': False,
     'titles_only': False,
     "display_github": True,
     "github_user": "LeDeathAmongst",
