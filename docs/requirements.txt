@@ -1,2 +1,2 @@
+sphinx_rtd_theme
 furo
-git+https://github.com/PBOwner/mkdocs.git

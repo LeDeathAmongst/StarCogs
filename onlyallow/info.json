@@ -1,0 +1,16 @@
+{
+    "author": ["Star"],
+    "name": "OnlyAllow",
+    "install_msg": "Thank you for installing this cog!\nDo `[p]help CogName` to get the list of commands and their description. If you enjoy my work, please consider donating on [Ko-Fi](<https://ko-fi.com/starcogs>)!",
+    "short": "Only allow users to execute specific commands or commands from specific cogs, on specific servers! If nothing is set in a server, all cogs/commands are permitted.",
+    "description": "Only allow users to execute specific commands or commands from specific cogs, on specific servers! If nothing is set in a server, all cogs/commands are permitted.",
+    "tags": [
+        "only",
+        "allow",
+        "cogs",
+        "commands"
+    ],
+    "requirements": ["git+https://github.com/LeDeathAmongst/Star_Utils.git"],
+    "min_bot_version": "3.5.0",
+    "end_user_data_statement": "This cog does not persistently store data or metadata about users."
+}
