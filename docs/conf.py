@@ -13,7 +13,7 @@ exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "renku"
+html_theme = "topos-theme"
 
 # GitHub integration
 html_context = {
