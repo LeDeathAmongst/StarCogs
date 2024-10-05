@@ -33,7 +33,7 @@ html_theme_options = {
 }
 
 html_context = {
-    "style": "literal.css"
+    "style": ""
 #    "site_name": 'Starfire Docs',
 #    "bot_name": 'Starfire',
 #    "prefix": ',',
