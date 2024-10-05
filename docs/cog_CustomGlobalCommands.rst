@@ -1,0 +1,84 @@
+CustomGlobalCommands
+====================
+
+Global custom commands.
+
+# <@1275521742961508432>setgcom
+Adds a global custom command<br/>
+ - Usage: `<@1275521742961508432>setgcom <command> <text>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### command: str
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+> ### text
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+# <@1275521742961508432>rmgcom
+Removes a global custom command<br/>
+ - Usage: `<@1275521742961508432>rmgcom <command>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### command: str
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+# <@1275521742961508432>lsgcom
+Shows global custom commands list<br/>
+ - Usage: `<@1275521742961508432>lsgcom`
+
+
+# <@1275521742961508432>agcom
+Create aliases for Global Custom Commands<br/>
+ - Usage: `<@1275521742961508432>agcom [command=None]`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### command=None
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+## <@1275521742961508432>agcom show
+Shows aliases for a command, or the command bound to an alias<br/>
+ - Usage: `<@1275521742961508432>agcom show <command>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### command
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+## <@1275521742961508432>agcom rm
+Remove an alias from a global cc<br/>
+ - Usage: `<@1275521742961508432>agcom rm <aliases>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### *aliases
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+## <@1275521742961508432>agcom add
+Add one or more aliases for a custom command<br/>
+ - Usage: `<@1275521742961508432>agcom add <command> <aliases>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### command
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+> ### *aliases
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
