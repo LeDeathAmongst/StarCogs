@@ -1,0 +1,2 @@
+furo
+git+https://github.com/PBOwner/mkdocs.git
