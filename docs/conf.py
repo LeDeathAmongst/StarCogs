@@ -14,23 +14,42 @@ exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = "topos-theme"
+html_title = "Starfire Docs"
 
-# GitHub integration
-html_context = {
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    # Toc options
+    'collapse_navigation': True,
+    'includehidden': False,
+    'titles_only': False,
     "display_github": True,
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
-    "github_version": "main",
-    "style": "literal.css",
-    "site_name": 'Starfire Docs',
-    "bot_name": 'Starfire',
-    "prefix": ',',
-    "invite_link": 'https://discord.com/oauth2/authorize?client_id=1275521742961508432',
-    "support_server": 'https://discord.gg/HXdan6NnfJ',
+    "github_version": "master",
+    "description": "Starfire Documentations site"
 }
 
+html_context = {
+    "style": ""
+#    "site_name": 'Starfire Docs',
+#    "bot_name": 'Starfire',
+#    "prefix": ',',
+#    "invite_link": 'https://discord.com/oauth2/authorize?client_id=1275521742961508432',
+#    "support_server": 'https://discord.gg/HXdan6NnfJ',
+}
+
+rst_epilog = """
+.. |site_name| replace:: Starfire Docs
+.. |bot_name| replace:: Starfire
+.. |prefix| replace:: ,
+.. |invite_link| replace:: https://discord.com/oauth2/authorize?client_id=1275521742961508432
+.. |support_server| replace:: https://discord.gg/HXdan6NnfJ
+"""
 # Source file suffix
 source_suffix = ".rst"
 
 # Master document
-master_doc = "index"
+master_doc = "welcome-to-the-docs"
