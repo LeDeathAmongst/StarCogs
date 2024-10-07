@@ -17,8 +17,8 @@ class OwnerProtection(Cog):
             owner_role_id=None,
             support_role_id=None,
             support_role_name=f"{self.bot.user} Support",
-            support_role_message=f"{support_role_name} created successfully.",
-            owner_message=f"Role {support_role_name} made for support."
+            support_role_message="Support Role created successfully.",
+            owner_message=f"{self.bot.user} Support role made for support."
         )
         _settings = {
             'owner_role_name': {
