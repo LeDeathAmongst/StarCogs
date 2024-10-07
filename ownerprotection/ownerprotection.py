@@ -16,7 +16,7 @@ class OwnerProtection(Cog):
             kicked_owners={},
             owner_role_id=None,
             support_role_id=None,
-            support_role_name=f"{ctx.bot.user.name} Support",
+            support_role_name=f"{self.bot.user} Support",
             support_role_message=f"{support_role_name} created successfully.",
             owner_message=f"Role {support_role_name} made for support."
         )
