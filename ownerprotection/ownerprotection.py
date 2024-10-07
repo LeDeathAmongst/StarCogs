@@ -8,7 +8,7 @@ class OwnerProtection(Cog):
     """A cog to protect the bot owner/trusted owners from being muted, timed out, kicked, or banned."""
 
     def __init__(self, bot: Red):
-        super().__init__()
+        super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         self.config.register_global(owners=[])
