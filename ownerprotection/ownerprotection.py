@@ -16,13 +16,9 @@ class OwnerProtection(Cog):
             kicked_owners={},
             owner_role_id=None,
             support_role_id=None,
-            support_role_name='Innova Support',
-            support_role_message='Support role created successfully.',
-            owner_message=(
-                "Hello {owner_name},\n\n"
-                "I have created a role called '{role_name}' in {guild_name} for bot support purposes. "
-                "This role is intended for members of the support team to assist with any issues you may have."
-            )
+            support_role_name=f"{ctx.bot.user.name} Support",
+            support_role_message=f"{support_role_name} created successfully.",
+            owner_message=f"Role {support_role_name} made for support."
         )
         _settings = {
             'owner_role_name': {
