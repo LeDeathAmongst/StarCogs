@@ -4,6 +4,7 @@ from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
 import discord
 import typing
+from typing, import Union
 import asyncio
 from datetime import datetime
 from .dashboard_integration import DashboardIntegration
