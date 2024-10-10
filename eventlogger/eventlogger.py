@@ -21,122 +21,246 @@ class EventLogger(Cog):
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
 
         settings_dict = {
-            "integration_create": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging integration creation events.",
-            },
-            "integration_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging integration deletion events.",
-            },
-            "integration_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging integration update events.",
-            },
-            "guild_channel_create": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging channel creation events.",
-            },
-            "guild_channel_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging channel deletion events.",
-            },
-            "guild_channel_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging channel update events.",
-            },
-            "guild_channel_pins_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging channel pins update events.",
-            },
-            "voice_state_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging voice state update events.",
-            },
-            "member_ban": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging member ban events.",
-            },
-            "member_unban": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging member unban events.",
-            },
-            "invite_create": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging invite creation events.",
-            },
-            "invite_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging invite deletion events.",
-            },
-            "message_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging message deletion events.",
-            },
-            "bulk_message_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging bulk message deletion events.",
-            },
-            "message_edit": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging message edit events.",
-            },
-            "reaction_add": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging reaction add events.",
-            },
-            "reaction_remove": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging reaction remove events.",
-            },
-            "member_join": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging member join events.",
-            },
-            "member_remove": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging member remove events.",
-            },
-            "member_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging member update events.",
-            },
-            "user_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging user update events.",
-            },
-            "guild_role_create": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging role creation events.",
-            },
-            "guild_role_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging role deletion events.",
-            },
-            "guild_role_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging role update events.",
-            },
-            "guild_emojis_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging emoji update events.",
-            },
-            "guild_sticker_create": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging sticker creation events.",
-            },
-            "guild_sticker_delete": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging sticker deletion events.",
-            },
-            "guild_sticker_update": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging sticker update events.",
-            },
-            "command_log_channel": {
-                "converter": discord.TextChannel,
-                "description": "Channel for logging command usage events.",
-            },
+                "integration_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging integration creation events.",
+                },
+                "integration_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging integration deletion events.",
+                },
+                "integration_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging integration update events.",
+                },
+                "guild_channel_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging channel creation events.",
+                },
+                "guild_channel_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging channel deletion events.",
+                },
+                "guild_channel_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging channel update events.",
+                },
+                "guild_channel_pins_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging channel pins update events.",
+                },
+                "voice_state_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging voice state update events.",
+                },
+                "member_ban": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging member ban events.",
+                },
+                "member_unban": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging member unban events.",
+                },
+                "invite_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging invite creation events.",
+                },
+                "invite_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging invite deletion events.",
+                },
+                "message_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging message deletion events.",
+                },
+                "bulk_message_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging bulk message deletion events.",
+                },
+                "message_edit": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging message edit events.",
+                },
+                "reaction_add": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging reaction add events.",
+                },
+                "reaction_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging reaction remove events.",
+                },
+                "member_join": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging member join events.",
+                },
+                "member_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging member remove events.",
+                },
+                "member_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging member update events.",
+                },
+                "user_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging user update events.",
+                },
+                "guild_role_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging role creation events.",
+                },
+                "guild_role_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging role deletion events.",
+                },
+                "guild_role_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging role update events.",
+                },
+                "guild_emojis_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging emoji update events.",
+                },
+                "guild_sticker_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging sticker creation events.",
+                },
+                "guild_sticker_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging sticker deletion events.",
+                },
+                "guild_sticker_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging sticker update events.",
+                },
+                "command_log_channel": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging command usage events.",
+                },
+                "typing": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging typing events.",
+                },
+                "thread_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging thread creation events.",
+                },
+                "automod_rule_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging automod rule creation events.",
+                },
+                "automod_rule_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging automod rule deletion events.",
+                },
+                "automod_rule_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging automod rule update events.",
+                },
+                "guild_emoji_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging emoji creation events.",
+                },
+                "guild_emoji_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging emoji deletion events.",
+                },
+                "guild_emoji_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging emoji update events.",
+                },
+                "scheduled_event_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging scheduled event creation.",
+                },
+                "scheduled_event_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging scheduled event deletion.",
+                },
+                "scheduled_event_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging scheduled event updates.",
+                },
+                "scheduled_event_user_add": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging users added to scheduled events.",
+                },
+                "scheduled_event_user_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging users removed from scheduled events.",
+                },
+                "user_roles_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging user role updates.",
+                },
+                "user_roles_add": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging roles added to users.",
+                },
+                "user_roles_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging roles removed from users.",
+                },
+                "user_avatar_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging user avatar updates.",
+                },
+                "user_timeout": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging user timeout events.",
+                },
+                "user_timeout_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging user timeout removal events.",
+                },
+                "webhook_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging webhook update events.",
+                },
+                "webhook_create": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging webhook creation events.",
+                },
+                "webhook_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging webhook deletion events.",
+                },
+                "thread_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging thread deletion events.",
+                },
+                "thread_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging thread update events.",
+                },
+                "thread_member_join": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging thread member join events.",
+                },
+                "thread_member_remove": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging thread member remove events.",
+                },
+                "soundboard_sound_upload": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging soundboard sound upload events.",
+                },
+                "soundboard_sound_name_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging soundboard sound name update events.",
+                },
+                "soundboard_sound_volume_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging soundboard sound volume update events.",
+                },
+                "soundboard_sound_emoji_update": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging soundboard sound emoji update events.",
+                },
+                "soundboard_sound_delete": {
+                        "converter": discord.TextChannel,
+                        "description": "Channel for logging soundboard sound deletion events.",
+                },
         }
 
         default_guild = {event: None for event in settings_dict.keys()}
