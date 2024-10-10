@@ -175,7 +175,7 @@ class EventLogger(Cog):
     @commands.is_owner()
     @commands.bot_has_permissions(manage_channels=True)
     @commands.group(name='seteventlogger', invoke_without_command=True)
-    async def configuration(self, ctx: commands.Context) -> None:
+    async def seteventlogger(self, ctx: commands.Context) -> None:
         """Configure EventLogger for your server."""
         pass
 
