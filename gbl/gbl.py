@@ -73,7 +73,7 @@ class GlobalBanList(Cog):
         """Group command for Global Ban List owner settings."""
         pass
 
-    @gblo.command(name="add_authorized")
+    @gblo.command(name="addauth")
     async def add_authorized(self, ctx: commands.Context, user: discord.User):
         """Add a user to the authorized users list."""
         async with self.config.authorized_users() as authorized:
@@ -84,7 +84,7 @@ class GlobalBanList(Cog):
             else:
                 await ctx.send(f"{user.name} is already in the authorized users list.")
 
-    @gblo.command(name="remove_authorized")
+    @gblo.command(name="remauth")
     async def remove_authorized(self, ctx: commands.Context, user: discord.User):
         """Remove a user from the authorized users list."""
         async with self.config.authorized_users() as authorized:
@@ -95,7 +95,7 @@ class GlobalBanList(Cog):
             else:
                 await ctx.send(f"{user.name} is not in the authorized users list.")
 
-    @gblo.command(name="set_appeal_channel")
+    @gblo.command(name="setappeal")
     async def set_appeal_channel(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """Set the channel for ban appeals."""
         if channel is None:
@@ -106,14 +106,14 @@ class GlobalBanList(Cog):
             await ctx.send(f"Ban appeal channel has been set to {channel.mention}.")
         await self.owner_log("Set Appeal Channel", ctx.author, f"Set appeal channel to {channel.mention if channel else 'None'}")
 
-    @gblo.command(name="set_owner_log")
+    @gblo.command(name="setolog")
     async def set_owner_log(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for owner logging."""
         await self.config.owner_log_channel.set(channel.id)
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
 
-    @gblo.command(name="set_general_log")
+    @gblo.command(name="setglog")
     async def set_general_log(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for general logging."""
         await self.config.general_log_channel.set(channel.id)
