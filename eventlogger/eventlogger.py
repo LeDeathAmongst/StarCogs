@@ -164,7 +164,7 @@ class EventLogger(Cog):
     @commands.guild_only()
     @commands.is_owner()
     @commands.bot_has_permissions(manage_channels=True)
-    @commands.hybrid_group(name='setlog', invoke_without_command=True)
+    @commands.group(name='setlog', invoke_without_command=True)
     async def setlog(self, ctx: commands.Context, event: str, channel: discord.TextChannel) -> None:
         """Set the logging channel for a specific event"""
         async with self.config.guild(ctx.guild).channels() as channels:
@@ -174,8 +174,8 @@ class EventLogger(Cog):
     @commands.guild_only()
     @commands.is_owner()
     @commands.bot_has_permissions(manage_channels=True)
-    @commands.hybrid_group(name='seteventlogger', invoke_without_command=True)
-    async def seteventlogger(self, ctx: commands.Context) -> None:
+    @commands.group(name='seteventlogger', invoke_without_command=True)
+    async def configuration(self, ctx: commands.Context) -> None:
         """Configure EventLogger for your server."""
         pass
 
