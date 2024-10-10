@@ -19,7 +19,7 @@ def dashboard_page(*args, **kwargs):
 
 class DashboardIntegration(commands.Cog):
     def __init__(self, bot: Red):
-        super().__init__()
+        super().__init__(bot)
         self.bot = bot
         self.config: Config = Config.get_conf(self, identifier=1234567891, force_registration=True)
         self.config.register_guild(channels={}, command_log_channel=None)
