@@ -52,14 +52,14 @@ class GlobalBanList(Cog):
             authorized_users=[],
             ban_appeal_channel=None,
             appeal_cooldown_days=30,
-            owner_log_channel=None,
-            general_log_channel=None
+            owner_log_channel=None
         )
         self.config.register_guild(
             subscribed_lists=[],
             auto_ban=True,
             notify_channel=None,
-            exempt_roles=[]
+            exempt_roles=[],
+            general_log_channel=None
         )
 
         self.db = sqlite3.connect("globalbanlist.db")
@@ -128,13 +128,6 @@ class GlobalBanList(Cog):
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
 
-    @gblo.command(name="setgenerallog")
-    async def setgenerallog(self, ctx: commands.Context, channel: discord.TextChannel):
-        """Set the channel for general logging."""
-        await self.config.general_log_channel.set(channel.id)
-        await ctx.send(f"General log channel has been set to {channel.mention}.")
-        await self.owner_log("Set General Log Channel", ctx.author, f"Set general log channel to {channel.mention}")
-
     @gblo.command(name="displaylist")
     async def displaylist(self, ctx: commands.Context, list_name: str):
         """Display a dynamically updating embed for a specific ban list."""
@@ -185,10 +178,28 @@ class GlobalBanList(Cog):
         await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user_obj} from {group} list")
 
     @gbl.command(name="list")
-    async def list_users(self, ctx: commands.Context, group: str):
-        """List all users in a specific ban list."""
+    async def list_users(self, ctx: commands.Context, group: str = None):
+        """List all users in a specific ban list or show available lists."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
+            return
+
+        if group is None:
+            # Show available lists
+            self.cursor.execute("SELECT list_name FROM ban_lists")
+            lists = self.cursor.fetchall()
+            if not lists:
+                await ctx.send("There are no ban lists available.")
+                return
+            lists_str = "\n".join([f"- {list_name[0]}" for list_name in lists])
+            embed = discord.Embed(title="Available Ban Lists", description=lists_str, color=discord.Color.blue())
+            await ctx.send(embed=embed)
+            return
+
+        # Check if the specified list exists
+        self.cursor.execute("SELECT 1 FROM ban_lists WHERE list_name = ?", (group,))
+        if not self.cursor.fetchone():
+            await ctx.send(f"The list '{group}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
         self.cursor.execute("SELECT user_id, reason, proof, banned_at FROM banned_users WHERE list_name = ?", (group,))
@@ -231,6 +242,13 @@ class GlobalBanList(Cog):
                 await self.owner_log("Unsubscribe", ctx.author, f"Unsubscribed from {list_name} list in {ctx.guild.name}")
             else:
                 await ctx.send(f"This server is not subscribed to the {list_name} list.")
+
+    @gbl.command(name="setgenerallog")
+    @commands.has_permissions(administrator=True)
+    async def setgenerallog(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel for general logging in this server."""
+        await self.config.guild(ctx.guild).general_log_channel.set(channel.id)
+        await ctx.send(f"General log channel for this server has been set to {channel.mention}.")
 
     @gbl.command()
     async def appeal(self, ctx: commands.Context):
@@ -306,7 +324,7 @@ class GlobalBanList(Cog):
                         channel = member.guild.get_channel(guild_config['notify_channel'])
                         if channel:
                             await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
-                    await self.general_log("User Banned", member, list_name, reason, proof, member.guild)
+                    await self.general_log(member.guild, "User Banned", member, list_name, reason, proof)
                 except discord.Forbidden:
                     print(f"Failed to ban {member.name} from {member.guild.name} - Insufficient permissions")
 
@@ -334,7 +352,7 @@ class GlobalBanList(Cog):
                         channel = guild.get_channel(guild_config['notify_channel'])
                         if channel:
                             await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
-                    await self.general_log("User Banned", member, list_name, reason, proof, guild)
+                    await self.general_log(guild, "User Banned", member, list_name, reason, proof)
                 except discord.Forbidden:
                     print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
 
@@ -353,7 +371,7 @@ class GlobalBanList(Cog):
                                 await channel.send(f"{member} was banned due to being added to the {group} global ban list.")
                         self.cursor.execute("SELECT reason, proof FROM banned_users WHERE user_id = ? AND list_name = ?", (user_id, group))
                         reason, proof = self.cursor.fetchone()
-                        await self.general_log("User Banned", member, group, reason, proof, guild)
+                        await self.general_log(guild, "User Banned", member, group, reason, proof)
                     except discord.Forbidden:
                         print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
 
@@ -380,13 +398,13 @@ class GlobalBanList(Cog):
 
         await channel.send(embed=embed)
 
-    async def general_log(self, action: str, user: discord.User, list_name: str, reason: str, proof: str, guild: discord.Guild = None):
-        """Log general actions."""
-        channel_id = await self.config.general_log_channel()
+    async def general_log(self, guild: discord.Guild, action: str, user: discord.User, list_name: str, reason: str, proof: str):
+        """Log general actions for a specific guild."""
+        channel_id = await self.config.guild(guild).general_log_channel()
         if not channel_id:
             return
 
-        channel = self.bot.get_channel(channel_id)
+        channel = guild.get_channel(channel_id)
         if not channel:
             return
 
@@ -396,8 +414,6 @@ class GlobalBanList(Cog):
         embed.add_field(name="List", value=list_name, inline=False)
         embed.add_field(name="Reason", value=reason, inline=False)
         embed.add_field(name="Proof", value=proof, inline=False)
-        if guild:
-            embed.add_field(name="Guild", value=f"{guild.name} ({guild.id})", inline=False)
         embed.set_footer(text=f"User ID: {user.id}")
 
         await channel.send(embed=embed)
