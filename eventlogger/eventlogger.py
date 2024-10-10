@@ -11,34 +11,139 @@ from .dashboard_integration import DashboardIntegration
 
 _ = Translator('EventLogger', __file__)
 
-class ChannelDictConverter(commands.Converter):
-    async def convert(self, ctx, argument):
-        try:
-            # Assuming the input is in the format "event:channel_id,event2:channel_id2"
-            return {k: int(v) for k, v in (pair.split(':') for pair in argument.split(','))}
-        except (ValueError, AttributeError):
-            raise commands.BadArgument('Invalid format. Use "event:channel_id,event2:channel_id2"')
-
 @cog_i18n(_)
-class EventLogger(DashboardIntegration, Cog):
+class EventLogger(Cog):
+    """Cog to log various Discord events"""
+
     def __init__(self, bot: Red):
         super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
-        self.config.register_guild(channels={}, command_log_channel=None)
-        self.event_queue = asyncio.Queue()
-        self.bot.loop.create_task(self.process_event_queue())
 
         settings_dict = {
-            "channels": {
-                "converter": ChannelDictConverter,
-                "description": "Channels for logging different events.",
+            "integration_create": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging integration creation events.",
+            },
+            "integration_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging integration deletion events.",
+            },
+            "integration_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging integration update events.",
+            },
+            "guild_channel_create": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging channel creation events.",
+            },
+            "guild_channel_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging channel deletion events.",
+            },
+            "guild_channel_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging channel update events.",
+            },
+            "guild_channel_pins_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging channel pins update events.",
+            },
+            "voice_state_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging voice state update events.",
+            },
+            "member_ban": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging member ban events.",
+            },
+            "member_unban": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging member unban events.",
+            },
+            "invite_create": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging invite creation events.",
+            },
+            "invite_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging invite deletion events.",
+            },
+            "message_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging message deletion events.",
+            },
+            "bulk_message_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging bulk message deletion events.",
+            },
+            "message_edit": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging message edit events.",
+            },
+            "reaction_add": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging reaction add events.",
+            },
+            "reaction_remove": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging reaction remove events.",
+            },
+            "member_join": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging member join events.",
+            },
+            "member_remove": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging member remove events.",
+            },
+            "member_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging member update events.",
+            },
+            "user_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging user update events.",
+            },
+            "guild_role_create": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging role creation events.",
+            },
+            "guild_role_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging role deletion events.",
+            },
+            "guild_role_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging role update events.",
+            },
+            "guild_emojis_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging emoji update events.",
+            },
+            "guild_sticker_create": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging sticker creation events.",
+            },
+            "guild_sticker_delete": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging sticker deletion events.",
+            },
+            "guild_sticker_update": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging sticker update events.",
             },
             "command_log_channel": {
                 "converter": discord.TextChannel,
-                "description": "Channel for logging command usage.",
+                "description": "Channel for logging command usage events.",
             },
         }
+
+        default_guild = {event: None for event in settings_dict.keys()}
+        self.config.register_guild(**default_guild)
+
+        self.event_queue = asyncio.Queue()
+        self.bot.loop.create_task(self.process_event_queue())
 
         self.settings = Settings(
             bot=self.bot,
@@ -49,7 +154,7 @@ class EventLogger(DashboardIntegration, Cog):
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
-            commands_group=self.configuration
+            commands_group=self.eventlogger
         )
 
     async def cog_load(self) -> None:
