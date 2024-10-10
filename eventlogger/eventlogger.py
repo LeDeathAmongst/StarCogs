@@ -145,8 +145,6 @@ class EventLogger(Cog):
         self.event_queue = asyncio.Queue()
         self.bot.loop.create_task(self.process_event_queue())
 
-        self.eventlogger = commands.Group(name="eventlogger", invoke_without_command=True)
-
         self.settings = Settings(
             bot=self.bot,
             cog=self,
@@ -156,7 +154,7 @@ class EventLogger(Cog):
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
-            commands_group=self.eventlogger
+            commands_group=self.seteventlogger
         )
 
     async def cog_load(self) -> None:
