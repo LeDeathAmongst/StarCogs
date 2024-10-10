@@ -7,6 +7,7 @@ import asyncio
 import os
 import math
 from datetime import datetime
+from typing import Union
 
 class UserOrID(commands.Converter):
     async def convert(self, ctx, argument):
@@ -25,7 +26,7 @@ class UserOrID(commands.Converter):
 class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
     understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph)
     why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph)
-    steps = discord.ui.TextInput(label='What steps will you take here on out?', style=discord.TextStyle.paragraph)
+    steps = discord.ui.TextInput(label='What steps will you take to prevent future bans?', style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
         appeal_text = f"Understanding: {self.understand.value}\n\nReason for unban: {self.why_unban.value}\n\nPreventive steps: {self.steps.value}"
@@ -148,8 +149,8 @@ class GlobalBanList(Cog):
             await ctx.send("Please provide both a reason and proof, separated by a '|' character.")
             return
 
-        user_id = user.id
-        user_obj = user
+        user_id = getattr(user, 'id', user)
+        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user_id)
 
         cursor = self.cursors[list_name]
         cursor.execute("INSERT OR REPLACE INTO banned_users (user_id, reason, proof, banned_at) VALUES (?, ?, ?, ?)",
@@ -173,8 +174,8 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        user_id = user.id
-        user_obj = user
+        user_id = getattr(user, 'id', user)
+        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user_id)
 
         cursor = self.cursors[list_name]
         cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
@@ -327,7 +328,7 @@ class GlobalBanList(Cog):
                         {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve_appeal"},
                         {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny_appeal"}
                     ],
-                    members=[m.id for m in self.bot.owner_ids],
+                    members=self.bot.owner_ids,
                     function=self.handle_appeal_decision
                 )
 
@@ -449,10 +450,11 @@ class GlobalBanList(Cog):
                     if guild_config['notify_channel']:
                         channel = guild.get_channel(guild_config['notify_channel'])
                         if channel:
-                            user_obj = self.bot.get_user(user_id) or f"User ID: {user_id}"
-                            await channel.send(f"{user_obj} has been unbanned due to being removed from the {list_name} global ban list.")
+                            user_obj = await self.bot.fetch_user(user_id)
+                            user_str = f"{user_obj} ({user_id})" if user_obj else f"User ID: {user_id}"
+                            await channel.send(f"{user_str} has been unbanned due to being removed from the {list_name} global ban list.")
 
-                    await self.general_log(guild, "User Unbanned", user_obj, list_name, "Removed from global ban list", "N/A")
+                    await self.general_log(guild, "User Unbanned", user_id, list_name, "Removed from global ban list", "N/A")
                 except discord.Forbidden:
                     print(f"Failed to unban user ID {user_id} from {guild.name} - Insufficient permissions")
                 except discord.HTTPException as e:
@@ -464,7 +466,7 @@ class GlobalBanList(Cog):
         return user.id in authorized_users or await self.bot.is_owner(user)
 
     async def owner_log(self, action: str, user: discord.User, details: str):
-        """Log owner actions."""
+        """Log owner and authorized user actions."""
         channel_id = await self.config.owner_log_channel()
         if not channel_id:
             return
@@ -473,15 +475,20 @@ class GlobalBanList(Cog):
         if not channel:
             return
 
-        embed = discord.Embed(title="Owner Action Log", color=discord.Color.blue(), timestamp=datetime.utcnow())
+        authorized_users = await self.config.authorized_users()
+        is_authorized = user.id in authorized_users
+        is_owner = await self.bot.is_owner(user)
+
+        embed = discord.Embed(title="Owner/Authorized User Action Log", color=discord.Color.blue(), timestamp=datetime.utcnow())
         embed.add_field(name="Action", value=action, inline=False)
         embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
         embed.add_field(name="Details", value=details, inline=False)
+        embed.add_field(name="User Type", value="Owner" if is_owner else "Authorized User" if is_authorized else "Unknown", inline=False)
         embed.set_footer(text=f"User ID: {user.id}")
 
         await channel.send(embed=embed)
 
-    async def general_log(self, guild: discord.Guild, action: str, user: discord.User, list_name: str, reason: str, proof: str):
+    async def general_log(self, guild: discord.Guild, action: str, user: Union[discord.User, int], list_name: str, reason: str, proof: str):
         """Log general actions for a specific guild."""
         channel_id = await self.config.guild(guild).general_log_channel()
         if not channel_id:
@@ -493,11 +500,18 @@ class GlobalBanList(Cog):
 
         embed = discord.Embed(title="Global Ban List Log", color=discord.Color.red(), timestamp=datetime.utcnow())
         embed.add_field(name="Action", value=action, inline=False)
-        embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
+
+        if isinstance(user, (discord.User, discord.Member)):
+            user_str = f"{user} ({user.id})"
+        else:
+            user_obj = await self.bot.fetch_user(user)
+            user_str = f"{user_obj} ({user})" if user_obj else f"User ID: {user}"
+
+        embed.add_field(name="User", value=user_str, inline=False)
         embed.add_field(name="List", value=list_name, inline=False)
         embed.add_field(name="Reason", value=reason, inline=False)
         embed.add_field(name="Proof", value=proof, inline=False)
-        embed.set_footer(text=f"User ID: {user.id}")
+        embed.set_footer(text=f"User ID: {getattr(user, 'id', user)}")
 
         await channel.send(embed=embed)
 
