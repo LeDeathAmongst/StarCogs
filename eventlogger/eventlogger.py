@@ -145,6 +145,8 @@ class EventLogger(Cog):
         self.event_queue = asyncio.Queue()
         self.bot.loop.create_task(self.process_event_queue())
 
+        self.eventlogger = commands.Group(name="eventlogger", invoke_without_command=True)
+
         self.settings = Settings(
             bot=self.bot,
             cog=self,
@@ -178,8 +180,6 @@ class EventLogger(Cog):
     async def configuration(self, ctx: commands.Context) -> None:
         """Configure EventLogger for your server."""
         pass
-
-    # ... (rest of your code remains the same)
 
     async def log_event(self, guild: typing.Optional[discord.Guild], event: str, description: str):
         if guild is None:
