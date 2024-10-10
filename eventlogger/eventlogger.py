@@ -50,6 +50,7 @@ class EventLogger(DashboardIntegration, Cog):
             use_profiles_system=False,
             can_edit=True,
             commands_group=self.configuration
+        )
 
     async def cog_load(self) -> None:
         await super().cog_load()
