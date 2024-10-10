@@ -183,6 +183,9 @@ class GlobalBanList(Cog):
         await ctx.send(f"User {user_obj} (ID: {user_id}) has been removed from the {list_name} list.")
         await self.update_list_embeds(list_name)
 
+        # Unban user from subscribed guilds
+        await self.unban_from_subscribed_guilds(user_id, list_name)
+
         await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user_obj} from {list_name} list")
 
     @gbl.command(name="list")
@@ -416,6 +419,33 @@ class GlobalBanList(Cog):
                             await self.general_log(guild, "User Banned", member, list_name, reason, proof)
                         except discord.Forbidden:
                             print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+
+    async def unban_from_subscribed_guilds(self, user_id: int, list_name: str):
+        """Unban a user from all guilds subscribed to the specified list."""
+        for guild in self.bot.guilds:
+            guild_config = await self.config.guild(guild).all()
+            if list_name in guild_config['subscribed_lists']:
+                try:
+                    # Check if the user is banned
+                    try:
+                        ban_entry = await guild.fetch_ban(discord.Object(id=user_id))
+                    except discord.NotFound:
+                        continue  # User is not banned in this guild
+
+                    # Unban the user
+                    await guild.unban(discord.Object(id=user_id), reason=f"Removed from Global Ban List: {list_name}")
+
+                    if guild_config['notify_channel']:
+                        channel = guild.get_channel(guild_config['notify_channel'])
+                        if channel:
+                            user_obj = self.bot.get_user(user_id) or f"User ID: {user_id}"
+                            await channel.send(f"{user_obj} has been unbanned due to being removed from the {list_name} global ban list.")
+
+                    await self.general_log(guild, "User Unbanned", user_obj, list_name, "Removed from global ban list", "N/A")
+                except discord.Forbidden:
+                    print(f"Failed to unban user ID {user_id} from {guild.name} - Insufficient permissions")
+                except discord.HTTPException as e:
+                    print(f"Failed to unban user ID {user_id} from {guild.name} - {str(e)}")
 
     async def is_authorized(self, user: discord.User) -> bool:
         """Check if a user is authorized to manage the global ban list."""
