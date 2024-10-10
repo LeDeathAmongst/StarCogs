@@ -8,6 +8,16 @@ import sqlite3
 import asyncio
 from datetime import datetime, timedelta
 
+class UserOrID(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            return await commands.UserConverter().convert(ctx, argument)
+        except commands.UserNotFound:
+            try:
+                return int(argument)
+            except ValueError:
+                raise commands.BadArgument("Not a valid user or user ID.")
+
 class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
     understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph)
     why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph)
@@ -151,7 +161,7 @@ class GlobalBanList(Cog):
 
     @gbl.command(name="add")
     @commands.hybrid_command()
-    async def add_user(self, ctx: commands.Context, user: typing.Union[discord.User, int], group: str, *, reason: str):
+    async def add_user(self, ctx: commands.Context, user: UserOrID, group: str, *, reason: str):
         """Add a user to a specific ban list."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
@@ -168,7 +178,7 @@ class GlobalBanList(Cog):
 
     @gbl.command(name="remove")
     @commands.hybrid_command()
-    async def remove_user(self, ctx: commands.Context, user: typing.Union[discord.User, int], group: str):
+    async def remove_user(self, ctx: commands.Context, user: UserOrID, group: str):
         """Remove a user from a specific ban list."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
@@ -263,7 +273,7 @@ class GlobalBanList(Cog):
                 if guild_config['auto_ban']:
                     await self.check_guild_members(guild, guild_config['subscribed_lists'])
 
-    async def check_guild_members(self, guild: discord.Guild, subscribed_lists: List[str]):
+    async def check_guild_members(self, guild: discord.Guild, subscribed_lists: typing.List[str]):
         """Check all members of a guild against subscribed ban lists."""
         for member in guild.members:
             self.cursor.execute("SELECT list_name, reason FROM banned_users WHERE user_id = ? AND list_name IN ({})".format(
