@@ -296,7 +296,18 @@ class GlobalBanList(Cog):
             cursor.execute("SELECT 1 FROM banned_users WHERE user_id = ?", (ctx.author.id,))
             if cursor.fetchone():
                 appeal_modal = AppealModal()
-                await ctx.send_modal(appeal_modal)
+
+                # Create a button for the user to click
+                view = discord.ui.View()
+                button = discord.ui.Button(label="Submit Appeal", style=discord.ButtonStyle.primary)
+
+                async def button_callback(interaction: discord.Interaction):
+                    await interaction.response.send_modal(appeal_modal)
+
+                button.callback = button_callback
+                view.add_item(button)
+
+                await ctx.send("Click the button below to submit your appeal:", view=view)
                 return
         await ctx.send("You are not on any global ban list.")
 
