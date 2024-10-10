@@ -160,7 +160,6 @@ class GlobalBanList(Cog):
         await ctx.send(explanation)
 
     @gbl.command(name="add")
-    @commands.hybrid_command()
     async def add_user(self, ctx: commands.Context, user: UserOrID, group: str, *, reason: str):
         """Add a user to a specific ban list."""
         if not await self.is_authorized(ctx.author):
@@ -177,7 +176,6 @@ class GlobalBanList(Cog):
         await self.check_subscribed_servers(user_id, group)
 
     @gbl.command(name="remove")
-    @commands.hybrid_command()
     async def remove_user(self, ctx: commands.Context, user: UserOrID, group: str):
         """Remove a user from a specific ban list."""
         if not await self.is_authorized(ctx.author):
