@@ -11,11 +11,17 @@ from .dashboard_integration import DashboardIntegration
 
 _ = Translator('EventLogger', __file__)
 
+class ChannelDictConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            # Assuming the input is in the format "event:channel_id,event2:channel_id2"
+            return {k: int(v) for k, v in (pair.split(':') for pair in argument.split(','))}
+        except (ValueError, AttributeError):
+            raise commands.BadArgument('Invalid format. Use "event:channel_id,event2:channel_id2"')
+
 @cog_i18n(_)
 class EventLogger(DashboardIntegration, Cog):
-    """Cog to log various Discord events"""
-
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: Red):
         super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
@@ -25,7 +31,7 @@ class EventLogger(DashboardIntegration, Cog):
 
         settings_dict = {
             "channels": {
-                "converter": dict,
+                "converter": ChannelDictConverter,
                 "description": "Channels for logging different events.",
             },
             "command_log_channel": {
@@ -44,7 +50,6 @@ class EventLogger(DashboardIntegration, Cog):
             use_profiles_system=False,
             can_edit=True,
             commands_group=self.configuration
-        )
 
     async def cog_load(self) -> None:
         await super().cog_load()
