@@ -26,6 +26,21 @@ class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
         await interaction.client.get_cog('GlobalBanList').submit_appeal(interaction.user, appeal_text)
         await interaction.response.send_message("Your appeal has been submitted for review.", ephemeral=True)
 
+class DynamicListView(discord.ui.View):
+    def __init__(self, cog, list_name):
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.list_name = list_name
+
+    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.green)
+    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
+        await self.update_embed(interaction)
+
+    async def update_embed(self, interaction: discord.Interaction):
+        embed = await self.cog.create_list_embed(self.list_name)
+        await interaction.message.edit(embed=embed)
+
 class GlobalBanList(Cog):
     """A complex cog for managing global ban lists across multiple Discord servers."""
 
@@ -74,7 +89,7 @@ class GlobalBanList(Cog):
         pass
 
     @gblo.command(name="addauth")
-    async def add_authorized(self, ctx: commands.Context, user: discord.User):
+    async def addauth(self, ctx: commands.Context, user: discord.User):
         """Add a user to the authorized users list."""
         async with self.config.authorized_users() as authorized:
             if user.id not in authorized:
@@ -85,7 +100,7 @@ class GlobalBanList(Cog):
                 await ctx.send(f"{user.name} is already in the authorized users list.")
 
     @gblo.command(name="remauth")
-    async def remove_authorized(self, ctx: commands.Context, user: discord.User):
+    async def remauth(self, ctx: commands.Context, user: discord.User):
         """Remove a user from the authorized users list."""
         async with self.config.authorized_users() as authorized:
             if user.id in authorized:
@@ -95,8 +110,8 @@ class GlobalBanList(Cog):
             else:
                 await ctx.send(f"{user.name} is not in the authorized users list.")
 
-    @gblo.command(name="setappeal")
-    async def set_appeal_channel(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @gblo.command(name="setappealchannel")
+    async def setappealchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """Set the channel for ban appeals."""
         if channel is None:
             await self.config.ban_appeal_channel.clear()
@@ -106,19 +121,26 @@ class GlobalBanList(Cog):
             await ctx.send(f"Ban appeal channel has been set to {channel.mention}.")
         await self.owner_log("Set Appeal Channel", ctx.author, f"Set appeal channel to {channel.mention if channel else 'None'}")
 
-    @gblo.command(name="setolog")
-    async def set_owner_log(self, ctx: commands.Context, channel: discord.TextChannel):
+    @gblo.command(name="setownerlog")
+    async def setownerlog(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for owner logging."""
         await self.config.owner_log_channel.set(channel.id)
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
 
-    @gblo.command(name="setglog")
-    async def set_general_log(self, ctx: commands.Context, channel: discord.TextChannel):
+    @gblo.command(name="setgenerallog")
+    async def setgenerallog(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for general logging."""
         await self.config.general_log_channel.set(channel.id)
         await ctx.send(f"General log channel has been set to {channel.mention}.")
         await self.owner_log("Set General Log Channel", ctx.author, f"Set general log channel to {channel.mention}")
+
+    @gblo.command(name="displaylist")
+    async def displaylist(self, ctx: commands.Context, list_name: str):
+        """Display a dynamically updating embed for a specific ban list."""
+        embed = await self.create_list_embed(list_name)
+        view = DynamicListView(self, list_name)
+        await ctx.send(embed=embed, view=view)
 
     @commands.hybrid_group(name="globalbanlist", aliases=["gbl"])
     async def gbl(self, ctx: commands.Context):
@@ -141,6 +163,7 @@ class GlobalBanList(Cog):
         self.db.commit()
         await ctx.send(f"User ID {user_id} has been added to the {group} list.")
         await self.check_subscribed_servers(user_id, group)
+        await self.update_list_embeds(group)
 
         await self.owner_log("Add to Ban List", ctx.author, f"Added {user_obj} to {group} list")
 
@@ -157,6 +180,7 @@ class GlobalBanList(Cog):
         self.cursor.execute("DELETE FROM banned_users WHERE user_id = ? AND list_name = ?", (user_id, group))
         self.db.commit()
         await ctx.send(f"User ID {user_id} has been removed from the {group} list.")
+        await self.update_list_embeds(group)
 
         await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user_obj} from {group} list")
 
@@ -377,6 +401,40 @@ class GlobalBanList(Cog):
         embed.set_footer(text=f"User ID: {user.id}")
 
         await channel.send(embed=embed)
+
+    async def create_list_embed(self, list_name: str):
+        self.cursor.execute("SELECT user_id, reason, proof, banned_at FROM banned_users WHERE list_name = ? ORDER BY banned_at DESC", (list_name,))
+        users = self.cursor.fetchall()
+
+        embed = discord.Embed(title=f"Users in {list_name} list", color=discord.Color.red(), timestamp=datetime.utcnow())
+        embed.set_footer(text=f"Total users: {len(users)}")
+
+        if not users:
+            embed.description = "No users found in this list."
+            return embed
+
+        for user_id, reason, proof, banned_at in users[:10]:  # Display top 10 most recent bans
+            user = self.bot.get_user(user_id) or f"Unknown User ({user_id})"
+            embed.add_field(
+                name=f"{user}",
+                value=f"Reason: {reason}\nProof: {proof}\nBanned at: {banned_at}",
+                inline=False
+            )
+
+        if len(users) > 10:
+            embed.set_footer(text=f"Showing 10 most recent out of {len(users)} total users")
+
+        return embed
+
+    async def update_list_embeds(self, list_name: str):
+        for guild in self.bot.guilds:
+            async for message in guild.text_channels.history(limit=None):
+                if message.author == self.bot.user and message.embeds:
+                    embed = message.embeds[0]
+                    if embed.title == f"Users in {list_name} list":
+                        view = discord.utils.get(message.components, type=discord.ComponentType.view)
+                        if isinstance(view, DynamicListView):
+                            await view.update_embed(await self.bot.get_context(message))
 
     def cog_unload(self):
         self.db.close()
