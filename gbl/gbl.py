@@ -6,6 +6,7 @@ import sqlite3
 import asyncio
 import os
 import math
+import typing
 from datetime import datetime
 
 class UserOrID(commands.Converter):
