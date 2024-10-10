@@ -25,7 +25,7 @@ class UserOrID(commands.Converter):
 class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
     understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph)
     why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph)
-    steps = discord.ui.TextInput(label='What steps will you take to prevent future bans?', style=discord.TextStyle.paragraph)
+    steps = discord.ui.TextInput(label='What steps will you take here on out?', style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
         appeal_text = f"Understanding: {self.understand.value}\n\nReason for unban: {self.why_unban.value}\n\nPreventive steps: {self.steps.value}"
