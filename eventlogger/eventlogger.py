@@ -1,4 +1,4 @@
-from Star_Utils import Cog
+from Star_Utils import Cog, Settings
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
@@ -9,22 +9,46 @@ import asyncio
 from datetime import datetime
 from .dashboard_integration import DashboardIntegration
 
-_: Translator = Translator('EventLogger', __file__)
+_ = Translator('EventLogger', __file__)
 
 @cog_i18n(_)
-class EventLogger(DashboardIntegration, commands.Cog):
+class EventLogger(DashboardIntegration, Cog):
     """Cog to log various Discord events"""
 
     def __init__(self, bot: Red) -> None:
         super().__init__(bot)
         self.bot = bot
-        self.config: Config = Config.get_conf(self, identifier=1234567890, force_registration=True)
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         self.config.register_guild(channels={}, command_log_channel=None)
         self.event_queue = asyncio.Queue()
         self.bot.loop.create_task(self.process_event_queue())
 
+        settings_dict = {
+            "channels": {
+                "converter": dict,
+                "description": "Channels for logging different events.",
+            },
+            "command_log_channel": {
+                "converter": discord.TextChannel,
+                "description": "Channel for logging command usage.",
+            },
+        }
+
+        self.settings = Settings(
+            bot=self.bot,
+            cog=self,
+            config=self.config,
+            group=self.config.GUILD,
+            settings=settings_dict,
+            global_path=[],
+            use_profiles_system=False,
+            can_edit=True,
+            commands_group=self.configuration
+        )
+
     async def cog_load(self) -> None:
         await super().cog_load()
+        await self.settings.add_commands()
 
     @commands.guild_only()
     @commands.is_owner()
@@ -43,6 +67,8 @@ class EventLogger(DashboardIntegration, commands.Cog):
     async def configuration(self, ctx: commands.Context) -> None:
         """Configure EventLogger for your server."""
         pass
+
+    # ... (rest of your code remains the same)
 
     async def log_event(self, guild: typing.Optional[discord.Guild], event: str, description: str):
         if guild is None:
