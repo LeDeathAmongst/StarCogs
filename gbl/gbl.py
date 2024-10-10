@@ -11,12 +11,19 @@ from datetime import datetime
 class UserOrID(commands.Converter):
     async def convert(self, ctx, argument):
         try:
-            return await commands.UserConverter().convert(ctx, argument)
-        except commands.UserNotFound:
+            # First, try to convert to a member (which uses the gateway cache)
+            return await commands.MemberConverter().convert(ctx, argument)
+        except commands.MemberNotFound:
             try:
-                return int(argument)
-            except ValueError:
-                raise commands.BadArgument("Not a valid user or user ID.")
+                # If not a member, try to convert to a user
+                return await commands.UserConverter().convert(ctx, argument)
+            except commands.UserNotFound:
+                # If not a user in the cache, try to fetch the user
+                try:
+                    user_id = int(argument)
+                    return await ctx.bot.fetch_user(user_id)
+                except (ValueError, discord.NotFound):
+                    raise commands.BadArgument("Not a valid user or user ID.")
 
 class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
     understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph)
@@ -135,23 +142,13 @@ class GlobalBanList(Cog):
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
 
-    @gblo.command(name="displaylist")
-    async def displaylist(self, ctx: commands.Context, list_name: str):
-        """Display a dynamically updating embed for a specific ban list."""
-        if list_name not in self.lists:
-            await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
-            return
-        embeds = await self.create_list_embed(list_name)
-        view = DynamicListView(self, list_name)
-        await ctx.send(embeds=embeds, view=view)
-
     @commands.hybrid_group(name="globalbanlist", aliases=["gbl"])
     async def gbl(self, ctx: commands.Context):
         """Manage the global ban list."""
         pass
 
     @gbl.command(name="add")
-    async def add_user(self, ctx: commands.Context, list_name: str, user: UserOrID, reason: str, proof: str):
+    async def add_user(self, ctx: commands.Context, list_name: str, user: UserOrID, *, reason_and_proof: str):
         """Add a user to a specific ban list."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
@@ -161,15 +158,24 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        user_id = user.id if isinstance(user, discord.User) else user
-        user_obj = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+        # Split reason and proof
+        try:
+            reason, proof = reason_and_proof.split('|')
+            reason = reason.strip()
+            proof = proof.strip()
+        except ValueError:
+            await ctx.send("Please provide both a reason and proof, separated by a '|' character.")
+            return
+
+        user_id = user.id
+        user_obj = user
 
         cursor = self.cursors[list_name]
         cursor.execute("INSERT OR REPLACE INTO banned_users (user_id, reason, proof, banned_at) VALUES (?, ?, ?, ?)",
                         (user_id, reason, proof, datetime.utcnow()))
         self.databases[list_name].commit()
 
-        await ctx.send(f"User ID {user_id} has been added to the {list_name} list.")
+        await ctx.send(f"User {user_obj} (ID: {user_id}) has been added to the {list_name} list.")
         await self.check_subscribed_servers(user_id, list_name)
         await self.update_list_embeds(list_name)
 
@@ -186,14 +192,14 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        user_id = user.id if isinstance(user, discord.User) else user
-        user_obj = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+        user_id = user.id
+        user_obj = user
 
         cursor = self.cursors[list_name]
         cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
         self.databases[list_name].commit()
 
-        await ctx.send(f"User ID {user_id} has been removed from the {list_name} list.")
+        await ctx.send(f"User {user_obj} (ID: {user_id}) has been removed from the {list_name} list.")
         await self.update_list_embeds(list_name)
 
         await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user_obj} from {list_name} list")
@@ -218,6 +224,20 @@ class GlobalBanList(Cog):
         embeds = await self.create_list_embed(list_name)
         for embed in embeds:
             await ctx.send(embed=embed)
+
+    @gbl.command(name="history")
+    async def display_history(self, ctx: commands.Context, list_name: str):
+        """Display the history of a specific ban list."""
+        if not await self.is_authorized(ctx.author):
+            await ctx.send("You are not authorized to use this command.")
+            return
+
+        if list_name not in self.lists:
+            await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
+            return
+        embeds = await self.create_list_embed(list_name)
+        view = DynamicListView(self, list_name)
+        await ctx.send(embeds=embeds, view=view)
 
     @gbl.command(name="subscribe")
     @commands.has_permissions(administrator=True)
@@ -462,17 +482,18 @@ class GlobalBanList(Cog):
 
     async def update_list_embeds(self, list_name: str):
         for guild in self.bot.guilds:
-            async for message in guild.text_channels.history(limit=None):
-                if message.author == self.bot.user and message.embeds:
-                    embed = message.embeds[0]
-                    if embed.title.startswith(f"Users in {list_name} list"):
-                        new_embeds = await self.create_list_embed(list_name)
-                        if len(new_embeds) == 1:
-                            await message.edit(embed=new_embeds[0])
-                        else:
-                            await message.delete()
-                            for new_embed in new_embeds:
-                                await message.channel.send(embed=new_embed)
+            for channel in guild.text_channels:
+                async for message in channel.history(limit=None):
+                    if message.author == self.bot.user and message.embeds:
+                        embed = message.embeds[0]
+                        if embed.title.startswith(f"Users in {list_name} list"):
+                            new_embeds = await self.create_list_embed(list_name)
+                            if len(new_embeds) == 1:
+                                await message.edit(embed=new_embeds[0])
+                            else:
+                                await message.delete()
+                                for new_embed in new_embeds:
+                                    await channel.send(embed=new_embed)
 
     def cog_unload(self):
         for db in self.databases.values():
