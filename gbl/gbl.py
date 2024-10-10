@@ -7,7 +7,6 @@ import asyncio
 import os
 import math
 from datetime import datetime
-from typing import Union
 
 class UserOrID(commands.Converter):
     async def convert(self, ctx, argument):
@@ -150,7 +149,7 @@ class GlobalBanList(Cog):
             return
 
         user_id = getattr(user, 'id', user)
-        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user_id)
+        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user)
 
         cursor = self.cursors[list_name]
         cursor.execute("INSERT OR REPLACE INTO banned_users (user_id, reason, proof, banned_at) VALUES (?, ?, ?, ?)",
@@ -175,7 +174,7 @@ class GlobalBanList(Cog):
             return
 
         user_id = getattr(user, 'id', user)
-        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user_id)
+        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user)
 
         cursor = self.cursors[list_name]
         cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
@@ -322,6 +321,24 @@ class GlobalBanList(Cog):
                 embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
                 embed.add_field(name="Appeal", value=appeal_text, inline=False)
 
+                async def handle_appeal_decision(view: Buttons, interaction: discord.Interaction):
+                    decision = "approved" if interaction.data["custom_id"] == "approve_appeal" else "denied"
+                    user_id = int(interaction.message.embeds[0].fields[0].value.split("(")[-1].split(")")[0])
+
+                    if decision == "approved":
+                        # Remove user from all ban lists
+                        for list_name in self.lists:
+                            cursor = self.cursors[list_name]
+                            cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
+                            self.databases[list_name].commit()
+
+                    appeal_user = self.bot.get_user(user_id)
+                    if appeal_user:
+                        await appeal_user.send(f"Your ban appeal has been {decision}.")
+
+                    await interaction.message.edit(content=f"Appeal {decision} by {interaction.user}", view=None)
+                    await self.owner_log("Appeal Decision", interaction.user, f"Appeal for user {user_id} was {decision}")
+
                 buttons = Buttons(
                     timeout=600,
                     buttons=[
@@ -329,30 +346,12 @@ class GlobalBanList(Cog):
                         {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny_appeal"}
                     ],
                     members=self.bot.owner_ids,
-                    function=self.handle_appeal_decision
+                    function=handle_appeal_decision
                 )
 
                 await appeal_channel.send(embed=embed, view=buttons)
 
         await self.owner_log("Appeal Submitted", user, f"Appeal text: {appeal_text}")
-
-    async def handle_appeal_decision(self, view: Buttons, interaction: discord.Interaction):
-        decision = "approved" if interaction.data["custom_id"] == "approve_appeal" else "denied"
-        user_id = int(interaction.message.embeds[0].fields[0].value.split("(")[-1].split(")")[0])
-
-        if decision == "approved":
-            # Remove user from all ban lists
-            for list_name in self.lists:
-                cursor = self.cursors[list_name]
-                cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
-                self.databases[list_name].commit()
-
-        user = self.bot.get_user(user_id)
-        if user:
-            await user.send(f"Your ban appeal has been {decision}.")
-
-        await interaction.message.edit(content=f"Appeal {decision} by {interaction.user}", view=None)
-        await self.owner_log("Appeal Decision", interaction.user, f"Appeal for user {user_id} was {decision}")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -466,7 +465,7 @@ class GlobalBanList(Cog):
         return user.id in authorized_users or await self.bot.is_owner(user)
 
     async def owner_log(self, action: str, user: discord.User, details: str):
-        """Log owner and authorized user actions."""
+        """Log owner actions."""
         channel_id = await self.config.owner_log_channel()
         if not channel_id:
             return
@@ -475,20 +474,15 @@ class GlobalBanList(Cog):
         if not channel:
             return
 
-        authorized_users = await self.config.authorized_users()
-        is_authorized = user.id in authorized_users
-        is_owner = await self.bot.is_owner(user)
-
-        embed = discord.Embed(title="Owner/Authorized User Action Log", color=discord.Color.blue(), timestamp=datetime.utcnow())
+        embed = discord.Embed(title="Owner Action Log", color=discord.Color.blue(), timestamp=datetime.utcnow())
         embed.add_field(name="Action", value=action, inline=False)
         embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
         embed.add_field(name="Details", value=details, inline=False)
-        embed.add_field(name="User Type", value="Owner" if is_owner else "Authorized User" if is_authorized else "Unknown", inline=False)
         embed.set_footer(text=f"User ID: {user.id}")
 
         await channel.send(embed=embed)
 
-    async def general_log(self, guild: discord.Guild, action: str, user: Union[discord.User, int], list_name: str, reason: str, proof: str):
+    async def general_log(self, guild: discord.Guild, action: str, user: typing.Union[discord.User, int], list_name: str, reason: str, proof: str):
         """Log general actions for a specific guild."""
         channel_id = await self.config.guild(guild).general_log_channel()
         if not channel_id:
