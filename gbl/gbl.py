@@ -11,14 +11,11 @@ from datetime import datetime
 class UserOrID(commands.Converter):
     async def convert(self, ctx, argument):
         try:
-            # First, try to convert to a member (which uses the gateway cache)
             return await commands.MemberConverter().convert(ctx, argument)
         except commands.MemberNotFound:
             try:
-                # If not a member, try to convert to a user
                 return await commands.UserConverter().convert(ctx, argument)
             except commands.UserNotFound:
-                # If not a user in the cache, try to fetch the user
                 try:
                     user_id = int(argument)
                     return await ctx.bot.fetch_user(user_id)
@@ -34,21 +31,6 @@ class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
         appeal_text = f"Understanding: {self.understand.value}\n\nReason for unban: {self.why_unban.value}\n\nPreventive steps: {self.steps.value}"
         await interaction.client.get_cog('GlobalBanList').submit_appeal(interaction.user, appeal_text)
         await interaction.response.send_message("Your appeal has been submitted for review.", ephemeral=True)
-
-class DynamicListView(discord.ui.View):
-    def __init__(self, cog, list_name):
-        super().__init__(timeout=None)
-        self.cog = cog
-        self.list_name = list_name
-
-    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.green)
-    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer()
-        await self.update_embed(interaction)
-
-    async def update_embed(self, interaction: discord.Interaction):
-        embeds = await self.cog.create_list_embed(self.list_name)
-        await interaction.message.edit(embeds=embeds)
 
 class GlobalBanList(Cog):
     """A complex cog for managing global ban lists across multiple Discord servers."""
@@ -158,7 +140,6 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        # Split reason and proof
         try:
             reason, proof = reason_and_proof.split('|')
             reason = reason.strip()
@@ -222,8 +203,7 @@ class GlobalBanList(Cog):
             return
 
         embeds = await self.create_list_embed(list_name)
-        for embed in embeds:
-            await ctx.send(embed=embed)
+        await Menu(pages=embeds).start(ctx)
 
     @gbl.command(name="history")
     async def display_history(self, ctx: commands.Context, list_name: str):
@@ -236,8 +216,7 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
         embeds = await self.create_list_embed(list_name)
-        view = DynamicListView(self, list_name)
-        await ctx.send(embeds=embeds, view=view)
+        await Menu(pages=embeds).start(ctx)
 
     @gbl.command(name="subscribe")
     @commands.has_permissions(administrator=True)
@@ -252,8 +231,40 @@ class GlobalBanList(Cog):
                 subscribed.append(list_name)
                 await ctx.send(f"This server has been subscribed to the {list_name} list.")
                 await self.owner_log("Subscribe", ctx.author, f"Subscribed to {list_name} list in {ctx.guild.name}")
+
+                # Check existing members against the ban list
+                await self.check_existing_members(ctx.guild, list_name)
             else:
                 await ctx.send(f"This server is already subscribed to the {list_name} list.")
+
+    async def check_existing_members(self, guild: discord.Guild, list_name: str):
+        cursor = self.cursors[list_name]
+        cursor.execute("SELECT user_id FROM banned_users")
+        banned_users = [row[0] for row in cursor.fetchall()]
+
+        total_members = len(guild.members)
+        progress_embed = discord.Embed(title=f"Checking Members against {list_name}", color=discord.Color.blue())
+        progress_embed.description = "Initializing..."
+        progress_message = await guild.system_channel.send(embed=progress_embed)
+
+        for i, member in enumerate(guild.members):
+            progress = (i + 1) / total_members
+            bar_length = 20
+            filled_length = int(bar_length * progress)
+            bar = '█' * filled_length + '-' * (bar_length - filled_length)
+
+            progress_embed.description = f"Checking: {member.id}\n\nProgress: [{bar}] {progress:.0%}"
+            await progress_message.edit(embed=progress_embed)
+
+            if member.id in banned_users:
+                try:
+                    await member.ban(reason=f"Global Ban List: {list_name}")
+                    await self.general_log(guild, "User Banned", member, list_name, "Existing member ban", "N/A")
+                except discord.Forbidden:
+                    print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+
+        progress_embed.description = "Finished checking all members."
+        await progress_message.edit(embed=progress_embed)
 
     @gbl.command(name="unsubscribe")
     @commands.has_permissions(administrator=True)
@@ -486,7 +497,7 @@ class GlobalBanList(Cog):
                 async for message in channel.history(limit=None):
                     if message.author == self.bot.user and message.embeds:
                         embed = message.embeds[0]
-                        if embed.title.startswith(f"Users in {list_name} list"):
+                        if embed and embed.title and embed.title.startswith(f"Users in {list_name} list"):
                             new_embeds = await self.create_list_embed(list_name)
                             if len(new_embeds) == 1:
                                 await message.edit(embed=new_embeds[0])
