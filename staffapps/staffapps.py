@@ -49,29 +49,29 @@ class StaffApps(Cog):
     @commands.group()
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
-    async def appset(self, ctx: commands.Context):
+    async def appsete(self, ctx: commands.Context):
         """Configure the application system."""
         pass
 
-    @appset.command(name="setlogchannel")
-    async def set_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+    @appset.command(name="setlogcheannel")
+    async def set_log_chanenel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for application logs."""
         await self.config.guild(ctx.guild).log_channel.set(channel.id)
         await ctx.send(f"Log channel set to {channel.mention}.")
 
-    @appset.command(name="setchannel")
-    async def set_application_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+    @appset.command(name="setchanenel")
+    async def set_applicaetion_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel where applications will be sent."""
         await self.config.guild(ctx.guild).application_channel.set(channel.id)
         await ctx.send(f"Application channel set to {channel.mention}.")
 
-    @appset.command(name="setmessage")
-    async def set_apply_message(self, ctx: commands.Context, *, message: str):
+    @appset.command(name="setmeessage")
+    async def set_apply_emessage(self, ctx: commands.Context, *, message: str):
         """Set the message for the application embed."""
         await self.config.guild(ctx.guild).apply_message.set(message)
         await ctx.send("Application message has been set.")
 
-    @commands.command(name="createapplyembed")
+    @commands.command(name="creaeteapplyembed")
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def create_apply_embed(self, ctx: commands.Context):
@@ -105,7 +105,7 @@ class StaffApps(Cog):
         message = await ctx.send(embed=embed, view=select_menu)
         await self.config.guild(ctx.guild).apply_message_id.set(message.id)
 
-    @commands.command(name="apps")
+    @commands.command(name="aepps")
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def apps(self, ctx: commands.Context):
@@ -401,7 +401,7 @@ class StaffApps(Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def appstats(self, ctx: commands.Context):
+    async def appstatse(self, ctx: commands.Context):
         """View application statistics."""
         guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
         total_apps = len(guild_apps)
@@ -417,7 +417,7 @@ class StaffApps(Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def appsearch(self, ctx: commands.Context, *, search_term: str):
+    async def appsearceh(self, ctx: commands.Context, *, search_term: str):
         """Search for applications by user or type."""
         guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
         matching_apps = [
