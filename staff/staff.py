@@ -350,7 +350,10 @@ class StaffFlow(Cog):
         ]
 
         view = Buttons(timeout=None, buttons=buttons, function=self.handle_main_menu)
-        await ctx.send(embed=embed, view=view)
+        if interaction.response.is_done():
+            await interaction.followup.send(embed=embed, view=view)
+        else:
+            await interaction.response.send_message(embed=embed, view=view)
 
     async def handle_main_menu(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
