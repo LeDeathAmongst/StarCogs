@@ -1,43 +1,33 @@
 import discord
-from redbot.core import commands, Config
+from redbot.core import commands, Config, app_commands
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu
+from redbot.core.utils.menus import Menu
 import sqlite3
 import asyncio
 import os
 import math
 from datetime import datetime
-import typing
+from typing import Literal, List
 
-class UserOrID(commands.Converter):
-    async def convert(self, ctx, argument):
-        try:
-            return await commands.MemberConverter().convert(ctx, argument)
-        except commands.MemberNotFound:
-            try:
-                return await commands.UserConverter().convert(ctx, argument)
-            except commands.UserNotFound:
-                try:
-                    user_id = int(argument)
-                    return await ctx.bot.fetch_user(user_id)
-                except (ValueError, discord.NotFound):
-                    raise commands.BadArgument("Not a valid user or user ID.")
-
-class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
-    understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph, max_length=1000)
-    why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph, max_length=1000)
-    steps = discord.ui.TextInput(label='What will you do to stay unbanned?', style=discord.TextStyle.paragraph, max_length=1000)
+class AppealModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title='Global Ban Appeal')
+        self.understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph, max_length=1000)
+        self.why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph, max_length=1000)
+        self.steps = discord.ui.TextInput(label='What will you do to stay unbanned?', style=discord.TextStyle.paragraph, max_length=1000)
+        self.add_item(self.understand)
+        self.add_item(self.why_unban)
+        self.add_item(self.steps)
 
     async def on_submit(self, interaction: discord.Interaction):
         appeal_text = f"Understanding: {self.understand.value}\n\nReason for unban: {self.why_unban.value}\n\nPreventive steps: {self.steps.value}"
         await interaction.client.get_cog('GlobalBanList').submit_appeal(interaction.user, appeal_text)
         await interaction.response.send_message("Your appeal has been submitted for review.", ephemeral=True)
 
-class GlobalBanList(Cog):
+class GlobalBanList(commands.Cog):
     """A complex cog for managing global ban lists across multiple Discord servers."""
 
     def __init__(self, bot: Red):
-        super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         self.config.register_global(
@@ -78,7 +68,6 @@ class GlobalBanList(Cog):
         self.databases[list_name].commit()
 
     async def cog_load(self):
-        await super().cog_load()
         self.periodic_check_task = self.bot.loop.create_task(self.periodic_check())
 
     @commands.group(name="globalbanlistowner", aliases=["gblo"])
@@ -133,7 +122,13 @@ class GlobalBanList(Cog):
         pass
 
     @gbl.command(name="add")
-    async def add_user(self, ctx: commands.Context, list_name: str, user: UserOrID, *, reason_and_proof: str):
+    @app_commands.describe(
+        list_name="The name of the ban list",
+        user="The user to add to the ban list",
+        reason="The reason for the ban",
+        proof="Proof for the ban"
+    )
+    async def add_user(self, ctx: commands.Context, list_name: str, user: discord.User, reason: str, proof: str):
         """Add a user to a specific ban list."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
@@ -143,30 +138,23 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        try:
-            reason, proof = reason_and_proof.split('|')
-            reason = reason.strip()
-            proof = proof.strip()
-        except ValueError:
-            await ctx.send("Please provide both a reason and proof, separated by a '|' character.")
-            return
-
-        user_id = getattr(user, 'id', user)
-        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user)
-
         cursor = self.cursors[list_name]
         cursor.execute("INSERT OR REPLACE INTO banned_users (user_id, reason, proof, banned_at) VALUES (?, ?, ?, ?)",
-                        (user_id, reason, proof, datetime.utcnow()))
+                        (user.id, reason, proof, datetime.utcnow()))
         self.databases[list_name].commit()
 
-        await ctx.send(f"User {user_obj} (ID: {user_id}) has been added to the {list_name} list.")
-        await self.check_subscribed_servers(user_id, list_name)
+        await ctx.send(f"User {user} (ID: {user.id}) has been added to the {list_name} list.")
+        await self.check_subscribed_servers(user.id, list_name)
         await self.update_list_embeds(list_name)
 
-        await self.owner_log("Add to Ban List", ctx.author, f"Added {user_obj} to {list_name} list")
+        await self.owner_log("Add to Ban List", ctx.author, f"Added {user} to {list_name} list")
 
     @gbl.command(name="remove")
-    async def remove_user(self, ctx: commands.Context, list_name: str, user: UserOrID):
+    @app_commands.describe(
+        list_name="The name of the ban list",
+        user="The user to remove from the ban list"
+    )
+    async def remove_user(self, ctx: commands.Context, list_name: str, user: discord.User):
         """Remove a user from a specific ban list."""
         if not await self.is_authorized(ctx.author):
             await ctx.send("You are not authorized to use this command.")
@@ -176,20 +164,17 @@ class GlobalBanList(Cog):
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
             return
 
-        user_id = getattr(user, 'id', user)
-        user_obj = user if isinstance(user, (discord.User, discord.Member)) else await self.bot.fetch_user(user)
-
         cursor = self.cursors[list_name]
-        cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
+        cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user.id,))
         self.databases[list_name].commit()
 
-        await ctx.send(f"User {user_obj} (ID: {user_id}) has been removed from the {list_name} list.")
+        await ctx.send(f"User {user} (ID: {user.id}) has been removed from the {list_name} list.")
         await self.update_list_embeds(list_name)
 
         # Unban user from subscribed guilds
-        await self.unban_from_subscribed_guilds(user_id, list_name)
+        await self.unban_from_subscribed_guilds(user.id, list_name)
 
-        await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user_obj} from {list_name} list")
+        await self.owner_log("Remove from Ban List", ctx.author, f"Removed {user} from {list_name} list")
 
     @gbl.command(name="list")
     async def list_users(self, ctx: commands.Context, list_name: str = None):
@@ -211,25 +196,18 @@ class GlobalBanList(Cog):
         embeds = await self.create_list_embed(list_name)
         await Menu(pages=embeds).start(ctx)
 
-    @gbl.command(name="history")
-    async def display_history(self, ctx: commands.Context, list_name: str):
-        """Display the history of a specific ban list."""
-        if not await self.is_authorized(ctx.author):
-            await ctx.send("You are not authorized to use this command.")
-            return
-
-        if list_name not in self.lists:
-            await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
-            return
-        embeds = await self.create_list_embed(list_name)
-        await Menu(pages=embeds).start(ctx)
-
     @gbl.command(name="subscribe")
-    @commands.has_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True)
+    @app_commands.describe(list_name="The name of the ban list to subscribe to")
     async def subscribe(self, ctx: commands.Context, list_name: str):
         """Subscribe to a specific ban list."""
         if list_name not in self.lists:
             await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
+            return
+
+        # Check if the bot has ban permissions
+        if not ctx.guild.me.guild_permissions.ban_members:
+            await ctx.send("I don't have permission to ban members in this server. Please give me the 'Ban Members' permission before subscribing to a ban list.")
             return
 
         async with self.config.guild(ctx.guild).subscribed_lists() as subscribed:
@@ -239,41 +217,14 @@ class GlobalBanList(Cog):
                 await self.owner_log("Subscribe", ctx.author, f"Subscribed to {list_name} list in {ctx.guild.name}")
 
                 # Check existing members against the ban list
+                await ctx.send("Checking existing members against the ban list. This may take a while...")
                 await self.check_existing_members(ctx.guild, list_name)
             else:
                 await ctx.send(f"This server is already subscribed to the {list_name} list.")
 
-    async def check_existing_members(self, guild: discord.Guild, list_name: str):
-        cursor = self.cursors[list_name]
-        cursor.execute("SELECT user_id FROM banned_users")
-        banned_users = [row[0] for row in cursor.fetchall()]
-
-        total_members = len(guild.members)
-        progress_embed = discord.Embed(title=f"Checking Members against {list_name}", color=discord.Color.blue())
-        progress_embed.description = "Initializing..."
-        progress_message = await guild.system_channel.send(embed=progress_embed)
-
-        for i, member in enumerate(guild.members):
-            progress = (i + 1) / total_members
-            bar_length = 20
-            filled_length = int(bar_length * progress)
-            bar = '█' * filled_length + '-' * (bar_length - filled_length)
-
-            progress_embed.description = f"Checking: {member.id}\n\nProgress: [{bar}] {progress:.0%}"
-            await progress_message.edit(embed=progress_embed)
-
-            if member.id in banned_users:
-                try:
-                    await member.ban(reason=f"Global Ban List: {list_name}")
-                    await self.general_log(guild, "User Banned", member, list_name, "Existing member ban", "N/A")
-                except discord.Forbidden:
-                    print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
-
-        progress_embed.description = "Finished checking all members."
-        await progress_message.edit(embed=progress_embed)
-
     @gbl.command(name="unsubscribe")
-    @commands.has_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True)
+    @app_commands.describe(list_name="The name of the ban list to unsubscribe from")
     async def unsubscribe(self, ctx: commands.Context, list_name: str):
         """Unsubscribe from a specific ban list."""
         async with self.config.guild(ctx.guild).subscribed_lists() as subscribed:
@@ -285,7 +236,8 @@ class GlobalBanList(Cog):
                 await ctx.send(f"This server is not subscribed to the {list_name} list.")
 
     @gbl.command(name="setgenerallog")
-    @commands.has_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True)
+    @app_commands.describe(channel="The channel to set for general logging")
     async def setgenerallog(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for general logging in this server."""
         await self.config.guild(ctx.guild).general_log_channel.set(channel.id)
@@ -326,7 +278,11 @@ class GlobalBanList(Cog):
                 embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
                 embed.add_field(name="Appeal", value=appeal_text, inline=False)
 
-                async def handle_appeal_decision(view: Buttons, interaction: discord.Interaction):
+                view = discord.ui.View()
+                approve_button = discord.ui.Button(label="Approve", style=discord.ButtonStyle.green, custom_id="approve_appeal")
+                deny_button = discord.ui.Button(label="Deny", style=discord.ButtonStyle.red, custom_id="deny_appeal")
+
+                async def handle_appeal_decision(interaction: discord.Interaction):
                     decision = "approved" if interaction.data["custom_id"] == "approve_appeal" else "denied"
                     user_id = int(interaction.message.embeds[0].fields[0].value.split("(")[-1].split(")")[0])
 
@@ -344,17 +300,12 @@ class GlobalBanList(Cog):
                     await interaction.message.edit(content=f"Appeal {decision} by {interaction.user}", view=None)
                     await self.owner_log("Appeal Decision", interaction.user, f"Appeal for user {user_id} was {decision}")
 
-                buttons = Buttons(
-                    timeout=600,
-                    buttons=[
-                        {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve_appeal"},
-                        {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny_appeal"}
-                    ],
-                    members=self.bot.owner_ids,
-                    function=handle_appeal_decision
-                )
+                approve_button.callback = handle_appeal_decision
+                deny_button.callback = handle_appeal_decision
+                view.add_item(approve_button)
+                view.add_item(deny_button)
 
-                await appeal_channel.send(embed=embed, view=buttons)
+                await appeal_channel.send(embed=embed, view=view)
 
         await self.owner_log("Appeal Submitted", user, f"Appeal text: {appeal_text}")
 
@@ -424,6 +375,26 @@ class GlobalBanList(Cog):
                 except sqlite3.ProgrammingError:
                     if not self.is_unloading:
                         print(f"Database for {list_name} is closed unexpectedly.")
+
+    async def check_existing_members(self, guild: discord.Guild, list_name: str):
+        cursor = self.cursors[list_name]
+        cursor.execute("SELECT user_id FROM banned_users")
+        banned_users = [row[0] for row in cursor.fetchall()]
+
+        total_members = len(guild.members)
+        banned_count = 0
+
+        for member in guild.members:
+            if member.id in banned_users:
+                try:
+                    await member.ban(reason=f"Global Ban List: {list_name}")
+                    banned_count += 1
+                    await self.general_log(guild, "User Banned", member, list_name, "Existing member ban", "N/A")
+                except discord.Forbidden:
+                    print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+
+        if guild.system_channel:
+            await guild.system_channel.send(f"Finished checking existing members. Banned {banned_count} out of {total_members} members.")
 
     async def check_subscribed_servers(self, user_id: int, list_name: str):
         """Check all subscribed servers for a newly banned user."""
@@ -498,7 +469,7 @@ class GlobalBanList(Cog):
 
         await channel.send(embed=embed)
 
-    async def general_log(self, guild: discord.Guild, action: str, user: typing.Union[discord.User, int], list_name: str, reason: str, proof: str):
+    async def general_log(self, guild: discord.Guild, action: str, user: discord.User, list_name: str, reason: str, proof: str):
         """Log general actions for a specific guild."""
         channel_id = await self.config.guild(guild).general_log_channel()
         if not channel_id:
@@ -510,18 +481,11 @@ class GlobalBanList(Cog):
 
         embed = discord.Embed(title="Global Ban List Log", color=discord.Color.red(), timestamp=datetime.utcnow())
         embed.add_field(name="Action", value=action, inline=False)
-
-        if isinstance(user, (discord.User, discord.Member)):
-            user_str = f"{user} ({user.id})"
-        else:
-            user_obj = await self.bot.fetch_user(user)
-            user_str = f"{user_obj} ({user})" if user_obj else f"User ID: {user}"
-
-        embed.add_field(name="User", value=user_str, inline=False)
+        embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
         embed.add_field(name="List", value=list_name, inline=False)
         embed.add_field(name="Reason", value=reason, inline=False)
         embed.add_field(name="Proof", value=proof, inline=False)
-        embed.set_footer(text=f"User ID: {getattr(user, 'id', user)}")
+        embed.set_footer(text=f"User ID: {user.id}")
 
         await channel.send(embed=embed)
 
@@ -575,7 +539,6 @@ class GlobalBanList(Cog):
         self.is_unloading = True
         if self.periodic_check_task:
             self.periodic_check_task.cancel()
-        # Wait a short time to ensure the task has a chance to complete
         asyncio.create_task(self._finish_unload())
 
     async def _finish_unload(self):
