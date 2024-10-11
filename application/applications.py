@@ -386,8 +386,9 @@ class Applications(Cog):
         await self.log_application_event(interaction.guild, "Application Denied", application)
 
     async def approve_with_reason(self, interaction: discord.Interaction, application: Application):
-        modal = Modal(title="Approve Application")
-        modal.add_item(discord.ui.TextInput(label="Reason", style=discord.TextStyle.paragraph))
+        modal = Modal(title="Approve Application", inputs=[
+            {"label": "Reason", "style": discord.TextStyle.paragraph, "custom_id": "reason"}
+        ])
         await interaction.response.send_modal(modal)
 
         try:
@@ -411,8 +412,9 @@ class Applications(Cog):
         await self.log_application_event(interaction.guild, f"Application Approved with Reason: {reason}", application)
 
     async def deny_with_reason(self, interaction: discord.Interaction, application: Application):
-        modal = Modal(title="Deny Application")
-        modal.add_item(discord.ui.TextInput(label="Reason", style=discord.TextStyle.paragraph))
+        modal = Modal(title="Deny Application", inputs=[
+            {"label": "Reason", "style": discord.TextStyle.paragraph, "custom_id": "reason"}
+        ])
         await interaction.response.send_modal(modal)
 
         try:
@@ -446,9 +448,10 @@ class Applications(Cog):
         channel = await category.create_text_channel(channel_name)
 
         # Set permissions
-        staff_role = discord.utils.get(guild.roles, permissions=discord.Permissions(manage_messages=True))
+        staff_roles = [role for role in guild.roles if role.permissions.manage_messages]
         await channel.set_permissions(guild.default_role, read_messages=False)
-        await channel.set_permissions(staff_role, read_messages=True, send_messages=True)
+        for staff_role in staff_roles:
+            await channel.set_permissions(staff_role, read_messages=True, send_messages=True)
         await channel.set_permissions(user, read_messages=True, send_messages=True)
 
         await channel.send(f"{user.mention}, staff members have some additional questions about your {application.app_type} application.")
@@ -478,7 +481,7 @@ class Applications(Cog):
         embed.add_field(name="User", value=f"{user.name}#{user.discriminator}", inline=False)
         embed.add_field(name="Application Type", value=application.app_type, inline=False)
         embed.add_field(name="Status", value=application.status, inline=False)
-        embed.add_field(name="Event Time", value=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), inline=False)
+        embed.add_field(name="Event Time", value=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), inline=False)
 
         await log_channel.send(embed=embed)
 
