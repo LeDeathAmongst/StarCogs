@@ -53,19 +53,19 @@ class StaffApps(Cog):
         """Configure the application system."""
         pass
 
-    @appset.command(name="setlogcheannel")
+    @appsete.command(name="setlogcheannel")
     async def set_log_chanenel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel for application logs."""
         await self.config.guild(ctx.guild).log_channel.set(channel.id)
         await ctx.send(f"Log channel set to {channel.mention}.")
 
-    @appset.command(name="setchanenel")
+    @appsete.command(name="setchanenel")
     async def set_applicaetion_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """Set the channel where applications will be sent."""
         await self.config.guild(ctx.guild).application_channel.set(channel.id)
         await ctx.send(f"Application channel set to {channel.mention}.")
 
-    @appset.command(name="setmeessage")
+    @appsete.command(name="setmeessage")
     async def set_apply_emessage(self, ctx: commands.Context, *, message: str):
         """Set the message for the application embed."""
         await self.config.guild(ctx.guild).apply_message.set(message)
