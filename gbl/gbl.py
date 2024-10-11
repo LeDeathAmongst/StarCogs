@@ -99,6 +99,35 @@ class GlobalBanList(Cog):
             else:
                 await ctx.send(f"{user.name} is already in the authorized users list.")
 
+    @gblo.command(name="remauth")
+    async def remauth(self, ctx: commands.Context, user: discord.User):
+        """Remove a user from the authorized users list."""
+        async with self.config.authorized_users() as authorized:
+            if user.id in authorized:
+                authorized.remove(user.id)
+                await ctx.send(f"{user.name} has been removed from the authorized users list.")
+                await self.owner_log("Remove Authorized User", ctx.author, f"Removed {user.name} from authorized users")
+            else:
+                await ctx.send(f"{user.name} is not in the authorized users list.")
+
+    @gblo.command(name="setappealchannel")
+    async def setappealchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        """Set the channel for ban appeals."""
+        if channel is None:
+            await self.config.ban_appeal_channel.clear()
+            await ctx.send("Ban appeal channel has been cleared.")
+        else:
+            await self.config.ban_appeal_channel.set(channel.id)
+            await ctx.send(f"Ban appeal channel has been set to {channel.mention}.")
+        await self.owner_log("Set Appeal Channel", ctx.author, f"Set appeal channel to {channel.mention if channel else 'None'}")
+
+    @gblo.command(name="setownerlog")
+    async def setownerlog(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel for owner logging."""
+        await self.config.owner_log_channel.set(channel.id)
+        await ctx.send(f"Owner log channel has been set to {channel.mention}.")
+        await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
+
     @commands.hybrid_group(name="globalbanlist", aliases=["gbl"])
     async def gbl(self, ctx: commands.Context):
         """Manage the global ban list."""
@@ -198,6 +227,19 @@ class GlobalBanList(Cog):
         embeds = await self.create_list_embed(list_name)
         await Menu(pages=embeds).start(ctx)
 
+    @gbl.command(name="history")
+    async def display_history(self, ctx: commands.Context, list_name: str):
+        """Display the history of a specific ban list."""
+        if not await self.is_authorized(ctx.author):
+            await ctx.send("You are not authorized to use this command.")
+            return
+
+        if list_name not in self.lists:
+            await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
+            return
+        embeds = await self.create_list_embed(list_name)
+        await Menu(pages=embeds).start(ctx)
+
     @gbl.command(name="subscribe")
     @commands.has_permissions(administrator=True)
     @app_commands.describe(list_name="The name of the ban list to subscribe to")
@@ -238,6 +280,14 @@ class GlobalBanList(Cog):
                 await self.owner_log("Unsubscribe", ctx.author, f"Unsubscribed from {list_name} list in {ctx.guild.name}")
             else:
                 await ctx.send(f"This server is not subscribed to the {list_name} list.")
+
+    @gbl.command(name="setgenerallog")
+    @commands.has_permissions(administrator=True)
+    @app_commands.describe(channel="The channel to set for general logging")
+    async def setgenerallog(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel for general logging in this server."""
+        await self.config.guild(ctx.guild).general_log_channel.set(channel.id)
+        await ctx.send(f"General log channel for this server has been set to {channel.mention}.")
 
     @gbl.command()
     async def appeal(self, ctx: commands.Context):
