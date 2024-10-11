@@ -392,16 +392,12 @@ class Applications(Cog):
         await interaction.response.send_modal(modal)
 
         try:
-            modal_interaction = await self.bot.wait_for(
-                "modal_submit",
-                check=lambda i: i.custom_id == modal.custom_id and i.user.id == interaction.user.id,
-                timeout=300.0
-            )
+            modal_interaction, inputs, _ = await modal.wait_result()
         except asyncio.TimeoutError:
             await interaction.followup.send("Approval timed out.", ephemeral=True)
             return
 
-        reason = modal_interaction.data['components'][0]['components'][0]['value']
+        reason = inputs[0].value
         application.status = "Approved"
         application.last_updated = datetime.datetime.utcnow()
         await modal_interaction.response.send_message(f"Application approved with reason.", ephemeral=True)
@@ -418,16 +414,12 @@ class Applications(Cog):
         await interaction.response.send_modal(modal)
 
         try:
-            modal_interaction = await self.bot.wait_for(
-                "modal_submit",
-                check=lambda i: i.custom_id == modal.custom_id and i.user.id == interaction.user.id,
-                timeout=300.0
-            )
+            modal_interaction, inputs, _ = await modal.wait_result()
         except asyncio.TimeoutError:
             await interaction.followup.send("Denial timed out.", ephemeral=True)
             return
 
-        reason = modal_interaction.data['components'][0]['components'][0]['value']
+        reason = inputs[0].value
         application.status = "Denied"
         application.last_updated = datetime.datetime.utcnow()
         await modal_interaction.response.send_message(f"Application denied with reason.", ephemeral=True)
