@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu, Modal, Dropdown, Select
+from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu, Modal, Dropdown
 import asyncio
 import datetime
 import typing
@@ -72,14 +72,19 @@ class Applications(Cog):
         questions = []
         while True:
             question_type = await self.get_question_type(ctx)
+            if question_type is None:
+                return
             question = await self.get_question(ctx)
+            if question is None:
+                return
             questions.append((question, question_type))
 
             if not await self.add_another_question(ctx):
                 break
 
         app_name = await self.get_application_name(ctx)
-        await self.save_application(ctx, app_name, questions)
+        if app_name:
+            await self.save_application(ctx, app_name, questions)
 
     async def get_question_type(self, ctx: commands.Context):
         options = [
@@ -96,7 +101,7 @@ class Applications(Cog):
         message = await ctx.send("Select the type of question:", view=select_menu)
 
         try:
-            interaction, values = await select_menu.wait_result()
+            interaction, values, _ = await select_menu.wait_result()
             await message.delete()
             return values[0]
         except asyncio.TimeoutError:
@@ -132,7 +137,7 @@ class Applications(Cog):
         message = await ctx.send("Do you want to add another question?", view=select_menu)
 
         try:
-            interaction, values = await select_menu.wait_result()
+            interaction, values, _ = await select_menu.wait_result()
             await message.delete()
             return values[0] == "yes"
         except asyncio.TimeoutError:
@@ -237,7 +242,7 @@ class Applications(Cog):
                 message = await channel.send("Please select your answer:", view=view)
 
                 try:
-                    interaction, values = await view.wait_result()
+                    interaction, values, _ = await view.wait_result()
                     self.applications[channel.id].answers[i] = values[0]
                     await message.edit(content=f"You answered: {values[0]}", view=None)
                 except asyncio.TimeoutError:
