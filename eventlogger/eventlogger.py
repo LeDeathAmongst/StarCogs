@@ -498,7 +498,7 @@ class EventLogger(Cog):
             f"**Channel:** {reaction.message.channel.mention}\n"
             f"**Message:** [Jump to Message]({reaction.message.jump_url})\n"
             f"**Emoji:** {reaction.emoji}\n"
-            f"**Removed At:** <t:{int(datetime.utcnow().timestamp())}:F}"
+            f"**Removed At:** <t:{int(datetime.utcnow().timestamp())}:F>"
         )
         await self.log_event(reaction.message.guild, 'reaction_remove', description, discord.Color.orange())
 
