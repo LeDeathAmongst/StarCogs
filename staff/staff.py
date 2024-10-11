@@ -166,7 +166,7 @@ class Staffer(Cog):
 
     async def add_hierarchy_modal(self, interaction: discord.Interaction):
         example = (
-            "Example hierarchy configuration:\n"
+            "Example configuration:\n"
             "Trial Mod\n"
             "Mod\n"
             "Senior Mod\n"
@@ -178,7 +178,7 @@ class Staffer(Cog):
             title="Add New Hierarchy",
             inputs=[
                 {"label": "Hierarchy Name", "style": discord.TextStyle.short, "custom_id": "name", "required": True},
-                {"label": "Levels (one per line, use '-' for promotion paths)", "style": discord.TextStyle.paragraph, "custom_id": "levels", "required": True, "placeholder": example},
+                {"label": "Levels (one per line, use '-' for promo)", "style": discord.TextStyle.paragraph, "custom_id": "levels", "required": True, "placeholder": example},
             ],
             function=self.handle_add_hierarchy_modal
         )
