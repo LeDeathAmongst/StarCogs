@@ -307,15 +307,13 @@ class Applications(Cog):
             return
 
         embed = await self.create_application_embed(application)
-        message = await channel.send(embed=embed)
-
-        thread = await message.create_thread(name=f"{user.name}'s {application.app_type} Application")
-        application.thread_id = thread.id
 
         buttons = [
             {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve"},
             {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny"},
-            {"style": discord.ButtonStyle.blurple, "label": "Ask Question", "custom_id": "ask_question"}
+            {"style": discord.ButtonStyle.blurple, "label": "Approve with Reason", "custom_id": "approve_reason"},
+            {"style": discord.ButtonStyle.blurple, "label": "Deny with Reason", "custom_id": "deny_reason"},
+            {"style": discord.ButtonStyle.grey, "label": "Ask Extra Questions", "custom_id": "ask_questions"}
         ]
 
         view = Buttons(
@@ -323,7 +321,13 @@ class Applications(Cog):
             buttons=buttons,
             function=self.handle_review_action
         )
-        await thread.send("Please review this application:", view=view)
+
+        message = await channel.send(embed=embed, view=view)
+        thread = await message.create_thread(name=f"{user.name}'s {application.app_type} Application")
+        application.thread_id = thread.id
+
+        start_message = await thread.send("Application submitted. Please review.")
+        await start_message.pin()
 
         await user.send("Your application has been submitted. You will be notified if there are any updates.")
         await self.log_application_event(guild, "Application Submitted", application)
@@ -340,8 +344,8 @@ class Applications(Cog):
 
     async def handle_review_action(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
-        thread = interaction.channel
-        application = next((app for app in self.applications.values() if app.thread_id == thread.id), None)
+        message = interaction.message
+        application = next((app for app in self.applications.values() if app.thread_id == message.id), None)
 
         if not application:
             await interaction.response.send_message("Could not find the associated application.", ephemeral=True)
@@ -351,32 +355,36 @@ class Applications(Cog):
             await self.approve_application(interaction, application)
         elif action == "deny":
             await self.deny_application(interaction, application)
-        elif action == "ask_question":
-            await self.ask_question(interaction, application)
+        elif action == "approve_reason":
+            await self.approve_with_reason(interaction, application)
+        elif action == "deny_reason":
+            await self.deny_with_reason(interaction, application)
+        elif action == "ask_questions":
+            await self.create_question_channel(interaction, application)
 
     async def approve_application(self, interaction: discord.Interaction, application: Application):
         application.status = "Approved"
         application.last_updated = datetime.datetime.utcnow()
-        await interaction.response.send_message("Application approved!")
+        await interaction.response.send_message("Application approved!", ephemeral=True)
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been approved!")
-        await self.update_application_embed(interaction.channel, application)
+        await self.update_application_embed(interaction.message, application)
         await self.log_application_event(interaction.guild, "Application Approved", application)
 
     async def deny_application(self, interaction: discord.Interaction, application: Application):
         application.status = "Denied"
         application.last_updated = datetime.datetime.utcnow()
-        await interaction.response.send_message("Application denied.")
+        await interaction.response.send_message("Application denied.", ephemeral=True)
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been denied.")
-        await self.update_application_embed(interaction.channel, application)
+        await self.update_application_embed(interaction.message, application)
         await self.log_application_event(interaction.guild, "Application Denied", application)
 
-    async def ask_question(self, interaction: discord.Interaction, application: Application):
-        modal = Modal(title="Ask a Question")
-        modal.add_item(discord.ui.TextInput(label="Enter your question"))
+    async def approve_with_reason(self, interaction: discord.Interaction, application: Application):
+        modal = Modal(title="Approve Application")
+        modal.add_item(discord.ui.TextInput(label="Reason for approval", style=discord.TextStyle.paragraph))
         await interaction.response.send_modal(modal)
 
         try:
@@ -386,24 +394,72 @@ class Applications(Cog):
                 timeout=300.0
             )
         except asyncio.TimeoutError:
-            await interaction.followup.send("Question request timed out.", ephemeral=True)
+            await interaction.followup.send("Approval timed out.", ephemeral=True)
             return
 
-        question = modal_interaction.data['components'][0]['components'][0]['value']
-        thread = interaction.channel
-        await thread.send(f"**Staff Question:** {question}")
+        reason = modal_interaction.data['components'][0]['components'][0]['value']
+        application.status = "Approved"
+        application.last_updated = datetime.datetime.utcnow()
+        await modal_interaction.response.send_message(f"Application approved with reason.", ephemeral=True)
         user = self.bot.get_user(application.user_id)
-        await user.send(f"A staff member has asked a question regarding your {application.app_type} application:\n\n{question}\n\nPlease respond in the application thread.")
+        if user:
+            await user.send(f"Your {application.app_type} application has been approved. Reason: {reason}")
+        await self.update_application_embed(interaction.message, application)
+        await self.log_application_event(interaction.guild, f"Application Approved with Reason: {reason}", application)
 
-    async def update_application_embed(self, thread: discord.Thread, application: Application):
-        channel_id = await self.config.guild(thread.guild).application_channel()
-        channel = thread.guild.get_channel(channel_id)
-        if channel:
-            async for message in channel.history(limit=None):
-                if message.id == thread.id:
-                    embed = await self.create_application_embed(application)
-                    await message.edit(embed=embed)
-                    break
+    async def deny_with_reason(self, interaction: discord.Interaction, application: Application):
+        modal = Modal(title="Deny Application")
+        modal.add_item(discord.ui.TextInput(label="Reason for denial", style=discord.TextStyle.paragraph))
+        await interaction.response.send_modal(modal)
+
+        try:
+            modal_interaction = await self.bot.wait_for(
+                "modal_submit",
+                check=lambda i: i.custom_id == modal.custom_id and i.user.id == interaction.user.id,
+                timeout=300.0
+            )
+        except asyncio.TimeoutError:
+            await interaction.followup.send("Denial timed out.", ephemeral=True)
+            return
+
+        reason = modal_interaction.data['components'][0]['components'][0]['value']
+        application.status = "Denied"
+        application.last_updated = datetime.datetime.utcnow()
+        await modal_interaction.response.send_message(f"Application denied with reason.", ephemeral=True)
+        user = self.bot.get_user(application.user_id)
+        if user:
+            await user.send(f"Your {application.app_type} application has been denied. Reason: {reason}")
+        await self.update_application_embed(interaction.message, application)
+        await self.log_application_event(interaction.guild, f"Application Denied with Reason: {reason}", application)
+
+    async def create_question_channel(self, interaction: discord.Interaction, application: Application):
+        guild = interaction.guild
+        category = discord.utils.get(guild.categories, name="Application Questions")
+        if not category:
+            category = await guild.create_category("Application Questions")
+
+        user = self.bot.get_user(application.user_id)
+        channel_name = f"{application.app_type}-{user.name}-questions"
+        channel = await category.create_text_channel(channel_name)
+
+        # Set permissions
+        staff_role = discord.utils.get(guild.roles, permissions=discord.Permissions(manage_messages=True))
+        await channel.set_permissions(guild.default_role, read_messages=False)
+        await channel.set_permissions(staff_role, read_messages=True, send_messages=True)
+        await channel.set_permissions(user, read_messages=True, send_messages=True)
+
+        await channel.send(f"{user.mention}, staff members have some additional questions about your {application.app_type} application.")
+        await interaction.response.send_message(f"Created question channel: {channel.mention}", ephemeral=True)
+
+        # Update application status
+        application.status = "Additional Questions"
+        application.last_updated = datetime.datetime.utcnow()
+        await self.update_application_embed(interaction.message, application)
+        await self.log_application_event(guild, "Additional Questions Requested", application)
+
+    async def update_application_embed(self, message: discord.Message, application: Application):
+        embed = await self.create_application_embed(application)
+        await message.edit(embed=embed)
 
     async def log_application_event(self, guild: discord.Guild, event: str, application: Application):
         log_channel_id = await self.config.guild(guild).log_channel()
