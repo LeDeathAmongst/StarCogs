@@ -23,7 +23,6 @@ from redbot.core import dev_commands
 from redbot.core.utils.chat_formatting import box
 from redbot.core.utils.predicates import MessagePredicate
 
-from .dashboard_integration import DashboardIntegration
 from .env import DevEnv, DevSpace, Exit, ctxconsole
 from .view import ExecuteView, cleanup_code
 
@@ -464,10 +463,8 @@ class DevOutput(dev_commands.DevOutput):
 
 
 @cog_i18n(_)
-class Dev(DashboardIntegration, Cog, dev_commands.Dev):
+class Dev(Cog, dev_commands.Dev):
     """Various development focused utilities!"""
-
-    __authors__: typing.List[str] = ["Cog-Creators", "Zephyrkul (Zephyrkul#1089)", "Star"]
 
     def __init__(self, bot: Red) -> None:
         super().__init__(bot=bot)
