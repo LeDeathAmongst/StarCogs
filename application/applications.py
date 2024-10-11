@@ -332,11 +332,34 @@ class Applications(Cog):
         await start_message.pin()
 
         await user.send("Your application has been submitted. You will be notified if there are any updates.")
-        await self.log_application_event(guild, "Application Submitted", application)
 
-    async def create_application_embed(self, application: Application) -> discord.Embed:
+    async def create_application_embed(self, application: Application, action_user: discord.User = None, reason: str = None) -> discord.Embed:
         user = self.bot.get_user(application.user_id)
-        embed = discord.Embed(title=f"{user.name} | {application.app_type}", color=discord.Color.blue())
+
+        if application.status == "Submitted":
+            color = discord.Color.blue()
+            title = f"New application from {user.name}"
+            description = f"{user.mention} has submitted a new application."
+        elif application.status == "Approved":
+            color = discord.Color.green()
+            title = f"Application Approved: {user.name}"
+            if reason:
+                description = f"Application was approved by {action_user.mention} for `{reason}`"
+            else:
+                description = f"Application was approved by {action_user.mention}"
+        elif application.status == "Denied":
+            color = discord.Color.red()
+            title = f"Application Denied: {user.name}"
+            if reason:
+                description = f"Application was denied by {action_user.mention} for `{reason}`"
+            else:
+                description = f"Application was denied by {action_user.mention}"
+        else:
+            color = discord.Color.gold()
+            title = f"{user.name} | {application.app_type}"
+            description = f"Application status: {application.status}"
+
+        embed = discord.Embed(title=title, description=description, color=color)
 
         for question, answer in application.answers.items():
             embed.add_field(name=f"Question {question}", value=answer, inline=False)
@@ -372,8 +395,7 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been approved!")
-        await self.update_application_embed(interaction.message, application)
-        await self.log_application_event(interaction.guild, "Application Approved", application)
+        await self.update_application_embed(interaction.message, application, interaction.user)
 
     async def deny_application(self, interaction: discord.Interaction, application: Application):
         application.status = "Denied"
@@ -382,8 +404,7 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been denied.")
-        await self.update_application_embed(interaction.message, application)
-        await self.log_application_event(interaction.guild, "Application Denied", application)
+        await self.update_application_embed(interaction.message, application, interaction.user)
 
     async def approve_with_reason(self, interaction: discord.Interaction, application: Application):
         modal = Modal(title="Approve Application", inputs=[
@@ -404,8 +425,7 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been approved. Reason: {reason}")
-        await self.update_application_embed(interaction.message, application)
-        await self.log_application_event(interaction.guild, f"Application Approved with Reason: {reason}", application)
+        await self.update_application_embed(interaction.message, application, interaction.user, reason)
 
     async def deny_with_reason(self, interaction: discord.Interaction, application: Application):
         modal = Modal(title="Deny Application", inputs=[
@@ -426,8 +446,7 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been denied. Reason: {reason}")
-        await self.update_application_embed(interaction.message, application)
-        await self.log_application_event(interaction.guild, f"Application Denied with Reason: {reason}", application)
+        await self.update_application_embed(interaction.message, application, interaction.user, reason)
 
     async def create_question_channel(self, interaction: discord.Interaction, application: Application):
         guild = interaction.guild
@@ -437,6 +456,20 @@ class Applications(Cog):
 
         user = self.bot.get_user(application.user_id)
         channel_name = f"{application.app_type}-{user.name}-questions"
+
+        modal = Modal(title="Create Question Channel", inputs=[
+            {"label": "Reason (Optional)", "style": discord.TextStyle.short, "custom_id": "reason", "required": False}
+        ])
+        await interaction.response.send_modal(modal)
+
+        try:
+            modal_interaction, inputs, _ = await modal.wait_result()
+        except asyncio.TimeoutError:
+            await interaction.followup.send("Channel creation timed out.", ephemeral=True)
+            return
+
+        reason = inputs[0].value if inputs[0].value else "No reason provided"
+
         channel = await category.create_text_channel(channel_name)
 
         # Set permissions
@@ -446,36 +479,64 @@ class Applications(Cog):
             await channel.set_permissions(staff_role, read_messages=True, send_messages=True)
         await channel.set_permissions(user, read_messages=True, send_messages=True)
 
-        await channel.send(f"{user.mention}, staff members have some additional questions about your {application.app_type} application.")
-        await interaction.response.send_message(f"Created question channel: {channel.mention}", ephemeral=True)
+        embed = discord.Embed(
+            title="A member of staff will be with you shortly.",
+            description=f"Ticket created by {interaction.user.mention} with reason: {reason}",
+            color=discord.Color.blue()
+        )
+
+        close_buttons = [
+            {"style": discord.ButtonStyle.red, "label": "Close", "custom_id": "close"},
+            {"style": discord.ButtonStyle.red, "label": "Close with Reason", "custom_id": "close_reason"}
+        ]
+
+        view = Buttons(
+            timeout=None,
+            buttons=close_buttons,
+            function=self.handle_close_action
+        )
+
+        await channel.send(f"{user.mention}", embed=embed, view=view)
+        await modal_interaction.response.send_message(f"Created question channel: {channel.mention}", ephemeral=True)
 
         # Update application status
         application.status = "Additional Questions"
         application.last_updated = datetime.datetime.utcnow()
         await self.update_application_embed(interaction.message, application)
-        await self.log_application_event(guild, "Additional Questions Requested", application)
 
-    async def update_application_embed(self, message: discord.Message, application: Application):
-        embed = await self.create_application_embed(application)
+    async def handle_close_action(self, view: Buttons, interaction: discord.Interaction):
+        action = interaction.data["custom_id"]
+
+        if action == "close":
+            await self.close_question_channel(interaction)
+        elif action == "close_reason":
+            await self.close_question_channel_with_reason(interaction)
+
+    async def close_question_channel(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Closing the channel...", ephemeral=True)
+        await asyncio.sleep(5)  # Give some time for users to see the message
+        await interaction.channel.delete()
+
+    async def close_question_channel_with_reason(self, interaction: discord.Interaction):
+        modal = Modal(title="Close Question Channel", inputs=[
+            {"label": "Reason", "style": discord.TextStyle.short, "custom_id": "reason"}
+        ])
+        await interaction.response.send_modal(modal)
+
+        try:
+            modal_interaction, inputs, _ = await modal.wait_result()
+        except asyncio.TimeoutError:
+            await interaction.followup.send("Channel closure timed out.", ephemeral=True)
+            return
+
+        reason = inputs[0].value
+        await modal_interaction.response.send_message(f"Closing the channel. Reason: {reason}", ephemeral=True)
+        await asyncio.sleep(5)  # Give some time for users to see the message
+        await interaction.channel.delete()
+
+    async def update_application_embed(self, message: discord.Message, application: Application, action_user: discord.User = None, reason: str = None):
+        embed = await self.create_application_embed(application, action_user, reason)
         await message.edit(embed=embed)
-
-    async def log_application_event(self, guild: discord.Guild, event: str, application: Application):
-        log_channel_id = await self.config.guild(guild).log_channel()
-        if not log_channel_id:
-            return
-
-        log_channel = guild.get_channel(log_channel_id)
-        if not log_channel:
-            return
-
-        user = self.bot.get_user(application.user_id)
-        embed = discord.Embed(title=f"Application Event: {event}", color=discord.Color.gold())
-        embed.add_field(name="User", value=f"{user.name}#{user.discriminator}", inline=False)
-        embed.add_field(name="Application Type", value=application.app_type, inline=False)
-        embed.add_field(name="Status", value=application.status, inline=False)
-        embed.add_field(name="Event Time", value=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), inline=False)
-
-        await log_channel.send(embed=embed)
 
     @commands.command()
     @commands.guild_only()
