@@ -181,7 +181,7 @@ class EventLogger(Cog):
             color=color,
             timestamp=datetime.utcnow()
         )
-        embed.set_footer(text=f"Event Logger | {self.bot.user.name}", icon_url=self.bot.user.avatar_url)
+        embed.set_footer(text=f"Event Logger | {self.bot.user.name}", icon_url=self.bot.user.avatar.url if self.bot.user.avatar else None)
         return embed
 
     async def log_event(self, guild: typing.Optional[discord.Guild], event: str, description: str, color: discord.Color = discord.Color.blue()):
@@ -559,7 +559,7 @@ class EventLogger(Cog):
         if before.discriminator != after.discriminator:
             changes.append(f"**Discriminator:** {before.discriminator} → {after.discriminator}")
         if before.avatar != after.avatar:
-            changes.append(f"**Avatar:** [Before]({before.avatar_url}) → [After]({after.avatar_url})")
+            changes.append(f"**Avatar:** [Before]({before.avatar.url}) → [After]({after.avatar.url})")
 
         if changes:
             description = (
