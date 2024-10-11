@@ -45,7 +45,7 @@ class StaffFlow(Cog):
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def staffflow(self, ctx: commands.Context):
-        """StaffFlow management system"""
+        """Staffer management system"""
         if ctx.invoked_subcommand is None:
             await self.send_main_menu(ctx)
 
@@ -118,7 +118,7 @@ class StaffFlow(Cog):
 
     @staffflow.group(name="settings", invoke_without_command=True)
     async def settings(self, ctx: commands.Context):
-        """Manage StaffFlow settings"""
+        """Manage Staffer settings"""
         if ctx.invoked_subcommand is None:
             await self.send_settings_menu(ctx)
 
@@ -340,7 +340,7 @@ class StaffFlow(Cog):
             await ctx.send(embed=embed)
 
     async def send_main_menu(self, ctx: commands.Context):
-        embed = discord.Embed(title="StaffFlow Management", description="Select an option to manage your staff team.", color=discord.Color.blue())
+        embed = discord.Embed(title="Staffer Management", description="Select an option to manage your staff team.", color=discord.Color.blue())
 
         buttons = [
             {"style": discord.ButtonStyle.primary, "label": "Manage Hierarchies", "custom_id": "hierarchies"},
@@ -643,34 +643,6 @@ class StaffFlow(Cog):
 
         await self.add_staff_member(modal_interaction, user, hierarchy, level)
 
-    async def send_staff_menu(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Manage Staff", description="Select an action to manage staff members.", color=discord.Color.gold())
-
-        buttons = [
-            {"style": discord.ButtonStyle.primary, "label": "Add Staff", "custom_id": "add_staff"},
-            {"style": discord.ButtonStyle.primary, "label": "Remove Staff", "custom_id": "remove_staff"},
-            {"style": discord.ButtonStyle.primary, "label": "Promote Staff", "custom_id": "promote_staff"},
-            {"style": discord.ButtonStyle.primary, "label": "Demote Staff", "custom_id": "demote_staff"},
-            {"style": discord.ButtonStyle.secondary, "label": "Back", "custom_id": "back"}
-        ]
-
-        view = Buttons(timeout=None, buttons=buttons, function=self.handle_staff_menu)
-        await interaction.response.send_message(embed=embed, view=view)
-
-    async def handle_staff_menu(self, view: Buttons, interaction: discord.Interaction):
-        action = interaction.data["custom_id"]
-
-        if action == "add_staff":
-            await self.add_staff_modal(interaction)
-        elif action == "remove_staff":
-            await self.remove_staff_dropdown(interaction)
-        elif action == "promote_staff":
-            await self.promote_staff_dropdown(interaction)
-        elif action == "demote_staff":
-            await self.demote_staff_dropdown(interaction)
-        elif action == "back":
-            await self.send_main_menu(interaction)
-
     async def remove_staff_dropdown(self, interaction: discord.Interaction):
         staff_members = await self.config.guild(interaction.guild).staff_members()
 
@@ -747,7 +719,7 @@ class StaffFlow(Cog):
     async def send_settings_menu(self, interaction: discord.Interaction):
         settings = await self.config.guild(interaction.guild).settings()
 
-        embed = discord.Embed(title="StaffFlow Settings", description="Current settings:", color=discord.Color.purple())
+        embed = discord.Embed(title="Staffer Settings", description="Current settings:", color=discord.Color.purple())
         embed.add_field(name="Auto Role Update", value="Enabled" if settings['auto_role_update'] else "Disabled", inline=False)
         embed.add_field(name="Performance Review Interval", value=f"{settings['performance_review_interval']} days", inline=False)
         embed.add_field(name="Warning Threshold", value=str(settings['warning_threshold']), inline=False)
