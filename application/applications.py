@@ -320,7 +320,8 @@ class Applications(Cog):
         view = Buttons(
             timeout=None,
             buttons=buttons,
-            function=self.handle_review_action
+            function=self.handle_review_action,
+            infinity=True
         )
 
         message = await channel.send(embed=embed, view=view)
@@ -376,6 +377,11 @@ class Applications(Cog):
         if not application:
             await interaction.response.send_message("Could not find the associated application.", ephemeral=True)
             return
+
+        if action in ["approve", "deny", "approve_reason", "deny_reason"]:
+            for child in view.children:
+                child.disabled = True
+            await message.edit(view=view)
 
         if action == "approve":
             await self.approve_application(interaction, application)
@@ -493,7 +499,8 @@ class Applications(Cog):
         view = Buttons(
             timeout=None,
             buttons=close_buttons,
-            function=self.handle_close_action
+            function=self.handle_close_action,
+            infinity=True
         )
 
         await channel.send(f"{user.mention}", embed=embed, view=view)
