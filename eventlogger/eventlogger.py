@@ -1,4 +1,4 @@
-from Star_Utils import Cog, Settings
+from Star_Utils import Cog, Settings, CogsUtils
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
@@ -137,6 +137,8 @@ class EventLogger(Cog):
 
         default_guild = {event: None for event in settings_dict.keys()}
         self.config.register_guild(**default_guild)
+
+        self.logs = CogsUtils.get_logger(cog=self)
 
         self.event_queue = asyncio.Queue()
         self.bot.loop.create_task(self.process_event_queue())
