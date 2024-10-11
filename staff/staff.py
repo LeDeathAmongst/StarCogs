@@ -5,16 +5,17 @@ from redbot.core.utils.chat_formatting import box, pagify
 from typing import Dict, List, Optional, Union
 import asyncio
 import datetime
+import traceback
 from Star_Utils import Cog, Buttons, Dropdown, Modal, Loop, CogsUtils
 
 class StaffHierarchy:
-    def __init__(self, name: str, levels: Dict[int, str], role_ids: Dict[int, int]):
+    def __init__(self, name: str, levels: Dict[str, Dict[str, str]], role_ids: Dict[str, int]):
         self.name = name
         self.levels = levels
         self.role_ids = role_ids
 
 class StaffMember:
-    def __init__(self, user_id: int, hierarchy: str, level: int):
+    def __init__(self, user_id: int, hierarchy: str, level: str):
         self.user_id = user_id
         self.hierarchy = hierarchy
         self.level = level
@@ -68,7 +69,7 @@ class Staffer(Cog):
             loop.stop_all()
 
     async def performance_review_loop(self):
-        self.logger.info("Running performance review loop")
+        self.logs.info("Running performance review loop")
         all_guilds = await self.config.all_guilds()
         for guild_id, guild_data in all_guilds.items():
             guild = self.bot.get_guild(int(guild_id))
@@ -79,10 +80,8 @@ class Staffer(Cog):
                 member = guild.get_member(int(member_id))
                 if not member:
                     continue
+                self.logs.debug(f"Reviewing performance for {member.name}")
                 # Implement your performance review logic here
-                # For example, you could update the performance score based on activity
-                # or other metrics you define
-                self.logger.debug(f"Reviewing performance for {member.name}")
 
     @commands.group(name="staffer", invoke_without_command=True)
     @commands.guild_only()
@@ -166,10 +165,20 @@ class Staffer(Cog):
             await self.send_main_menu(interaction)
 
     async def add_hierarchy_modal(self, interaction: discord.Interaction):
+        example = (
+            "Example hierarchy configuration:\n"
+            "Trial Mod\n"
+            "Mod\n"
+            "Senior Mod\n"
+            "- Management\n"
+            "Chief Security Officer\n"
+            "- Next hierarchy"
+        )
         modal = Modal(
             title="Add New Hierarchy",
             inputs=[
                 {"label": "Hierarchy Name", "style": discord.TextStyle.short, "custom_id": "name", "required": True},
+                {"label": "Levels (one per line, use '-' for promotion paths)", "style": discord.TextStyle.paragraph, "custom_id": "levels", "required": True, "placeholder": example},
             ],
             function=self.handle_add_hierarchy_modal
         )
@@ -177,32 +186,33 @@ class Staffer(Cog):
         await interaction.response.send_modal(modal)
 
     async def handle_add_hierarchy_modal(self, modal: Modal, interaction: discord.Interaction, inputs: List[discord.ui.TextInput]):
-        name = inputs[0].value
-        await self.add_hierarchy_levels(interaction, name)
+        hierarchy_name = inputs[0].value
+        levels_input = inputs[1].value.split('\n')
 
-    async def add_hierarchy_levels(self, interaction: discord.Interaction, hierarchy_name: str):
-        roles = interaction.guild.roles
-        options = [{"label": role.name, "value": str(role.id)} for role in roles if role.name != "@everyone"]
+        levels = {}
+        current_level = 0
+        for line in levels_input:
+            line = line.strip()
+            if line.startswith('- '):
+                if current_level == 0:
+                    await interaction.response.send_message("Invalid format: Promotion path specified before any level.", ephemeral=True)
+                    return
+                promotion = line[2:].strip()
+                if promotion == "Next hierarchy":
+                    levels[str(current_level)]["next_hierarchy"] = True
+                else:
+                    levels[str(current_level)]["next"] = promotion
+            else:
+                current_level += 1
+                levels[str(current_level)] = {"name": line, "next": None}
 
-        view = Dropdown(
-            placeholder="Select roles for levels",
-            options=options,
-            min_values=1,
-            max_values=len(options),
-            function=lambda v, i, vals: self.handle_add_hierarchy_levels(v, i, vals, hierarchy_name)
-        )
-        await interaction.response.send_message("Select roles for each level in the hierarchy:", view=view)
-
-    async def handle_add_hierarchy_levels(self, view: Dropdown, interaction: discord.Interaction, values: List[str], hierarchy_name: str):
         async with self.config.guild(interaction.guild).hierarchies() as hierarchies:
             if hierarchy_name in hierarchies:
                 return await interaction.response.send_message("A hierarchy with this name already exists.", ephemeral=True)
 
-            levels = {str(i+1): interaction.guild.get_role(int(role_id)).name for i, role_id in enumerate(values)}
-            role_ids = {str(i+1): int(role_id) for i, role_id in enumerate(values)}
-            hierarchies[hierarchy_name] = {"levels": levels, "role_ids": role_ids}
+            hierarchies[hierarchy_name] = {"levels": levels, "role_ids": {}}
 
-        await interaction.response.send_message(f"Hierarchy '{hierarchy_name}' created with levels: {', '.join(levels.values())}", ephemeral=True)
+        await interaction.response.send_message(f"Hierarchy '{hierarchy_name}' created with {len(levels)} levels.", ephemeral=True)
         await self.send_hierarchy_menu(interaction)
 
     async def edit_hierarchy_dropdown(self, interaction: discord.Interaction):
@@ -229,8 +239,7 @@ class Staffer(Cog):
         embed = discord.Embed(title=f"Edit Hierarchy: {hierarchy_name}", description="Select an action to edit the hierarchy.", color=discord.Color.orange())
 
         options = [
-            {"label": "Add Level", "value": "add_level"},
-            {"label": "Remove Level", "value": "remove_level"},
+            {"label": "Edit Levels", "value": "edit_levels"},
             {"label": "Set Role", "value": "set_role"},
             {"label": "Back to Hierarchy Menu", "value": "back"}
         ]
@@ -247,68 +256,53 @@ class Staffer(Cog):
     async def handle_edit_hierarchy_menu(self, view: Dropdown, interaction: discord.Interaction, values: List[str], hierarchy_name: str):
         action = values[0]
 
-        if action == "add_level":
-            await self.add_level_modal(interaction, hierarchy_name)
-        elif action == "remove_level":
-            await self.remove_level_dropdown(interaction, hierarchy_name)
+        if action == "edit_levels":
+            await self.edit_levels_modal(interaction, hierarchy_name)
         elif action == "set_role":
             await self.set_role_dropdown(interaction, hierarchy_name)
         elif action == "back":
             await self.send_hierarchy_menu(interaction)
 
-    async def add_level_modal(self, interaction: discord.Interaction, hierarchy_name: str):
+    async def edit_levels_modal(self, interaction: discord.Interaction, hierarchy_name: str):
+        hierarchies = await self.config.guild(interaction.guild).hierarchies()
+        current_levels = hierarchies[hierarchy_name]['levels']
+
+        current_config = "\n".join([f"{level['name']}" + (f"\n- {level['next']}" if level['next'] else "") for level in current_levels.values()])
+
         modal = Modal(
-            title=f"Add Level to {hierarchy_name}",
+            title=f"Edit Levels for {hierarchy_name}",
             inputs=[
-                {"label": "Level Name", "style": discord.TextStyle.short, "custom_id": "level_name", "required": True}
+                {"label": "Levels (one per line, use '-' for promotion paths)", "style": discord.TextStyle.paragraph, "custom_id": "levels", "required": True, "value": current_config},
             ],
-            function=lambda m, i, inputs: self.handle_add_level(m, i, inputs, hierarchy_name)
+            function=lambda m, i, inputs: self.handle_edit_levels(m, i, inputs, hierarchy_name)
         )
 
         await interaction.response.send_modal(modal)
 
-    async def handle_add_level(self, modal: Modal, interaction: discord.Interaction, inputs: List[discord.ui.TextInput], hierarchy_name: str):
-        level_name = inputs[0].value
+    async def handle_edit_levels(self, modal: Modal, interaction: discord.Interaction, inputs: List[discord.ui.TextInput], hierarchy_name: str):
+        levels_input = inputs[0].value.split('\n')
+
+        levels = {}
+        current_level = 0
+        for line in levels_input:
+            line = line.strip()
+            if line.startswith('- '):
+                if current_level == 0:
+                    await interaction.response.send_message("Invalid format: Promotion path specified before any level.", ephemeral=True)
+                    return
+                promotion = line[2:].strip()
+                if promotion == "Next hierarchy":
+                    levels[str(current_level)]["next_hierarchy"] = True
+                else:
+                    levels[str(current_level)]["next"] = promotion
+            else:
+                current_level += 1
+                levels[str(current_level)] = {"name": line, "next": None}
 
         async with self.config.guild(interaction.guild).hierarchies() as hierarchies:
-            if hierarchy_name not in hierarchies:
-                return await interaction.response.send_message("Hierarchy not found.", ephemeral=True)
+            hierarchies[hierarchy_name]['levels'] = levels
 
-            new_level = str(len(hierarchies[hierarchy_name]['levels']) + 1)
-            hierarchies[hierarchy_name]['levels'][new_level] = level_name
-
-        await interaction.response.send_message(f"Added level {new_level}: {level_name} to {hierarchy_name}", ephemeral=True)
-        await self.edit_hierarchy_menu(interaction, hierarchy_name)
-
-    async def remove_level_dropdown(self, interaction: discord.Interaction, hierarchy_name: str):
-        async with self.config.guild(interaction.guild).hierarchies() as hierarchies:
-            if hierarchy_name not in hierarchies:
-                return await interaction.response.send_message("Hierarchy not found.", ephemeral=True)
-
-            levels = hierarchies[hierarchy_name]['levels']
-
-            if not levels:
-                return await interaction.response.send_message("This hierarchy has no levels to remove.", ephemeral=True)
-
-            options = [{"label": f"Level {level}: {name}", "value": level} for level, name in levels.items()]
-            view = Dropdown(
-                placeholder="Select a level to remove",
-                options=options,
-                min_values=1,
-                max_values=1,
-                function=lambda v, i, vals: self.handle_remove_level(v, i, vals, hierarchy_name)
-            )
-            await interaction.response.edit_message(content="Select a level to remove:", view=view)
-
-    async def handle_remove_level(self, view: Dropdown, interaction: discord.Interaction, values: List[str], hierarchy_name: str):
-        level_to_remove = values[0]
-
-        async with self.config.guild(interaction.guild).hierarchies() as hierarchies:
-            del hierarchies[hierarchy_name]['levels'][level_to_remove]
-            if level_to_remove in hierarchies[hierarchy_name]['role_ids']:
-                del hierarchies[hierarchy_name]['role_ids'][level_to_remove]
-
-        await interaction.response.send_message(f"Removed level {level_to_remove} from {hierarchy_name}", ephemeral=True)
+        await interaction.response.send_message(f"Levels for '{hierarchy_name}' have been updated.", ephemeral=True)
         await self.edit_hierarchy_menu(interaction, hierarchy_name)
 
     async def set_role_dropdown(self, interaction: discord.Interaction, hierarchy_name: str):
@@ -321,7 +315,7 @@ class Staffer(Cog):
             if not levels:
                 return await interaction.response.send_message("This hierarchy has no levels to set roles for.", ephemeral=True)
 
-            options = [{"label": f"Level {level}: {name}", "value": level} for level, name in levels.items()]
+            options = [{"label": f"Level {level}: {data['name']}", "value": level} for level, data in levels.items()]
             view = Dropdown(
                 placeholder="Select a level to set role",
                 options=options,
@@ -413,22 +407,28 @@ class Staffer(Cog):
 
     async def list_hierarchies(self, interaction: discord.Interaction):
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
-        embed = discord.Embed(title="Staff Hierarchies", color=discord.Color.blue())
+
+        if not hierarchies:
+            return await interaction.response.send_message("No hierarchies exist yet.", ephemeral=True)
+
+        embed = discord.Embed(title="Hierarchies", color=discord.Color.blue())
+
         for name, data in hierarchies.items():
-            levels = "\n".join([f"{level}: {role}" for level, role in data['levels'].items()])
+            levels = "\n".join([f"{level}: {info['name']}" for level, info in data['levels'].items()])
             embed.add_field(name=name, value=levels, inline=False)
-        await interaction.response.edit_message(embed=embed)
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def send_staff_menu(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Manage Staff", description="Select an action to manage staff members.", color=discord.Color.gold())
+        embed = discord.Embed(title="Manage Staff", description="Select an action to manage staff members.", color=discord.Color.green())
 
         options = [
-            {"label": "Add Staff", "value": "add_staff"},
-            {"label": "Remove Staff", "value": "remove_staff"},
-            {"label": "Promote Staff", "value": "promote_staff"},
-            {"label": "Demote Staff", "value": "demote_staff"},
+            {"label": "Add Staff Member", "value": "add_staff"},
+            {"label": "Remove Staff Member", "value": "remove_staff"},
+            {"label": "Promote Staff Member", "value": "promote_staff"},
+            {"label": "Demote Staff Member", "value": "demote_staff"},
             {"label": "View Staff Info", "value": "staff_info"},
-            {"label": "List Staff", "value": "list_staff"},
+            {"label": "List Staff Members", "value": "list_staff"},
             {"label": "Back to Main Menu", "value": "back"}
         ]
 
@@ -494,7 +494,7 @@ class Staffer(Cog):
     async def add_staff_level_dropdown(self, interaction: discord.Interaction, user: discord.Member, hierarchy: str):
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
         levels = hierarchies[hierarchy]['levels']
-        options = [{"label": f"Level {level}: {name}", "value": level} for level, name in levels.items()]
+        options = [{"label": f"Level {level}: {data['name']}", "value": level} for level, data in levels.items()]
         view = Dropdown(
             placeholder="Select a level",
             options=options,
@@ -505,10 +505,10 @@ class Staffer(Cog):
         await interaction.response.edit_message(content=f"Select a level for {user.name} in {hierarchy}:", view=view)
 
     async def handle_add_staff_level(self, view: Dropdown, interaction: discord.Interaction, values: List[str], user: discord.Member, hierarchy: str):
-        level = int(values[0])
+        level = values[0]
         await self.add_staff_member(interaction, user, hierarchy, level)
 
-    async def add_staff_member(self, interaction: discord.Interaction, user: discord.Member, hierarchy: str, level: int):
+    async def add_staff_member(self, interaction: discord.Interaction, user: discord.Member, hierarchy: str, level: str):
         async with self.config.guild(interaction.guild).staff_members() as staff_members:
             if str(user.id) in staff_members:
                 return await interaction.response.send_message("This user is already a staff member.", ephemeral=True)
@@ -517,8 +517,8 @@ class Staffer(Cog):
             staff_members[str(user.id)] = staff_member.__dict__
 
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
-        if hierarchy in hierarchies and str(level) in hierarchies[hierarchy]['role_ids']:
-            role_id = hierarchies[hierarchy]['role_ids'][str(level)]
+        if hierarchy in hierarchies and level in hierarchies[hierarchy]['role_ids']:
+            role_id = hierarchies[hierarchy]['role_ids'][level]
             role = interaction.guild.get_role(role_id)
             if role:
                 await user.add_roles(role)
@@ -610,25 +610,28 @@ class Staffer(Cog):
             staff_member = StaffMember(**staff_members[str(user.id)])
 
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
-        if staff_member.hierarchy not in hierarchies:
-            return await interaction.response.send_message("Invalid hierarchy for this staff member.", ephemeral=True)
-
         current_hierarchy = hierarchies[staff_member.hierarchy]
-        next_level = str(staff_member.level + 1)
+        current_level = current_hierarchy['levels'][staff_member.level]
 
-        if next_level not in current_hierarchy['levels']:
-            # Move to the next hierarchy
-            hierarchy_keys = list(hierarchies.keys())
-            current_index = hierarchy_keys.index(staff_member.hierarchy)
-            if current_index + 1 < len(hierarchy_keys):
-                next_hierarchy = hierarchy_keys[current_index + 1]
+        if current_level['next'] is None:
+            if 'next_hierarchy' in current_level:
+                # Find the first level of the next hierarchy
+                next_hierarchy = next(iter(hierarchies.keys()))
                 next_level = "1"
             else:
-                return await interaction.response.send_message("This staff member is already at the highest level in the highest hierarchy.", ephemeral=True)
+                return await interaction.response.send_message("This staff member is already at the highest level.", ephemeral=True)
         else:
             next_hierarchy = staff_member.hierarchy
+            next_level = current_level['next']
 
-        await self.update_staff_member(interaction, user, next_hierarchy, int(next_level))
+        # If the next level is in a different hierarchy, find it
+        if next_hierarchy == staff_member.hierarchy and next_level not in current_hierarchy['levels']:
+            for hier_name, hier_data in hierarchies.items():
+                if next_level in hier_data['levels']:
+                    next_hierarchy = hier_name
+                    break
+
+        await self.update_staff_member(interaction, user, next_hierarchy, next_level)
 
     async def demote_staff_dropdown(self, interaction: discord.Interaction):
         staff_members = await self.config.guild(interaction.guild).staff_members()
@@ -655,27 +658,35 @@ class Staffer(Cog):
             staff_member = StaffMember(**staff_members[str(user.id)])
 
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
-        if staff_member.hierarchy not in hierarchies:
-            return await interaction.response.send_message("Invalid hierarchy for this staff member.", ephemeral=True)
-
         current_hierarchy = hierarchies[staff_member.hierarchy]
-        prev_level = str(staff_member.level - 1)
+        current_level = current_hierarchy['levels'][staff_member.level]
 
-        if prev_level not in current_hierarchy['levels']:
-            # Move to the previous hierarchy
-            hierarchy_keys = list(hierarchies.keys())
-            current_index = hierarchy_keys.index(staff_member.hierarchy)
-            if current_index > 0:
-                prev_hierarchy = hierarchy_keys[current_index - 1]
-                prev_level = str(len(hierarchies[prev_hierarchy]['levels']))
-            else:
-                return await interaction.response.send_message("This staff member is already at the lowest level in the lowest hierarchy.", ephemeral=True)
-        else:
-            prev_hierarchy = staff_member.hierarchy
+        prev_level = None
+        prev_hierarchy = staff_member.hierarchy
 
-        await self.update_staff_member(interaction, user, prev_hierarchy, int(prev_level))
+        # Find the previous level in the current hierarchy
+        for level, data in current_hierarchy['levels'].items():
+            if data['next'] == staff_member.level:
+                prev_level = level
+                break
 
-    async def update_staff_member(self, interaction: discord.Interaction, user: discord.Member, hierarchy: str, level: int):
+        # If not found, check other hierarchies
+        if prev_level is None:
+            for hier_name, hier_data in hierarchies.items():
+                for level, data in hier_data['levels'].items():
+                    if data.get('next') == staff_member.level and hier_data.get('next_hierarchy') == staff_member.hierarchy:
+                        prev_level = level
+                        prev_hierarchy = hier_name
+                        break
+                if prev_level:
+                    break
+
+        if prev_level is None:
+            return await interaction.response.send_message("This staff member is already at the lowest level.", ephemeral=True)
+
+        await self.update_staff_member(interaction, user, prev_hierarchy, prev_level)
+
+    async def update_staff_member(self, interaction: discord.Interaction, user: discord.Member, new_hierarchy: str, new_level: str):
         async with self.config.guild(interaction.guild).staff_members() as staff_members:
             if str(user.id) not in staff_members:
                 return await interaction.response.send_message("This user is not a staff member.", ephemeral=True)
@@ -684,24 +695,27 @@ class Staffer(Cog):
             old_hierarchy = staff_member.hierarchy
             old_level = staff_member.level
 
-            staff_member.hierarchy = hierarchy
-            staff_member.level = level
+            staff_member.hierarchy = new_hierarchy
+            staff_member.level = new_level
             staff_members[str(user.id)] = staff_member.__dict__
 
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
-        if old_hierarchy in hierarchies and str(old_level) in hierarchies[old_hierarchy]['role_ids']:
-            old_role_id = hierarchies[old_hierarchy]['role_ids'][str(old_level)]
+
+        # Remove old role
+        if old_hierarchy in hierarchies and old_level in hierarchies[old_hierarchy]['role_ids']:
+            old_role_id = hierarchies[old_hierarchy]['role_ids'][old_level]
             old_role = interaction.guild.get_role(old_role_id)
             if old_role:
                 await user.remove_roles(old_role)
 
-        if hierarchy in hierarchies and str(level) in hierarchies[hierarchy]['role_ids']:
-            new_role_id = hierarchies[hierarchy]['role_ids'][str(level)]
+        # Add new role
+        if new_hierarchy in hierarchies and new_level in hierarchies[new_hierarchy]['role_ids']:
+            new_role_id = hierarchies[new_hierarchy]['role_ids'][new_level]
             new_role = interaction.guild.get_role(new_role_id)
             if new_role:
                 await user.add_roles(new_role)
 
-        await interaction.response.send_message(f"{user.mention}'s staff status has been updated to level {level} in the {hierarchy} hierarchy.", ephemeral=True)
+        await interaction.response.send_message(f"{user.mention}'s staff status has been updated to {new_level} in the {new_hierarchy} hierarchy.", ephemeral=True)
         await self.send_staff_menu(interaction)
 
     async def staff_info_dropdown(self, interaction: discord.Interaction):
@@ -730,7 +744,7 @@ class Staffer(Cog):
 
         hierarchies = await self.config.guild(interaction.guild).hierarchies()
         hierarchy = hierarchies.get(staff_member.hierarchy, {})
-        level_name = hierarchy.get('levels', {}).get(str(staff_member.level), "Unknown")
+        level_name = hierarchy.get('levels', {}).get(staff_member.level, {}).get('name', "Unknown")
 
         embed = discord.Embed(title=f"Staff Info - {user.name}", color=discord.Color.blue())
         embed.add_field(name="Hierarchy", value=staff_member.hierarchy, inline=False)
@@ -776,7 +790,7 @@ class Staffer(Cog):
 
             user = interaction.guild.get_member(member.user_id)
             if user:
-                level_name = hierarchies.get(member.hierarchy, {}).get('levels', {}).get(str(member.level), "Unknown")
+                level_name = hierarchies.get(member.hierarchy, {}).get('levels', {}).get(member.level, {}).get('name', "Unknown")
                 embed.add_field(name=user.name, value=f"Hierarchy: {member.hierarchy}\nLevel: {member.level} ({level_name})", inline=False)
 
         if not embed.fields:
@@ -797,87 +811,6 @@ class Staffer(Cog):
 
         await interaction.response.send_message(embed=embed)
 
-    async def send_settings_menu(self, interaction: discord.Interaction):
-        settings = await self.config.guild(interaction.guild).settings()
-
-        embed = discord.Embed(title="Staffer Settings", description="Current settings:", color=discord.Color.purple())
-        embed.add_field(name="Auto Role Update", value="Enabled" if settings['auto_role_update'] else "Disabled", inline=False)
-        embed.add_field(name="Performance Review Interval", value=f"{settings['performance_review_interval']} days", inline=False)
-        embed.add_field(name="Warning Threshold", value=str(settings['warning_threshold']), inline=False)
-
-        options = [
-            {"label": "Toggle Auto Role Update", "value": "toggle_auto_role"},
-            {"label": "Set Review Interval", "value": "set_review_interval"},
-            {"label": "Set Warning Threshold", "value": "set_warning_threshold"},
-            {"label": "Back to Main Menu", "value": "back"}
-        ]
-
-        view = Dropdown(
-            placeholder="Select a setting to change",
-            options=options,
-            function=self.handle_settings_menu,
-            infinity=True
-        )
-        await interaction.response.edit_message(embed=embed, view=view)
-
-    async def handle_settings_menu(self, view: Dropdown, interaction: discord.Interaction, values: List[str]):
-        action = values[0]
-
-        if action == "toggle_auto_role":
-            await self.toggle_auto_role(interaction)
-        elif action == "set_review_interval":
-            await self.set_review_interval_modal(interaction)
-        elif action == "set_warning_threshold":
-            await self.set_warning_threshold_modal(interaction)
-        elif action == "back":
-            await self.send_main_menu(interaction)
-
-    async def toggle_auto_role(self, interaction: discord.Interaction):
-        async with self.config.guild(interaction.guild).settings() as settings:
-            settings['auto_role_update'] = not settings['auto_role_update']
-            new_state = "enabled" if settings['auto_role_update'] else "disabled"
-
-        await interaction.response.send_message(f"Auto role update has been {new_state}.", ephemeral=True)
-        await self.send_settings_menu(interaction)
-
-    async def set_review_interval_modal(self, interaction: discord.Interaction):
-        modal = Modal(
-            title="Set Review Interval",
-            inputs=[
-                {"label": "Interval (in days)", "style": discord.TextStyle.short, "custom_id": "interval", "required": True}
-            ],
-            function=self.handle_set_review_interval
-        )
-
-        await interaction.response.send_modal(modal)
-
-    async def handle_set_review_interval(self, modal: Modal, interaction: discord.Interaction, inputs: List[discord.ui.TextInput]):
-        interval = int(inputs[0].value)
-        async with self.config.guild(interaction.guild).settings() as settings:
-            settings['performance_review_interval'] = interval
-
-        await interaction.response.send_message(f"Performance review interval set to {interval} days.", ephemeral=True)
-        await self.send_settings_menu(interaction)
-
-    async def set_warning_threshold_modal(self, interaction: discord.Interaction):
-        modal = Modal(
-            title="Set Warning Threshold",
-            inputs=[
-                {"label": "Threshold", "style": discord.TextStyle.short, "custom_id": "threshold", "required": True}
-            ],
-            function=self.handle_set_warning_threshold
-        )
-
-        await interaction.response.send_modal(modal)
-
-    async def handle_set_warning_threshold(self, modal: Modal, interaction: discord.Interaction, inputs: List[discord.ui.TextInput]):
-        threshold = int(inputs[0].value)
-        async with self.config.guild(interaction.guild).settings() as settings:
-            settings['warning_threshold'] = threshold
-
-        await interaction.response.send_message(f"Warning threshold set to {threshold}.", ephemeral=True)
-        await self.send_settings_menu(interaction)
-
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if before.roles == after.roles:
@@ -895,7 +828,50 @@ class Staffer(Cog):
                 role = after.guild.get_role(role_id)
                 if role and role in after.roles and role not in before.roles:
                     if str(after.id) not in staff_members:
-                        await self.add_staff_member(None, after, hierarchy, int(level))
+                        await self.add_staff_member(None, after, hierarchy, level)
                     else:
-                        await self.update_staff_member(None, after, hierarchy, int(level))
+                        await self.update_staff_member(None, after, hierarchy, level)
                     return
+
+    @commands.is_owner()
+    @commands.command()
+    async def getlogs(self, ctx: commands.Context, level: str = "all"):
+        """Get logs for the Staffer cog."""
+        if level == "stats":
+            message = "---------- Logs Stats ----------"
+            for _level, logs in self.logs.items():
+                message += f"\n{_level}: {len(logs)}"
+            await ctx.send(box(message, lang="py"))
+            return
+        if level != "all" and (self.logs.get(level, None) is None or self.logs.get(level, None) == []):
+            await ctx.send("No logs found for this level.")
+            return
+        if level == "all":
+            data = []
+            for _level in self.logs:
+                data.extend(iter(self.logs[_level]))
+        else:
+            data = list(self.logs.get(level))
+        result = []
+        for log in data:
+            name = self.logs.name
+            time = log["time"]
+            asctime = time.strftime("%Y-%m-%d %H:%M:%S")
+            levelname = log["levelname"]
+            message = log["message"]
+            exc_info = log["exc_info"]
+            if exc_info is None:
+                exc_info = ""
+            else:
+                exc_info = "".join(traceback.format_exception(type(exc_info), exc_info, exc_info.__traceback__))
+            result.append(box(CogsUtils.replace_var_paths(f"[{asctime}] {levelname} [{name}] {message}\n{exc_info}")[:2000-10], lang="py"))
+        for page in pagify("\n".join(result), page_length=1990):
+            await ctx.send(page)
+
+    @commands.is_owner()
+    @commands.command()
+    async def getdebugloopsstatus(self, ctx: commands.Context):
+        """Get debug loops status for the Staffer cog."""
+        embeds = [loop.get_debug_embed() for loop in self.loops]
+        for embed in embeds:
+            await ctx.send(embed=embed)
