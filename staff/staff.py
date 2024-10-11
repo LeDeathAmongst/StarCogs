@@ -46,7 +46,6 @@ class Staffer(Cog):
         self.logs = CogsUtils.get_logger(cog=self)
         self.loops = []
 
-        self.init_logger()
         self.init_loops()
 
     def init_loops(self):
