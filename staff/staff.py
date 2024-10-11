@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 import asyncio
 import datetime
 from Star_Utils import Cog, Buttons, Dropdown, Modal
@@ -45,7 +45,7 @@ class StaffFlow(Cog):
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def staffflow(self, ctx: commands.Context):
-        """Staffer management system"""
+        """StaffFlow management system"""
         if ctx.invoked_subcommand is None:
             await self.send_main_menu(ctx)
 
@@ -118,7 +118,7 @@ class StaffFlow(Cog):
 
     @staffflow.group(name="settings", invoke_without_command=True)
     async def settings(self, ctx: commands.Context):
-        """Manage Staffer settings"""
+        """Manage StaffFlow settings"""
         if ctx.invoked_subcommand is None:
             await self.send_settings_menu(ctx)
 
@@ -169,7 +169,7 @@ class StaffFlow(Cog):
     async def add_staff_member(self, ctx: Optional[commands.Context], user: discord.Member, hierarchy: str, level: int, auto: bool = False):
         async with self.config.guild(user.guild).staff_members() as staff_members:
             if str(user.id) in staff_members:
-                if not auto:
+                if not auto and ctx:
                     await ctx.send("This user is already a staff member.")
                 return
 
@@ -183,7 +183,7 @@ class StaffFlow(Cog):
             if role:
                 await user.add_roles(role)
 
-        if not auto:
+        if not auto and ctx:
             await ctx.send(f"{user.mention} has been added as a level {level} staff member in the {hierarchy} hierarchy.")
         else:
             channel_id = await self.config.guild(user.guild).staff_channels.get("log_channel")
@@ -195,7 +195,7 @@ class StaffFlow(Cog):
     async def update_staff_member(self, ctx: Optional[commands.Context], user: discord.Member, hierarchy: str, level: int, auto: bool = False):
         async with self.config.guild(user.guild).staff_members() as staff_members:
             if str(user.id) not in staff_members:
-                if not auto:
+                if not auto and ctx:
                     await ctx.send("This user is not a staff member.")
                 return
 
@@ -220,7 +220,7 @@ class StaffFlow(Cog):
             if new_role:
                 await user.add_roles(new_role)
 
-        if not auto:
+        if not auto and ctx:
             await ctx.send(f"{user.mention}'s staff status has been updated to level {level} in the {hierarchy} hierarchy.")
         else:
             channel_id = await self.config.guild(user.guild).staff_channels.get("log_channel")
@@ -339,8 +339,8 @@ class StaffFlow(Cog):
         else:
             await ctx.send(embed=embed)
 
-    async def send_main_menu(self, ctx: commands.Context):
-        embed = discord.Embed(title="Staffer Management", description="Select an option to manage your staff team.", color=discord.Color.blue())
+    async def send_main_menu(self, ctx_or_interaction: Union[commands.Context, discord.Interaction]):
+        embed = discord.Embed(title="StaffFlow Management", description="Select an option to manage your staff team.", color=discord.Color.blue())
 
         buttons = [
             {"style": discord.ButtonStyle.primary, "label": "Manage Hierarchies", "custom_id": "hierarchies"},
@@ -350,10 +350,14 @@ class StaffFlow(Cog):
         ]
 
         view = Buttons(timeout=None, buttons=buttons, function=self.handle_main_menu)
-        if interaction.response.is_done():
-            await interaction.followup.send(embed=embed, view=view)
-        else:
-            await interaction.response.send_message(embed=embed, view=view)
+
+        if isinstance(ctx_or_interaction, commands.Context):
+            await ctx_or_interaction.send(embed=embed, view=view)
+        else:  # It's an Interaction
+            if ctx_or_interaction.response.is_done():
+                await ctx_or_interaction.followup.send(embed=embed, view=view)
+            else:
+                await ctx_or_interaction.response.send_message(embed=embed, view=view)
 
     async def handle_main_menu(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
@@ -722,7 +726,7 @@ class StaffFlow(Cog):
     async def send_settings_menu(self, interaction: discord.Interaction):
         settings = await self.config.guild(interaction.guild).settings()
 
-        embed = discord.Embed(title="Staffer Settings", description="Current settings:", color=discord.Color.purple())
+        embed = discord.Embed(title="StaffFlow Settings", description="Current settings:", color=discord.Color.purple())
         embed.add_field(name="Auto Role Update", value="Enabled" if settings['auto_role_update'] else "Disabled", inline=False)
         embed.add_field(name="Performance Review Interval", value=f"{settings['performance_review_interval']} days", inline=False)
         embed.add_field(name="Warning Threshold", value=str(settings['warning_threshold']), inline=False)
