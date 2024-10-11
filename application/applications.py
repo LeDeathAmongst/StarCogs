@@ -78,7 +78,7 @@ class Applications(Cog):
         """Create an embed with a dropdown for users to start applications."""
         app_types = await self.config.guild(ctx.guild).application_types()
         if not app_types:
-            await ctx.send("No application types have been set up yet.")
+            await ctx.send("No applications have been set up yet.")
             return
 
         custom_message = await self.config.guild(ctx.guild).apply_message()
@@ -90,7 +90,7 @@ class Applications(Cog):
 
         options = [{"label": name, "value": name} for name in app_types.keys()]
         select_menu = Dropdown(
-            placeholder="Choose an application type",
+            placeholder="What are you applying for?",
             options=options,
             min_values=1,
             max_values=1
@@ -227,7 +227,7 @@ class Applications(Cog):
 
         options = [{"label": name, "value": name} for name in app_types.keys()]
         select_menu = Dropdown(
-            placeholder="Choose an application type",
+            placeholder="What are you applying for?",
             options=options,
             min_values=1,
             max_values=1
@@ -238,7 +238,7 @@ class Applications(Cog):
             await self.start_application(interaction, app_type)
 
         select_menu.function = handle_selection
-        await ctx.send("Please select an application type:", view=select_menu)
+        await ctx.send("Please select an application:", view=select_menu)
 
     async def start_application(self, interaction: discord.Interaction, app_type: str):
         guild = interaction.guild
