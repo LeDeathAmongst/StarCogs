@@ -249,14 +249,17 @@ class EventLogger(Cog):
 
     @commands.Cog.listener()
     async def on_integration_create(self, integration: discord.Integration):
+        # Use getattr to safely get created_at, or use current time if not available
+        created_at = getattr(integration, 'created_at', datetime.utcnow())
+
         description = (
-            f"# 🆕 New Integration Added\n\n"
+            f"#  New Integration Added\n\n"
             f"**Name:** {integration.name}\n"
             f"**ID:** `{integration.id}`\n"
             f"**Type:** {integration.type}\n"
             f"**Account:** {integration.account.name} (ID: {integration.account.id})\n"
             f"**Guild:** {integration.guild.name}\n"
-            f"**Created At:** <t:{int(integration.created_at.timestamp())}:F>\n\n"
+            f"**Created At:** <t:{int(created_at.timestamp())}:F>\n\n"
             f"[Integration Settings](https://discord.com/channels/{integration.guild.id}/integrations)"
         )
         await self.log_event(integration.guild, 'integration_create', description, discord.Color.green())
