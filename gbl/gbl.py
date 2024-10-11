@@ -139,7 +139,6 @@ class GlobalBanList(Cog):
         user="The user to add to the ban list",
         reason_and_proof="Reason and proof separated by '|'"
     )
-    @app_commands.autocomplete(list_name=autocomplete_list_name)
     async def add_user(self, ctx: commands.Context, list_name: str, user: UserOrID, *, reason_and_proof: str):
         """Add a user to a specific ban list."""
         if not await self.is_authorized(ctx.author):
@@ -177,7 +176,6 @@ class GlobalBanList(Cog):
         list_name="The name of the ban list",
         user="The user to remove from the ban list"
     )
-    @app_commands.autocomplete(list_name=autocomplete_list_name, user=autocomplete_banned_user)
     async def remove_user(self, ctx: commands.Context, list_name: str, user: str):
         """Remove a user from a specific ban list."""
         if not await self.is_authorized(ctx.author):
@@ -243,7 +241,6 @@ class GlobalBanList(Cog):
     @gbl.command(name="subscribe")
     @commands.has_permissions(administrator=True)
     @app_commands.describe(list_name="The name of the ban list to subscribe to")
-    @app_commands.autocomplete(list_name=autocomplete_list_name)
     async def subscribe(self, ctx: commands.Context, list_name: str):
         """Subscribe to a specific ban list."""
         if list_name not in self.lists:
@@ -270,7 +267,6 @@ class GlobalBanList(Cog):
     @gbl.command(name="unsubscribe")
     @commands.has_permissions(administrator=True)
     @app_commands.describe(list_name="The name of the ban list to unsubscribe from")
-    @app_commands.autocomplete(list_name=autocomplete_list_name)
     async def unsubscribe(self, ctx: commands.Context, list_name: str):
         """Unsubscribe from a specific ban list."""
         async with self.config.guild(ctx.guild).subscribed_lists() as subscribed:
@@ -622,3 +618,19 @@ class GlobalBanList(Cog):
         await asyncio.sleep(1)  # Wait for 1 second
         for db in self.databases.values():
             db.close()
+
+async def setup(bot):
+    cog = GlobalBanList(bot)
+    await bot.add_cog(cog)
+
+    # Set up autocomplete for app commands
+    add_user_command = cog.gbl.get_command("add")
+    remove_user_command = cog.gbl.get_command("remove")
+    subscribe_command = cog.gbl.get_command("subscribe")
+    unsubscribe_command = cog.gbl.get_command("unsubscribe")
+
+    add_user_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    remove_user_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    remove_user_command.autocomplete("user")(cog.autocomplete_banned_user)
+    subscribe_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    unsubscribe_command.autocomplete("list_name")(cog.autocomplete_list_name)
