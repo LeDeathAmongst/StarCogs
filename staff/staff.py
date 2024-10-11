@@ -351,13 +351,13 @@ class StaffFlow(Cog):
 
         view = Buttons(timeout=None, buttons=buttons, function=self.handle_main_menu)
 
-        if isinstance(ctx_or_interaction, commands.Context):
-            await ctx_or_interaction.send(embed=embed, view=view)
-        else:  # It's an Interaction
+        if isinstance(ctx_or_interaction, discord.Interaction):
             if ctx_or_interaction.response.is_done():
                 await ctx_or_interaction.followup.send(embed=embed, view=view)
             else:
                 await ctx_or_interaction.response.send_message(embed=embed, view=view)
+        else:
+            await ctx_or_interaction.send(embed=embed, view=view)
 
     async def handle_main_menu(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
