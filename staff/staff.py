@@ -49,10 +49,6 @@ class Staffer(Cog):
         self.init_logger()
         self.init_loops()
 
-    def init_logger(self):
-        self.logger = self.bot.get_logger("Staffer")
-        self.logger.setLevel("DEBUG")
-
     def init_loops(self):
         self.loops.append(
             Loop(
