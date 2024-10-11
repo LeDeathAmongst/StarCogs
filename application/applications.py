@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu, Modal, Dropdown
+from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu, Modal, Dropdown, Select
 import asyncio
 import datetime
 import typing
@@ -83,8 +83,8 @@ class Applications(Cog):
 
     async def get_question_type(self, ctx: commands.Context):
         options = [
-            discord.SelectOption(label="Text Question", value=QuestionType.TEXT),
-            discord.SelectOption(label="Yes/No Question", value=QuestionType.YES_NO)
+            {"label": "Text Question", "value": QuestionType.TEXT},
+            {"label": "Yes/No Question", "value": QuestionType.YES_NO}
         ]
         select_menu = Dropdown(
             placeholder="What kind of question?",
@@ -119,8 +119,8 @@ class Applications(Cog):
 
     async def add_another_question(self, ctx: commands.Context):
         options = [
-            discord.SelectOption(label="Yes", value="yes"),
-            discord.SelectOption(label="No", value="no")
+            {"label": "Yes", "value": "yes"},
+            {"label": "No", "value": "no"}
         ]
         select_menu = Dropdown(
             placeholder="Do you want to add another question?",
@@ -176,7 +176,7 @@ class Applications(Cog):
             await ctx.send("No application types have been set up yet.")
             return
 
-        options = [discord.SelectOption(label=name, value=name) for name in app_types.keys()]
+        options = [{"label": name, "value": name} for name in app_types.keys()]
         select_menu = Dropdown(
             placeholder="Choose an application type",
             options=options,
@@ -224,12 +224,13 @@ class Applications(Cog):
             await channel.send(f"**Question {i}:** {question}")
 
             if q_type == QuestionType.YES_NO:
+                options = [
+                    {"label": "Yes", "value": "Yes"},
+                    {"label": "No", "value": "No"}
+                ]
                 view = Dropdown(
                     placeholder="Select your answer",
-                    options=[
-                        discord.SelectOption(label="Yes", value="Yes"),
-                        discord.SelectOption(label="No", value="No")
-                    ],
+                    options=options,
                     min_values=1,
                     max_values=1
                 )
