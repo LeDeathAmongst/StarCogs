@@ -22,6 +22,18 @@ from .gbl import GlobalBanList
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 
-async def setup(bot: Red) ->None:
+async def setup(bot):
     cog = GlobalBanList(bot)
     await bot.add_cog(cog)
+
+    # Set up autocomplete for app commands
+    add_user_command = cog.gbl.get_command("add")
+    remove_user_command = cog.gbl.get_command("remove")
+    subscribe_command = cog.gbl.get_command("subscribe")
+    unsubscribe_command = cog.gbl.get_command("unsubscribe")
+
+    add_user_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    remove_user_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    remove_user_command.autocomplete("user")(cog.autocomplete_banned_user)
+    subscribe_command.autocomplete("list_name")(cog.autocomplete_list_name)
+    unsubscribe_command.autocomplete("list_name")(cog.autocomplete_list_name)
