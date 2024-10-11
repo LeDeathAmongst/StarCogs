@@ -163,8 +163,7 @@ class EventLogger(Cog):
     @commands.group(name='setlog', invoke_without_command=True)
     async def setlog(self, ctx: commands.Context, event: str, channel: discord.TextChannel) -> None:
         """Set the logging channel for a specific event"""
-        async with self.config.guild(ctx.guild).channels() as channels:
-            channels[event] = channel.id
+        await self.config.guild(ctx.guild).set_raw(event, value=channel.id)
         await ctx.send(f'Logging channel for {event} set to {channel.mention}')
 
     @commands.guild_only()
@@ -188,8 +187,7 @@ class EventLogger(Cog):
     async def log_event(self, guild: typing.Optional[discord.Guild], event: str, description: str, color: discord.Color = discord.Color.blue()):
         if guild is None:
             return
-        channels = await self.config.guild(guild).channels()
-        channel_id = channels.get(event)
+        channel_id = await self.config.guild(guild).get_raw(event, default=None)
         if channel_id:
             channel = guild.get_channel(channel_id)
             if channel:
