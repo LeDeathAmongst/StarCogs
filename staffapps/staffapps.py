@@ -1,645 +1,437 @@
 import discord
-import asyncio
 from redbot.core import commands, Config
-from .dashboard_integration import DashboardIntegration
+from redbot.core.bot import Red
+from Star_Utils import Cog, CogsUtils, Settings, Buttons, Menu, Modal, Dropdown
+import asyncio
+import datetime
+import typing
+import uuid
 
-class StaffApps(DashboardIntegration, commands.Cog):  # Subclass ``DashboardIntegration``.
-    """Cog for handling applications and managing staff members."""
+class QuestionType:
+    TEXT = "text"
+    YES_NO = "yes_no"
 
-    def __init__(self, bot):
+class ApplicationType:
+    def __init__(self, name, questions):
+        self.name = name
+        self.questions = questions  # List of (question, type) tuples
+
+class Application:
+    def __init__(self, user_id, app_type, guild_id):
+        self.id = str(uuid.uuid4())
+        self.user_id = user_id
+        self.app_type = app_type
+        self.guild_id = guild_id
+        self.thread_id = None
+        self.message_id = None
+        self.answers = {}
+        self.status = "In Progress"
+        self.created_at = datetime.datetime.utcnow()
+        self.last_updated = datetime.datetime.utcnow()
+
+class StaffApps(Cog):
+    """A complex application system for Discord servers."""
+
+    def __init__(self, bot: Red):
+        super().__init__(bot)
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=1234567890)
+        self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
         default_guild = {
+            "application_types": {},
+            "log_channel": None,
             "application_channel": None,
-            "questions": {},
-            "applications": {},
-            "staff_updates_channel": None,
-            "blacklist_channel": None,
-            "loa_requests_channel": None,
-            "loa_role": None,
-            "resignation_requests_channel": None,
-            "loa_requests": {},
-            "resignation_requests": {},
-            "role_categories": {},
-            "base_role": None,
-            "auto_role": None
+            "apply_message": "Select an application type from the dropdown below to start your application.",
+            "apply_message_id": None
         }
         self.config.register_guild(**default_guild)
+        self.applications = {}
 
-    # Application Commands
+    @commands.group()
     @commands.guild_only()
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def addq(self, ctx, role: discord.Role, *, question: str):
-        """Add a question for a specific role."""
-        async with self.config.guild(ctx.guild).questions() as questions:
-            questions.setdefault(str(role.id), []).append(question)
-        await ctx.send(f"Question added for {role.name}.")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def appset(self, ctx: commands.Context):
+        """Configure the application system."""
+        pass
 
-    @commands.guild_only()
-    @commands.command()
-    @commands.has_permissions(manage_channels=True)
-    async def setappchannel(self, ctx, channel: discord.TextChannel):
-        """Set the application channel."""
+    @appset.command(name="setlogchannel")
+    async def set_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel for application logs."""
+        await self.config.guild(ctx.guild).log_channel.set(channel.id)
+        await ctx.send(f"Log channel set to {channel.mention}.")
+
+    @appset.command(name="setchannel")
+    async def set_application_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel where applications will be sent."""
         await self.config.guild(ctx.guild).application_channel.set(channel.id)
         await ctx.send(f"Application channel set to {channel.mention}.")
 
-    @commands.guild_only()
-    @commands.command()
-    async def listroles(self, ctx):
-        """List roles available for application."""
-        questions = await self.config.guild(ctx.guild).questions()
-        roles = [ctx.guild.get_role(int(role_id)).mention for role_id in questions if ctx.guild.get_role(int(role_id))]
-        if roles:
-            roles_list = '\n'.join(roles)
-            await ctx.send("Roles available for application:\n{}\n\nUse `apply <role_mention>` to apply for a role.".format(roles_list))
-        else:
-            await ctx.send("No roles set for applications.")
+    @appset.command(name="setmessage")
+    async def set_apply_message(self, ctx: commands.Context, *, message: str):
+        """Set the message for the application embed."""
+        await self.config.guild(ctx.guild).apply_message.set(message)
+        await ctx.send("Application message has been set.")
 
+    @commands.command(name="createapplyembed")
     @commands.guild_only()
-    @commands.command()
-    async def apply(self, ctx, *, role: discord.Role):
-        """Apply for a specific role."""
-        questions = await self.config.guild(ctx.guild).questions()
-        role_questions = questions.get(str(role.id))
-        if not role_questions:
-            return await ctx.send("No questions set for this role.")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def create_apply_embed(self, ctx: commands.Context):
+        """Create an embed with a dropdown for users to start applications."""
+        app_types = await self.config.guild(ctx.guild).application_types()
+        if not app_types:
+            await ctx.send("No application types have been set up yet.")
+            return
 
-        responses = {}
-        for question in role_questions:
-            await ctx.author.send(f"Question: {question}\nPlease respond in this DM.")
-            try:
-                response = await self.bot.wait_for(
-                    "message",
-                    check=lambda m: m.author == ctx.author and m.channel.type == discord.ChannelType.private,
-                    timeout=300
-                )
-                responses[question] = response.content
-            except asyncio.TimeoutError:
-                await ctx.author.send("Time's up. Please try again later.")
+        custom_message = await self.config.guild(ctx.guild).apply_message()
+        embed = discord.Embed(
+            title="Start an Application",
+            description=custom_message,
+            color=discord.Color.blue()
+        )
+
+        options = [{"label": name, "value": name} for name in app_types.keys()]
+        select_menu = Dropdown(
+            placeholder="Choose an application type",
+            options=options,
+            min_values=1,
+            max_values=1
+        )
+
+        async def handle_selection(view: Dropdown, interaction: discord.Interaction, values: typing.List[str]):
+            app_type = values[0]
+            await self.start_application(interaction, app_type)
+
+        select_menu.function = handle_selection
+
+        message = await ctx.send(embed=embed, view=select_menu)
+        await self.config.guild(ctx.guild).apply_message_id.set(message.id)
+
+    @commands.command(name="apps")
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
+    async def apps(self, ctx: commands.Context):
+        """Manage application types and questions."""
+        await self.add_application(ctx)
+
+    async def add_application(self, ctx: commands.Context):
+        questions = []
+        while True:
+            question_type = await self.get_question_type(ctx)
+            if question_type is None:
+                return
+            question = await self.get_question(ctx)
+            if question is None:
+                return
+            questions.append((question, question_type))
+
+            if not await self.add_another_question(ctx):
+                break
+
+        app_name = await self.get_application_name(ctx)
+        if app_name:
+            await self.save_application(ctx, app_name, questions)
+
+    async def get_question_type(self, ctx: commands.Context):
+        options = [
+            {"label": "Text Question", "value": QuestionType.TEXT},
+            {"label": "Yes/No Question", "value": QuestionType.YES_NO}
+        ]
+        select_menu = Dropdown(
+            placeholder="What kind of question?",
+            options=options,
+            min_values=1,
+            max_values=1
+        )
+
+        message = await ctx.send("Select the type of question:", view=select_menu)
+
+        try:
+            interaction, values, _ = await select_menu.wait_result()
+            await message.delete()
+            return values[0]
+        except asyncio.TimeoutError:
+            await message.delete()
+            await ctx.send("Question creation timed out.")
+            return None
+
+    async def get_question(self, ctx: commands.Context):
+        await ctx.send("What is the question?")
+
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        try:
+            message = await self.bot.wait_for('message', check=check, timeout=300.0)
+            return message.content
+        except asyncio.TimeoutError:
+            await ctx.send("Question input timed out.")
+            return None
+
+    async def add_another_question(self, ctx: commands.Context):
+        options = [
+            {"label": "Yes", "value": "yes"},
+            {"label": "No", "value": "no"}
+        ]
+        select_menu = Dropdown(
+            placeholder="Do you want to add another question?",
+            options=options,
+            min_values=1,
+            max_values=1
+        )
+
+        message = await ctx.send("Do you want to add another question?", view=select_menu)
+
+        try:
+            interaction, values, _ = await select_menu.wait_result()
+            await message.delete()
+            return values[0] == "yes"
+        except asyncio.TimeoutError:
+            await message.delete()
+            await ctx.send("Selection timed out.")
+            return False
+
+    async def get_application_name(self, ctx: commands.Context):
+        await ctx.send("What is this application for? (This will be the name of the application type)")
+
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        try:
+            message = await self.bot.wait_for('message', check=check, timeout=300.0)
+            return message.content
+        except asyncio.TimeoutError:
+            await ctx.send("Application name input timed out.")
+            return None
+
+    async def save_application(self, ctx: commands.Context, app_name: str, questions: typing.List[typing.Tuple[str, str]]):
+        if not app_name:
+            await ctx.send("Application creation cancelled due to missing name.")
+            return
+
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name in app_types:
+                await ctx.send(f"An application type named '{app_name}' already exists. Please choose a different name.")
                 return
 
-        async with self.config.guild(ctx.guild).applications() as applications:
-            applications.setdefault(str(role.id), {}).setdefault(str(ctx.author.id), responses)
+            app_types[app_name] = {"questions": questions}
 
-        application_channel_id = await self.config.guild(ctx.guild).application_channel()
-        application_channel = self.bot.get_channel(application_channel_id)
+        await ctx.send(f"Application '{app_name}' has been created with {len(questions)} questions.")
 
-        if application_channel:
-            embed = discord.Embed(title=f"New Application for {role.name} - {ctx.author.display_name} - {ctx.author.id}", color=discord.Color.blue())
-            for question, response in responses.items():
-                embed.add_field(name=f"Question: {question}", value=f"Response: {response}", inline=False)
-            embed.add_field(name="Status", value="Pending", inline=False)
-            message = await application_channel.send(embed=embed)
-            async with self.config.guild(ctx.guild).applications() as applications:
-                applications[str(role.id)][str(ctx.author.id)]["message_id"] = message.id
-            await ctx.author.send("Application submitted. Thank you!")
+    async def start_application(self, interaction: discord.Interaction, app_type: str):
+        guild = interaction.guild
+        user = interaction.user
+
+        app_types = await self.config.guild(guild).application_types()
+        if app_type not in app_types:
+            await interaction.response.send_message("Invalid application type.", ephemeral=True)
+            return
+
+        application = Application(user.id, app_type, guild.id)
+        self.applications[application.id] = application
+
+        questions = app_types[app_type]["questions"]
+        await self.send_application_questions(interaction, questions, application)
+
+    async def send_application_questions(self, interaction: discord.Interaction, questions: typing.List[typing.Tuple[str, str]], application: Application):
+        for i, (question, q_type) in enumerate(questions, 1):
+            if q_type == QuestionType.YES_NO:
+                modal = Modal(title=f"Question {i}", inputs=[
+                    {"label": question, "style": discord.TextStyle.short, "custom_id": f"q_{i}", "placeholder": "Yes or No"}
+                ])
+            else:
+                modal = Modal(title=f"Question {i}", inputs=[
+                    {"label": question, "style": discord.TextStyle.paragraph, "custom_id": f"q_{i}"}
+                ])
+
+            await interaction.response.send_modal(modal)
+
+            try:
+                modal_interaction, inputs, _ = await modal.wait_result()
+            except asyncio.TimeoutError:
+                await interaction.followup.send("Application timed out.", ephemeral=True)
+                del self.applications[application.id]
+                return
+
+            application.answers[i] = inputs[0].value
+
+            if i < len(questions):
+                interaction = modal_interaction
+
+        await self.finish_application(interaction, application)
+
+    async def finish_application(self, interaction: discord.Interaction, application: Application):
+        application.status = "Pending Review"
+        application.last_updated = datetime.datetime.utcnow()
+
+        guild = self.bot.get_guild(application.guild_id)
+        channel_id = await self.config.guild(guild).application_channel()
+        channel = guild.get_channel(channel_id)
+
+        if not channel:
+            await interaction.followup.send("There was an error submitting your application. Please contact a server administrator.", ephemeral=True)
+            return
+
+        embed = await self.create_application_embed(application)
+
+        buttons = [
+            {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve"},
+            {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny"},
+            {"style": discord.ButtonStyle.grey, "label": "Ask Extra Questions", "custom_id": "ask_questions"}
+        ]
+
+        view = Buttons(
+            timeout=None,
+            buttons=buttons,
+            function=self.handle_review_action
+        )
+
+        status_message = f"Status: {application.status}"
+        message = await channel.send(content=status_message, embed=embed, view=view)
+        application.message_id = message.id
+        thread = await message.create_thread(name=f"{interaction.user.name}'s {application.app_type} Application")
+        application.thread_id = thread.id
+
+        start_message = await thread.send("Application submitted. Please review.")
+        await start_message.pin()
+
+        await interaction.followup.send("Your application has been submitted. You will be notified if there are any updates.", ephemeral=True)
+        await self.log_application_event(guild, "Application Submitted", application)
+
+    async def create_application_embed(self, application: Application) -> discord.Embed:
+        user = self.bot.get_user(application.user_id)
+
+        if application.status == "Submitted" or application.status == "Pending Review":
+            color = discord.Color.blue()
+        elif application.status == "Approved":
+            color = discord.Color.green()
+        elif application.status == "Denied":
+            color = discord.Color.red()
         else:
-            await ctx.author.send("Application channel not set. Please set an application channel using the `setappchannel` command.")
+            color = discord.Color.default()
 
+        embed = discord.Embed(title=f"{user.name} | {application.app_type}", color=color)
+
+        for question, answer in application.answers.items():
+            embed.add_field(name=f"Question {question}", value=answer, inline=False)
+
+        embed.set_footer(text=f"Created: {application.created_at.strftime('%Y-%m-%d %H:%M:%S')} | Updated: {application.last_updated.strftime('%Y-%m-%d %H:%M:%S')}")
+        return embed
+
+    async def handle_review_action(self, view: Buttons, interaction: discord.Interaction):
+        action = interaction.data["custom_id"]
+        message = interaction.message
+
+        application = next((app for app in self.applications.values() if app.message_id == message.id), None)
+
+        if not application:
+            await interaction.response.send_message("Could not find the associated application.", ephemeral=True)
+            return
+
+        if action == "approve":
+            await self.approve_application(interaction, application)
+        elif action == "deny":
+            await self.deny_application(interaction, application)
+        elif action == "ask_questions":
+            await self.create_question_channel(interaction, application)
+
+    async def update_application_status(self, message: discord.Message, application: Application, new_status: str, reviewer: discord.Member):
+        application.status = new_status
+        application.last_updated = datetime.datetime.utcnow()
+        status_message = f"Status: {application.status} | {new_status} by {reviewer.name}"
+        await message.edit(content=status_message)
+        embed = await self.create_application_embed(application)
+        await message.edit(embed=embed)
+
+    async def approve_application(self, interaction: discord.Interaction, application: Application):
+        await self.update_application_status(interaction.message, application, "Approved", interaction.user)
+        await interaction.response.send_message("Application approved!", ephemeral=True)
+        user = self.bot.get_user(application.user_id)
+        if user:
+            await user.send(f"Your {application.app_type} application has been approved!")
+        await self.log_application_event(interaction.guild, "Application Approved", application)
+
+    async def deny_application(self, interaction: discord.Interaction, application: Application):
+        await self.update_application_status(interaction.message, application, "Denied", interaction.user)
+        await interaction.response.send_message("Application denied.", ephemeral=True)
+        user = self.bot.get_user(application.user_id)
+        if user:
+            await user.send(f"Your {application.app_type} application has been denied.")
+        await self.log_application_event(interaction.guild, "Application Denied", application)
+
+    async def create_question_channel(self, interaction: discord.Interaction, application: Application):
+        guild = interaction.guild
+        category = discord.utils.get(guild.categories, name="Application Questions")
+        if not category:
+            category = await guild.create_category("Application Questions")
+
+        user = self.bot.get_user(application.user_id)
+        channel_name = f"{application.app_type}-{user.name}-questions"
+        channel = await category.create_text_channel(channel_name)
+
+        # Set permissions
+        staff_roles = [role for role in guild.roles if role.permissions.manage_messages]
+        await channel.set_permissions(guild.default_role, read_messages=False)
+        for staff_role in staff_roles:
+            await channel.set_permissions(staff_role, read_messages=True, send_messages=True)
+        await channel.set_permissions(user, read_messages=True, send_messages=True)
+
+        await channel.send(f"{user.mention}, staff members have some additional questions about your {application.app_type} application.")
+        await self.update_application_status(interaction.message, application, "Additional Questions", interaction.user)
+        await interaction.response.send_message(f"Created question channel: {channel.mention}", ephemeral=True)
+
+        await self.log_application_event(guild, "Additional Questions Requested", application)
+
+    async def log_application_event(self, guild: discord.Guild, event: str, application: Application):
+        log_channel_id = await self.config.guild(guild).log_channel()
+        if not log_channel_id:
+            return
+
+        log_channel = guild.get_channel(log_channel_id)
+        if not log_channel:
+            return
+
+        user = self.bot.get_user(application.user_id)
+        embed = discord.Embed(title=f"Application Event: {event}", color=discord.Color.gold())
+        embed.add_field(name="User", value=f"{user.name}#{user.discriminator}", inline=False)
+        embed.add_field(name="Application Type", value=application.app_type, inline=False)
+        embed.add_field(name="Status", value=application.status, inline=False)
+        embed.add_field(name="Event Time", value=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), inline=False)
+
+        await log_channel.send(embed=embed)
+
+    @commands.command()
     @commands.guild_only()
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def remq(self, ctx, role: discord.Role, *, question: str):
-        """Remove a question for a specific role."""
-        async with self.config.guild(ctx.guild).questions() as questions:
-            if question in questions.get(str(role.id), []):
-                questions[str(role.id)].remove(question)
-                await ctx.send(f"Question removed for {role.mention}.")
-            else:
-                await ctx.send("Question not found for this role.")
+    @commands.has_permissions(administrator=True)
+    async def appstats(self, ctx: commands.Context):
+        """View application statistics."""
+        guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
+        total_apps = len(guild_apps)
+        status_counts = {status: len([app for app in guild_apps if app.status == status]) for status in set(app.status for app in guild_apps)}
 
+        embed = discord.Embed(title="Application Statistics", color=discord.Color.blue())
+        embed.add_field(name="Total Applications", value=str(total_apps), inline=False)
+        for status, count in status_counts.items():
+            embed.add_field(name=f"{status} Applications", value=str(count), inline=True)
+
+        await ctx.send(embed=embed)
+
+    @commands.command()
     @commands.guild_only()
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def clearqs(self, ctx, role: discord.Role):
-        """Clear all questions for a specific role."""
-        async with self.config.guild(ctx.guild).questions() as questions:
-            if str(role.id) in questions:
-                del questions[str(role.id)]
-                await ctx.send(f"Questions cleared for {role.mention}.")
-            else:
-                await ctx.send("No questions set for this role.")
+    @commands.has_permissions(administrator=True)
+    async def appsearch(self, ctx: commands.Context, *, search_term: str):
+        """Search for applications by user or type."""
+        guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
+        matching_apps = [
+            app for app in guild_apps
+            if search_term.lower() in self.bot.get_user(app.user_id).name.lower()
+            or search_term.lower() in app.app_type.lower()
+        ]
 
-    # Staff Management Commands
-    @commands.command()
-    @commands.has_permissions(manage_channels=True)
-    async def setupdates(self, ctx, channel: discord.TextChannel):
-        """Set the channel for staff update messages."""
-        await self.config.guild(ctx.guild).staff_updates_channel.set(channel.id)
-        await ctx.send(f"Staff updates channel set to {channel.mention}")
+        if not matching_apps:
+            await ctx.send("No matching applications found.")
+            return
 
-    @commands.command()
-    @commands.has_permissions(manage_channels=True)
-    async def setblacklist(self, ctx, channel: discord.TextChannel):
-        """Set the channel for blacklist messages."""
-        await self.config.guild(ctx.guild).blacklist_channel.set(channel.id)
-        await ctx.send(f"Blacklist channel set to {channel.mention}")
+        embeds = []
+        for app in matching_apps:
+            embeds.append(await self.create_application_embed(app))
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        """Handle command errors."""
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send("You do not have the required permissions to run this command.")
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def fire(self, ctx, member: discord.Member, role: discord.Role):
-        """Fire a staff member."""
-        await member.remove_roles(role)
-        auto_role_id = await self.config.guild(ctx.guild).auto_role()
-        if auto_role_id:
-            auto_role = ctx.guild.get_role(auto_role_id)
-            if auto_role:
-                await member.remove_roles(auto_role)
-        embed = discord.Embed(title="Staff Fired", color=discord.Color.red())
-        embed.add_field(name="Username", value=member.name, inline=False)
-        embed.add_field(name="User ID", value=member.id, inline=False)
-        embed.add_field(name="Position", value=role.mention, inline=False)
-        embed.add_field(name="Issuer", value=ctx.author.name, inline=False)
-        staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-        staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-        if staff_updates_channel:
-            await staff_updates_channel.send(embed=embed)
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def demote(self, ctx, member: discord.Member, new_role: discord.Role = None):
-        """Demote a staff member."""
-        role_categories = await self.config.guild(ctx.guild).role_categories()
-        member_roles = [role for role in member.roles if role.id in [int(role_id) for roles in role_categories.values() for role_id in roles]]
-
-        if not member_roles:
-            return await ctx.send("This member does not have any staff role that can be demoted.")
-
-        current_role = sorted(member_roles, key=lambda r: r.position, reverse=True)[0]
-        category_name = next((cat for cat, roles in role_categories.items() if str(current_role.id) in roles), None)
-        if not category_name:
-            return await ctx.send("This role is not part of any configured category.")
-
-        roles_in_category = role_categories[category_name]
-        current_index = roles_in_category.index(str(current_role.id))
-
-        if new_role:
-            if str(new_role.id) not in roles_in_category:
-                return await ctx.send("The specified new role is not part of the same category.")
-        else:
-            if current_index == 0:
-                return await ctx.send("This member is already at the lowest role in the category.")
-            new_role = ctx.guild.get_role(int(roles_in_category[current_index - 1]))
-
-        await member.remove_roles(current_role)
-        await member.add_roles(new_role)
-
-        # Handle category role switch
-        new_category_name = next((cat for cat, roles in role_categories.items() if str(new_role.id) in roles), None)
-        if new_category_name and new_category_name != category_name:
-            old_category_role = ctx.guild.get_role(int(role_categories[category_name][0]))
-            new_category_role = ctx.guild.get_role(int(role_categories[new_category_name][0]))
-            if old_category_role:
-                await member.remove_roles(old_category_role)
-            if new_category_role:
-                await member.add_roles(new_category_role)
-
-        embed = discord.Embed(title="Staff Demoted", color=discord.Color.orange())
-        embed.add_field(name="Username", value=member.name, inline=False)
-        embed.add_field(name="User ID", value=member.id, inline=False)
-        embed.add_field(name="New Position", value=new_role.mention, inline=False)
-        embed.add_field(name="Old Position", value=current_role.mention, inline=False)
-        embed.add_field(name="Issuer", value=ctx.author.name, inline=False)
-        staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-        staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-        if staff_updates_channel:
-            await staff_updates_channel.send(embed=embed)
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def promote(self, ctx, member: discord.Member, new_role: discord.Role = None):
-        """Promote a staff member."""
-        role_categories = await self.config.guild(ctx.guild).role_categories()
-        member_roles = [role for role in member.roles if role.id in [int(role_id) for roles in role_categories.values() for role_id in roles]]
-
-        if not member_roles:
-            return await ctx.send("This member does not have any staff role that can be promoted.")
-
-        current_role = sorted(member_roles, key=lambda r: r.position, reverse=True)[0]
-        category_name = next((cat for cat, roles in role_categories.items() if str(current_role.id) in roles), None)
-        if not category_name:
-            return await ctx.send("This role is not part of any configured category.")
-
-        roles_in_category = role_categories[category_name]
-        current_index = roles_in_category.index(str(current_role.id))
-
-        if new_role:
-            if str(new_role.id) not in roles_in_category:
-                return await ctx.send("The specified new role is not part of the same category.")
-        else:
-            if current_index == len(roles_in_category) - 1:
-                return await ctx.send("This member is already at the highest role in the category.")
-            new_role = ctx.guild.get_role(int(roles_in_category[current_index + 1]))
-
-        await member.remove_roles(current_role)
-        await member.add_roles(new_role)
-
-        # Handle category role switch
-        new_category_name = next((cat for cat, roles in role_categories.items() if str(new_role.id) in roles), None)
-        if new_category_name and new_category_name != category_name:
-            old_category_role = ctx.guild.get_role(int(role_categories[category_name][0]))
-            new_category_role = ctx.guild.get_role(int(role_categories[new_category_name][0]))
-            if old_category_role:
-                await member.remove_roles(old_category_role)
-            if new_category_role:
-                await member.add_roles(new_category_role)
-
-        embed = discord.Embed(title="Staff Promoted", color=discord.Color.blue())
-        embed.add_field(name="Username", value=member.name, inline=False)
-        embed.add_field(name="User ID", value=member.id, inline=False)
-        embed.add_field(name="New Position", value=new_role.mention, inline=False)
-        embed.add_field(name="Old Position", value=current_role.mention, inline=False)
-        embed.add_field(name="Issuer", value=ctx.author.name, inline=False)
-        staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-        staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-        if staff_updates_channel:
-            await staff_updates_channel.send(embed=embed)
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def setcategory(self, ctx, category_name: str):
-        """Set a new role category."""
-        async with self.config.guild(ctx.guild).role_categories() as role_categories:
-            if category_name in role_categories:
-                return await ctx.send("This category already exists.")
-            role_categories[category_name] = []
-        await ctx.send(f"Category '{category_name}' created.")
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def roleadd(self, ctx, category_name: str, role: discord.Role):
-        """Add a role to a category."""
-        async with self.config.guild(ctx.guild).role_categories() as role_categories:
-            if category_name not in role_categories:
-                return await ctx.send("This category does not exist.")
-            if str(role.id) in role_categories[category_name]:
-                return await ctx.send("This role is already in the category.")
-            role_categories[category_name].append(str(role.id))
-        await ctx.send(f"Role {role.mention} added to category '{category_name}'.")
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def rolerem(self, ctx, category_name: str, role: discord.Role):
-        """Remove a role from a category."""
-        async with self.config.guild(ctx.guild).role_categories() as role_categories:
-            if category_name not in role_categories:
-                return await ctx.send("This category does not exist.")
-            if str(role.id) not in role_categories[category_name]:
-                return await ctx.send("This role is not in the category.")
-            role_categories[category_name].remove(str(role.id))
-        await ctx.send(f"Role {role.mention} removed from category '{category_name}'.")
-
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def setautorole(self, ctx, role: discord.Role):
-        """Set the automatically configured role given upon hiring."""
-        await self.config.guild(ctx.guild).auto_role.set(role.id)
-        await ctx.send(f"Automatically configured role set to {role.mention}.")
-
-    # LOA Commands
-    @commands.group()
-    @commands.has_permissions(send_messages=True)
-    async def loa(self, ctx):
-        """Group command for managing leave of absence requests."""
-        pass
-
-    @loa.command(name="setchannel")
-    @commands.has_permissions(manage_channels=True)
-    async def loa_setchannel(self, ctx, channel: discord.TextChannel):
-        """Set the channel for LOA request messages."""
-        await self.config.guild(ctx.guild).loa_requests_channel.set(channel.id)
-        await ctx.send(f"LOA requests channel set to {channel.mention}")
-
-    @loa.command(name="role")
-    @commands.has_permissions(manage_roles=True)
-    async def loa_role(self, ctx, role: discord.Role):
-        """Set the role to be assigned during LOA."""
-        await self.config.guild(ctx.guild).loa_role.set(role.id)
-        await ctx.send(f"LOA role set to {role.mention}")
-
-    @loa.command(name="request")
-    async def loa_request(self, ctx, duration: str, reason: str):
-        """Request a leave of absence."""
-        loa_requests = await self.config.guild(ctx.guild).loa_requests()
-        user_id = ctx.author.id
-        loa_requests[user_id] = {
-            "user": ctx.author.id,
-            "duration": duration,
-            "reason": reason,
-            "approved_by": None
-        }
-        await self.config.guild(ctx.guild).loa_requests.set(loa_requests)
-
-        loa_requests_channel_id = await self.config.guild(ctx.guild).loa_requests_channel()
-        loa_requests_channel = self.bot.get_channel(loa_requests_channel_id)
-        if loa_requests_channel:
-            embed = discord.Embed(title="LOA Request", color=discord.Color.yellow())
-            embed.add_field(name="User", value=ctx.author.name, inline=False)
-            embed.add_field(name="Reason", value=reason, inline=False)
-            embed.add_field(name="Duration", value=duration, inline=False)
-            embed.add_field(name="User ID", value=ctx.author.id, inline=False)
-            embed.add_field(name="Status", value="Pending", inline=False)
-            embed.set_footer(text="Do `app accept loa <user_id>` or `app deny loa <user_id>`")
-            message = await loa_requests_channel.send(embed=embed)
-            loa_requests[user_id]["message_id"] = message.id
-
-        await ctx.send(f"Leave of Absence request submitted for {duration} due to {reason}.")
-
-    @loa.command(name="end")
-    async def loa_end(self, ctx, user_id: int):
-        """End a leave of absence."""
-        loa_requests = await self.config.guild(ctx.guild).loa_requests()
-        if user_id in loa_requests and loa_requests[user_id]["approved_by"] is not None:
-            user = self.bot.get_user(loa_requests[user_id]["user"])
-            loa_role_id = await self.config.guild(ctx.guild).loa_role()
-            loa_role = ctx.guild.get_role(loa_role_id)
-            if loa_role:
-                await user.remove_roles(loa_role)
-            del loa_requests[user_id]
-            await self.config.guild(ctx.guild).loa_requests.set(loa_requests)
-            embed = discord.Embed(title="Leave of Absence Ended", color=discord.Color.red())
-            embed.add_field(name="User", value=user.name, inline=False)
-            embed.add_field(name="User ID", value=user.id, inline=False)
-            staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-            staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-            if staff_updates_channel:
-                await staff_updates_channel.send(embed=embed)
-            await ctx.send(f"Leave of Absence for {user.name} has ended.")
-        else:
-            await ctx.send(f"Leave of Absence for user ID {user_id} not found or not approved.")
-
-    # Resignation Commands
-    @commands.group()
-    @commands.has_permissions(send_messages=True)
-    async def resign(self, ctx):
-        """Group command for managing resignation requests."""
-        pass
-
-    @resign.command(name="request")
-    async def resign_request(self, ctx, reason: str):
-        """Request a resignation."""
-        resignation_requests = await self.config.guild(ctx.guild).resignation_requests()
-        user_id = ctx.author.id
-        resignation_requests[user_id] = {
-            "user": ctx.author.id,
-            "reason": reason,
-            "approved_by": None
-        }
-        await self.config.guild(ctx.guild).resignation_requests.set(resignation_requests)
-
-        resignation_requests_channel_id = await self.config.guild(ctx.guild).resignation_requests_channel()
-        resignation_requests_channel = self.bot.get_channel(resignation_requests_channel_id)
-        if resignation_requests_channel:
-            embed = discord.Embed(title="Resignation Request", color=discord.Color.yellow())
-            embed.add_field(name="User", value=ctx.author.name, inline=False)
-            embed.add_field(name="Reason", value=reason, inline=False)
-            embed.add_field(name="User ID", value=ctx.author.id, inline=False)
-            embed.add_field(name="Status", value="Pending", inline=False)
-            embed.set_footer(text="Do `app accept resignation <user_id>` or `app deny resignation <user_id>`")
-            message = await resignation_requests_channel.send(embed=embed)
-            resignation_requests[user_id]["message_id"] = message.id
-
-        await ctx.send(f"Resignation request submitted due to {reason}.")
-
-    @resign.command(name="setchannel")
-    @commands.has_permissions(manage_channels=True)
-    async def resign_setchannel(self, ctx, channel: discord.TextChannel):
-        """Set the channel for resignation request messages."""
-        await self.config.guild(ctx.guild).resignation_requests_channel.set(channel.id)
-        await ctx.send(f"Resignation requests channel set to {channel.mention}")
-
-    # App Commands
-    @commands.group()
-    async def app(self, ctx):
-        """Group command for managing applications, LOA, and resignations."""
-        pass
-
-    @app.command()
-    async def status(self, ctx, request_type: str):
-        """Check the status of your application, LOA, or resignation."""
-        if request_type.lower() == "application":
-            applications = await self.config.guild(ctx.guild).applications()
-            for role_id, role_apps in applications.items():
-                if str(ctx.author.id) in role_apps:
-                    role = ctx.guild.get_role(int(role_id))
-                    await ctx.send(f"Your application status for role {role.mention}: pending")
-                    return
-            await ctx.send("You have no pending applications.")
-        elif request_type.lower() == "loa":
-            loa_requests = await self.config.guild(ctx.guild).loa_requests()
-            if str(ctx.author.id) in loa_requests:
-                loa_request = loa_requests[str(ctx.author.id)]
-                status = "approved" if loa_request["approved_by"] else "pending"
-                await ctx.send(f"Your leave of absence status: {status}")
-            else:
-                await ctx.send("You have no pending leave of absence requests.")
-        elif request_type.lower() == "resignation":
-            resignation_requests = await self.config.guild(ctx.guild).resignation_requests()
-            if str(ctx.author.id) in resignation_requests:
-                resignation_request = resignation_requests[str(ctx.author.id)]
-                status = "approved" if resignation_request["approved_by"] else "pending"
-                await ctx.send(f"Your resignation status: {status}")
-            else:
-                await ctx.send("You have no pending resignation requests.")
-        else:
-            await ctx.send("Invalid request type. Use 'application', 'loa', or 'resignation'.")
-
-    @app.command()
-    @commands.has_permissions(manage_roles=True)
-    async def accept(self, ctx, request_type: str, user_id: int):
-        """Accept an application, LOA, or resignation request."""
-        if request_type.lower() == "application":
-            applications = await self.config.guild(ctx.guild).applications()
-            for role_id, role_apps in applications.items():
-                if str(user_id) in role_apps:
-                    member = ctx.guild.get_member(user_id)
-                    role = ctx.guild.get_role(int(role_id))
-                    if not role:
-                        return await ctx.send(f"Role {role_id} not found.")
-                    await member.add_roles(role)
-                    auto_role_id = await self.config.guild(ctx.guild).auto_role()
-                    if auto_role_id:
-                        auto_role = ctx.guild.get_role(auto_role_id)
-                        if auto_role:
-                            await member.add_roles(auto_role)
-                    await member.send(f"Congratulations! Your application for {role.mention} has been accepted.")
-                    embed = discord.Embed(title="Staff Hired", color=discord.Color.green())
-                    embed.add_field(name="Username", value=member.name, inline=False)
-                    embed.add_field(name="User ID", value=member.id, inline=False)
-                    embed.add_field(name="Position", value=role.mention, inline=False)
-                    embed.add_field(name="Issuer", value=ctx.author.name, inline=False)
-                    staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-                    staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-                    if staff_updates_channel:
-                        await staff_updates_channel.send(embed=embed)
-                    # Update the original application message
-                    message_id = role_apps[str(user_id)].get("message_id")
-                    if message_id:
-                        application_channel_id = await self.config.guild(ctx.guild).application_channel()
-                        application_channel = self.bot.get_channel(application_channel_id)
-                        message = await application_channel.fetch_message(message_id)
-                        if message:
-                            embed = message.embeds[0]
-                            embed.set_field_at(-1, name="Status", value="Approved", inline=False)
-                            await message.edit(embed=embed)
-
-                    await ctx.send(f"Accepted {member.display_name} for {role.mention}.")
-                    return
-            await ctx.send("No application found for this member and role.")
-        elif request_type.lower() == "loa":
-            loa_requests = await self.config.guild(ctx.guild).loa_requests()
-            if user_id in loa_requests and loa_requests[user_id]["approved_by"] is None:
-                loa_requests[user_id]["approved_by"] = ctx.author.id
-                await self.config.guild(ctx.guild).loa_requests.set(loa_requests)
-                user = self.bot.get_user(loa_requests[user_id]["user"])
-                loa_role_id = await self.config.guild(ctx.guild).loa_role()
-                loa_role = ctx.guild.get_role(loa_role_id)
-                if not loa_role:
-                    return await ctx.send("LOA role not found.")
-                await user.add_roles(loa_role)
-                embed = discord.Embed(title="Leave of Absence", color=discord.Color.green())
-                embed.add_field(name="User", value=user.name, inline=False)
-                embed.add_field(name="Duration", value=loa_requests[user_id]["duration"], inline=False)
-                embed.add_field(name="Reason", value=loa_requests[user_id]["reason"], inline=False)
-                embed.add_field(name="Approved by", value=ctx.author.name, inline=False)
-                embed.add_field(name="Status", value="Approved", inline=False)
-                staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-                staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-                if staff_updates_channel:
-                    await staff_updates_channel.send(embed=embed)
-
-                # Update the original LOA request message
-                message_id = loa_requests[user_id].get("message_id")
-                if message_id:
-                    loa_requests_channel_id = await self.config.guild(ctx.guild).loa_requests_channel()
-                    loa_requests_channel = self.bot.get_channel(loa_requests_channel_id)
-                    message = await loa_requests_channel.fetch_message(message_id)
-                    if message:
-                        embed = message.embeds[0]
-                        embed.set_field_at(-1, name="Status", value="Approved", inline=False)
-                        await message.edit(embed=embed)
-
-                await ctx.send(f"Leave of Absence request for {user.name} approved.")
-            else:
-                await ctx.send(f"Leave of Absence request for user ID {user_id} not found or already approved.")
-        elif request_type.lower() == "resignation":
-            resignation_requests = await self.config.guild(ctx.guild).resignation_requests()
-            if user_id in resignation_requests and resignation_requests[user_id]["approved_by"] is None:
-                resignation_requests[user_id]["approved_by"] = ctx.author.id
-                await self.config.guild(ctx.guild).resignation_requests.set(resignation_requests)
-                user = self.bot.get_user(resignation_requests[user_id]["user"])
-                embed = discord.Embed(title="Staff Member Resigned", color=discord.Color.red())
-                embed.add_field(name="Former Staff", value=user.name, inline=False)
-                embed.add_field(name="Reason", value=resignation_requests[user_id]["reason"], inline=False)
-                embed.add_field(name="Approved by", value=ctx.author.name, inline=False)
-                embed.add_field(name="Status", value="Approved", inline=False)
-                staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-                staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-                if staff_updates_channel:
-                    await staff_updates_channel.send(embed=embed)
-
-                # Update the original resignation request message
-                message_id = resignation_requests[user_id].get("message_id")
-                if message_id:
-                    resignation_requests_channel_id = await self.config.guild(ctx.guild).resignation_requests_channel()
-                    resignation_requests_channel = self.bot.get_channel(resignation_requests_channel_id)
-                    message = await resignation_requests_channel.fetch_message(message_id)
-                    if message:
-                        embed = message.embeds[0]
-                        embed.set_field_at(-1, name="Status", value="Approved", inline=False)
-                        await message.edit(embed=embed)
-
-                await ctx.send(f"Resignation request for {user.name} accepted.")
-            else:
-                await ctx.send(f"Resignation request for user ID {user_id} not found or already accepted.")
-        else:
-            await ctx.send("Invalid request type. Use 'application', 'loa', or 'resignation'.")
-
-    @app.command()
-    @commands.has_permissions(manage_roles=True)
-    async def deny(self, ctx, request_type: str, user_id: int):
-        """Deny an application, LOA, or resignation request."""
-        if request_type.lower() == "application":
-            applications = await self.config.guild(ctx.guild).applications()
-            for role_id, role_apps in applications.items():
-                if str(user_id) in role_apps:
-                    member = ctx.guild.get_member(user_id)
-                    await member.send(f"Sorry, your application for role {ctx.guild.get_role(int(role_id)).mention} was denied.")
-                    await ctx.send(f"Denied {member.display_name}'s application for role {ctx.guild.get_role(int(role_id)).mention}.")
-
-                    # Update the original application message
-                    message_id = role_apps[str(user_id)].get("message_id")
-                    if message_id:
-                        application_channel_id = await self.config.guild(ctx.guild).application_channel()
-                        application_channel = self.bot.get_channel(application_channel_id)
-                        message = await application_channel.fetch_message(message_id)
-                        if message:
-                            embed = message.embeds[0]
-                            embed.set_field_at(-1, name="Status", value="Denied", inline=False)
-                            await message.edit(embed=embed)
-
-                    return
-            await ctx.send("No application found for this member and role.")
-        elif request_type.lower() == "loa":
-            loa_requests = await self.config.guild(ctx.guild).loa_requests()
-            if user_id in loa_requests:
-                loa_requests[user_id]["approved_by"] = None
-                await self.config.guild(ctx.guild).loa_requests.set(loa_requests)
-                embed = discord.Embed(title="Leave of Absence", color=discord.Color.red())
-                embed.add_field(name="User ID", value=user_id, inline=False)
-                embed.add_field(name="Status", value="Denied", inline=False)
-                staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-                staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-                if staff_updates_channel:
-                    await staff_updates_channel.send(embed=embed)
-
-                # Update the original LOA request message
-                message_id = loa_requests[user_id].get("message_id")
-                if message_id:
-                    loa_requests_channel_id = await self.config.guild(ctx.guild).loa_requests_channel()
-                    loa_requests_channel = self.bot.get_channel(loa_requests_channel_id)
-                    message = await loa_requests_channel.fetch_message(message_id)
-                    if message:
-                        embed = message.embeds[0]
-                        embed.set_field_at(-1, name="Status", value="Denied", inline=False)
-                        await message.edit(embed=embed)
-
-                await ctx.send(f"Leave of Absence request for user ID {user_id} denied.")
-            else:
-                await ctx.send(f"Leave of Absence request for user ID {user_id} not found.")
-        elif request_type.lower() == "resignation":
-            resignation_requests = await self.config.guild(ctx.guild).resignation_requests()
-            if user_id in resignation_requests:
-                resignation_requests[user_id]["approved_by"] = None
-                await self.config.guild(ctx.guild).resignation_requests.set(resignation_requests)
-                embed = discord.Embed(title="Resignation Request", color=discord.Color.red())
-                embed.add_field(name="User ID", value=user_id, inline=False)
-                embed.add_field(name="Status", value="Denied", inline=False)
-                staff_updates_channel_id = await self.config.guild(ctx.guild).staff_updates_channel()
-                staff_updates_channel = self.bot.get_channel(staff_updates_channel_id)
-                if staff_updates_channel:
-                    await staff_updates_channel.send(embed=embed)
-
-                # Update the original resignation request message
-                message_id = resignation_requests[user_id].get("message_id")
-                if message_id:
-                    resignation_requests_channel_id = await self.config.guild(ctx.guild).resignation_requests_channel()
-                    resignation_requests_channel = self.bot.get_channel(resignation_requests_channel_id)
-                    message = await resignation_requests_channel.fetch_message(message_id)
-                    if message:
-                        embed = message.embeds[0]
-                        embed.set_field_at(-1, name="Status", value="Denied", inline=False)
-                        await message.edit(embed=embed)
-
-                await ctx.send(f"Resignation request for user ID {user_id} denied.")
-            else:
-                await ctx.send(f"Resignation request for user ID {user_id} not found.")
-        else:
-            await ctx.send("Invalid request type. Use 'application', 'loa', or 'resignation'.")
+        await Menu(pages=embeds).start(ctx)
