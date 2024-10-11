@@ -384,10 +384,11 @@ class GlobalBanList(Cog):
                     print(f"Failed to ban {member.name} from {member.guild.name} - Insufficient permissions")
 
     async def periodic_check(self):
-        """Periodically check all servers for banned users."""
         while not self.is_unloading:
             try:
                 await asyncio.sleep(3600)  # Check every hour
+                if self.is_unloading:
+                    break
                 for guild in self.bot.guilds:
                     guild_config = await self.config.guild(guild).all()
                     if guild_config['auto_ban']:
@@ -398,26 +399,31 @@ class GlobalBanList(Cog):
                 print(f"Error in periodic check: {str(e)}")
 
     async def check_guild_members(self, guild: discord.Guild, subscribed_lists: list):
-        """Check all members of a guild against subscribed ban lists."""
+        if self.is_unloading:
+            return
         for member in guild.members:
             for list_name in subscribed_lists:
-                if list_name not in self.lists:
+                if list_name not in self.lists or self.is_unloading:
                     continue
                 cursor = self.cursors[list_name]
-                cursor.execute("SELECT reason, proof FROM banned_users WHERE user_id = ?", (member.id,))
-                ban_info = cursor.fetchone()
-                if ban_info:
-                    reason, proof = ban_info
-                    try:
-                        await member.ban(reason=f"Global Ban List: {list_name} - {reason}")
-                        guild_config = await self.config.guild(guild).all()
-                        if guild_config['notify_channel']:
-                            channel = guild.get_channel(guild_config['notify_channel'])
-                            if channel:
-                                await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
-                        await self.general_log(guild, "User Banned", member, list_name, reason, proof)
-                    except discord.Forbidden:
-                        print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+                try:
+                    cursor.execute("SELECT reason, proof FROM banned_users WHERE user_id = ?", (member.id,))
+                    ban_info = cursor.fetchone()
+                    if ban_info:
+                        reason, proof = ban_info
+                        try:
+                            await member.ban(reason=f"Global Ban List: {list_name} - {reason}")
+                            guild_config = await self.config.guild(guild).all()
+                            if guild_config['notify_channel']:
+                                channel = guild.get_channel(guild_config['notify_channel'])
+                                if channel:
+                                    await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
+                            await self.general_log(guild, "User Banned", member, list_name, reason, proof)
+                        except discord.Forbidden:
+                            print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+                except sqlite3.ProgrammingError:
+                    if not self.is_unloading:
+                        print(f"Database for {list_name} is closed unexpectedly.")
 
     async def check_subscribed_servers(self, user_id: int, list_name: str):
         """Check all subscribed servers for a newly banned user."""
@@ -569,5 +575,10 @@ class GlobalBanList(Cog):
         self.is_unloading = True
         if self.periodic_check_task:
             self.periodic_check_task.cancel()
+        # Wait a short time to ensure the task has a chance to complete
+        asyncio.create_task(self._finish_unload())
+
+    async def _finish_unload(self):
+        await asyncio.sleep(1)  # Wait for 1 second
         for db in self.databases.values():
             db.close()
