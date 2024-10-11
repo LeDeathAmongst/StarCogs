@@ -5,7 +5,7 @@ from redbot.core.utils.chat_formatting import box, pagify
 from typing import Dict, List, Optional, Union
 import asyncio
 import datetime
-from Star_Utils import Cog, Buttons, Dropdown, Modal, Loop, SharedCog
+from Star_Utils import Cog, Buttons, Dropdown, Modal, Loop, CogsUtils
 
 class StaffHierarchy:
     def __init__(self, name: str, levels: Dict[int, str], role_ids: Dict[int, int]):
