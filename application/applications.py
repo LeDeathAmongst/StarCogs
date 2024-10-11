@@ -17,11 +17,12 @@ class ApplicationType:
         self.questions = questions  # List of (question, type) tuples
 
 class Application:
-    def __init__(self, user_id, app_type, channel_id):
+    def __init__(self, user_id, app_type, guild_id):
         self.id = str(uuid.uuid4())
         self.user_id = user_id
         self.app_type = app_type
-        self.channel_id = channel_id
+        self.guild_id = guild_id
+        self.thread_id = None
         self.answers = {}
         self.status = "In Progress"
         self.created_at = datetime.datetime.utcnow()
@@ -37,7 +38,9 @@ class Applications(Cog):
         default_guild = {
             "application_types": {},
             "log_channel": None,
-            "application_category": None,
+            "application_channel": None,
+            "apply_message": "Select an application type from the dropdown below to start your application.",
+            "apply_message_id": None
         }
         self.config.register_guild(**default_guild)
         self.applications = {}
@@ -55,11 +58,51 @@ class Applications(Cog):
         await self.config.guild(ctx.guild).log_channel.set(channel.id)
         await ctx.send(f"Log channel set to {channel.mention}.")
 
-    @appset.command(name="setcategory")
-    async def set_application_category(self, ctx: commands.Context, category: discord.CategoryChannel):
-        """Set the category for application channels."""
-        await self.config.guild(ctx.guild).application_category.set(category.id)
-        await ctx.send(f"Application category set to {category.name}.")
+    @appset.command(name="setchannel")
+    async def set_application_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel where applications will be sent."""
+        await self.config.guild(ctx.guild).application_channel.set(channel.id)
+        await ctx.send(f"Application channel set to {channel.mention}.")
+
+    @appset.command(name="setmessage")
+    async def set_apply_message(self, ctx: commands.Context, *, message: str):
+        """Set the message for the application embed."""
+        await self.config.guild(ctx.guild).apply_message.set(message)
+        await ctx.send("Application message has been set.")
+
+    @commands.command(name="createapplyembed")
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
+    async def create_apply_embed(self, ctx: commands.Context):
+        """Create an embed with a dropdown for users to start applications."""
+        app_types = await self.config.guild(ctx.guild).application_types()
+        if not app_types:
+            await ctx.send("No application types have been set up yet.")
+            return
+
+        custom_message = await self.config.guild(ctx.guild).apply_message()
+        embed = discord.Embed(
+            title="Start an Application",
+            description=custom_message,
+            color=discord.Color.blue()
+        )
+
+        options = [{"label": name, "value": name} for name in app_types.keys()]
+        select_menu = Dropdown(
+            placeholder="Choose an application type",
+            options=options,
+            min_values=1,
+            max_values=1
+        )
+
+        async def handle_selection(view: Dropdown, interaction: discord.Interaction, values: typing.List[str]):
+            app_type = values[0]
+            await self.start_application(interaction, app_type)
+
+        select_menu.function = handle_selection
+
+        message = await ctx.send(embed=embed, view=select_menu)
+        await self.config.guild(ctx.guild).apply_message_id.set(message.id)
 
     @commands.command(name="apps")
     @commands.guild_only()
@@ -205,28 +248,16 @@ class Applications(Cog):
             await interaction.response.send_message("Invalid application type.", ephemeral=True)
             return
 
-        category_id = await self.config.guild(guild).application_category()
-        category = guild.get_channel(category_id)
-        if not category:
-            await interaction.response.send_message("Application category not set up. Please contact an admin.", ephemeral=True)
-            return
+        application = Application(user.id, app_type, guild.id)
+        self.applications[application.id] = application
 
-        channel_name = f"{app_type.lower()}-{user.name}-{user.discriminator}"
-        channel = await guild.create_text_channel(channel_name, category=category)
+        await interaction.response.send_message("I've sent you a DM to start your application.", ephemeral=True)
+        await self.send_application_questions(user, app_types[app_type]["questions"], application)
 
-        await channel.set_permissions(user, read_messages=True, send_messages=True)
-        await channel.set_permissions(guild.default_role, read_messages=False)
-
-        application = Application(user.id, app_type, channel.id)
-        self.applications[channel.id] = application
-
-        await interaction.response.send_message(f"Your application has been started in {channel.mention}", ephemeral=True)
-        await self.send_application_questions(channel, app_types[app_type]["questions"])
-
-    async def send_application_questions(self, channel: discord.TextChannel, questions: typing.List[typing.Tuple[str, str]]):
-        await channel.send("Please answer the following questions:")
+    async def send_application_questions(self, user: discord.User, questions: typing.List[typing.Tuple[str, str]], application: Application):
+        await user.send("Please answer the following questions:")
         for i, (question, q_type) in enumerate(questions, 1):
-            await channel.send(f"**Question {i}:** {question}")
+            await user.send(f"**Question {i}:** {question}")
 
             if q_type == QuestionType.YES_NO:
                 options = [
@@ -239,66 +270,89 @@ class Applications(Cog):
                     min_values=1,
                     max_values=1
                 )
-                message = await channel.send("Please select your answer:", view=view)
+                message = await user.send("Please select your answer:", view=view)
 
                 try:
                     interaction, values, _ = await view.wait_result()
-                    self.applications[channel.id].answers[i] = values[0]
+                    application.answers[i] = values[0]
                     await message.edit(content=f"You answered: {values[0]}", view=None)
                 except asyncio.TimeoutError:
-                    await channel.send("You took too long to answer. The application has been cancelled.")
-                    await self.close_application(channel.id, "Timeout")
+                    await user.send("You took too long to answer. The application has been cancelled.")
+                    del self.applications[application.id]
                     return
             else:
                 def check(m):
-                    return m.channel == channel and m.author.id == self.applications[channel.id].user_id
+                    return m.author == user and isinstance(m.channel, discord.DMChannel)
 
                 try:
                     answer = await self.bot.wait_for('message', check=check, timeout=600)
-                    self.applications[channel.id].answers[i] = answer.content
+                    application.answers[i] = answer.content
                 except asyncio.TimeoutError:
-                    await channel.send("You took too long to answer. The application has been cancelled.")
-                    await self.close_application(channel.id, "Timeout")
+                    await user.send("You took too long to answer. The application has been cancelled.")
+                    del self.applications[application.id]
                     return
 
-        await self.finish_application(channel)
+        await self.finish_application(user, application)
 
-    async def finish_application(self, channel: discord.TextChannel):
-        application = self.applications[channel.id]
-        application.status = "Pending Review"
+    async def finish_application(self, user: discord.User, application: Application):
+        application.status = "Submitted"
         application.last_updated = datetime.datetime.utcnow()
 
-        embeds = await self.create_application_embeds(application)
-        for embed in embeds:
-            await channel.send(embed=embed)
+        guild = self.bot.get_guild(application.guild_id)
+        channel_id = await self.config.guild(guild).application_channel()
+        channel = guild.get_channel(channel_id)
 
-        await channel.send("Your application has been submitted for review.")
+        if not channel:
+            await user.send("There was an error submitting your application. Please contact a server administrator.")
+            return
 
-        review_message = await channel.send("Please review this application:")
-        approve_button = discord.ui.Button(style=discord.ButtonStyle.green, label="Approve", custom_id="approve")
-        deny_button = discord.ui.Button(style=discord.ButtonStyle.red, label="Deny", custom_id="deny")
-        more_info_button = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Request More Info", custom_id="more_info")
+        embed = await self.create_application_embed(application)
+        message = await channel.send(embed=embed)
+
+        thread = await message.create_thread(name=f"{user.name}'s {application.app_type} Application")
+        application.thread_id = thread.id
+
+        buttons = [
+            {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve"},
+            {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny"},
+            {"style": discord.ButtonStyle.blurple, "label": "Ask Question", "custom_id": "ask_question"}
+        ]
 
         view = Buttons(
             timeout=None,
-            buttons=[approve_button, deny_button, more_info_button],
+            buttons=buttons,
             function=self.handle_review_action
         )
-        await review_message.edit(view=view)
+        await thread.send("Please review this application:", view=view)
 
-        await self.log_application_event(channel.guild, "Application Submitted", application)
+        await user.send("Your application has been submitted. You will be notified if there are any updates.")
+        await self.log_application_event(guild, "Application Submitted", application)
+
+    async def create_application_embed(self, application: Application) -> discord.Embed:
+        user = self.bot.get_user(application.user_id)
+        embed = discord.Embed(title=f"{user.name} | {application.app_type}", color=discord.Color.blue())
+
+        for question, answer in application.answers.items():
+            embed.add_field(name=f"Question {question}", value=answer, inline=False)
+
+        embed.set_footer(text=f"Status: {application.status} | Created: {application.created_at.strftime('%Y-%m-%d %H:%M:%S')}\nUpdated: {application.last_updated.strftime('%Y-%m-%d %H:%M:%S')}")
+        return embed
 
     async def handle_review_action(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
-        channel = interaction.channel
-        application = self.applications[channel.id]
+        thread = interaction.channel
+        application = next((app for app in self.applications.values() if app.thread_id == thread.id), None)
+
+        if not application:
+            await interaction.response.send_message("Could not find the associated application.", ephemeral=True)
+            return
 
         if action == "approve":
             await self.approve_application(interaction, application)
         elif action == "deny":
             await self.deny_application(interaction, application)
-        elif action == "more_info":
-            await self.request_more_info(interaction, application)
+        elif action == "ask_question":
+            await self.ask_question(interaction, application)
 
     async def approve_application(self, interaction: discord.Interaction, application: Application):
         application.status = "Approved"
@@ -307,7 +361,7 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been approved!")
-        await self.close_application(application.channel_id, "Approved")
+        await self.update_application_embed(interaction.channel, application)
         await self.log_application_event(interaction.guild, "Application Approved", application)
 
     async def deny_application(self, interaction: discord.Interaction, application: Application):
@@ -317,12 +371,12 @@ class Applications(Cog):
         user = self.bot.get_user(application.user_id)
         if user:
             await user.send(f"Your {application.app_type} application has been denied.")
-        await self.close_application(application.channel_id, "Denied")
+        await self.update_application_embed(interaction.channel, application)
         await self.log_application_event(interaction.guild, "Application Denied", application)
 
-    async def request_more_info(self, interaction: discord.Interaction, application: Application):
-        modal = Modal(title="Request More Information")
-        modal.add_item(discord.ui.TextInput(label="What additional information is needed?"))
+    async def ask_question(self, interaction: discord.Interaction, application: Application):
+        modal = Modal(title="Ask a Question")
+        modal.add_item(discord.ui.TextInput(label="Enter your question"))
         await interaction.response.send_modal(modal)
 
         try:
@@ -332,50 +386,24 @@ class Applications(Cog):
                 timeout=300.0
             )
         except asyncio.TimeoutError:
-            await interaction.followup.send("Request timed out.", ephemeral=True)
+            await interaction.followup.send("Question request timed out.", ephemeral=True)
             return
 
-        additional_info_request = modal_interaction.data['components'][0]['components'][0]['value']
-        await modal_interaction.response.send_message(f"Requesting additional information: {additional_info_request}")
-
+        question = modal_interaction.data['components'][0]['components'][0]['value']
+        thread = interaction.channel
+        await thread.send(f"**Staff Question:** {question}")
         user = self.bot.get_user(application.user_id)
-        if user:
-            await user.send(f"Additional information is required for your {application.app_type} application:\n\n{additional_info_request}")
+        await user.send(f"A staff member has asked a question regarding your {application.app_type} application:\n\n{question}\n\nPlease respond in the application thread.")
 
-        application.status = "More Info Requested"
-        application.last_updated = datetime.datetime.utcnow()
-        await self.log_application_event(interaction.guild, "More Info Requested", application)
-
-    async def close_application(self, channel_id: int, reason: str):
-        application = self.applications.pop(channel_id, None)
-        if not application:
-            return
-
-        channel = self.bot.get_channel(channel_id)
+    async def update_application_embed(self, thread: discord.Thread, application: Application):
+        channel_id = await self.config.guild(thread.guild).application_channel()
+        channel = thread.guild.get_channel(channel_id)
         if channel:
-            await channel.send(f"This application is now closed. Reason: {reason}")
-            await asyncio.sleep(10)
-            await channel.delete()
-
-    async def create_application_embeds(self, application: Application) -> typing.List[discord.Embed]:
-        user = self.bot.get_user(application.user_id)
-        embeds = []
-        current_embed = discord.Embed(title=f"{application.app_type} Application", color=discord.Color.blue())
-        current_embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar.url)
-        current_embed.add_field(name="Status", value=application.status, inline=False)
-        current_embed.add_field(name="Created At", value=application.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
-        current_embed.add_field(name="Last Updated", value=application.last_updated.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
-
-        for question, answer in application.answers.items():
-            field_name = f"Question {question}"
-            field_value = answer[:1021] + "..." if len(answer) > 1024 else answer
-            if len(current_embed.fields) >= 25 or len(current_embed) + len(field_name) + len(field_value) > 6000:
-                embeds.append(current_embed)
-                current_embed = discord.Embed(title=f"{application.app_type} Application (Continued)", color=discord.Color.blue())
-            current_embed.add_field(name=field_name, value=field_value, inline=False)
-
-        embeds.append(current_embed)
-        return embeds
+            async for message in channel.history(limit=None):
+                if message.id == thread.id:
+                    embed = await self.create_application_embed(application)
+                    await message.edit(embed=embed)
+                    break
 
     async def log_application_event(self, guild: discord.Guild, event: str, application: Application):
         log_channel_id = await self.config.guild(guild).log_channel()
@@ -400,7 +428,7 @@ class Applications(Cog):
     @commands.has_permissions(administrator=True)
     async def appstats(self, ctx: commands.Context):
         """View application statistics."""
-        guild_apps = [app for app in self.applications.values() if self.bot.get_channel(app.channel_id).guild.id == ctx.guild.id]
+        guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
         total_apps = len(guild_apps)
         status_counts = {status: len([app for app in guild_apps if app.status == status]) for status in set(app.status for app in guild_apps)}
 
@@ -416,7 +444,7 @@ class Applications(Cog):
     @commands.has_permissions(administrator=True)
     async def appsearch(self, ctx: commands.Context, *, search_term: str):
         """Search for applications by user or type."""
-        guild_apps = [app for app in self.applications.values() if self.bot.get_channel(app.channel_id).guild.id == ctx.guild.id]
+        guild_apps = [app for app in self.applications.values() if app.guild_id == ctx.guild.id]
         matching_apps = [
             app for app in guild_apps
             if search_term.lower() in self.bot.get_user(app.user_id).name.lower()
@@ -429,6 +457,6 @@ class Applications(Cog):
 
         embeds = []
         for app in matching_apps:
-            embeds.extend(await self.create_application_embeds(app))
+            embeds.append(await self.create_application_embed(app))
 
         await Menu(pages=embeds).start(ctx)
