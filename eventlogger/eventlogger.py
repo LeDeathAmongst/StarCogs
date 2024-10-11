@@ -12,7 +12,7 @@ from .dashboard_integration import DashboardIntegration
 _ = Translator('EventLogger', __file__)
 
 @cog_i18n(_)
-class EventLogger(Cog):
+class EventLogger(DashboardIntegration, Cog):
     """Cog to log various Discord events"""
 
     def __init__(self, bot: Red):
