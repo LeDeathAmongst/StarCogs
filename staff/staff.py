@@ -43,7 +43,7 @@ class Staffer(Cog):
 
         self.config.register_guild(**default_guild)
 
-        self.logs = {}
+        self.logs = CogsUtils.get_logger(cog=self)
         self.loops = []
 
         self.init_logger()
