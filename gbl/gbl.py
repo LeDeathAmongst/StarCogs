@@ -6,8 +6,8 @@ import sqlite3
 import asyncio
 import os
 import math
-import typing
 from datetime import datetime
+import typing
 
 class UserOrID(commands.Converter):
     async def convert(self, ctx, argument):
@@ -24,9 +24,9 @@ class UserOrID(commands.Converter):
                     raise commands.BadArgument("Not a valid user or user ID.")
 
 class AppealModal(discord.ui.Modal, title='Global Ban Appeal'):
-    understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph)
-    why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph)
-    steps = discord.ui.TextInput(label='What you do to avoid punishment??', style=discord.TextStyle.paragraph)
+    understand = discord.ui.TextInput(label='Do you understand why you were banned?', style=discord.TextStyle.paragraph, max_length=1000)
+    why_unban = discord.ui.TextInput(label='Why should you be unbanned?', style=discord.TextStyle.paragraph, max_length=1000)
+    steps = discord.ui.TextInput(label='What steps will you take to prevent future bans?', style=discord.TextStyle.paragraph, max_length=1000)
 
     async def on_submit(self, interaction: discord.Interaction):
         appeal_text = f"Understanding: {self.understand.value}\n\nReason for unban: {self.why_unban.value}\n\nPreventive steps: {self.steps.value}"
@@ -58,6 +58,8 @@ class GlobalBanList(Cog):
         self.databases = {}
         self.cursors = {}
         self.setup_databases()
+        self.is_unloading = False
+        self.periodic_check_task = None
 
     def setup_databases(self):
         for list_name in self.lists:
@@ -77,7 +79,7 @@ class GlobalBanList(Cog):
 
     async def cog_load(self):
         await super().cog_load()
-        self.bot.loop.create_task(self.periodic_check())
+        self.periodic_check_task = self.bot.loop.create_task(self.periodic_check())
 
     @commands.group(name="globalbanlistowner", aliases=["gblo"])
     @commands.is_owner()
@@ -296,14 +298,16 @@ class GlobalBanList(Cog):
             cursor = self.cursors[list_name]
             cursor.execute("SELECT 1 FROM banned_users WHERE user_id = ?", (ctx.author.id,))
             if cursor.fetchone():
-                appeal_modal = AppealModal()
-
-                # Create a button for the user to click
                 view = discord.ui.View()
                 button = discord.ui.Button(label="Submit Appeal", style=discord.ButtonStyle.primary)
 
                 async def button_callback(interaction: discord.Interaction):
-                    await interaction.response.send_modal(appeal_modal)
+                    try:
+                        appeal_modal = AppealModal()
+                        await interaction.response.send_modal(appeal_modal)
+                    except Exception as e:
+                        print(f"Error in button callback: {str(e)}")
+                        await interaction.response.send_message("An error occurred. Please try again later.", ephemeral=True)
 
                 button.callback = button_callback
                 view.add_item(button)
@@ -381,12 +385,17 @@ class GlobalBanList(Cog):
 
     async def periodic_check(self):
         """Periodically check all servers for banned users."""
-        while True:
-            await asyncio.sleep(3600)  # Check every hour
-            for guild in self.bot.guilds:
-                guild_config = await self.config.guild(guild).all()
-                if guild_config['auto_ban']:
-                    await self.check_guild_members(guild, guild_config['subscribed_lists'])
+        while not self.is_unloading:
+            try:
+                await asyncio.sleep(3600)  # Check every hour
+                for guild in self.bot.guilds:
+                    guild_config = await self.config.guild(guild).all()
+                    if guild_config['auto_ban']:
+                        await self.check_guild_members(guild, guild_config['subscribed_lists'])
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                print(f"Error in periodic check: {str(e)}")
 
     async def check_guild_members(self, guild: discord.Guild, subscribed_lists: list):
         """Check all members of a guild against subscribed ban lists."""
@@ -557,5 +566,8 @@ class GlobalBanList(Cog):
                                     await channel.send(embed=new_embed)
 
     def cog_unload(self):
+        self.is_unloading = True
+        if self.periodic_check_task:
+            self.periodic_check_task.cancel()
         for db in self.databases.values():
             db.close()
