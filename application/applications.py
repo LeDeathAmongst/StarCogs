@@ -23,6 +23,7 @@ class Application:
         self.app_type = app_type
         self.guild_id = guild_id
         self.thread_id = None
+        self.message_id = None
         self.answers = {}
         self.status = "In Progress"
         self.created_at = datetime.datetime.utcnow()
@@ -323,6 +324,7 @@ class Applications(Cog):
         )
 
         message = await channel.send(embed=embed, view=view)
+        application.message_id = message.id
         thread = await message.create_thread(name=f"{user.name}'s {application.app_type} Application")
         application.thread_id = thread.id
 
@@ -345,7 +347,8 @@ class Applications(Cog):
     async def handle_review_action(self, view: Buttons, interaction: discord.Interaction):
         action = interaction.data["custom_id"]
         message = interaction.message
-        application = next((app for app in self.applications.values() if app.thread_id == message.id), None)
+
+        application = next((app for app in self.applications.values() if app.message_id == message.id), None)
 
         if not application:
             await interaction.response.send_message("Could not find the associated application.", ephemeral=True)
@@ -384,7 +387,7 @@ class Applications(Cog):
 
     async def approve_with_reason(self, interaction: discord.Interaction, application: Application):
         modal = Modal(title="Approve Application")
-        modal.add_item(discord.ui.TextInput(label="Reason for approval", style=discord.TextStyle.paragraph))
+        modal.add_item(discord.ui.TextInput(label="Reason", style=discord.TextStyle.paragraph))
         await interaction.response.send_modal(modal)
 
         try:
@@ -409,7 +412,7 @@ class Applications(Cog):
 
     async def deny_with_reason(self, interaction: discord.Interaction, application: Application):
         modal = Modal(title="Deny Application")
-        modal.add_item(discord.ui.TextInput(label="Reason for denial", style=discord.TextStyle.paragraph))
+        modal.add_item(discord.ui.TextInput(label="Reason", style=discord.TextStyle.paragraph))
         await interaction.response.send_modal(modal)
 
         try:
