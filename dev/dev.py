@@ -75,6 +75,7 @@ class DevOutput(dev_commands.DevOutput):
         persistence_data = load_persistence()
         self.bot._bypass_cooldowns = persistence_data.get('bypass_cooldowns',
             False)
+        bot = self.bot
         super().__init__(*args, **kwargs)
 
     def __str__(self, output_mode: typing.Literal['repr', 'repr_or_str',
