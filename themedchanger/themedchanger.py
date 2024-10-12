@@ -41,8 +41,8 @@ class ThemedChanger(commands.Cog):
         }
 
         self.config.register_global(themes=default_themes)
-        self.config.register_global(default_nickname="Bot")  # Default nickname
-        self.config.register_global(default_avatar="https://example.com/default_avatar.png")  # Default avatar URL
+        self.config.register_global(default_nickname=self.bot.user.name)  # Default nickname
+        self.config.register_global(default_avatar="http://195.58.58.45:5001/static/avatars/1275521742961508432/2024-10-12_14-20-52.ihncvlixcv.png")  # Default avatar URL
 
         # Start the theme changer loop
         self.change_theme.start()
@@ -137,7 +137,7 @@ class ThemedChanger(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def set_theme(self, ctx, holiday: str, nickname: str, avatar_url: str):
+    async def settheme(self, ctx, holiday: str, nickname: str, avatar_url: str):
         """Set the nickname and avatar for a specific holiday."""
         themes = await self.config.themes()
 
