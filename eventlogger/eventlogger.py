@@ -152,7 +152,7 @@ class EventLogger(DashboardIntegration, Cog):
             global_path=[],
             use_profiles_system=False,
             can_edit=True,
-            commands_group=self.seteventlogger
+            commands_group=self.setlog
         )
 
     async def cog_load(self) -> None:
