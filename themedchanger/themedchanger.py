@@ -1,9 +1,10 @@
 from redbot.core import commands, Config
 import discord
 from datetime import datetime
+from Star_Utils import Cog
 from discord.ext import tasks
 
-class ThemedChanger(commands.Cog):
+class ThemedChanger(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890, force_registration=True)
