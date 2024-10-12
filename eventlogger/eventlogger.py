@@ -570,7 +570,7 @@ class EventLogger(DashboardIntegration, Cog):
         if before.discriminator != after.discriminator:
             changes.append(f"**Discriminator:** {before.discriminator} → {after.discriminator}")
         if before.avatar != after.avatar:
-            changes.append(f"**Avatar:** [Before]({before.display_avatar.url}) → [After]({after.display_avatar.url})")
+            changes.append(f"**Avatar:** [Before]({before.avatar.url}) → [After]({after.avatar.url})")
 
         if changes:
             description = (
