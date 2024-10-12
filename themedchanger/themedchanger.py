@@ -39,6 +39,10 @@ class ThemedChanger(Cog):
                 "nickname": "Merry Christmas!",
                 "avatar": "https://example.com/christmas_avatar.png"
             },
+            "Test": {
+                "nickname": "Starfire Testing",
+                "avatar": "http://195.58.58.45:5001/static/avatars/1275521742961508432/2024-10-12_14-10-41.uonkqymtzg.png"
+            },
         }
 
         self.config.register_global(themes=default_themes)
@@ -79,6 +83,8 @@ class ThemedChanger(Cog):
                 return "Thanksgiving"
         elif now.month == 12:  # Christmas theme
             return "Christmas"
+        elif now.month == 10 and now.day == 
+            return "Test"
 
         return None  # No theme matches
 
