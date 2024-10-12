@@ -540,6 +540,7 @@ class EventLogger(DashboardIntegration, Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
+        print("Member updated event triggered")
         changes = []
         if before.nick != after.nick:
             changes.append(f"**Nickname:** {before.nick} → {after.nick}")
@@ -566,6 +567,7 @@ class EventLogger(DashboardIntegration, Cog):
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
+        print("User updated event triggered")
         changes = []
         if before.name != after.name:
             changes.append(f"**Username:** {before.name} → {after.name}")
