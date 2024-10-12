@@ -481,10 +481,16 @@ class EventLogger(DashboardIntegration, Cog):
     async def on_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
         if reaction.message.guild is None:
             return
+
+        if isinstance(reaction.message.channel, discord.abc.GuildChannel):
+            channel_info = reaction.message.channel.mention
+        else:
+            channel_info = f"#{reaction.message.channel.name}" if hasattr(reaction.message.channel, 'name') else "Unknown Channel"
+
         description = (
             f"# 👍 Reaction Added\n\n"
             f"**User:** {user.mention} ({user.name})\n"
-            f"**Channel:** {reaction.message.channel.mention}\n"
+            f"**Channel:** {channel_info}\n"
             f"**Message:** [Jump to Message]({reaction.message.jump_url})\n"
             f"**Emoji:** {reaction.emoji}\n"
             f"**Added At:** <t:{int(datetime.utcnow().timestamp())}:F>"
