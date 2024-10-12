@@ -520,7 +520,7 @@ class EventLogger(DashboardIntegration, Cog):
             f"**Account Created:** <t:{int(member.created_at.timestamp())}:R>\n"
             f"**Joined At:** <t:{int(member.joined_at.timestamp())}:F>\n"
             f"**Server Member Count:** {member.guild.member_count}\n\n"
-            f"[Member Profile](https://discord.com/users/{member.id})"
+            f"[Member Profile](https://discord.com/channels/@me/{member.id})"
         )
         await self.log_event(member.guild, 'member_join', description, discord.Color.green())
 
@@ -561,7 +561,7 @@ class EventLogger(DashboardIntegration, Cog):
                 f"**Member ID:** `{after.id}`\n"
                 f"**Changes:**\n" + "\n".join(changes) + f"\n\n"
                 f"**Updated At:** <t:{int(datetime.utcnow().timestamp())}:F>\n\n"
-                f"[Member Profile](https://discord.com/users/{after.id})"
+                f"[Member Profile](https://discord.com/channels/@me/{after.id})"
             )
             await self.log_event(after.guild, 'member_update', description, discord.Color.blue())
 
@@ -583,7 +583,7 @@ class EventLogger(DashboardIntegration, Cog):
                 f"**User ID:** `{after.id}`\n"
                 f"**Changes:**\n" + "\n".join(changes) + f"\n\n"
                 f"**Updated At:** <t:{int(datetime.utcnow().timestamp())}:F>\n\n"
-                f"[User Profile](https://discord.com/users/{after.id})"
+                f"[User Profile](https://discord.com/channels/@me/{after.id})"
             )
             await self.log_event(None, 'user_update', description, discord.Color.blue())
 
