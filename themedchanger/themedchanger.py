@@ -41,6 +41,8 @@ class ThemedChanger(commands.Cog):
         }
 
         self.config.register_global(themes=default_themes)
+        self.config.register_global(default_nickname="Bot")  # Default nickname
+        self.config.register_global(default_avatar="https://example.com/default_avatar.png")  # Default avatar URL
 
         # Start the theme changer loop
         self.change_theme.start()
@@ -53,6 +55,8 @@ class ThemedChanger(commands.Cog):
         current_theme = self.get_current_theme()
         if current_theme:
             await self.update_bot_theme(current_theme)
+        else:
+            await self.reset_bot_theme()  # Reset to default if no current theme
 
     def get_current_theme(self):
         """Determine the current theme based on the date."""
@@ -106,6 +110,31 @@ class ThemedChanger(commands.Cog):
             except Exception as e:
                 print(f"Error updating avatar: {e}")
 
+    async def reset_bot_theme(self):
+        """Reset the bot's nickname and avatar to default values."""
+        default_nickname = await self.config.default_nickname()
+        default_avatar = await self.config.default_avatar()
+
+        # Change nickname to default
+        try:
+            await self.bot.user.edit(nick=default_nickname)
+            print(f"Nickname reset to '{default_nickname}'")
+        except discord.Forbidden:
+            print(f"Failed to reset nickname to '{default_nickname}': Missing permissions.")
+
+        # Change avatar to default
+        try:
+            if default_avatar:
+                async with self.bot.session.get(default_avatar) as response:
+                    if response.status == 200:
+                        avatar_data = await response.read()
+                        await self.bot.user.edit(avatar=avatar_data)
+                        print("Avatar reset to default.")
+        except discord.Forbidden:
+            print("Failed to reset avatar: Missing permissions.")
+        except Exception as e:
+            print(f"Error resetting avatar: {e}")
+
     @commands.command()
     @commands.is_owner()
     async def set_theme(self, ctx, holiday: str, nickname: str, avatar_url: str):
@@ -119,6 +148,14 @@ class ThemedChanger(commands.Cog):
             await ctx.send(f"Updated {holiday} theme: Nickname set to '{nickname}' and avatar updated.")
         else:
             await ctx.send(f"Holiday '{holiday}' not found. Available holidays: {', '.join(themes.keys())}")
+
+    @commands.command()
+    @commands.is_owner()
+    async def set_default(self, ctx, nickname: str, avatar_url: str):
+        """Set the default nickname and avatar for the bot."""
+        await self.config.default_nickname.set(nickname)
+        await self.config.default_avatar.set(avatar_url)
+        await ctx.send(f"Default nickname set to '{nickname}' and default avatar updated.")
 
 async def setup(bot):
     await bot.add_cog(ThemedChanger(bot))
