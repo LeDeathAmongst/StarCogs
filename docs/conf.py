@@ -49,7 +49,7 @@ rst_epilog = """
 .. |support_server| replace:: https://discord.gg/HXdan6NnfJ
 """
 # Source file suffix
-source_suffix = ".rst"
+source_suffix = ".md"
 
 # Master document
 master_doc = "index"

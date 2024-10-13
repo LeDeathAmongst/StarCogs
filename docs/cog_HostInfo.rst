@@ -1,8 +1,0 @@
-HostInfo
-========
-
-# ,hostinfo
-
- - Usage: `,hostinfo`
-
-
