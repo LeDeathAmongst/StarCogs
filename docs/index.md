@@ -1,6 +1,6 @@
 # StarCogs
 
-This documentation is here for the support of my redbot cogs. Everything should be here that you need.
+This documentation is here for support. Everything you need *should* be here. If not, ask me with `/contact`
 
 ## Useful Links
 
