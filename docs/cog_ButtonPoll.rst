@@ -102,21 +102,12 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>buttonpollinfo
-
- - Usage: `<@1275521742961508432>buttonpollinfo`
-
-
-# <@1275521742961508432>buttonpoll
-=======
 # ,buttonpollinfo
 
  - Usage: `,buttonpollinfo`
 
 
 # ,buttonpoll
->>>>>>> 9e308722 (Revamped and Fixed)
 Start a button-based poll<br/>
 
 This is an interactive setup. By default the current channel will be used,<br/>
@@ -124,15 +115,9 @@ but if you want to start a poll remotely you can send the channel name<br/>
 along with the buttonpoll command.<br/>
 
 **Examples:**<br/>
-<<<<<<< HEAD
-- `<@1275521742961508432>buttonpoll` - start a poll in the current channel<br/>
-- `<@1275521742961508432>buttonpoll #polls` start a poll somewhere else<br/>
- - Usage: `<@1275521742961508432>buttonpoll [chan=None]`
-=======
 - `,buttonpoll` - start a poll in the current channel<br/>
 - `,buttonpoll #polls` start a poll somewhere else<br/>
  - Usage: `,buttonpoll [chan=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `poll and bpoll`
  - Checks: `server_only`
@@ -148,21 +133,12 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>advstartpoll
-Advanced users: create a pull using command arguments<br/>
-
-The help text for this command is too long to fit in the help command. Just run<br/>
-`<@1275521742961508432>advstartpoll` to see it.<br/>
- - Usage: `<@1275521742961508432>advstartpoll [arguments]`
-=======
 # ,advstartpoll
 Advanced users: create a pull using command arguments<br/>
 
 The help text for this command is too long to fit in the help command. Just run<br/>
 `,advstartpoll` to see it.<br/>
  - Usage: `,advstartpoll [arguments]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -172,20 +148,12 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>getvoters
-=======
 # ,getvoters
->>>>>>> 9e308722 (Revamped and Fixed)
 Fetch the current voters for a running poll<br/>
 
 **Arguments**<br/>
 - `message_id`: (integer) The ID of the poll message<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>getvoters <message_id>`
-=======
  - Usage: `,getvoters <message_id>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `voters`
  - Checks: `server_only`
@@ -196,20 +164,12 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>endpoll
-=======
 # ,endpoll
->>>>>>> 9e308722 (Revamped and Fixed)
 End a currently running poll<br/>
 
 **Arguments**<br/>
 - `message_id`: (integer) The ID of the poll message<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>endpoll <message_id>`
-=======
  - Usage: `,endpoll <message_id>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `endp`
  - Checks: `server_only`
@@ -220,15 +180,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>listpolls
-List all currently running polls<br/>
- - Usage: `<@1275521742961508432>listpolls`
-=======
 # ,listpolls
 List all currently running polls<br/>
  - Usage: `,listpolls`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 

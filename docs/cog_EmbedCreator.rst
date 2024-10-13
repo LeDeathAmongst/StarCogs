@@ -3,11 +3,7 @@ EmbedCreator
 
 Create embeds using buttons, modals and dropdowns!
 
-<<<<<<< HEAD
-# <@1275521742961508432>embedcreate
-=======
 # ,embedcreate
->>>>>>> 9e308722 (Revamped and Fixed)
 Create an embed.<br/>
 
 The command will send an interactive menu to construct an embed, unless otherwise specified by the **builder** option described further below.<br/>
@@ -27,11 +23,7 @@ The following options are supported:<br/>
 - **builder** - Whether this help menu appears along with the constructor buttons. Defaults to true.<br/>
 - **source** - An existing message to use its embed. Can be a link or message ID.<br/>
 - **content** - The text sent outside of the message.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>embedcreate <options>`
-=======
  - Usage: `,embedcreate <options>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `ecreate`
 

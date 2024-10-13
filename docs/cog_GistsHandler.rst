@@ -3,19 +3,11 @@ GistsHandler
 
 A cog to create new Gists and edit/delete existing ones!
 
-<<<<<<< HEAD
-# <@1275521742961508432>gist (Hybrid Command)
-Create a new Gist and edit an existing one.<br/>
-
-You need to set up a GitHub token with `<@1275521742961508432>set api github token,[TOKEN]` first.<br/>
- - Usage: `<@1275521742961508432>gist [gist=None] [file_name=None]`
-=======
 # ,gist (Hybrid Command)
 Create a new Gist and edit an existing one.<br/>
 
 You need to set up a GitHub token with `,set api github token,[TOKEN]` first.<br/>
  - Usage: `,gist [gist=None] [file_name=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/gist [gist=None] [file_name=None]`
  - Restricted to: `BOT_OWNER`
  - Aliases: `gisthandler`

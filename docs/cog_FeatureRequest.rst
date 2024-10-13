@@ -3,17 +3,6 @@ FeatureRequest
 
 Cog to handle feature requests.
 
-<<<<<<< HEAD
-# <@1275521742961508432>frequest
-Base command for feature requests.<br/>
- - Usage: `<@1275521742961508432>frequest`
- - Aliases: `fr`
-
-
-## <@1275521742961508432>frequest submit
-Request a new feature for the bot.<br/>
- - Usage: `<@1275521742961508432>frequest submit <feature>`
-=======
 # ,frequest
 Base command for feature requests.<br/>
  - Usage: `,frequest`
@@ -33,7 +22,6 @@ Extended Arg Info
 ## ,frequest submit
 Request a new feature for the bot.<br/>
  - Usage: `,frequest submit <feature>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### feature: str
 > ```
@@ -41,15 +29,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>frequest deny
-Deny a feature request.<br/>
- - Usage: `<@1275521742961508432>frequest deny <request_id> [reason]`
-=======
 ## ,frequest consider
 Consider a feature request.<br/>
  - Usage: `,frequest consider <request_id> [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 Extended Arg Info
 > ### request_id: str
@@ -62,11 +44,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>frequest channel
-Set the channel for feature requests.<br/>
- - Usage: `<@1275521742961508432>frequest channel <channel>`
-=======
 ## ,frequest deny
 Deny a feature request.<br/>
  - Usage: `,frequest deny <request_id> [reason]`
@@ -85,7 +62,6 @@ Extended Arg Info
 ## ,frequest channel
 Set the channel for feature requests.<br/>
  - Usage: `,frequest channel <channel>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
@@ -99,40 +75,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>frequest status
-Check the status of a feature request.<br/>
- - Usage: `<@1275521742961508432>frequest status <request_id>`
-Extended Arg Info
-> ### request_id: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>frequest accept
-Accept a feature request.<br/>
- - Usage: `<@1275521742961508432>frequest accept <request_id> [reason]`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### request_id: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### reason: str = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>frequest consider
-Consider a feature request.<br/>
- - Usage: `<@1275521742961508432>frequest consider <request_id> [reason]`
-=======
 ## ,frequest accept
 Accept a feature request.<br/>
  - Usage: `,frequest accept <request_id> [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 Extended Arg Info
 > ### request_id: str

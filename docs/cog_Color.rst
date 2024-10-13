@@ -3,64 +3,6 @@ Color
 
 View embeds showcasing the supplied color and information about it
 
-<<<<<<< HEAD
-# <@1275521742961508432>color
-Group command for color commands<br/>
- - Usage: `<@1275521742961508432>color`
- - Aliases: `colour`
-
-
-## <@1275521742961508432>color name
-Provides the hexadecimal value, RGB value and HSL value of a passed color.  For example, pass `red` or `blue` as the name argument.<br/>
- - Usage: `<@1275521742961508432>color name <name>`
-Extended Arg Info
-> ### name
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>color hex
-Provides the RGB value and HSL value of a passed hexadecimal value.  Hexadecimal value must in the format of something like `#ffffff` or `0xffffff` to be used.<br/>
- - Usage: `<@1275521742961508432>color hex <hexa>`
-Extended Arg Info
-> ### hexa: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>color msgshort
-Enable or disable the in-message shortcut.<br/>
-
-In-message shortcuts can be used by using the hex, rgb or name after a `#` in the middle of a message, as follows:<br/>
-
-`#000000` (hex)<br/>
-`#1,1,1` (rgb)<br/>
-`#black` (named)<br/>
- - Usage: `<@1275521742961508432>color msgshort <enable>`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### enable: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>color decimal
-Provides the RGB value of the decimal value given.<br/>
- - Usage: `<@1275521742961508432>color decimal <decimal>`
-Extended Arg Info
-> ### decimal: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>color hsl
-Provides the hexadecimal value and the RGB value of the hsl value given.  Each value must have a space between them.<br/>
- - Usage: `<@1275521742961508432>color hsl <h> <s> <l>`
-=======
 # ,color
 Group command for color commands<br/>
  - Usage: `,color`
@@ -70,7 +12,6 @@ Group command for color commands<br/>
 ## ,color hsl
 Provides the hexadecimal value and the RGB value of the hsl value given.  Each value must have a space between them.<br/>
  - Usage: `,color hsl <h> <s> <l>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### h: float
 > ```
@@ -86,11 +27,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>color rgb
-Provides the hexadecimal value and HSL value of the rgb value given.  Each value must have a space between them.  Highest argument must be 1 or 255, indicating the highest value of a single value (r, g, or b).<br/>
- - Usage: `<@1275521742961508432>color rgb <highest> <r> <g> <b>`
-=======
 ## ,color name
 Provides the hexadecimal value, RGB value and HSL value of a passed color.  For example, pass `red` or `blue` as the name argument.<br/>
  - Usage: `,color name <name>`
@@ -104,7 +40,6 @@ Extended Arg Info
 ## ,color rgb
 Provides the hexadecimal value and HSL value of the rgb value given.  Each value must have a space between them.  Highest argument must be 1 or 255, indicating the highest value of a single value (r, g, or b).<br/>
  - Usage: `,color rgb <highest> <r> <g> <b>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### highest: int
 > ```
@@ -124,8 +59,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-=======
 ## ,color hex
 Provides the RGB value and HSL value of a passed hexadecimal value.  Hexadecimal value must in the format of something like `#ffffff` or `0xffffff` to be used.<br/>
  - Usage: `,color hex <hexa>`
@@ -163,4 +96,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

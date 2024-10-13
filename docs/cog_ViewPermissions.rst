@@ -3,11 +3,7 @@ ViewPermissions
 
 A cog to display permissions for roles and members, at guild level or in a specified channel!
 
-<<<<<<< HEAD
-# <@1275521742961508432>viewpermissions (Hybrid Command)
-=======
 # ,viewpermissions (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Display permissions for roles and members, at server level or in a specified channel.<br/>
 
 - You can specify several roles and members, and their permissions will be added together.<br/>
@@ -15,11 +11,7 @@ Display permissions for roles and members, at server level or in a specified cha
 - If you provide permission(s) and a channel, only these permissions will be displayed for this channel.<br/>
 - If you provide permission(s) and no channel, all server channels will be displayed, with a tick if all the specified permissions are true in the channel.<br/>
 - If you provide permission(s) and no mentionables, the everyone role is used.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>viewpermissions [advanced=False] [channel=None] [permissions=None] [mentionables=None]`
-=======
  - Usage: `,viewpermissions [advanced=False] [channel=None] [permissions=None] [mentionables=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/viewpermissions [advanced=False] [channel=None] [permissions=None] [mentionables=None]`
  - Aliases: `viewperms and permsview`
  - Checks: `server_only`

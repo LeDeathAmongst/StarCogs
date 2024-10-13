@@ -1,15 +1,9 @@
 HowGay
 ======
 
-<<<<<<< HEAD
-# <@1275521742961508432>howgay
-Rate the gay level of a user or yourself.<br/>
- - Usage: `<@1275521742961508432>howgay [user=None]`
-=======
 # ,howgay
 Rate the gay level of a user or yourself.<br/>
  - Usage: `,howgay [user=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### user: discord.user.User = None
 > 

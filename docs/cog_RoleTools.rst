@@ -3,109 +3,6 @@ RoleTools
 
 Role related tools for moderation
 
-<<<<<<< HEAD
-# <@1275521742961508432>roletools
-Commands for creating custom role settings<br/>
- - Usage: `<@1275521742961508432>roletools`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>roletools required
-Set role requirements<br/>
- - Usage: `<@1275521742961508432>roletools required`
- - Aliases: `requires, require, and req`
-
-
-### <@1275521742961508432>roletools required any
-Set the required roles to require any of the roles instead of all of them<br/>
-
-`<role>` This is the role a user may acquire you want to set requirements for.<br/>
-`<require_any>` Either `True` or `False`. If `True` any of the required roles will allow<br/>
-the user to acquire the `<role>`.<br/>
-
-Note: This will only work for roles assigned by this cog.<br/>
- - Usage: `<@1275521742961508432>roletools required any <role> <require_any>`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### require_any: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-### <@1275521742961508432>roletools required add
-Add role requirements<br/>
-
-`<role>` This is the role a user may acquire you want to set requirements for.<br/>
-`<requires>` The role(s) the user requires before being allowed to gain this role.<br/>
-
-Note: This will only work for roles assigned by this cog.<br/>
- - Usage: `<@1275521742961508432>roletools required add <role> <required>`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools required remove
-Remove role requirements<br/>
-
-`<role>` This is the role a user may acquire you want to set requirements for.<br/>
-`<requires>` The role(s) you wish to have added when a user gains the `<role>`<br/>
-
-Note: This will only work for roles assigned by this cog.<br/>
- - Usage: `<@1275521742961508432>roletools required remove <role> <required>`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools selfrole
-Add or remove a defined selfrole<br/>
-
-`<role>` The role you want to add or remove.<br/>
-If you already have the role it will be removed.<br/>
- - Usage: `<@1275521742961508432>roletools selfrole <role>`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>roletools globalatomic
-Set the atomicity of role assignment.<br/>
-What this means is that when this is `True` roles will be<br/>
-applied inidvidually and not cause any errors. When this<br/>
-is set to `False` roles will be grouped together into one call.<br/>
-
-This can cause race conditions if you have other methods of applying<br/>
-roles setup when set to `False`.<br/>
-
-`[true_or_false]` optional boolean of what to set the setting to.<br/>
-If not provided the current setting will be shown instead.<br/>
- - Usage: `<@1275521742961508432>roletools globalatomic [true_or_false=None]`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### true_or_false: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>roletools cost
-Set the cost to acquire a role.<br/>
-
-`[cost]` The price you want to set the role at in bot credits.<br/>
-Setting this to 0 or lower will remove the cost.<br/>
-If not provided the current setting will be shown instead.<br/>
-`<role>` The role you want to set.<br/>
- - Usage: `<@1275521742961508432>roletools cost [cost=None] <role>`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### cost: Optional[int] = None
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>roletools viewroles
-View current roletools setup for each role in the server<br/>
-
-`[role]` The role you want to see settings for.<br/>
- - Usage: `<@1275521742961508432>roletools viewroles [role]`
-=======
 # ,roletools
 Commands for creating custom role settings<br/>
  - Usage: `,roletools`
@@ -117,7 +14,6 @@ View current roletools setup for each role in the server<br/>
 
 `[role]` The role you want to see settings for.<br/>
  - Usage: `,roletools viewroles [role]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `viewrole`
 Extended Arg Info
 > ### role: Optional[discord.role.Role] = None
@@ -130,21 +26,13 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>roletools selfrem
-=======
 ## ,roletools selfrem
->>>>>>> 9e308722 (Revamped and Fixed)
 Set whether or not a user can remove the role from themselves.<br/>
 
 `[true_or_false]` optional boolean of what to set the setting to.<br/>
 If not provided the current setting will be shown instead.<br/>
 `<role>` The role you want to set.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools selfrem [true_or_false=None] <role>`
-=======
  - Usage: `,roletools selfrem [true_or_false=None] <role>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### true_or_false: Optional[bool] = None
@@ -153,256 +41,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>roletools select
-Setup role select menus<br/>
- - Usage: `<@1275521742961508432>roletools select`
- - Restricted to: `ADMIN`
- - Aliases: `selects`
-
-
-### <@1275521742961508432>roletools select viewoptions
-View current select menus setup for role assign in this server.<br/>
- - Usage: `<@1275521742961508432>roletools select viewoptions`
- - Restricted to: `ADMIN`
- - Aliases: `listoptions, viewoption, and listoption`
-
-
-### <@1275521742961508432>roletools select view
-View current select menus setup for role assign in this server.<br/>
- - Usage: `<@1275521742961508432>roletools select view`
- - Restricted to: `ADMIN`
- - Aliases: `list`
-
-
-### <@1275521742961508432>roletools select cleanup
-Check each select menu that has registered a message still exists and remove buttons with<br/>
-missing messages.<br/>
-
-# Note: This will also potentially cause problems if the button exists in a thread<br/>
-it will not be found if the thread is archived and subsequently removed.<br/>
- - Usage: `<@1275521742961508432>roletools select cleanup`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools select deleteoption
-Delete a saved option.<br/>
-
-`<name>` - the name of the select option you want to delete.<br/>
- - Usage: `<@1275521742961508432>roletools select deleteoption <name>`
- - Aliases: `deloption, removeoption, and remoption`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>roletools select delete
-Delete a saved select menu.<br/>
-
-`<name>` - the name of the select menu you want to delete.<br/>
- - Usage: `<@1275521742961508432>roletools select delete <name>`
- - Aliases: `del and remove`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>roletools select createoption
-Create a select menu option<br/>
-
-- `<name>` - The name of the select option for use later in setup.<br/>
-- `<role>` - The role this select option will assign or remove.<br/>
-- `[extras]`<br/>
- - `label:` - The optional label for the option, max of 25 characters.<br/>
- - `description:` - The description for the option, max of 50 characters.<br/>
- - `emoji:` - The optional emoji used in the select option.<br/>
-
-Note: If no label and no emoji are provided the roles name will be used instead.<br/>
-This name will not update if the role name is changed.<br/>
-
-Example:<br/>
-    `<@1275521742961508432>roletools select createoption role1 @role label: Super Fun Role emoji: 😀`<br/>
- - Usage: `<@1275521742961508432>roletools select createoption <name> <role> <extras>`
- - Aliases: `addoption`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>roletools select create
-Create a select menu<br/>
-
-- `<name>` - The name for you to use when you send a message with this menu.<br/>
-- `[options]...` - The select menu options you designated previously.<br/>
-- `[extras]`<br/>
- - `min:` - The minimum number of items from this menu to be selected.<br/>
- - `max:` - The maximum number of items from this menu that can be selected.<br/>
- (If not provided this will default to the number of options provided.)<br/>
- - `placeholder:` - This is the default text on the menu when no option has been<br/>
-chosen yet.<br/>
-Example:<br/>
-    `<@1275521742961508432>roletools select create myrolemenu role1 role2 role3 placeholder: Pick your role!`<br/>
- - Usage: `<@1275521742961508432>roletools select create <name> <options> <extras>`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>roletools selfadd
-Set whether or not a user can apply the role to themselves.<br/>
-
-`[true_or_false]` optional boolean of what to set the setting to.<br/>
-If not provided the current setting will be shown instead.<br/>
-`<role>` The role you want to set.<br/>
- - Usage: `<@1275521742961508432>roletools selfadd [true_or_false=None] <role>`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### true_or_false: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>roletools reaction
-Reaction role settings<br/>
- - Usage: `<@1275521742961508432>roletools reaction`
- - Aliases: `react and reactions`
-
-
-### <@1275521742961508432>roletools reaction remove
-Remove a reaction role<br/>
-
-`<message>` can be the channel_id-message_id pair<br/>
-from copying message ID while holding SHIFT or a message link<br/>
-`<emoji>` The emoji you want people to react with to get the role.<br/>
-`<role>` The role you want people to receive for reacting.<br/>
-
-Note: This will not remove the emoji reactions on the message.<br/>
- - Usage: `<@1275521742961508432>roletools reaction remove <message> <role_or_emoji>`
- - Restricted to: `ADMIN`
- - Aliases: `rem`
-Extended Arg Info
-> ### message: discord.message.Message
-> Converts to a :class:`discord.Message`.
-> 
->     
-
-
-### <@1275521742961508432>roletools reaction bulk
-Create multiple roles reactions for a single message<br/>
-
-`<message>` can be the channel_id-message_id pair<br/>
-from copying message ID while holding SHIFT or a message link<br/>
-`[role_emoji...]` Must be a role-emoji pair separated by either `;`, `,`, `|`, or `-`.<br/>
-
-Note: Any spaces will be considered a new set of role-emoji pairs, if you<br/>
-want to specify a role with a space in it without pinging it enclose<br/>
-the full role-emoji pair in quotes.<br/>
-
-e.g. `<@1275521742961508432>roletools bulkreact 461417772115558410-821105109097644052 @member-:smile:`<br/>
-`<@1275521742961508432>roletools bulkreact 461417772115558410-821105109097644052 "Super Member-:frown:"`<br/>
- - Usage: `<@1275521742961508432>roletools reaction bulk <message> <role_emoji>`
- - Restricted to: `ADMIN`
- - Aliases: `bulkcreate and bulkmake`
-Extended Arg Info
-> ### message: discord.message.Message
-> Converts to a :class:`discord.Message`.
-> 
->     
-
-
-### <@1275521742961508432>roletools reaction clearreact
-Clear the reactions for reaction roles. This will remove<br/>
-all reactions and then re-apply the bots reaction for you.<br/>
-
-`<message>` The message you want to clear reactions on.<br/>
-`[emojis...]` Optional emojis you want to specifically remove.<br/>
-If no emojis are provided this will clear all the reaction role<br/>
-emojis the bot has for the message provided.<br/>
-
-Note: This will only clear reactions which have a corresponding<br/>
-reaction role on it.<br/>
- - Usage: `<@1275521742961508432>roletools reaction clearreact <message> <emojis>`
- - Restricted to: `ADMIN`
- - Aliases: `clearreacts`
-Extended Arg Info
-> ### message: discord.message.Message
-> Converts to a :class:`discord.Message`.
-> 
->     
-> ### *emojis: Union[discord.emoji.Emoji, str, NoneType]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by extracting ID from the emoji.
->     3. Lookup by name
-> 
->     
-
-
-### <@1275521742961508432>roletools reaction create
-Create a reaction role<br/>
-
-`<message>` can be the channel_id-message_id pair<br/>
-from copying message ID while holding SHIFT or a message link<br/>
-`<emoji>` The emoji you want people to react with to get the role.<br/>
-`<role>` The role you want people to receive for reacting.<br/>
- - Usage: `<@1275521742961508432>roletools reaction create <message> <emoji> <role>`
- - Restricted to: `ADMIN`
- - Aliases: `make and setup`
-Extended Arg Info
-> ### message: discord.message.Message
-> Converts to a :class:`discord.Message`.
-> 
->     
-> ### emoji: Union[discord.emoji.Emoji, str]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by extracting ID from the emoji.
->     3. Lookup by name
-> 
->     
-
-
-### <@1275521742961508432>roletools reaction reactroles
-View current bound roles in the server<br/>
- - Usage: `<@1275521742961508432>roletools reaction reactroles`
- - Restricted to: `ADMIN`
- - Aliases: `reactionroles and reactrole`
-
-
-### <@1275521742961508432>roletools reaction ownercleanup
-Cleanup old/missing reaction roles and settings on the bot.<br/>
-
-Note: This will also clear out reaction roles if the bot is just<br/>
-missing permissions to see the reactions.<br/>
- - Usage: `<@1275521742961508432>roletools reaction ownercleanup`
- - Restricted to: `BOT_OWNER`
- - Cooldown: `1 per 86400.0 seconds`
-
-
-### <@1275521742961508432>roletools reaction cleanup
-Cleanup old/missing reaction roles and settings.<br/>
-
-Note: This will also clear out reaction roles if the bot is just<br/>
-missing permissions to see the reactions.<br/>
- - Usage: `<@1275521742961508432>roletools reaction cleanup`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools giverole
-=======
 ## ,roletools giverole
->>>>>>> 9e308722 (Revamped and Fixed)
 Gives a role to designated members.<br/>
 
 `<role>` The role you want to give.<br/>
@@ -424,17 +63,10 @@ which may cause unintended roles to be removed/applied.
 
 **This command is on a cooldown of 10 seconds per member who receives
 a role up to a maximum of 1 hour.**
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools giverole <role> <who>`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### *who: Union[discord.role.Role, discord.channel.TextChannel, discord.member.Member, str]
-=======
  - Usage: `,roletools giverole <role> <who>`
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### *who: Union[discord.role.Role, discord.channel.TextChannel, discord.threads.Thread, discord.member.Member, str]
->>>>>>> 9e308722 (Revamped and Fixed)
 > 
 > 
 >     1. Lookup by ID.
@@ -444,19 +76,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>roletools message
-Commands for sending/editing messages for roletools<br/>
- - Usage: `<@1275521742961508432>roletools message`
-
-
-### <@1275521742961508432>roletools message editselect
-Edit a bots message to include Role Buttons<br/>
-
-`<message>` - The existing message to add role buttons to. Must be a bots message.<br/>
-`[menus]...` - The names of the select menus you want to include up to a maximum of 5.<br/>
- - Usage: `<@1275521742961508432>roletools message editselect <message> <menus>`
-=======
 ## ,roletools reaction
 Reaction role settings<br/>
  - Usage: `,roletools reaction`
@@ -485,7 +104,6 @@ Note: This will not remove the emoji reactions on the message.<br/>
  - Usage: `,roletools reaction remove <message> <role_or_emoji>`
  - Restricted to: `ADMIN`
  - Aliases: `rem`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message: discord.message.Message
 > Converts to a :class:`discord.Message`.
@@ -493,14 +111,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>roletools message editbutton
-Edit a bots message to include Role Buttons<br/>
-
-`<message>` - The existing message to add role buttons to. Must be a bots message.<br/>
-`[buttons]...` - The names of the buttons you want to include up to a maximum of 25.<br/>
- - Usage: `<@1275521742961508432>roletools message editbutton <message> <buttons>`
-=======
 ### ,roletools reaction bulk
 Create multiple roles reactions for a single message<br/>
 
@@ -517,7 +127,6 @@ e.g. `,roletools bulkreact 461417772115558410-821105109097644052 @member-:smile:
  - Usage: `,roletools reaction bulk <message> <role_emoji>`
  - Restricted to: `ADMIN`
  - Aliases: `bulkcreate and bulkmake`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message: discord.message.Message
 > Converts to a :class:`discord.Message`.
@@ -525,46 +134,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>roletools message send
-Send a select menu to a specified channel for role assignment<br/>
-
-`<channel>` - the channel to send the button role buttons to.<br/>
-`[buttons]...` - The names of the buttons you want included in the<br/>
-`[menus]...` - The names of the select menus you want included in the<br/>
-message up to a maximum of 5.<br/>
-`[text]` - The text to be included with the select menu.<br/>
-
-Note: There is a maximum of 25 slots available on one message. Each menu<br/>
-uses up 5 slots while each button uses up 1 slot.<br/>
- - Usage: `<@1275521742961508432>roletools message send <channel> <buttons> <menus> [text]`
-Extended Arg Info
-> ### channel: discord.channel.TextChannel
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by channel URL.
->     4. Lookup by name
-> 
->     
-> ### text: Optional[str] = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>roletools message edit
-Edit a bots message to include Role Buttons<br/>
-
-`<message>` - The existing message to add role buttons to. Must be a bots message.<br/>
-`[buttons]...` - The names of the buttons you want to include up to a maximum of 25.<br/>
-`[menus]...` - The names of the select menus you want to include up to a maximum of 5.<br/>
-
-Note: There is a maximum of 25 slots available on one message. Each menu<br/>
-uses up 5 slots while each button uses up 1 slot.<br/>
- - Usage: `<@1275521742961508432>roletools message edit <message> <buttons> <menus>`
-=======
 ### ,roletools reaction clearreact
 Clear the reactions for reaction roles. This will remove<br/>
 all reactions and then re-apply the bots reaction for you.<br/>
@@ -604,17 +173,11 @@ from copying message ID while holding SHIFT or a message link<br/>
  - Usage: `,roletools reaction create <message> <emoji> <role>`
  - Restricted to: `ADMIN`
  - Aliases: `make and setup`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message: discord.message.Message
 > Converts to a :class:`discord.Message`.
 > 
 >     
-<<<<<<< HEAD
-
-
-### <@1275521742961508432>roletools message sendbutton
-=======
 > ### emoji: Union[discord.emoji.Emoji, str]
 > 
 > 
@@ -656,18 +219,13 @@ Commands for sending/editing messages for roletools<br/>
 
 
 ### ,roletools message sendbutton
->>>>>>> 9e308722 (Revamped and Fixed)
 Send buttons to a specified channel with optional message.<br/>
 
 `<channel>` - the channel to send the button role buttons to.<br/>
 `[buttons]...` - The names of the buttons you want included in the<br/>
 message up to a maximum of 25.<br/>
 `[text]` - The text to be included with the buttons.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools message sendbutton <channel> <buttons> [text]`
-=======
  - Usage: `,roletools message sendbutton <channel> <buttons> [text]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -684,22 +242,14 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>roletools message sendselect
-=======
 ### ,roletools message sendselect
->>>>>>> 9e308722 (Revamped and Fixed)
 Send a select menu to a specified channel for role assignment<br/>
 
 `<channel>` - the channel to send the button role buttons to.<br/>
 `[menus]...` - The names of the select menus you want included in the<br/>
 message up to a maximum of 5.<br/>
 `[text]` - The text to be included with the select menu.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools message sendselect <channel> <menus> [text]`
-=======
  - Usage: `,roletools message sendselect <channel> <menus> [text]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -716,9 +266,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>roletools forceroleremove
-=======
 ### ,roletools message send
 Send a select menu to a specified channel for role assignment<br/>
 
@@ -791,26 +338,17 @@ Extended Arg Info
 
 
 ## ,roletools forceroleremove
->>>>>>> 9e308722 (Revamped and Fixed)
 Force remove sticky role on one or more users.<br/>
 
 `<users>` The users you want to have a forced stickyrole applied to.<br/>
 `<roles>` The role you want to set.<br/>
 
 Note: This is generally only useful for users who have left the server.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools forceroleremove <users> <role>`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools forcerole
-=======
  - Usage: `,roletools forceroleremove <users> <role>`
  - Restricted to: `ADMIN`
 
 
 ## ,roletools forcerole
->>>>>>> 9e308722 (Revamped and Fixed)
 Force a sticky role on one or more users.<br/>
 
 `<users>` The users you want to have a forced stickyrole applied to.<br/>
@@ -818,134 +356,11 @@ Force a sticky role on one or more users.<br/>
 
 Note: The only way to remove this would be to manually remove the role from<br/>
 the user.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools forcerole <users> <role>`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools atomic
-Set the atomicity of role assignment.<br/>
-What this means is that when this is `True` roles will be<br/>
-applied inidvidually and not cause any errors. When this<br/>
-is set to `False` roles will be grouped together into one call.<br/>
-
-This can cause race conditions if you have other methods of applying<br/>
-roles setup when set to `False`.<br/>
-
-`[true_or_false]` optional boolean of what to set the setting to.<br/>
-To reset back to the default global rules use `clear`.<br/>
-If not provided the current setting will be shown instead.<br/>
- - Usage: `<@1275521742961508432>roletools atomic [true_or_false=None]`
- - Restricted to: `ADMIN`
-Extended Arg Info
-> ### true_or_false: Union[str, bool, NoneType] = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>roletools autorole
-Set a role to be automatically applied when a user joins the server.<br/>
-
-`[true_or_false]` optional boolean of what to set the setting to.<br/>
-If not provided the current setting will be shown instead.<br/>
-`<role>` The role you want to set.<br/>
- - Usage: `<@1275521742961508432>roletools autorole [true_or_false=None] <role>`
- - Restricted to: `ADMIN`
- - Aliases: `auto`
-Extended Arg Info
-> ### true_or_false: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>roletools include
-Set role inclusion<br/>
- - Usage: `<@1275521742961508432>roletools include`
- - Aliases: `inclusive`
-
-
-### <@1275521742961508432>roletools include remove
-Remove role inclusion<br/>
-
-`<role>` This is the role a user may acquire you want to set exclusions for.<br/>
-`<include>` The role(s) currently inclusive you no longer wish to have included<br/>
- - Usage: `<@1275521742961508432>roletools include remove <role> <include>`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools include mutual
-Allow setting roles mutually inclusive to eachother<br/>
-
-This is equivalent to individually setting each roles inclusive roles to another<br/>
-set of roles.<br/>
-
-`[role...]` The roles you want to set as mutually inclusive.<br/>
- - Usage: `<@1275521742961508432>roletools include mutual <roles>`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools include add
-Add role inclusion (This will add roles if the designated role is acquired<br/>
-if the designated role is removed the included roles will also be removed<br/>
-if the included roles are set to selfremovable)<br/>
-
-`<role>` This is the role a user may acquire you want to set exclusions for.<br/>
-`<include>` The role(s) you wish to have added when a user gains the `<role>`<br/>
-
-Note: This will only work for roles assigned by this cog.<br/>
- - Usage: `<@1275521742961508432>roletools include add <role> <include>`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools exclude
-Set role exclusions<br/>
- - Usage: `<@1275521742961508432>roletools exclude`
- - Aliases: `exclusive`
-
-
-### <@1275521742961508432>roletools exclude add
-Add role exclusion (This will remove if the designated role is acquired<br/>
-if the included roles are not selfremovable they will not be removed<br/>
-and the designated role will not be given)<br/>
-
-`<role>` This is the role a user may acquire you want to set exclusions for.<br/>
-`<exclude>` The role(s) you wish to have removed when a user gains the `<role>`<br/>
-
-Note: This will only work for roles assigned by this cog.<br/>
- - Usage: `<@1275521742961508432>roletools exclude add <role> <exclude>`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools exclude mutual
-Allow setting roles mutually exclusive to eachother<br/>
-
-This is equivalent to individually setting each roles exclusive roles to another<br/>
-set of roles.<br/>
-
-`[role...]` The roles you want to set as mutually exclusive.<br/>
- - Usage: `<@1275521742961508432>roletools exclude mutual <roles>`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools exclude remove
-Remove role exclusion<br/>
-
-`<role>` This is the role a user may acquire you want to set exclusions for.<br/>
-`<exclude>` The role(s) currently excluded you no longer wish to have excluded<br/>
- - Usage: `<@1275521742961508432>roletools exclude remove <role> <exclude>`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools removerole
-=======
  - Usage: `,roletools forcerole <users> <role>`
  - Restricted to: `ADMIN`
 
 
 ## ,roletools removerole
->>>>>>> 9e308722 (Revamped and Fixed)
 Removes a role from the designated members.<br/>
 
 `<role>` The role you want to give.<br/>
@@ -967,11 +382,7 @@ which may cause unintended roles to be removed/applied.
 
 **This command is on a cooldown of 10 seconds per member who receives
 a role up to a maximum of 1 hour.**
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools removerole <role> <who>`
-=======
  - Usage: `,roletools removerole <role> <who>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### *who: Union[discord.role.Role, discord.channel.TextChannel, discord.member.Member, str]
@@ -984,11 +395,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>roletools buttons
-Setup role buttons<br/>
- - Usage: `<@1275521742961508432>roletools buttons`
-=======
 ## ,roletools atomic
 Set the atomicity of role assignment.<br/>
 What this means is that when this is `True` roles will be<br/>
@@ -1122,14 +528,10 @@ Remove role exclusion<br/>
 ## ,roletools buttons
 Setup role buttons<br/>
  - Usage: `,roletools buttons`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
  - Aliases: `button`
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>roletools buttons create
-=======
 ### ,roletools buttons delete
 Delete a saved button.<br/>
 
@@ -1144,7 +546,6 @@ Extended Arg Info
 
 
 ### ,roletools buttons create
->>>>>>> 9e308722 (Revamped and Fixed)
 Create a role button<br/>
 
 - `<name>` - The name of the button for use later in setup.<br/>
@@ -1166,13 +567,8 @@ Note: If no label and no emoji are provided the roles name will be used instead.
 This name will not update if the role name is changed.<br/>
 
 Example:<br/>
-<<<<<<< HEAD
-    `<@1275521742961508432>roletools button create role1 @role label: Super fun role style: blurple emoji: 😀`<br/>
- - Usage: `<@1275521742961508432>roletools buttons create <name> <role> <extras>`
-=======
     `,roletools button create role1 @role label: Super fun role style: blurple emoji: 😀`<br/>
  - Usage: `,roletools buttons create <name> <role> <extras>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### name: str
 > ```
@@ -1180,42 +576,12 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>roletools buttons view
-View current buttons setup for role assign in this server.<br/>
- - Usage: `<@1275521742961508432>roletools buttons view`
- - Restricted to: `ADMIN`
-
-
-### <@1275521742961508432>roletools buttons delete
-Delete a saved button.<br/>
-
-`<name>` - the name of the button you want to delete.<br/>
- - Usage: `<@1275521742961508432>roletools buttons delete <name>`
- - Aliases: `del and remove`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>roletools buttons cleanup
-=======
 ### ,roletools buttons cleanup
->>>>>>> 9e308722 (Revamped and Fixed)
 Check each button that has registered a message still exists and remove buttons with<br/>
 missing messages.<br/>
 
 # Note: This will also potentially cause problems if the button exists in a thread<br/>
 it will not be found if the thread is archived and subsequently removed.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools buttons cleanup`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>roletools sticky
-=======
  - Usage: `,roletools buttons cleanup`
  - Restricted to: `ADMIN`
 
@@ -1227,17 +593,12 @@ View current buttons setup for role assign in this server.<br/>
 
 
 ## ,roletools sticky
->>>>>>> 9e308722 (Revamped and Fixed)
 Set whether or not a role will be re-applied when a user leaves and rejoins the server.<br/>
 
 `[true_or_false]` optional boolean of what to set the setting to.<br/>
 If not provided the current setting will be shown instead.<br/>
 `<role>` The role you want to set.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>roletools sticky [true_or_false=None] <role>`
-=======
  - Usage: `,roletools sticky [true_or_false=None] <role>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### true_or_false: Optional[bool] = None
@@ -1246,8 +607,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-=======
 ## ,roletools select
 Setup role select menus<br/>
  - Usage: `,roletools select`
@@ -1431,4 +790,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

@@ -30,24 +30,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>pllocalset
-Configure cog settings<br/>
- - Usage: `<@1275521742961508432>pllocalset`
-
-
-## <@1275521742961508432>pllocalset update
-Update the track list for /local<br/>
- - Usage: `<@1275521742961508432>pllocalset update`
- - Restricted to: `BOT_OWNER`
-
-
-## <@1275521742961508432>pllocalset version
-Show the version of the Cog and PyLav<br/>
- - Usage: `<@1275521742961508432>pllocalset version`
-
-
-=======
 # ,pllocalset
 Configure cog settings<br/>
  - Usage: `,pllocalset`
@@ -64,4 +46,3 @@ Update the track list for /local<br/>
  - Restricted to: `BOT_OWNER`
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

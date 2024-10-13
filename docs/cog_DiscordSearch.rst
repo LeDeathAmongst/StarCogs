@@ -3,11 +3,7 @@ DiscordSearch
 
 A cog to edit roles!
 
-<<<<<<< HEAD
-# <@1275521742961508432>discordsearch (Hybrid Command)
-=======
 # ,discordsearch (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Search for a message on Discord in a channel.<br/>
 
 Warning: The bot uses the api for each search.<br/>
@@ -21,11 +17,7 @@ Arguments:<br/>
 `--regex "\[p\]"`<br/>
 `--contain link --contain embed --contain file`<br/>
 `--limit 100` (It's the limit of the number of messages taken into account in the search, not the number of results.)<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>discordsearch <channel> <args>`
-=======
  - Usage: `,discordsearch <channel> <args>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/discordsearch <channel> <args>`
  - Restricted to: `ADMIN`
  - Aliases: `dsearch`

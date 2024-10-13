@@ -40,15 +40,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>talk
-Send a message as the bot<br/>
- - Usage: `<@1275521742961508432>talk <message>`
-=======
 # ,talk
 Send a message as the bot<br/>
  - Usage: `,talk <message>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### message
@@ -57,15 +51,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>talkm
-Send a message as the bot, with mentions enabled<br/>
- - Usage: `<@1275521742961508432>talkm <message>`
-=======
 # ,talkm
 Send a message as the bot, with mentions enabled<br/>
  - Usage: `,talkm <message>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### message
@@ -74,15 +62,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>talkd
-Send a message as the bot, but delete the command message<br/>
- - Usage: `<@1275521742961508432>talkd <message>`
-=======
 # ,talkd
 Send a message as the bot, but delete the command message<br/>
  - Usage: `,talkd <message>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### message
@@ -91,15 +73,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>talkmd
-Send a message as the bot, with mentions enabled and delete the command message<br/>
- - Usage: `<@1275521742961508432>talkmd <message>`
-=======
 # ,talkmd
 Send a message as the bot, with mentions enabled and delete the command message<br/>
  - Usage: `,talkmd <message>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### message
@@ -108,17 +84,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>talkset
-Configure settings<br/>
- - Usage: `<@1275521742961508432>talkset`
- - Restricted to: `ADMIN`
-
-
-## <@1275521742961508432>talkset everyone
-Set the ability to mass mention using `everyone` or `here`<br/>
- - Usage: `<@1275521742961508432>talkset everyone [value=None]`
-=======
 # ,talkset
 Configure settings<br/>
  - Usage: `,talkset`
@@ -128,7 +93,6 @@ Configure settings<br/>
 ## ,talkset everyone
 Set the ability to mass mention using `everyone` or `here`<br/>
  - Usage: `,talkset everyone [value=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### value: bool = None
 > ```

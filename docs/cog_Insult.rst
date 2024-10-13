@@ -1,19 +1,11 @@
 Insult
 ======
 
-<<<<<<< HEAD
-# <@1275521742961508432>insult
-Insult the user.<br/>
-Usage: <@1275521742961508432>insult <Member><br/>
-Example: <@1275521742961508432>insult @Eris#0001<br/>
- - Usage: `<@1275521742961508432>insult [user=None]`
-=======
 # ,insult
 Insult the user.<br/>
 Usage: ,insult <Member><br/>
 Example: ,insult @Eris#0001<br/>
  - Usage: `,insult [user=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### user: discord.member.Member = None
 > 

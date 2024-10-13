@@ -21,11 +21,7 @@ If a user or bot exceeds X mod events within X seconds, the set action will be p
 - Any dangerous permissions added to a role will be logged.
 - If the vanity URL is changed, it will be logged.
 
-<<<<<<< HEAD
-# <@1275521742961508432>nonuke
-=======
 # ,nonuke
->>>>>>> 9e308722 (Revamped and Fixed)
 Anti-Nuke System for lazy server owners!<br/>
 
 Monitors the following events:<br/>
@@ -38,39 +34,11 @@ Set an overload count(X events in X seconds)<br/>
 Set an action(kick, ban, strip, notify)<br/>
 
 If a user or bot exceeds X mod events within X seconds, the set action will be performed<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>nonuke`
-=======
  - Usage: `,nonuke`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>nonuke ignorebots
-Toggle whether other bots are ignored<br/>
-
-**NOTE:** Bot specific roles (the role created when the bot joins) cannot be removed.<br/>
-If NoNuke is set to strip roles, and a bot triggers it while having an integrated role, NoNuke will fail<br/>
-to remove the role from it.<br/>
- - Usage: `<@1275521742961508432>nonuke ignorebots`
-
-
-## <@1275521742961508432>nonuke view
-View the NoNuke settings<br/>
- - Usage: `<@1275521742961508432>nonuke view`
-
-
-## <@1275521742961508432>nonuke dm
-Toggle whether the bot sends the user a DM when a kick or ban action is performed<br/>
- - Usage: `<@1275521742961508432>nonuke dm`
-
-
-## <@1275521742961508432>nonuke logchannel
-Set the log channel for Anti-Nuke kicks<br/>
- - Usage: `<@1275521742961508432>nonuke logchannel <channel>`
-=======
 ## ,nonuke overload
 How many mod actions can be done within the set cooldown<br/>
 
@@ -89,7 +57,6 @@ Extended Arg Info
 ## ,nonuke logchannel
 Set the log channel for Anti-Nuke kicks<br/>
  - Usage: `,nonuke logchannel <channel>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -102,9 +69,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>nonuke action
-=======
 ## ,nonuke dm
 Toggle whether the bot sends the user a DM when a kick or ban action is performed<br/>
  - Usage: `,nonuke dm`
@@ -130,7 +94,6 @@ View the NoNuke settings<br/>
 
 
 ## ,nonuke action
->>>>>>> 9e308722 (Revamped and Fixed)
 Set the action for the bot to take when NoNuke is triggered<br/>
 
 **Actions**<br/>
@@ -138,11 +101,7 @@ Set the action for the bot to take when NoNuke is triggered<br/>
 `ban` - ban the user<br/>
 `strip` - strip all roles with permissions from user<br/>
 `notify` - just sends a report to the log channel<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>nonuke action <action>`
-=======
  - Usage: `,nonuke action <action>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### action: str
 > ```
@@ -150,45 +109,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>nonuke enable
-Enable/Disable the NoNuke system<br/>
- - Usage: `<@1275521742961508432>nonuke enable`
-
-
-## <@1275521742961508432>nonuke cooldown
-Cooldown (in seconds) for NoNuke to trigger<br/>
- - Usage: `<@1275521742961508432>nonuke cooldown <cooldown>`
-Extended Arg Info
-> ### cooldown: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>nonuke overload
-How many mod actions can be done within the set cooldown<br/>
-
-**Mod actions include:**<br/>
-Kicks & Bans<br/>
-Channel Creation/Edit/Deletion<br/>
-Role Creation/Edit/Deletion<br/>
- - Usage: `<@1275521742961508432>nonuke overload <overload>`
-Extended Arg Info
-> ### overload: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>nonuke whitelist
-Add/Remove users from the whitelist<br/>
- - Usage: `<@1275521742961508432>nonuke whitelist <user>`
-=======
 ## ,nonuke whitelist
 Add/Remove users from the whitelist<br/>
  - Usage: `,nonuke whitelist <user>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### user: discord.member.Member
 > 
@@ -204,8 +127,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-=======
 ## ,nonuke cooldown
 Cooldown (in seconds) for NoNuke to trigger<br/>
  - Usage: `,nonuke cooldown <cooldown>`
@@ -216,4 +137,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

@@ -3,118 +3,21 @@ TicketTool
 
 A cog to manage a Tickets system!
 
-<<<<<<< HEAD
-# <@1275521742961508432>settickettool (Hybrid Command)
-Configure TicketTool for your server.<br/>
- - Usage: `<@1275521742961508432>settickettool`
-=======
 # ,settickettool (Hybrid Command)
 Configure TicketTool for your server.<br/>
  - Usage: `,settickettool`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool`
  - Restricted to: `ADMIN`
  - Aliases: `tickettoolset`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool pingroles (Hybrid Command)
-This role will be pinged automatically when the ticket is created, but does not give any additional permissions.<br/>
-
-Default value: `[]`<br/>
-Dev: `Greedy[Role]`<br/>
- - Usage: `<@1275521742961508432>settickettool pingroles <profile> <value>`
- - Slash Usage: `/settickettool pingroles <profile> <value>`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>settickettool renamechanneldropdown (Hybrid Command)
-With Dropdowns feature, rename the ticket channel with chosen reason.<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool renamechanneldropdown <profile> <value>`
- - Slash Usage: `/settickettool renamechanneldropdown <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool modalconfig (Hybrid Command)
-Set all settings for the cog with a Discord Modal.<br/>
- - Usage: `<@1275521742961508432>settickettool modalconfig <profile> [confirmation=False]`
- - Slash Usage: `/settickettool modalconfig <profile> [confirmation=False]`
- - Aliases: `configmodal`
- - Checks: `server_only`
-Extended Arg Info
-> ### confirmation: Optional[bool] = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool deleteonclose (Hybrid Command)
-Does closing the ticket directly delete it (with confirmation)?<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool deleteonclose <profile> <value>`
- - Slash Usage: `/settickettool deleteonclose <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool closeconfirmation (Hybrid Command)
-Should the bot ask for confirmation before closing the ticket (deletion will necessarily have a confirmation)?<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool closeconfirmation <profile> <value>`
- - Slash Usage: `/settickettool closeconfirmation <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool createonreact (Hybrid Command)
-Create a ticket when the reaction 🎟️ is set on any message on the server.<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool createonreact <profile> <value>`
- - Slash Usage: `/settickettool createonreact <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool ticketrole (Hybrid Command)
-=======
 ## ,settickettool ticketrole (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 This role will be added automatically to open tickets owners.<br/>
 
 Default value: `None`<br/>
 Dev: `<class 'discord.role.Role'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool ticketrole <profile> <value>`
-=======
  - Usage: `,settickettool ticketrole <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool ticketrole <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -128,9 +31,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool custommessage (Hybrid Command)
-=======
 ## ,settickettool forumchannel (Hybrid Command)
 Set the forum channel where the opened tickets will be, or a text channel to use private threads. If it's set, `category_open` and `category_close` will be ignored (except for existing tickets).<br/>
 
@@ -152,7 +52,6 @@ Extended Arg Info
 
 
 ## ,settickettool custommessage (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 This message will be sent in the ticket channel when the ticket is opened.<br/>
 
 `{ticket_id}` - Ticket number<br/>
@@ -171,11 +70,7 @@ This message will be sent in the ticket channel when the ticket is opened.<br/>
 
 Default value: `None`<br/>
 Dev: `<class 'str'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool custommessage <profile> <value>`
-=======
  - Usage: `,settickettool custommessage <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool custommessage <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -185,34 +80,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool profileadd (Hybrid Command)
-Create a new profile with defaults settings.<br/>
- - Usage: `<@1275521742961508432>settickettool profileadd <profile>`
- - Slash Usage: `/settickettool profileadd <profile>`
- - Aliases: `addprofile`
- - Checks: `server_only`
-Extended Arg Info
-> ### profile: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>settickettool resetsetting (Hybrid Command)
-Reset a setting.<br/>
- - Usage: `<@1275521742961508432>settickettool resetsetting <profile> <setting>`
- - Slash Usage: `/settickettool resetsetting <profile> <setting>`
- - Checks: `server_only`
-Extended Arg Info
-> ### setting: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>settickettool usercanclose (Hybrid Command)
-=======
 ## ,settickettool deleteonclose (Hybrid Command)
 Does closing the ticket directly delete it (with confirmation)?<br/>
 
@@ -237,16 +104,11 @@ List the existing profiles.<br/>
 
 
 ## ,settickettool usercanclose (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Can the author of the ticket, if he/she does not have a role set up for the system, close the ticket himself?<br/>
 
 Default value: `True`<br/>
 Dev: `<class 'bool'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool usercanclose <profile> <value>`
-=======
  - Usage: `,settickettool usercanclose <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool usercanclose <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -256,9 +118,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool dynamicchannelname (Hybrid Command)
-=======
 ## ,settickettool closeonleave (Hybrid Command)
 If a user leaves the server, will all their open tickets be closed?<br/>
 
@@ -324,7 +183,6 @@ Extended Arg Info
 
 
 ## ,settickettool dynamicchannelname (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Set the template that will be used to name the channel when creating a ticket.<br/>
 
 `{ticket_id}` - Ticket number<br/>
@@ -343,11 +201,7 @@ Set the template that will be used to name the channel when creating a ticket.<b
 
 Default value: `{emoji}-ticket-{ticket_id}`<br/>
 Dev: `<class 'str'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool dynamicchannelname <profile> <value>`
-=======
  - Usage: `,settickettool dynamicchannelname <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool dynamicchannelname <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -357,112 +211,12 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool message (Hybrid Command)
-Send a message with a button to open a ticket or dropdown with possible reasons.<br/>
-
-Examples:<br/>
-- `<@1275521742961508432>settickettool message <profile> #general "🐛|Report a bug|If you find a bug, report it here.|bug" "⚠️|Report a user|If you find a malicious user, report it here.|user"`<br/>
-- `<@1275521742961508432>settickettool <profile> 1234567890-0987654321`<br/>
- - Usage: `<@1275521742961508432>settickettool message <profile> <channel> <message> <reason_options> [emoji=🎟️] [label=None]`
- - Slash Usage: `/settickettool message <profile> <channel> <message> <reason_options> [emoji=🎟️] [label=None]`
- - Checks: `server_only`
-Extended Arg Info
-> ### channel: Optional[discord.channel.TextChannel]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by channel URL.
->     4. Lookup by name
-> 
->     
-
-
-## <@1275521742961508432>settickettool profileremove (Hybrid Command)
-Remove an existing profile.<br/>
- - Usage: `<@1275521742961508432>settickettool profileremove <profile> [confirmation=False]`
- - Slash Usage: `/settickettool profileremove <profile> [confirmation=False]`
- - Aliases: `removeprofile`
- - Checks: `server_only`
-Extended Arg Info
-> ### confirmation: Optional[bool] = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool profilerename (Hybrid Command)
-Rename an existing profile.<br/>
- - Usage: `<@1275521742961508432>settickettool profilerename <old_profile> <profile>`
- - Slash Usage: `/settickettool profilerename <old_profile> <profile>`
- - Aliases: `renameprofile`
- - Checks: `server_only`
-Extended Arg Info
-> ### profile: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>settickettool profileslist (Hybrid Command)
-List the existing profiles.<br/>
- - Usage: `<@1275521742961508432>settickettool profileslist`
- - Slash Usage: `/settickettool profileslist`
- - Aliases: `listprofiles`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>settickettool closeonleave (Hybrid Command)
-If a user leaves the server, will all their open tickets be closed?<br/>
-
-If the user then returns to the server, even if their ticket is still open, the bot will not automatically add them to the ticket.<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool closeonleave <profile> <value>`
- - Slash Usage: `/settickettool closeonleave <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool forumchannel (Hybrid Command)
-Set the forum channel where the opened tickets will be, or a text channel to use private threads. If it's set, `category_open` and `category_close` will be ignored (except for existing tickets).<br/>
-
-Default value: `None`<br/>
-Dev: `typing.Union[discord.channel.ForumChannel, discord.channel.TextChannel]`<br/>
- - Usage: `<@1275521742961508432>settickettool forumchannel <profile> <value>`
- - Slash Usage: `/settickettool forumchannel <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: Union[discord.channel.ForumChannel, discord.channel.TextChannel]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by channel URL.
->     4. Lookup by name
-> 
->     
-
-
-## <@1275521742961508432>settickettool logschannel (Hybrid Command)
-=======
 ## ,settickettool logschannel (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Set the channel where the logs will be sent/saved.<br/>
 
 Default value: `None`<br/>
 Dev: `typing.Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool logschannel <profile> <value>`
-=======
  - Usage: `,settickettool logschannel <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool logschannel <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -477,38 +231,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool custommodal (Hybrid Command)
-Ask a maximum of 5 questions to the user who opens a ticket, with a Discord Modal.<br/>
-
-**Example:**<br/>
-```
-<@1275521742961508432>settickettool customodal <profile>
-- label: What is the problem?
-  style: 2 #  short = 1, paragraph = 2
-  required: True
-  default: None
-  placeholder: None
-  min_length: None
-  max_length: None
-```
-
-Default value: `None`<br/>
-Dev: `<class 'tickettool.utils.CustomModalConverter'>`<br/>
- - Usage: `<@1275521742961508432>settickettool custommodal <profile> <value>`
- - Slash Usage: `/settickettool custommodal <profile> <value>`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>settickettool profileclone (Hybrid Command)
-Clone an existing profile with his settings.<br/>
- - Usage: `<@1275521742961508432>settickettool profileclone <old_profile> <profile>`
- - Slash Usage: `/settickettool profileclone <old_profile> <profile>`
- - Aliases: `cloneprofile`
- - Checks: `server_only`
-Extended Arg Info
-> ### profile: str
-=======
 ## ,settickettool resetsetting (Hybrid Command)
 Reset a setting.<br/>
  - Usage: `,settickettool resetsetting <profile> <setting>`
@@ -516,88 +238,17 @@ Reset a setting.<br/>
  - Checks: `server_only`
 Extended Arg Info
 > ### setting: str
->>>>>>> 9e308722 (Revamped and Fixed)
 > ```
 > A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool categoryopen (Hybrid Command)
-Set the category where the opened tickets will be.<br/>
-
-Default value: `None`<br/>
-Dev: `<class 'discord.channel.CategoryChannel'>`<br/>
- - Usage: `<@1275521742961508432>settickettool categoryopen <profile> <value>`
- - Slash Usage: `/settickettool categoryopen <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: discord.channel.CategoryChannel
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by channel URL.
->     4. Lookup by name
-> 
->     
-
-
-## <@1275521742961508432>settickettool showsettings (Hybrid Command)
-Show all settings for the cog with defaults and values.<br/>
- - Usage: `<@1275521742961508432>settickettool showsettings <profile> [with_dev=False]`
- - Slash Usage: `/settickettool showsettings <profile> [with_dev=False]`
- - Checks: `server_only`
-Extended Arg Info
-> ### with_dev: Optional[bool] = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool modlog (Hybrid Command)
-Does the bot create an action in the bot modlog when a ticket is created?<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool modlog <profile> <value>`
- - Slash Usage: `/settickettool modlog <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool enable (Hybrid Command)
-Enable the system.<br/>
-
-Default value: `False`<br/>
-Dev: `<class 'bool'>`<br/>
- - Usage: `<@1275521742961508432>settickettool enable <profile> <value>`
- - Slash Usage: `/settickettool enable <profile> <value>`
- - Checks: `server_only`
-Extended Arg Info
-> ### value: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>settickettool categoryclose (Hybrid Command)
-=======
 ## ,settickettool categoryclose (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Set the category where the closed tickets will be.<br/>
 
 Default value: `None`<br/>
 Dev: `<class 'discord.channel.CategoryChannel'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool categoryclose <profile> <value>`
-=======
  - Usage: `,settickettool categoryclose <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool categoryclose <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -612,20 +263,12 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool auditlogs (Hybrid Command)
-=======
 ## ,settickettool auditlogs (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 On all requests to the Discord api regarding the ticket (channel modification), does the bot send the name and id of the user who requested the action as the reason?<br/>
 
 Default value: `False`<br/>
 Dev: `<class 'bool'>`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool auditlogs <profile> <value>`
-=======
  - Usage: `,settickettool auditlogs <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool auditlogs <profile> <value>`
  - Checks: `server_only`
 Extended Arg Info
@@ -635,55 +278,26 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool adminroles (Hybrid Command)
-=======
 ## ,settickettool adminroles (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Users with this role will have full permissions for tickets, but will not be able to set up the cog.<br/>
 
 Default value: `[]`<br/>
 Dev: `Greedy[Role]`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool adminroles <profile> <value>`
-=======
  - Usage: `,settickettool adminroles <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool adminroles <profile> <value>`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool supportroles (Hybrid Command)
-=======
 ## ,settickettool supportroles (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Users with this role will be able to participate and claim the ticket.<br/>
 
 Default value: `[]`<br/>
 Dev: `Greedy[Role]`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool supportroles <profile> <value>`
-=======
  - Usage: `,settickettool supportroles <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool supportroles <profile> <value>`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>settickettool nbmax (Hybrid Command)
-Sets the maximum number of open tickets a user can have on the system at any one time (for a profile only).<br/>
-
-Default value: `5`<br/>
-Dev: `Range[int, 1, None]`<br/>
- - Usage: `<@1275521742961508432>settickettool nbmax <profile> <value>`
- - Slash Usage: `/settickettool nbmax <profile> <value>`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>settickettool viewroles (Hybrid Command)
-=======
 ## ,settickettool renamechanneldropdown (Hybrid Command)
 With Dropdowns feature, rename the ticket channel with chosen reason.<br/>
 
@@ -700,67 +314,15 @@ Extended Arg Info
 
 
 ## ,settickettool viewroles (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Users with this role will only be able to read messages from the ticket, but not send them.<br/>
 
 Default value: `[]`<br/>
 Dev: `Greedy[Role]`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>settickettool viewroles <profile> <value>`
-=======
  - Usage: `,settickettool viewroles <profile> <value>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/settickettool viewroles <profile> <value>`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>ticket (Hybrid Command)
-Commands for using the Tickets system.<br/>
-
-Many commands to manage tickets appear when you run help in a ticket channel.<br/>
- - Usage: `<@1275521742961508432>ticket`
- - Slash Usage: `/ticket`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>ticket open (Hybrid Command)
-Open an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket open [reason]`
- - Slash Usage: `/ticket open [reason]`
- - Aliases: `reopen`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### reason: Optional[str] = 'No reason provided.'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>ticket rename (Hybrid Command)
-Rename an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket rename <new_name> [reason]`
- - Slash Usage: `/ticket rename <new_name> [reason]`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### new_name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### reason: Optional[str] = 'No reason provided.'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>ticket claim (Hybrid Command)
-Claim an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket claim [member=None] [reason]`
- - Slash Usage: `/ticket claim [member=None] [reason]`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### member: Optional[discord.member.Member] = None
-=======
 ## ,settickettool message (Hybrid Command)
 Send a message with a button to open a ticket or dropdown with possible reasons.<br/>
 
@@ -772,33 +334,10 @@ Examples:<br/>
  - Checks: `server_only`
 Extended Arg Info
 > ### channel: Optional[discord.channel.TextChannel]
->>>>>>> 9e308722 (Revamped and Fixed)
 > 
 > 
 >     1. Lookup by ID.
 >     2. Lookup by mention.
-<<<<<<< HEAD
->     3. Lookup by username#discriminator (deprecated).
->     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
->     5. Lookup by user name.
->     6. Lookup by global name.
->     7. Lookup by server nickname.
-> 
->     
-> ### reason: Optional[str] = 'No reason provided.'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>ticket unclaim (Hybrid Command)
-Unclaim an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket unclaim [reason]`
- - Slash Usage: `/ticket unclaim [reason]`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### reason: Optional[str] = 'No reason provided.'
-=======
 >     3. Lookup by channel URL.
 >     4. Lookup by name
 > 
@@ -861,17 +400,11 @@ Create a new profile with defaults settings.<br/>
  - Checks: `server_only`
 Extended Arg Info
 > ### profile: str
->>>>>>> 9e308722 (Revamped and Fixed)
 > ```
 > A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ticket owner (Hybrid Command)
-Change the owner of an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket owner <new_owner> [reason]`
-=======
 ## ,settickettool profileremove (Hybrid Command)
 Remove an existing profile.<br/>
  - Usage: `,settickettool profileremove <profile> [confirmation=False]`
@@ -998,7 +531,6 @@ Please note: all attachments and user avatars are saved with the Discord link in
 ## ,ticket owner (Hybrid Command)
 Change the owner of an existing Ticket.<br/>
  - Usage: `,ticket owner <new_owner> [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ticket owner <new_owner> [reason]`
  - Checks: `TicketTool and server_only`
 Extended Arg Info
@@ -1020,55 +552,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ticket addmember (Hybrid Command)
-Add a member to an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket addmember <members>`
- - Slash Usage: `/ticket addmember <members>`
- - Aliases: `add`
- - Checks: `TicketTool and server_only`
-
-
-## <@1275521742961508432>ticket list (Hybrid Command)
-List the existing Tickets for a profile. You can provide a status and/or a ticket owner.<br/>
- - Usage: `<@1275521742961508432>ticket list <profile> <status> <owner>`
- - Slash Usage: `/ticket list <profile> <status> <owner>`
- - Restricted to: `ADMIN`
- - Checks: `server_only`
-Extended Arg Info
-> ### owner: Optional[discord.member.Member]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by username#discriminator (deprecated).
->     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
->     5. Lookup by user name.
->     6. Lookup by global name.
->     7. Lookup by server nickname.
-> 
->     
-
-
-## <@1275521742961508432>ticket removemember (Hybrid Command)
-Remove a member to an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket removemember <members>`
- - Slash Usage: `/ticket removemember <members>`
- - Aliases: `remove`
- - Checks: `TicketTool and server_only`
-
-
-## <@1275521742961508432>ticket create (Hybrid Command)
-Create a Ticket.<br/>
-
-If only one profile has been created on this server, you don't need to specify its name.<br/>
- - Usage: `<@1275521742961508432>ticket create [profile=None] [reason]`
- - Slash Usage: `/ticket create [profile=None] [reason]`
- - Aliases: `+`
- - Checks: `server_only`
-Extended Arg Info
-> ### reason: str = 'No reason provided.'
-=======
 ## ,ticket unclaim (Hybrid Command)
 Unclaim an existing Ticket.<br/>
  - Usage: `,ticket unclaim [reason]`
@@ -1076,17 +559,11 @@ Unclaim an existing Ticket.<br/>
  - Checks: `TicketTool and server_only`
 Extended Arg Info
 > ### reason: Optional[str] = 'No reason provided.'
->>>>>>> 9e308722 (Revamped and Fixed)
 > ```
 > A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ticket unlock (Hybrid Command)
-Unlock an existing locked Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket unlock [reason]`
-=======
 ## ,ticket removemember (Hybrid Command)
 Remove a member to an existing Ticket.<br/>
  - Usage: `,ticket removemember <members>`
@@ -1119,7 +596,6 @@ Extended Arg Info
 ## ,ticket unlock (Hybrid Command)
 Unlock an existing locked Ticket.<br/>
  - Usage: `,ticket unlock [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ticket unlock [reason]`
  - Checks: `TicketTool and server_only`
 Extended Arg Info
@@ -1129,43 +605,11 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ticket export (Hybrid Command)
-Export all the messages of an existing Ticket in html format.<br/>
-Please note: all attachments and user avatars are saved with the Discord link in this file.<br/>
- - Usage: `<@1275521742961508432>ticket export`
- - Slash Usage: `/ticket export`
- - Checks: `TicketTool and server_only`
-
-
-## <@1275521742961508432>ticket close (Hybrid Command)
-Close an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket close [confirmation=None] [reason]`
- - Slash Usage: `/ticket close [confirmation=None] [reason]`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### confirmation: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-> ### reason: Optional[str] = 'No reason provided.'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>ticket createfor (Hybrid Command)
-Create a Ticket for a member.<br/>
-
-If only one profile has been created on this server, you don't need to specify its name.<br/>
- - Usage: `<@1275521742961508432>ticket createfor <profile> <member> [reason]`
-=======
 ## ,ticket createfor (Hybrid Command)
 Create a Ticket for a member.<br/>
 
 If only one profile has been created on this server, you don't need to specify its name.<br/>
  - Usage: `,ticket createfor <profile> <member> [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ticket createfor <profile> <member> [reason]`
  - Restricted to: `MOD`
  - Checks: `server_only`
@@ -1188,34 +632,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ticket delete (Hybrid Command)
-Delete an existing Ticket.<br/>
-
-If a logs channel is defined, an html file containing all the messages of this ticket will be generated.<br/>
-(Attachments are not supported, as they are saved with their Discord link)<br/>
- - Usage: `<@1275521742961508432>ticket delete [confirmation=False] [reason]`
- - Slash Usage: `/ticket delete [confirmation=False] [reason]`
- - Checks: `TicketTool and server_only`
-Extended Arg Info
-> ### confirmation: Optional[bool] = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-> ### reason: Optional[str] = 'No reason provided.'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>ticket lock (Hybrid Command)
-Lock an existing Ticket.<br/>
- - Usage: `<@1275521742961508432>ticket lock [confirmation=None] [reason]`
-=======
 ## ,ticket lock (Hybrid Command)
 Lock an existing Ticket.<br/>
  - Usage: `,ticket lock [confirmation=None] [reason]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ticket lock [confirmation=None] [reason]`
  - Checks: `TicketTool and server_only`
 Extended Arg Info
@@ -1229,8 +648,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-=======
 ## ,ticket delete (Hybrid Command)
 Delete an existing Ticket.<br/>
 
@@ -1327,4 +744,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

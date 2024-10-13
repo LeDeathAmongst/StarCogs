@@ -3,17 +3,6 @@ ErrorLogs
 
 Log tracebacks of command errors in discord channels.
 
-<<<<<<< HEAD
-# <@1275521742961508432>errorlogs
-Manage error logs.<br/>
- - Usage: `<@1275521742961508432>errorlogs`
- - Restricted to: `BOT_OWNER`
-
-
-## <@1275521742961508432>errorlogs enabled
-Enable or disable error logging.<br/>
- - Usage: `<@1275521742961508432>errorlogs enabled <true_or_false>`
-=======
 # ,errorlogs
 Manage error logs.<br/>
  - Usage: `,errorlogs`
@@ -23,7 +12,6 @@ Manage error logs.<br/>
 ## ,errorlogs enabled
 Enable or disable error logging.<br/>
  - Usage: `,errorlogs enabled <true_or_false>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### true_or_false: bool
 > ```
@@ -31,15 +19,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>errorlogs global
-Enable or disable errors from all servers.<br/>
- - Usage: `<@1275521742961508432>errorlogs global <true_or_false>`
-=======
 ## ,errorlogs global
 Enable or disable errors from all servers.<br/>
  - Usage: `,errorlogs global <true_or_false>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### true_or_false: bool
 > ```
@@ -47,11 +29,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>errorlogs scroll
-=======
 ## ,errorlogs scroll
->>>>>>> 9e308722 (Revamped and Fixed)
 Scroll through the console's history.<br/>
 
 __**Arguments**__<br/>
@@ -59,11 +37,7 @@ __**Arguments**__<br/>
 page.<br/>
 `num_pages`: (integer) The number of pages to read into the<br/>
 buffer.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>errorlogs scroll [page_size=25] [num_pages=15]`
-=======
  - Usage: `,errorlogs scroll [page_size=25] [num_pages=15]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `history`
 Extended Arg Info
 > ### page_size: int = 25

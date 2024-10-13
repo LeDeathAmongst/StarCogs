@@ -3,15 +3,9 @@ ReTrigger
 
 Trigger bot events using regular expressions
 
-<<<<<<< HEAD
-## <@1275521742961508432>re-trigger modlog
-Set which events to record in the modlog.<br/>
- - Usage: `<@1275521742961508432>re-trigger modlog`
-=======
 ## ,re-trigger modlog
 Set which events to record in the modlog.<br/>
  - Usage: `,re-trigger modlog`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ### /re-trigger modlog settings (Slash Command)
@@ -66,15 +60,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>re-trigger allowlist
-Set allowlist options for ReTrigger.<br/>
- - Usage: `<@1275521742961508432>re-trigger allowlist`
-=======
 ## ,re-trigger allowlist
 Set allowlist options for ReTrigger.<br/>
  - Usage: `,re-trigger allowlist`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ### /re-trigger allowlist add (Slash Command)
@@ -203,15 +191,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>re-trigger blocklist
-Set blocklist options for ReTrigger.<br/>
- - Usage: `<@1275521742961508432>re-trigger blocklist`
-=======
 ## ,re-trigger blocklist
 Set blocklist options for ReTrigger.<br/>
  - Usage: `,re-trigger blocklist`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ### /re-trigger blocklist add (Slash Command)
@@ -340,15 +322,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>re-trigger edit
-Edit various settings in a set trigger.<br/>
- - Usage: `<@1275521742961508432>re-trigger edit`
-=======
 ## ,re-trigger edit
 Edit various settings in a set trigger.<br/>
  - Usage: `,re-trigger edit`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ### /re-trigger edit cooldown (Slash Command)
@@ -1176,600 +1152,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>retrigger
-Setup automatic triggers based on regular expressions<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>retrigger edit
-Edit various settings in a set trigger.<br/>
-
-Note: Only the server owner, Bot owner, or original<br/>
-author can edit a saved trigger. Multi triggers<br/>
-cannot be edited.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit command
-Edit the text of a saved trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<command>` The new command for the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit command <trigger> <command>`
- - Restricted to: `MOD`
- - Aliases: `cmd`
-Extended Arg Info
-> ### command: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>retrigger edit reply
-Set whether or not to reply to the triggered message<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`[set_to]` `True` will reply with a notificaiton, `False` will reply without a notification,<br/>
-leaving this blank will clear replies entirely.<br/>
-
-Note: This is only availabe for Red 3.4.6/discord.py 1.6.0 or greater.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit reply <trigger> [set_to=None]`
- - Restricted to: `MOD`
- - Aliases: `replies`
-Extended Arg Info
-> ### set_to: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-### <@1275521742961508432>retrigger edit suppress
-Toggle whether a trigger will suppress original message embeds.<br/>
-This will cause the original message embeds to be disabled for everyone.<br/>
-
-Useful if you're wanting to remove the embed of a url and replace with a new url.<br/>
-
-Note: This will disable checking edits for this trigger since it edits the original users<br/>
-message.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit suppress <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit text
-Edit the text of a saved trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<text>` The new text to respond with.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit text <trigger> <text>`
- - Restricted to: `MOD`
- - Aliases: `msg`
-Extended Arg Info
-> ### text: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>retrigger edit role
-Edit the added or removed roles of a saved trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<roles>` space separated list of roles or ID's to edit on the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit role <trigger> <roles>`
- - Restricted to: `MOD`
- - Aliases: `roles`
-Extended Arg Info
-> ### *roles: discord.role.Role
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by name
-> 
->     
-
-
-### <@1275521742961508432>retrigger edit cooldown
-Set cooldown options for retrigger<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<time>` is a time in seconds until the trigger will run again<br/>
-set a time of 0 or less to remove the cooldown<br/>
-`[style=server]` must be either `server`, `server`, `channel`, `user`, or `member`<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit cooldown <trigger> [time=0] [style=server]`
- - Restricted to: `MOD`
-Extended Arg Info
-> ### time: int = 0
-> ```
-> A number without decimal places.
-> ```
-> ### style='server'
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>retrigger edit thread
-Set whether or not this trigger will attempt to create a private thread on the triggered<br/>
-message. This will automatically add the user who triggered this to the thread.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<public_or_private>` `True` will create a public thread, `False` will create a private thread. `None`<br/>
-or leaving this option blank will tell the trigger not to create a thread.<br/>
-`<thread_name>` The name of the thread created. This uses replacements if you want dynamic<br/>
-information such as the users name, etc.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit thread <trigger> [public_or_private=None] [thread_name]`
- - Restricted to: `MOD`
- - Aliases: `makethread and createthread`
-Extended Arg Info
-> ### public_or_private: Optional[bool] = None
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-> ### thread_name: Optional[str] = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>retrigger edit disable
-Disable a trigger<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit disable <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit edited
-Toggle whether the bot will listen to edited messages as well as on_message for<br/>
-the specified trigger.<br/>
-
-Note: This will disable suppress for this trigger since it edits the original users<br/>
-message.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit edited <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit regex
-Edit the regex of a saved trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<regex>` The new regex pattern to use.<br/>
-
-Note: **"double quotes" is not required for regex with spaces in this command**<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit regex <trigger> <regex>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit react
-Edit the emoji reactions of a saved trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<emojis>` The new emojis to be used in the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit react <trigger> <emojis>`
- - Restricted to: `MOD`
- - Aliases: `emojis`
-
-
-### <@1275521742961508432>retrigger edit chance
-Edit the chance a trigger will execute.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<chance>` The chance the trigger will execute in form of 1 in chance.<br/>
-
-Set the `chance` to 0 to remove the chance and always perform the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit chance <trigger> [chance=0]`
- - Restricted to: `MOD`
- - Aliases: `chances`
-Extended Arg Info
-> ### chance: int = 0
-> ```
-> A number without decimal places.
-> ```
-
-
-### <@1275521742961508432>retrigger edit readthreads
-Toggle whether a filter trigger will check thread titles.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-This will toggle whether filter triggers are allowed to delete<br/>
-threads that are matched based on the thread title. This is enabled by default<br/>
-so if you only want filter triggers to work on messages disable this.<br/>
-
-# Note: This also requires the bot to have `manage_threads` permission<br/>
-in the channel that the threads are created to work.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit readthreads <trigger>`
- - Restricted to: `MOD`
- - Aliases: `readthread`
-
-
-### <@1275521742961508432>retrigger edit tts
-Set whether or not to send the message with text-to-speech<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`[set_to]` either `true` or `false` on whether to send the text<br/>
-reply with text-to-speech enabled.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit tts <trigger> [set_to=False]`
- - Restricted to: `MOD`
- - Aliases: `texttospeech and text-to-speech`
-Extended Arg Info
-> ### set_to: bool = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-### <@1275521742961508432>retrigger edit enable
-Enable a trigger<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit enable <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit deleteafter
-Edit the delete_after parameter of a saved text trigger.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`<delete_after>` The time until the message is deleted must include units.<br/>
-Example: `<@1275521742961508432>retrigger edit deleteafter trigger 2 minutes`<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit deleteafter <trigger> [delete_after]`
- - Restricted to: `MOD`
- - Aliases: `autodelete and delete`
-
-
-### <@1275521742961508432>retrigger edit includethreads
-Toggle whether the allowlist/blocklist will include threads within the channel.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-This will allow a trigger to run only within a channel and not within threads if<br/>
-the channel is added to the allowlist or only run within threads in a channel if<br/>
-the channel is added to the blocklist. Forum channels can only have threads<br/>
-so are exempt from this toggle.<br/>
-
-# Note: this only affects allowed/blocked triggers for specific channels.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit includethreads <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit ocr
-Toggle whether to use Optical Character Recognition to search for text within images.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit ocr <trigger>`
- - Restricted to: `MOD`
- - Checks: `ReTrigger`
-
-
-### <@1275521742961508432>retrigger edit ignorecommands
-Toggle the trigger ignoring command messages entirely.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit ignorecommands <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit nsfw
-Toggle whether a trigger is considered NSFW.<br/>
-This will prevent the trigger from activating in non-NSFW channels.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit nsfw <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit mention
-Set whether or not to send this trigger will allow role mentions<br/>
-
-`<style>` either `everyone`, `users`, or `roles`.<br/>
-`<trigger>` is the name of the trigger.<br/>
-`[set_to]` either `true` or `false` on whether to allow this trigger<br/>
-to actually ping roles if the bot has correct permissions.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit mention <style> <trigger> [set_to=False]`
- - Restricted to: `MOD`
- - Aliases: `ping`
-Extended Arg Info
-> ### set_to: bool = False
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-### <@1275521742961508432>retrigger edit readembeds
-Toggle whether a trigger will check embeds.<br/>
-This will allow the additional searching of Embed content.<br/>
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit readembeds <trigger>`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger edit readfilenames
-Toggle whether to search message attachment filenames.<br/>
-
-Note: This will append all attachments in a message to the message content. This **will not**<br/>
-download and read file content using regex.<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger edit readfilenames <trigger>`
- - Restricted to: `MOD`
- - Aliases: `filenames`
-
-
-## <@1275521742961508432>retrigger command
-Add a command trigger<br/>
-
-`<name>` name of the trigger<br/>
-`<regex>` the regex that will determine when to respond<br/>
-`<command>` the command that will be triggered, do not add <@1275521742961508432> prefix<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger command <name> <regex> <command>`
- - Restricted to: `MOD`
- - Aliases: `cmd`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### command: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>retrigger blocklist
-Set blocklist options for retrigger<br/>
-
-blocklisting supports channels, users, or roles<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger blocklist`
- - Restricted to: `MOD`
- - Aliases: `blacklist`
-
-
-### <@1275521742961508432>retrigger blocklist remove
-Remove a channel, user, or role from triggers blocklist<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`[channel_user_role...]` is the channel, user or role to remove from the blocklist<br/>
-(You can supply more than one of any at a time)<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger blocklist remove <triggers> <channel_user_role>`
- - Restricted to: `MOD`
- - Aliases: `rem and del`
-
-
-### <@1275521742961508432>retrigger blocklist add
-Add a channel, user, or role to triggers blocklist<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`[channel_user_role...]` is the channel, user or role to blocklist<br/>
-(You can supply more than one of any at a time)<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger blocklist add <triggers> <channel_user_role>`
- - Restricted to: `MOD`
-
-
-## <@1275521742961508432>retrigger kick
-Add a trigger to kick users for saying specific things found with regex<br/>
-This respects hierarchy so ensure the bot role is lower in the list<br/>
-than mods and admin so they don't get kicked by accident<br/>
-
-`<name>` name of the trigger<br/>
-`<regex>` the regex that will determine when to respond<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger kick <name> <regex>`
- - Restricted to: `MOD`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>retrigger image
-Add an image/file response trigger<br/>
-
-`<name>` name of the trigger<br/>
-`<regex>` the regex that will determine when to respond<br/>
-`image_url` optional image_url if none is provided the bot will ask to upload an image<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger image <name> <regex> [image_url=None]`
- - Restricted to: `MOD`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### image_url: str = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>retrigger mock
-Add a trigger for command as if you used the command<br/>
-
-`<name>` name of the trigger<br/>
-`<regex>` the regex that will determine when to respond<br/>
-`<command>` the command that will be triggered, do not add <@1275521742961508432> prefix<br/>
-**Warning:** This function can let other users run a command on your behalf,<br/>
-use with caution.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger mock <name> <regex> <command>`
- - Restricted to: `ADMIN`
- - Aliases: `cmdmock`
-Extended Arg Info
-> ### name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### command: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>retrigger bypass
-Bypass patterns being kicked from memory until reload<br/>
-
-**Warning:** Enabling this can allow mods and admins to create triggers<br/>
-that cause catastrophic backtracking which can lead to the bot crashing<br/>
-unexpectedly. Only enable in servers where you trust the admins not to<br/>
-mess with the bot.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger bypass <bypass>`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### bypass: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>retrigger deleteallbyuser
-Delete all triggers created by a specified user ID.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger deleteallbyuser <user_id>`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### user_id: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>retrigger allowlist
-=======
 # ,retrigger
 Setup automatic triggers based on regular expressions<br/>
 
@@ -1781,45 +1163,19 @@ See `,retrigger explain` or click the link below for more details.<br/>
 
 
 ## ,retrigger allowlist
->>>>>>> 9e308722 (Revamped and Fixed)
 Set allowlist options for retrigger<br/>
 
 allowlisting supports channels, users, or roles<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger allowlist`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger allowlist`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `whitelist`
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>retrigger allowlist remove
-Remove a channel, user, or role from triggers allowlist<br/>
-
-`<trigger>` is the name of the trigger.<br/>
-`[channel_user_role...]` is the channel, user or role to remove from the allowlist<br/>
-(You can supply more than one of any at a time)<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger allowlist remove <triggers> <channel_user_role>`
- - Restricted to: `MOD`
- - Aliases: `rem and del`
-
-
-### <@1275521742961508432>retrigger allowlist add
-=======
 ### ,retrigger allowlist add
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a channel, user, or role to triggers allowlist<br/>
 
 `<trigger>` is the name of the trigger.<br/>
@@ -1827,15 +1183,6 @@ Add a channel, user, or role to triggers allowlist<br/>
 (You can supply more than one of any at a time)<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger allowlist add <triggers> <channel_user_role>`
- - Restricted to: `MOD`
-
-
-## <@1275521742961508432>retrigger dmme
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger allowlist add <triggers> <channel_user_role>`
@@ -1858,7 +1205,6 @@ See `,retrigger explain` or click the link below for more details.<br/>
 
 
 ## ,retrigger dmme
->>>>>>> 9e308722 (Revamped and Fixed)
 Add trigger to DM yourself<br/>
 
 `<name>` name of the trigger<br/>
@@ -1866,15 +1212,9 @@ Add trigger to DM yourself<br/>
 `<text>` response of the trigger<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger dmme <name> <regex> <text>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger dmme <name> <regex> <text>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -1887,11 +1227,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger resize
-=======
 ## ,retrigger resize
->>>>>>> 9e308722 (Revamped and Fixed)
 Add an image to resize in response to a trigger<br/>
 this will attempt to resize the image based on length of matching regex<br/>
 
@@ -1900,15 +1236,9 @@ this will attempt to resize the image based on length of matching regex<br/>
 `[image_url]` optional image_url if none is provided the bot will ask to upload an image<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger resize <name> <regex> [image_url=None]`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger resize <name> <regex> [image_url=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `ReTrigger`
 Extended Arg Info
@@ -1922,11 +1252,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger removerole
-=======
 ## ,retrigger removerole
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a trigger to remove a role<br/>
 
 `<name>` name of the trigger<br/>
@@ -1934,15 +1260,9 @@ Add a trigger to remove a role<br/>
 `[role...]` the roles applied when the regex pattern matches space separated<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger removerole <name> <regex> <roles>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger removerole <name> <regex> <roles>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -1951,26 +1271,16 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger random
-=======
 ## ,retrigger random
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a random text response trigger<br/>
 
 `<name>` name of the trigger<br/>
 `<regex>` the regex that will determine when to respond<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger random <name> <regex>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger random <name> <regex>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `randomtext and rtext`
 Extended Arg Info
@@ -1980,11 +1290,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger react
-=======
 ## ,retrigger react
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a reaction trigger<br/>
 
 `<name>` name of the trigger<br/>
@@ -1992,15 +1298,9 @@ Add a reaction trigger<br/>
 `emojis` the emojis to react with when triggered separated by spaces<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger react <name> <regex> <emojis>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger react <name> <regex> <emojis>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2009,26 +1309,16 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger filter
-=======
 ## ,retrigger filter
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a trigger to delete a message<br/>
 
 `<name>` name of the trigger<br/>
 `<regex>` the regex that will determine when to respond<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger filter <name> [check_filenames=False] <regex>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger filter <name> [check_filenames=False] <regex>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `deletemsg`
 Extended Arg Info
@@ -2046,11 +1336,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger list
-=======
 ## ,retrigger list
->>>>>>> 9e308722 (Revamped and Fixed)
 List information about triggers.<br/>
 
 `[trigger]` if supplied provides information about named trigger.<br/>
@@ -2060,15 +1346,9 @@ List information about triggers.<br/>
 🚮 will delete the displayed trigger<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger list [server_id=None] [trigger=None]`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger list [server_id=None] [trigger=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### server_id: Optional[int] = None
 > ```
@@ -2076,11 +1356,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger addrole
-=======
 ## ,retrigger addrole
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a trigger to add a role<br/>
 
 `<name>` name of the trigger<br/>
@@ -2088,15 +1364,9 @@ Add a trigger to add a role<br/>
 `[role...]` the roles applied when the regex pattern matches space separated<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger addrole <name> <regex> <roles>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger addrole <name> <regex> <roles>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2105,125 +1375,16 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger modlog
-Set which events to record in the modlog.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog`
- - Restricted to: `MOD`
-
-
-### <@1275521742961508432>retrigger modlog addroles
-Toggle custom add role messages in the modlog<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog addroles`
- - Restricted to: `MOD`
- - Aliases: `addrole`
-
-
-### <@1275521742961508432>retrigger modlog removeroles
-Toggle custom add role messages in the modlog<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog removeroles`
- - Restricted to: `MOD`
- - Aliases: `removerole, remrole, and rolerem`
-
-
-### <@1275521742961508432>retrigger modlog bans
-Toggle custom ban messages in the modlog<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog bans`
- - Restricted to: `MOD`
- - Aliases: `ban`
-
-
-### <@1275521742961508432>retrigger modlog filter
-Toggle custom filter messages in the modlog<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog filter`
- - Restricted to: `MOD`
- - Aliases: `delete, filters, and deletes`
-
-
-### <@1275521742961508432>retrigger modlog channel
-Set the modlog channel for filtered words<br/>
-
-`<channel>` The channel you would like filtered word notifications to go<br/>
-Use `none` or `clear` to not show any modlogs<br/>
-User `default` to use the built in modlog channel<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog channel <channel>`
- - Restricted to: `MOD`
-Extended Arg Info
-> ### channel: Union[discord.channel.TextChannel, str, NoneType]
-> 
-> 
->     1. Lookup by ID.
->     2. Lookup by mention.
->     3. Lookup by channel URL.
->     4. Lookup by name
-> 
->     
-
-
-### <@1275521742961508432>retrigger modlog kicks
-Toggle custom kick messages in the modlog<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog kicks`
- - Restricted to: `MOD`
- - Aliases: `kick`
-
-
-### <@1275521742961508432>retrigger modlog settings
-Show the current modlog settings for this server.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger modlog settings`
- - Aliases: `list`
-
-
-## <@1275521742961508432>retrigger randomimage
-=======
 ## ,retrigger randomimage
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a random image/file response trigger<br/>
 
 `<name>` name of the trigger<br/>
 `<regex>` the regex that will determine when to respond<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger randomimage <name> <regex>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger randomimage <name> <regex>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `randimage, randimg, rimage, and rimg`
 Extended Arg Info
@@ -2233,9 +1394,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger dm
-=======
 ## ,retrigger deleteallbyuser
 Delete all triggers created by a specified user ID.<br/>
 
@@ -2252,7 +1410,6 @@ Extended Arg Info
 
 
 ## ,retrigger dm
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a dm response trigger<br/>
 
 `<name>` name of the trigger<br/>
@@ -2260,15 +1417,9 @@ Add a dm response trigger<br/>
 `<text>` response of the trigger<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger dm <name> <regex> <text>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger dm <name> <regex> <text>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2281,11 +1432,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger imagetext
-=======
 ## ,retrigger imagetext
->>>>>>> 9e308722 (Revamped and Fixed)
 Add an image/file response with text trigger<br/>
 
 `<name>` name of the trigger<br/>
@@ -2294,15 +1441,9 @@ Add an image/file response with text trigger<br/>
 `[image_url]` optional image_url if none is provided the bot will ask to upload an image<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger imagetext <name> <regex> <text> [image_url=None]`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger imagetext <name> <regex> <text> [image_url=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2319,26 +1460,16 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger publish
-=======
 ## ,retrigger publish
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a trigger to automatically publish content in news channels.<br/>
 
 `<name>` name of the trigger<br/>
 `<regex>` the regex that will determine when to respond<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger publish <name> <regex>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger publish <name> <regex>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2347,9 +1478,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger text
-=======
 ## ,retrigger edit
 Edit various settings in a set trigger.<br/>
 
@@ -2762,7 +1890,6 @@ Extended Arg Info
 
 
 ## ,retrigger text
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a text response trigger<br/>
 
 `<name>` name of the trigger.<br/>
@@ -2771,15 +1898,9 @@ Add a text response trigger<br/>
 `<text>` response of the trigger.<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger text <name> <regex> [delete_after=None] <text>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger text <name> <regex> [delete_after=None] <text>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -2792,34 +1913,20 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger remove
-=======
 ## ,retrigger remove
->>>>>>> 9e308722 (Revamped and Fixed)
 Remove a specified trigger<br/>
 
 `<trigger>` is the name of the trigger.<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger remove <trigger>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger remove <trigger>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Aliases: `del, rem, and delete`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger multi
-=======
 ## ,retrigger multi
->>>>>>> 9e308722 (Revamped and Fixed)
 Add a multiple response trigger<br/>
 
 - `<name>` name of the trigger.<br/>
@@ -2837,15 +1944,9 @@ Add a multiple response trigger<br/>
  - `filter:` True to delete the triggered message.<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger multi <name> <regex> <multi>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger multi <name> <regex> <multi>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### name: str
@@ -2854,15 +1955,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger explain
-Explain how to use retrigger<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger explain [page_num=1]`
-=======
 ## ,retrigger explain
 Explain how to use retrigger<br/>
 
@@ -2870,7 +1962,6 @@ See https://regex101.com/ for help building a regex pattern.<br/>
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger explain [page_num=1]`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### page_num: Optional[int] = 1
 > ```
@@ -2878,9 +1969,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger rename
-=======
 ## ,retrigger modlog
 Set which events to record in the modlog.<br/>
 
@@ -3018,7 +2106,6 @@ Extended Arg Info
 
 
 ## ,retrigger rename
->>>>>>> 9e308722 (Revamped and Fixed)
 Add trigger to rename users<br/>
 
 `<name>` name of the trigger.<br/>
@@ -3026,15 +2113,9 @@ Add trigger to rename users<br/>
 `<text>` new users nickanme.<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger rename <name> <regex> <text>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger rename <name> <regex> <text>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -3047,12 +2128,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger ban
-Add a trigger to ban users for saying specific things found with regex<br/>
-This respects hierarchy so ensure the bot role is lower in the list<br/>
-than mods and admin so they don't get banned by accident<br/>
-=======
 ## ,retrigger command
 Add a command trigger<br/>
 
@@ -3123,21 +2198,14 @@ See `,retrigger explain` or click the link below for more details.<br/>
 Add a trigger to kick users for saying specific things found with regex<br/>
 This respects hierarchy so ensure the bot role is lower in the list<br/>
 than mods and admin so they don't get kicked by accident<br/>
->>>>>>> 9e308722 (Revamped and Fixed)
 
 `<name>` name of the trigger<br/>
 `<regex>` the regex that will determine when to respond<br/>
 
 See https://regex101.com/ for help building a regex pattern.<br/>
-<<<<<<< HEAD
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger ban <name> <regex>`
-=======
 See `,retrigger explain` or click the link below for more details.<br/>
 [For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
  - Usage: `,retrigger kick <name> <regex>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### name: str
@@ -3146,22 +2214,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>retrigger timeout
-Set the timeout period for searching triggers<br/>
-
-`<timeout>` is number of seconds until regex searching is kicked out.<br/>
-
-See https://regex101.com/ for help building a regex pattern.<br/>
-See `<@1275521742961508432>retrigger explain` or click the link below for more details.<br/>
-[For more details click here.](https://github.com/TrustyJAID/Trusty-cogs/blob/master/retrigger/README.md)<br/>
- - Usage: `<@1275521742961508432>retrigger timeout <timeout>`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### timeout: int
-> ```
-> A number without decimal places.
-=======
 ## ,retrigger image
 Add an image/file response trigger<br/>
 
@@ -3228,7 +2280,6 @@ Extended Arg Info
 > ### bypass: bool
 > ```
 > Can be 1, 0, true, false, t, f
->>>>>>> 9e308722 (Revamped and Fixed)
 > ```
 
 

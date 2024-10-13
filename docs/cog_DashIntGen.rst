@@ -1,29 +1,11 @@
 DashIntGen
 ==========
 
-<<<<<<< HEAD
-Cog to generate dashboard integration for other cogs and modify imports.
-
-# <@1275521742961508432>dashint
-Generate a dashboard_integration.py for a specified cog and reload it.<br/>
- - Usage: `<@1275521742961508432>dashint <cogname>`
-Extended Arg Info
-> ### cogname: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-# <@1275521742961508432>setdatapath
-Set the data path for cog integrations.<br/>
- - Usage: `<@1275521742961508432>setdatapath <path>`
-=======
 Cog to generate advanced dashboard integration for other cogs using GPT-4.
 
 # ,setdatapath
 Set the data path for cog integrations.<br/>
  - Usage: `,setdatapath <path>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 Extended Arg Info
 > ### path: str
@@ -32,8 +14,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-=======
 # ,setopenaikey
 Set the OpenAI API key for GPT-4 integration.<br/>
  - Usage: `,setopenaikey <api_key>`
@@ -72,4 +52,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

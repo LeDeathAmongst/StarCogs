@@ -3,36 +3,12 @@ Werewolf
 
 Base to host werewolf on a guild
 
-<<<<<<< HEAD
-# <@1275521742961508432>buildgame
-=======
 # ,buildgame
->>>>>>> 9e308722 (Revamped and Fixed)
 Create game codes to run custom games.<br/>
 
 Pick the roles or randomized roles you want to include in a game.<br/>
 
 Note: The same role can be picked more than once.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>buildgame`
-
-
-# <@1275521742961508432>wwset
-Base command to adjust settings. Check help for command list.<br/>
- - Usage: `<@1275521742961508432>wwset`
- - Restricted to: `GUILD_OWNER`
-
-
-## <@1275521742961508432>wwset list
-Lists current server settings<br/>
- - Usage: `<@1275521742961508432>wwset list`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>wwset logchannel
-Assign the log channel<br/>
- - Usage: `<@1275521742961508432>wwset logchannel [channel=None]`
-=======
  - Usage: `,buildgame`
 
 
@@ -51,7 +27,6 @@ Lists current server settings<br/>
 ## ,wwset logchannel
 Assign the log channel<br/>
  - Usage: `,wwset logchannel [channel=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### channel: discord.channel.TextChannel = None
@@ -65,15 +40,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>wwset channel
-Assign the village channel<br/>
- - Usage: `<@1275521742961508432>wwset channel [channel=None]`
-=======
 ## ,wwset channel
 Assign the village channel<br/>
  - Usage: `,wwset channel [channel=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### channel: discord.channel.TextChannel = None
@@ -87,15 +56,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>wwset category
-Assign the channel category<br/>
- - Usage: `<@1275521742961508432>wwset category [category_id=None]`
-=======
 ## ,wwset category
 Assign the channel category<br/>
  - Usage: `,wwset category [category_id=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### category_id: int = None
@@ -104,17 +67,10 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>wwset role
-Set the game role<br/>
-This role should not be manually assigned<br/>
- - Usage: `<@1275521742961508432>wwset role [role=None]`
-=======
 ## ,wwset role
 Set the game role<br/>
 This role should not be manually assigned<br/>
  - Usage: `,wwset role [role=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### role: discord.role.Role = None
@@ -127,30 +83,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>ww
-Base command for this cog. Check help for the commands list.<br/>
- - Usage: `<@1275521742961508432>ww`
-
-
-## <@1275521742961508432>ww start
-Checks number of players and attempts to start the game<br/>
- - Usage: `<@1275521742961508432>ww start`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>ww quit
-Quit a game of Werewolf<br/>
- - Usage: `<@1275521742961508432>ww quit`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>ww code
-Adjusts the game code.<br/>
-
-See `<@1275521742961508432>buildgame` to generate a new code<br/>
- - Usage: `<@1275521742961508432>ww code <code>`
-=======
 # ,ww
 Base command for this cog. Check help for the commands list.<br/>
  - Usage: `,ww`
@@ -184,7 +116,6 @@ Adjusts the game code.<br/>
 
 See `,buildgame` to generate a new code<br/>
  - Usage: `,ww code <code>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### code
@@ -193,21 +124,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ww join
-Joins a game of Werewolf<br/>
- - Usage: `<@1275521742961508432>ww join`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>ww forcejoin
-Force someone to join a game of Werewolf<br/>
- - Usage: `<@1275521742961508432>ww forcejoin <target>`
-=======
 ## ,ww forcejoin
 Force someone to join a game of Werewolf<br/>
  - Usage: `,ww forcejoin <target>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
  - Checks: `server_only`
 Extended Arg Info
@@ -225,19 +144,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ww stop
-Stops the current game<br/>
- - Usage: `<@1275521742961508432>ww stop`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>ww choose
-Arbitrary decision making<br/>
-Handled by game+role<br/>
-Can be received by DM<br/>
- - Usage: `<@1275521742961508432>ww choose <data>`
-=======
 ## ,ww join
 Joins a game of Werewolf<br/>
  - Usage: `,ww join`
@@ -249,7 +155,6 @@ Arbitrary decision making<br/>
 Handled by game+role<br/>
 Can be received by DM<br/>
  - Usage: `,ww choose <data>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### data
 > ```
@@ -257,16 +162,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ww search
-Find custom roles by name, alignment, category, or ID<br/>
- - Usage: `<@1275521742961508432>ww search`
-
-
-### <@1275521742961508432>ww search name
-Search for a role by name<br/>
- - Usage: `<@1275521742961508432>ww search name <name>`
-=======
 ## ,ww search
 Find custom roles by name, alignment, category, or ID<br/>
  - Usage: `,ww search`
@@ -275,7 +170,6 @@ Find custom roles by name, alignment, category, or ID<br/>
 ### ,ww search name
 Search for a role by name<br/>
  - Usage: `,ww search name <name>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### name
 > ```
@@ -283,35 +177,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>ww search alignment
-Search for a role by alignment<br/>
- - Usage: `<@1275521742961508432>ww search alignment <alignment>`
-Extended Arg Info
-> ### alignment: int
-> ```
-> A number without decimal places.
-> ```
-
-
-### <@1275521742961508432>ww search category
-Search for a role by category<br/>
- - Usage: `<@1275521742961508432>ww search category <category>`
-Extended Arg Info
-> ### category: int
-> ```
-> A number without decimal places.
-> ```
-
-
-### <@1275521742961508432>ww search index
-Search for a role by ID<br/>
- - Usage: `<@1275521742961508432>ww search index <idx>`
-=======
 ### ,ww search index
 Search for a role by ID<br/>
  - Usage: `,ww search index <idx>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### idx: int
 > ```
@@ -319,11 +187,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ww vote
-Vote for a player by ID<br/>
- - Usage: `<@1275521742961508432>ww vote <target_id>`
-=======
 ### ,ww search alignment
 Search for a role by alignment<br/>
  - Usage: `,ww search alignment <alignment>`
@@ -347,7 +210,6 @@ Extended Arg Info
 ## ,ww vote
 Vote for a player by ID<br/>
  - Usage: `,ww vote <target_id>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### target_id: int
@@ -356,21 +218,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>ww new
-Create and join a new game of Werewolf<br/>
- - Usage: `<@1275521742961508432>ww new [game_code=None]`
- - Checks: `server_only`
-Extended Arg Info
-> ### game_code=None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-=======
 ## ,ww stop
 Stops the current game<br/>
  - Usage: `,ww stop`
  - Checks: `server_only`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 

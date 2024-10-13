@@ -13,17 +13,6 @@ Shoutout to YamiKaitou for starting the work on this 2+ years ago with a PR.
 Maybe one day it will be merged into core.
 https://github.com/Cog-Creators/Red-DiscordBot/pull/5325
 
-<<<<<<< HEAD
-# <@1275521742961508432>payday_override
-
- - Usage: `<@1275521742961508432>payday_override`
- - Checks: `server_only`
-
-
-# <@1275521742961508432>bankevents
-Get help using the BankEvents cog<br/>
- - Usage: `<@1275521742961508432>bankevents`
-=======
 # ,payday_override
 
  - Usage: `,payday_override`
@@ -33,7 +22,6 @@ Get help using the BankEvents cog<br/>
 # ,bankevents
 Get help using the BankEvents cog<br/>
  - Usage: `,bankevents`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 
 

@@ -3,15 +3,9 @@ Strikes
 
 Strike users to keep track of misbehaviour.
 
-<<<<<<< HEAD
-# <@1275521742961508432>strike
-Strike a user.<br/>
- - Usage: `<@1275521742961508432>strike <member> <reason>`
-=======
 # ,strike
 Strike a user.<br/>
  - Usage: `,strike <member> <reason>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -33,15 +27,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>delstrike
-Remove a single strike by its ID.<br/>
- - Usage: `<@1275521742961508432>delstrike <strike_id>`
-=======
 # ,delstrike
 Remove a single strike by its ID.<br/>
  - Usage: `,delstrike <strike_id>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -51,15 +39,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>delstrikes
-Remove all strikes from a member.<br/>
- - Usage: `<@1275521742961508432>delstrikes <member>`
-=======
 # ,delstrikes
 Remove all strikes from a member.<br/>
  - Usage: `,delstrikes <member>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -77,15 +59,9 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>strikes
-Show all previous strikes for a user.<br/>
- - Usage: `<@1275521742961508432>strikes <member>`
-=======
 # ,strikes
 Show all previous strikes for a user.<br/>
  - Usage: `,strikes <member>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -103,21 +79,13 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>allstrikes
-=======
 # ,allstrikes
->>>>>>> 9e308722 (Revamped and Fixed)
 Show all recent individual strikes.<br/>
 
 `[num_days]` is the number of past days of strikes to display.<br/>
 Defaults to 30. When 0, all strikes from the beginning of time<br/>
 will be counted shown.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>allstrikes [num_days=30]`
-=======
  - Usage: `,allstrikes [num_days=30]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info
@@ -127,11 +95,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>strikecounts
-=======
 # ,strikecounts
->>>>>>> 9e308722 (Revamped and Fixed)
 Show the strike count for multiple users.<br/>
 
 `[num_days]` is the number of past days of strikes to count.<br/>
@@ -147,11 +111,7 @@ either *count* or *date*. Defaults to *count*.<br/>
 `[sort_order]` is the order to sort in. It may be one of either<br/>
 *desc* for descending or *asc* for ascending. Defaults to<br/>
 *desc*.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>strikecounts [num_days=0] [limit=100] [sort_by=count] [sort_order=desc]`
-=======
  - Usage: `,strikecounts [num_days=0] [limit=100] [sort_by=count] [sort_order=desc]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
  - Checks: `server_only`
 Extended Arg Info

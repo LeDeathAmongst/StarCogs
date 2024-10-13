@@ -29,15 +29,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>emoji
-Retrieve information about an emoji.<br/>
- - Usage: `<@1275521742961508432>emoji <emoji>`
-=======
 # ,emoji
 Retrieve information about an emoji.<br/>
  - Usage: `,emoji <emoji>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### emoji: str
 > ```

@@ -3,29 +3,14 @@ ThreadOpener
 
 A cog to open continuous threads to messages in a channel.
 
-<<<<<<< HEAD
-# <@1275521742961508432>threadopener
-Manage ThreadOpener settings.<br/>
- - Usage: `<@1275521742961508432>threadopener`
-=======
 # ,threadopener
 Manage ThreadOpener settings.<br/>
  - Usage: `,threadopener`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
  - Cooldown: `1 per 10.0 seconds`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>threadopener showsettings
-Show ThreadOpener settings.<br/>
- - Usage: `<@1275521742961508432>threadopener showsettings`
- - Aliases: `ss and show`
-
-
-## <@1275521742961508432>threadopener channels
-=======
 ## ,threadopener blacklist
 Base command for Thread Opener blacklists.<br/>
 
@@ -90,7 +75,6 @@ Change the slowmode of threads.<br/>
 
 
 ## ,threadopener channels
->>>>>>> 9e308722 (Revamped and Fixed)
 Add or remove channels for your server.<br/>
 
 **Arguments:**<br/>
@@ -98,33 +82,12 @@ Add or remove channels for your server.<br/>
 - `<channels>` channels to be added.<br/>
 
 **Example:**<br/>
-<<<<<<< HEAD
-- `<@1275521742961508432>threadopener channels add #channel`<br/>
-- `<@1275521742961508432>threadopener channels remove #channel`<br/>
-=======
 - `,threadopener channels add #channel`<br/>
 - `,threadopener channels remove #channel`<br/>
->>>>>>> 9e308722 (Revamped and Fixed)
 
 **Note:**<br/>
 - You can add or remove multiple channels at once.<br/>
 - You can also use channel ID instead of mentioning the channel.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>threadopener channels <add_or_remove> <channels>`
- - Aliases: `channel`
-
-
-## <@1275521742961508432>threadopener archive
-Change the archive duration of threads.<br/>
-
-- Use `0` to disable auto archive duration of threads.<br/>
- - Usage: `<@1275521742961508432>threadopener archive <amount>`
-
-
-## <@1275521742961508432>threadopener allowbots
-Allow/Disallow bots from auto-creating threads using Thread Opener.<br/>
- - Usage: `<@1275521742961508432>threadopener allowbots <true_or_false>`
-=======
  - Usage: `,threadopener channels <add_or_remove> <channels>`
  - Aliases: `channel`
 
@@ -138,7 +101,6 @@ Show ThreadOpener settings.<br/>
 ## ,threadopener allowbots
 Allow/Disallow bots from auto-creating threads using Thread Opener.<br/>
  - Usage: `,threadopener allowbots <true_or_false>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### true_or_false: bool
 > ```
@@ -146,9 +108,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>threadopener name
-=======
 ## ,threadopener archive
 Change the archive duration of threads.<br/>
 
@@ -157,7 +116,6 @@ Change the archive duration of threads.<br/>
 
 
 ## ,threadopener name
->>>>>>> 9e308722 (Revamped and Fixed)
 Change the default thread name for ThreadOpener.<br/>
 
 (Supports TagScript)<br/>
@@ -169,20 +127,6 @@ Change the default thread name for ThreadOpener.<br/>
 - `{counter}`: Counter of how created thread. (Everytime a thread is created using ThreadOpener the counter goes up by 1.)<br/>
 
 **Example:**<br/>
-<<<<<<< HEAD
-- `<@1275521742961508432>threadopener name {author(name)}:{created}:{counter}`<br/>
-- `<@1275521742961508432>threadopener name {author(name)}-{counter}`<br/>
- - Usage: `<@1275521742961508432>threadopener name [tagscript]`
- - Aliases: `defaultname, default, and dn`
-
-
-## <@1275521742961508432>threadopener message
-Manage thread opener notifications when they are opened.<br/>
- - Usage: `<@1275521742961508432>threadopener message`
-
-
-### <@1275521742961508432>threadopener message set
-=======
 - `,threadopener name {author(name)}:{created}:{counter}`<br/>
 - `,threadopener name {author(name)}-{counter}`<br/>
  - Usage: `,threadopener name [tagscript]`
@@ -205,7 +149,6 @@ Extended Arg Info
 
 
 ### ,threadopener message set
->>>>>>> 9e308722 (Revamped and Fixed)
 Change the thread opener notification message.<br/>
 
 (Supports Tagscript)<br/>
@@ -227,21 +170,12 @@ Change the thread opener notification message.<br/>
 {embed(thumbnail):{member(avatar)}}
 {embed(color):{color}}
 ```
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>threadopener message set [message]`
-
-
-### <@1275521742961508432>threadopener message toggle
-Toggle the thread opener notification message.<br/>
- - Usage: `<@1275521742961508432>threadopener message toggle <true_or_false>`
-=======
  - Usage: `,threadopener message set [message]`
 
 
 ### ,threadopener message toggle
 Toggle the thread opener notification message.<br/>
  - Usage: `,threadopener message toggle <true_or_false>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### true_or_false: bool
 > ```
@@ -249,88 +183,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>threadopener message buttons
-Toggle buttons from the thread opener notification message. (Enabled by default.)<br/>
- - Usage: `<@1275521742961508432>threadopener message buttons <true_or_false>`
-Extended Arg Info
-> ### true_or_false: bool
-> ```
-> Can be 1, 0, true, false, t, f
-> ```
-
-
-## <@1275521742961508432>threadopener blacklist
-Base command for Thread Opener blacklists.<br/>
-
-**Commands:**<br/>
-- `<@1275521742961508432>threadopener blacklist users <add_or_remove> <users>`<br/>
-- `<@1275521742961508432>threadopener blacklist roles <add_or_remove> <roles>`<br/>
- - Usage: `<@1275521742961508432>threadopener blacklist`
- - Aliases: `bl`
-
-
-### <@1275521742961508432>threadopener blacklist users
-Add or remove users for your server's blacklist.<br/>
-
-**Arguments:**<br/>
-- `<add_or_remove>` should be either `add` to add users or `remove` to remove users.<br/>
-- `<users>` users to be added.<br/>
-
-**Example:**<br/>
-- `<@1275521742961508432>threadopener blacklist users add @inthedark.org`<br/>
-- `<@1275521742961508432>threadopener blacklist users remove @inthedark.org`<br/>
-
-**Note:**<br/>
-- You can add or remove multiple users at once.<br/>
-- You can also use user ID instead of mentioning the user.<br/>
- - Usage: `<@1275521742961508432>threadopener blacklist users <add_or_remove> <users>`
- - Aliases: `user, members, and member`
-
-
-### <@1275521742961508432>threadopener blacklist list
-View the blacklist.<br/>
-
-**Arguments:**<br/>
-` `<users_or_roles>` should be either ``users`` to view the user blacklist<br/>
-    or `roles` to view the role blacklist.<br/>
- - Usage: `<@1275521742961508432>threadopener blacklist list [users_or_roles=users]`
-
-
-### <@1275521742961508432>threadopener blacklist roles
-Add or remove roles for your server's blacklist.<br/>
-
-**Arguments:**<br/>
-- `<add_or_remove>` should be either `add` to add roles or `remove` to remove roles.<br/>
-- `<users>` roles to be added.<br/>
-
-**Example:**<br/>
-- `<@1275521742961508432>threadopener blacklist roles add @members`<br/>
-- `<@1275521742961508432>threadopener blacklist roles remove @members`<br/>
-
-**Note:**<br/>
-- You can add or remove multiple roles at once.<br/>
-- You can also use role ID instead of mentioning the role.<br/>
- - Usage: `<@1275521742961508432>threadopener blacklist roles <add_or_remove> <roles>`
- - Aliases: `role`
-
-
-## <@1275521742961508432>threadopener slowmode
-Change the slowmode of threads.<br/>
-
-- Use `0` to dsiable slowmode delay in threads.<br/>
- - Usage: `<@1275521742961508432>threadopener slowmode <amount>`
- - Aliases: `slow`
-
-
-## <@1275521742961508432>threadopener toggle
-Toggle ThreadOpener enable or disable.<br/>
- - Usage: `<@1275521742961508432>threadopener toggle <true_or_false>`
-=======
 ## ,threadopener toggle
 Toggle ThreadOpener enable or disable.<br/>
  - Usage: `,threadopener toggle <true_or_false>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### true_or_false: bool
 > ```

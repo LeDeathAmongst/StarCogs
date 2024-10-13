@@ -5,23 +5,6 @@ Translate things into lots of languages then back to English!
 
 This will defiantly have some funny moments... Take everything with a pinch of salt!
 
-<<<<<<< HEAD
-# <@1275521742961508432>madtranslateinfo
-
- - Usage: `<@1275521742961508432>madtranslateinfo`
-
-
-# <@1275521742961508432>madtranslate
-Translate something into lots of languages, then back to English!<br/>
-
-**Examples:**<br/>
-- `<@1275521742961508432>mtrans This is a sentence.`<br/>
-- `<@1275521742961508432>mtrans 25 Here's another one.`<br/>
-
-At the bottom of the output embed is a count-seed pair. You can use this with<br/>
-the `mtransseed` command to use the same language set.<br/>
- - Usage: `<@1275521742961508432>madtranslate [count=15] <text_to_translate>`
-=======
 # ,madtranslateinfo
 
  - Usage: `,madtranslateinfo`
@@ -37,7 +20,6 @@ Translate something into lots of languages, then back to English!<br/>
 At the bottom of the output embed is a count-seed pair. You can use this with<br/>
 the `mtransseed` command to use the same language set.<br/>
  - Usage: `,madtranslate [count=15] <text_to_translate>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `mtranslate and mtrans`
 Extended Arg Info
 > ### count: Optional[int] = 15
@@ -50,11 +32,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>mtransseed
-=======
 # ,mtransseed
->>>>>>> 9e308722 (Revamped and Fixed)
 Use a count-seed pair to (hopefully) get reproducible results.<br/>
 
 They may be unreproducible if Google Translate changes its translations.<br/>
@@ -62,15 +40,9 @@ They may be unreproducible if Google Translate changes its translations.<br/>
 The count-seed pair is obtained from the main command, `mtrans`, in the embed footer.<br/>
 
 **Examples:**<br/>
-<<<<<<< HEAD
-- `<@1275521742961508432>mtrans 15-111111 This is a sentence.`<br/>
-- `<@1275521742961508432>mtrans 25-000000 Here's another one.`<br/>
- - Usage: `<@1275521742961508432>mtransseed <count_seed> <text_to_translate>`
-=======
 - `,mtrans 15-111111 This is a sentence.`<br/>
 - `,mtrans 25-000000 Here's another one.`<br/>
  - Usage: `,mtransseed <count_seed> <text_to_translate>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### count_seed: str
 > ```

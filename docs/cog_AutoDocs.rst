@@ -5,11 +5,7 @@ Document your cogs with ease!
 
 Easily create documentation for any cog in reStructuredText format.
 
-<<<<<<< HEAD
-# <@1275521742961508432>makedocs (Hybrid Command)
-=======
 # ,makedocs (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Create a reStructuredText docs page for a cog and send to discord<br/>
 
 **Arguments**<br/>
@@ -26,11 +22,7 @@ Create a reStructuredText docs page for a cog and send to discord<br/>
 
 **Note** If `all` is specified for cog_name, all currently loaded non-core cogs will have docs generated for<br/>
 them and sent in a zip file<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>makedocs <cog_name> [replace_prefix=False] [replace_botname=False] [extended_info=False] [include_hidden=False] [include_help=True] [max_privilege_level=botowner] [min_privilage_level=user] [csv_export=False]`
-=======
  - Usage: `,makedocs <cog_name> [replace_prefix=False] [replace_botname=False] [extended_info=False] [include_hidden=False] [include_help=True] [max_privilege_level=botowner] [min_privilage_level=user] [csv_export=False]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/makedocs <cog_name> [replace_prefix=False] [replace_botname=False] [extended_info=False] [include_hidden=False] [include_help=True] [max_privilege_level=botowner] [min_privilage_level=user] [csv_export=False]`
  - Restricted to: `BOT_OWNER`
  - Checks: `server_only`

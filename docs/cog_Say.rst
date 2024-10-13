@@ -1,15 +1,9 @@
 Say
 ===
 
-<<<<<<< HEAD
-# <@1275521742961508432>say
-gimme a fact<br/>
- - Usage: `<@1275521742961508432>say <servername> <channelname> <what_to_say>`
-=======
 # ,say
 gimme a fact<br/>
  - Usage: `,say <servername> <channelname> <what_to_say>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### servername: str

@@ -1,17 +1,6 @@
 Trigger
 =======
 
-<<<<<<< HEAD
-# <@1275521742961508432>trigger
-Group command for triggers.<br/>
- - Usage: `<@1275521742961508432>trigger`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>trigger toggle
-Toggle a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger toggle <trigger_name>`
-=======
 # ,trigger
 Group command for triggers.<br/>
  - Usage: `,trigger`
@@ -26,7 +15,6 @@ List all triggers.<br/>
 ## ,trigger toggle
 Toggle a trigger.<br/>
  - Usage: `,trigger toggle <trigger_name>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### trigger_name
 > ```
@@ -34,16 +22,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>trigger edit
-Edit a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit`
-
-
-### <@1275521742961508432>trigger edit boundary
-Toggle word boundaries for a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit boundary <trigger_name> <toggle>`
-=======
 ## ,trigger delete
 Delete a trigger.<br/>
  - Usage: `,trigger delete <trigger_name>`
@@ -76,7 +54,6 @@ Extended Arg Info
 ### ,trigger edit boundary
 Toggle word boundaries for a trigger.<br/>
  - Usage: `,trigger edit boundary <trigger_name> <toggle>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `wordboundary`
 Extended Arg Info
 > ### trigger_name: str
@@ -89,15 +66,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>trigger edit responses
-Edit the responses for a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit responses <trigger_name>`
-=======
 ### ,trigger edit responses
 Edit the responses for a trigger.<br/>
  - Usage: `,trigger edit responses <trigger_name>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### trigger_name: str
 > ```
@@ -105,29 +76,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>trigger edit trigger
-Edit the trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit trigger <trigger_name> <triggered_by>`
-Extended Arg Info
-> ### trigger_name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-> ### triggered_by: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>trigger edit embeds
-Toggle searching within embeds for the trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit embeds <trigger_name> <toggle>`
-=======
 ### ,trigger edit embeds
 Toggle searching within embeds for the trigger.<br/>
  - Usage: `,trigger edit embeds <trigger_name> <toggle>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `embedsearch`
 Extended Arg Info
 > ### trigger_name: str
@@ -140,15 +91,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>trigger edit cooldown
-Set the cooldown for a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit cooldown <trigger_name> <seconds>`
-=======
 ### ,trigger edit cooldown
 Set the cooldown for a trigger.<br/>
  - Usage: `,trigger edit cooldown <trigger_name> <seconds>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### trigger_name: str
 > ```
@@ -160,15 +105,9 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-### <@1275521742961508432>trigger edit case
-Toggle case sensitivity for a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger edit case <trigger_name> <case_sensitive>`
-=======
 ### ,trigger edit case
 Toggle case sensitivity for a trigger.<br/>
  - Usage: `,trigger edit case <trigger_name> <case_sensitive>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `casesensitive`
 Extended Arg Info
 > ### trigger_name: str
@@ -181,26 +120,7 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>trigger list
-List all triggers.<br/>
- - Usage: `<@1275521742961508432>trigger list`
-
-
-## <@1275521742961508432>trigger delete
-Delete a trigger.<br/>
- - Usage: `<@1275521742961508432>trigger delete <trigger_name>`
-Extended Arg Info
-> ### trigger_name: str
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>trigger create
-=======
 ## ,trigger create
->>>>>>> 9e308722 (Revamped and Fixed)
 Create a trigger.<br/>
 
 Variables can be used within the responses.<br/>
@@ -212,11 +132,7 @@ uses: The number of times the trigger has been used.<br/>
 trigger: The name of the trigger that was triggered.<br/>
 
 Example: `{user} has triggered the trigger {trigger} in {channel} {uses} times.`<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>trigger create <trigger_name> <triggered_by>`
-=======
  - Usage: `,trigger create <trigger_name> <triggered_by>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### trigger_name: str
 > ```

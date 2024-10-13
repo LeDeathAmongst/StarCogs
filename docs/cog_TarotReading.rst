@@ -3,15 +3,6 @@ TarotReading
 
 Post information about tarot cards and readings
 
-<<<<<<< HEAD
-# <@1275521742961508432>tarot (Hybrid Command)
-Receive a tarot reading<br/>
- - Usage: `<@1275521742961508432>tarot`
- - Slash Usage: `/tarot`
-
-
-## <@1275521742961508432>tarot life (Hybrid Command)
-=======
 # ,tarot (Hybrid Command)
 Receive a tarot reading<br/>
  - Usage: `,tarot`
@@ -59,16 +50,11 @@ Extended Arg Info
 
 
 ## ,tarot life (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Unique reading based on your discord user ID. Doesn't change.<br/>
 
 `[user]` Optional user who you want to see a life tarot reading for.<br/>
 If no user is provided this will run for the user who is running the command.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>tarot life [user=None]`
-=======
  - Usage: `,tarot life [user=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/tarot life [user=None]`
 Extended Arg Info
 > ### user: Optional[discord.member.Member] = None
@@ -85,69 +71,12 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>tarot card (Hybrid Command)
-Random card or choose a card based on number or name.<br/>
-
-`[tarot_card]` Is the full name of any tarot card or a number corresponding to specific cards.<br/>
-If this doesn't match any cards number or name then a random one will be displayed instead.<br/>
- - Usage: `<@1275521742961508432>tarot card <tarot_card>`
- - Slash Usage: `/tarot card <tarot_card>`
-
-
-## <@1275521742961508432>tarot set (Hybrid Command)
-Set commands for tarot<br/>
- - Usage: `<@1275521742961508432>tarot set`
- - Slash Usage: `/tarot set`
-
-
-### <@1275521742961508432>tarot set globaldeck (Hybrid Command)
-Set which deck to use from https://www.tarot.com/tarot/decks<br/>
-
-This sets it for every server the bot is in by default. Servers<br/>
-can specify their own deck to use via `<@1275521742961508432>tarot set deck`<br/>
-
-`deck_name` must be the name in the URL for the deck you want to use.<br/>
-If not provided will revert to the default to the Rider–Waite Tarot Deck.<br/>
- - Usage: `<@1275521742961508432>tarot set globaldeck [deck_name=None]`
- - Slash Usage: `/tarot set globaldeck [deck_name=None]`
- - Restricted to: `BOT_OWNER`
-Extended Arg Info
-> ### deck_name: Optional[str] = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-### <@1275521742961508432>tarot set deck (Hybrid Command)
-Set which deck to use from https://www.tarot.com/tarot/decks<br/>
-
-`deck_name` must be the name in the URL for the deck you want to use.<br/>
-If not provided will revert to the default to the Rider–Waite Tarot Deck.<br/>
- - Usage: `<@1275521742961508432>tarot set deck [deck_name=None]`
- - Slash Usage: `/tarot set deck [deck_name=None]`
- - Restricted to: `MOD`
- - Checks: `server_only`
-Extended Arg Info
-> ### deck_name: Optional[str] = None
-> ```
-> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
-> ```
-
-
-## <@1275521742961508432>tarot reading (Hybrid Command)
-=======
 ## ,tarot reading (Hybrid Command)
->>>>>>> 9e308722 (Revamped and Fixed)
 Unique reading as of this very moment.<br/>
 
 `[user]` Optional user you want to view a tarot reading for.<br/>
 If no user is provided this will run for the user who is running the command.<br/>
-<<<<<<< HEAD
- - Usage: `<@1275521742961508432>tarot reading [user=None]`
-=======
  - Usage: `,tarot reading [user=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/tarot reading [user=None]`
 Extended Arg Info
 > ### user: Optional[discord.member.Member] = None
@@ -164,8 +93,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-=======
 ## ,tarot card (Hybrid Command)
 Random card or choose a card based on number or name.<br/>
 
@@ -175,4 +102,3 @@ If this doesn't match any cards number or name then a random one will be display
  - Slash Usage: `/tarot card <tarot_card>`
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

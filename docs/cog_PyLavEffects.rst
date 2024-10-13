@@ -3,15 +3,9 @@ PyLavEffects
 
 Apply filters and effects to the PyLav player
 
-<<<<<<< HEAD
-# <@1275521742961508432>fx
-Apply or remove filters<br/>
- - Usage: `<@1275521742961508432>fx`
-=======
 # ,fx
 Apply or remove filters<br/>
  - Usage: `,fx`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ## /fx nightcore (Slash Command)
@@ -373,29 +367,13 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-# <@1275521742961508432>fxset
-Configure the Player behaviour when an effect is set<br/>
- - Usage: `<@1275521742961508432>fxset`
-=======
 # ,fxset
 Configure the Player behaviour when an effect is set<br/>
  - Usage: `,fxset`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>fxset version
-Show the version of the Cog and PyLav<br/>
- - Usage: `<@1275521742961508432>fxset version`
-
-
-# <@1275521742961508432>eq
-Configure the Player behaviour when an equalizer preset is set<br/>
- - Usage: `<@1275521742961508432>eq`
-=======
 ## ,fxset version
 Show the version of the Cog and PyLav<br/>
  - Usage: `,fxset version`
@@ -404,19 +382,12 @@ Show the version of the Cog and PyLav<br/>
 # ,eq
 Configure the Player behaviour when an equalizer preset is set<br/>
  - Usage: `,eq`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Checks: `server_only`
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>eq persist
-Persist the last used preset<br/>
- - Usage: `<@1275521742961508432>eq persist`
-=======
 ## ,eq persist
 Persist the last used preset<br/>
  - Usage: `,eq persist`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 

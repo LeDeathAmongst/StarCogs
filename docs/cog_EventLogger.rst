@@ -3,16 +3,9 @@ EventLogger
 
 Cog to log various Discord events
 
-<<<<<<< HEAD
-# <@1275521742961508432>setlog (Hybrid Command)
-Set the logging channel for a specific event<br/>
- - Usage: `<@1275521742961508432>setlog <event> <channel>`
- - Slash Usage: `/setlog <event> <channel>`
-=======
 # ,setlog
 Set the logging channel for a specific event<br/>
  - Usage: `,setlog <event> <channel>`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
  - Checks: `server_only`
 Extended Arg Info
@@ -31,18 +24,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>setlog categories (Hybrid Command)
-View the event categories and their events<br/>
- - Usage: `<@1275521742961508432>setlog categories`
- - Slash Usage: `/setlog categories`
-
-
-# <@1275521742961508432>seteventlogger (Hybrid Command)
-Configure EventLogger for your server.<br/>
- - Usage: `<@1275521742961508432>seteventlogger`
- - Slash Usage: `/seteventlogger`
-=======
 ## ,setlog reactionadd
 Channel for logging reaction add events.<br/>
 
@@ -586,7 +567,6 @@ Extended Arg Info
 # ,seteventlogger
 Configure EventLogger for your server.<br/>
  - Usage: `,seteventlogger`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
  - Checks: `server_only`
 

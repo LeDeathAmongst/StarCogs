@@ -3,15 +3,9 @@ VirusTotal
 
 VirusTotal file upload and analysis via Discord
 
-<<<<<<< HEAD
-# <@1275521742961508432>virustotal
-
- - Usage: `<@1275521742961508432>virustotal [file_url=None]`
-=======
 # ,virustotal
 
  - Usage: `,virustotal [file_url=None]`
->>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `vt`
 Extended Arg Info
 > ### file_url: str = None

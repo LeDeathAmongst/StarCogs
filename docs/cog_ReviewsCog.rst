@@ -3,47 +3,6 @@ ReviewsCog
 
 A cog for managing product or service reviews.
 
-<<<<<<< HEAD
-# <@1275521742961508432>review
-Review commands.<br/>
- - Usage: `<@1275521742961508432>review`
- - Checks: `server_only`
-
-
-## <@1275521742961508432>review approve
-Approve a review.<br/>
- - Usage: `<@1275521742961508432>review approve <review_id>`
-Extended Arg Info
-> ### review_id: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>review remove
-Remove a review.<br/>
- - Usage: `<@1275521742961508432>review remove <review_id>`
-Extended Arg Info
-> ### review_id: int
-> ```
-> A number without decimal places.
-> ```
-
-
-## <@1275521742961508432>review submit
-Submit a review for approval.<br/>
- - Usage: `<@1275521742961508432>review submit`
-
-
-## <@1275521742961508432>review list
-List all reviews.<br/>
- - Usage: `<@1275521742961508432>review list`
-
-
-## <@1275521742961508432>review export
-Export reviews to a CSV or PDF file.<br/>
- - Usage: `<@1275521742961508432>review export <file_format>`
-=======
 # ,review
 Review commands.<br/>
  - Usage: `,review`
@@ -53,7 +12,6 @@ Review commands.<br/>
 ## ,review export
 Export reviews to a CSV or PDF file.<br/>
  - Usage: `,review export <file_format>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### file_format: str
 > ```
@@ -61,11 +19,6 @@ Extended Arg Info
 > ```
 
 
-<<<<<<< HEAD
-## <@1275521742961508432>review setchannel
-Set the channel where approved reviews will be posted.<br/>
- - Usage: `<@1275521742961508432>review setchannel <channel>`
-=======
 ## ,review approve
 Approve a review.<br/>
  - Usage: `,review approve <review_id>`
@@ -84,7 +37,6 @@ List all reviews.<br/>
 ## ,review setchannel
 Set the channel where approved reviews will be posted.<br/>
  - Usage: `,review setchannel <channel>`
->>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -97,8 +49,6 @@ Extended Arg Info
 >     
 
 
-<<<<<<< HEAD
-=======
 ## ,review submit
 Submit a review for approval.<br/>
  - Usage: `,review submit`
@@ -114,4 +64,3 @@ Extended Arg Info
 > ```
 
 
->>>>>>> 9e308722 (Revamped and Fixed)

@@ -13,14 +13,8 @@ If you want to disable it in a certain servers, use
 There are also other configurations, such as setting a default as disabled
 and enabling per-server, listed under `[p]help command`.
 
-<<<<<<< HEAD
-# <@1275521742961508432>caseinsensitiveinfo
-
- - Usage: `<@1275521742961508432>caseinsensitiveinfo`
-=======
 # ,caseinsensitiveinfo
 
  - Usage: `,caseinsensitiveinfo`
->>>>>>> 9e308722 (Revamped and Fixed)
 
 

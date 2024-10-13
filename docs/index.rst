@@ -28,10 +28,7 @@ Useful Links
 
     cog_Core
     cog_CogManagerUI
-<<<<<<< HEAD
-=======
     cog_Dev
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Permissions
     cog_Downloader
     cog_eep
@@ -39,20 +36,11 @@ Useful Links
     cog_AdvancedBlacklist
     cog_AFK
     cog_AltMarker
-<<<<<<< HEAD
-    cog_AntiLinks
-    cog_AutoMod
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_BankEvents
     cog_BannedCount
     cog_Bl
     cog_BotLogger
     cog_BrainfuckCog
-<<<<<<< HEAD
-    cog_CaseInsensitive
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Cooldown
     cog_DMAffiliates
     cog_Economy
@@ -68,10 +56,6 @@ Useful Links
     cog_Insult
     cog_IntroCog
     cog_InviteSettings
-<<<<<<< HEAD
-    cog_Jail
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_LastPing
     cog_Lenny
     cog_Maintenance
@@ -108,10 +92,6 @@ Useful Links
     cog_VoiceTools
     cog_WelcomeCount
     cog_WordScramble
-<<<<<<< HEAD
-    cog_Zalgo
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_ExclusiveRoles
     cog_HostInfo
     cog_Ticks
@@ -160,10 +140,6 @@ Useful Links
     cog_NoBot
     cog_Pupper
     cog_ReactToCommand
-<<<<<<< HEAD
-    cog_Seen
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_UrlButtons
     cog_Hue
     cog_Badges
@@ -171,10 +147,6 @@ Useful Links
     cog_AddImage
     cog_AdventureAlert
     cog_Aliases
-<<<<<<< HEAD
-    cog_AutoBan
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Away
     cog_ConsoleClearer
     cog_Freshmeat
@@ -188,10 +160,6 @@ Useful Links
     cog_MemberCount
     cog_Minecraft
     cog_Move
-<<<<<<< HEAD
-    cog_Pinboard
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Prefix
     cog_PyPi
     cog_QR
@@ -204,10 +172,6 @@ Useful Links
     cog_SentryIO
     cog_Skyrim
     cog_SmartReact
-<<<<<<< HEAD
-    cog_Spoop
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_System
     cog_TellMe
     cog_TimeChannel
@@ -266,15 +230,6 @@ Useful Links
     cog_Lockdown
     cog_Admin
     cog_Choose
-<<<<<<< HEAD
-    cog_AdWarn
-    cog_Purge
-    cog_DevUtils
-    cog_Dev
-    cog_DynamicPrefix
-    cog_OwnerProtection
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Banner
     cog_Avatar
     cog_Gulag
@@ -284,10 +239,6 @@ Useful Links
     cog_PyLavEffects
     cog_PyLavLocalFiles
     cog_PyLavLyrics
-<<<<<<< HEAD
-    cog_PyLavManagedNode
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_PyLavMigrator
     cog_PyLavNodes
     cog_PyLavNotifier
@@ -317,23 +268,6 @@ Useful Links
     cog_SlashTags
     cog_VerifyAll
     cog_ProjectPost
-<<<<<<< HEAD
-    cog_ServerAssistant
-    cog_GitHub
-    cog_CtrlZ
-    cog_RoleTools
-    cog_Race
-    cog_RolesButtons
-    cog_RedUpdate
-    cog_Tags
-    cog_AIUser
-    cog_RoleLocker
-    cog_Reminders
-    cog_NoSpoiler
-    cog_ReviewsCog
-    cog_Ratings
-    cog_Aki
-=======
     cog_GitHub
     cog_CtrlZ
     cog_Race
@@ -342,7 +276,6 @@ Useful Links
     cog_Reminders
     cog_ReviewsCog
     cog_Ratings
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_PyLavPlaylists
     cog_Calculator
     cog_Perform
@@ -353,30 +286,10 @@ Useful Links
     cog_AutoPublisher
     cog_SplitOrStealGame
     cog_PokemonDuel
-<<<<<<< HEAD
-    cog_Wormhole
-    cog_NoDMs
-=======
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_AdminToggle
     cog_LevelUp
     cog_UnbanAll
     cog_AIEmote
-<<<<<<< HEAD
-    cog_DashIntGen
-    cog_TempRoles
-    cog_RolloutGame
-    cog_Counting
-    cog_AntiPhishing
-    cog_DisurlVotesTracker
-    cog_EventLogger
-    cog_Dashboard
-    cog_GetDocs
-    cog_RoleSync
-    cog_Scanner
-    cog_AutoTraceback
-    cog_DiscordEdit
-=======
     cog_TempRoles
     cog_Counting
     cog_AntiPhishing
@@ -384,13 +297,10 @@ Useful Links
     cog_Dashboard
     cog_GetDocs
     cog_Scanner
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_CustomGlobalCommands
     cog_TarotReading
     cog_ViewPermissions
     cog_AutoDocs
-<<<<<<< HEAD
-=======
     cog_PyLavManagedNode
     cog_Todo
     cog_RedUpdate
@@ -421,5 +331,4 @@ Useful Links
     cog_EventLogger
     cog_PresenceXP
     cog_GlobalBanList
->>>>>>> 9e308722 (Revamped and Fixed)
     cog_Star_Utils
