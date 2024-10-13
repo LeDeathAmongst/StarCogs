@@ -79,11 +79,19 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>email
 Send an email<br/>
 
 Attach files to the command to send them as attachments<br/>
  - Usage: `<@1275521742961508432>email <sender> <recipient> <subject> <message>`
+=======
+# ,email
+Send an email<br/>
+
+Attach files to the command to send them as attachments<br/>
+ - Usage: `,email <sender> <recipient> <subject> <message>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `server_only`
 Extended Arg Info
 > ### sender: str
@@ -104,17 +112,29 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>addemail
 Add an email account<br/>
  - Usage: `<@1275521742961508432>addemail`
+=======
+# ,addemail
+Add an email account<br/>
+ - Usage: `,addemail`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Aliases: `addgmail`
  - Checks: `server_only`
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>editemail
 Edit an email account<br/>
  - Usage: `<@1275521742961508432>editemail <email>`
+=======
+# ,editemail
+Edit an email account<br/>
+ - Usage: `,editemail <email>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Aliases: `editgmail`
  - Checks: `server_only`
@@ -125,9 +145,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>deleteemail
 Delete an email account<br/>
  - Usage: `<@1275521742961508432>deleteemail <email>`
+=======
+# ,deleteemail
+Delete an email account<br/>
+ - Usage: `,deleteemail <email>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Checks: `server_only`
 Extended Arg Info
@@ -137,9 +163,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>gmailroles
 Set the roles allowed to send emails<br/>
  - Usage: `<@1275521742961508432>gmailroles <roles>`
+=======
+# ,gmailroles
+Set the roles allowed to send emails<br/>
+ - Usage: `,gmailroles <roles>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
  - Checks: `server_only`
 Extended Arg Info
@@ -153,6 +185,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>gmailsettings
 View the email settings for the server<br/>
  - Usage: `<@1275521742961508432>gmailsettings`
@@ -162,6 +195,17 @@ View the email settings for the server<br/>
 # <@1275521742961508432>gmailhelp
 Get instructions for setting up Gmail<br/>
  - Usage: `<@1275521742961508432>gmailhelp`
+=======
+# ,gmailsettings
+View the email settings for the server<br/>
+ - Usage: `,gmailsettings`
+ - Checks: `server_only`
+
+
+# ,gmailhelp
+Get instructions for setting up Gmail<br/>
+ - Usage: `,gmailhelp`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `gmailsetup`
  - Checks: `server_only`
 

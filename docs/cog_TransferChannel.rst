@@ -3,7 +3,11 @@ TransferChannel
 
 A cog to transfer messages from a channel to another channel, with many options!
 
+<<<<<<< HEAD
 # <@1275521742961508432>transferchannel (Hybrid Command)
+=======
+# ,transferchannel (Hybrid Command)
+>>>>>>> 9e308722 (Revamped and Fixed)
 Transfer messages from a channel to another channel, with many options. This might take a long time.<br/>
 You can specify the id of a channel from another server.<br/>
 
@@ -14,17 +18,29 @@ You can specify the id of a channel from another server.<br/>
 - `webhook` Do you want to send the messages with webhooks (name and avatar of the original author)?<br/>
 - `message`Do you want to transfer the message as a simple message?<br/>
 Remember that transfering other users' messages does not respect the TOS.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>transferchannel`
+=======
+ - Usage: `,transferchannel`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/transferchannel`
  - Restricted to: `GUILD_OWNER`
  - Aliases: `channeltransfer`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>transferchannel all (Hybrid Command)
 Transfer all messages from a channel to another channel. This might take a long time.<br/>
 
 Remember that transfering other users' messages does not respect the TOS.<br/>
  - Usage: `<@1275521742961508432>transferchannel all <source> <destination> [way=webhooks] [exclude_users_and_roles=[]]`
+=======
+## ,transferchannel all (Hybrid Command)
+Transfer all messages from a channel to another channel. This might take a long time.<br/>
+
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel all <source> <destination> [way=webhooks] [exclude_users_and_roles=[]]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/transferchannel all <source> <destination> [way=webhooks] [exclude_users_and_roles=[]]`
 Extended Arg Info
 > ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
@@ -47,6 +63,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>transferchannel after (Hybrid Command)
 Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
 
@@ -54,6 +71,15 @@ Specify the after message (id or link) or a valid Discord snowflake.<br/>
 Remember that transfering other users' messages does not respect the TOS.<br/>
  - Usage: `<@1275521742961508432>transferchannel after <source> <destination> <after> [way=webhooks] [exclude_users_and_roles=[]]`
  - Slash Usage: `/transferchannel after <source> <destination> <after> [way=webhooks] [exclude_users_and_roles=[]]`
+=======
+## ,transferchannel before (Hybrid Command)
+Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
+
+Specify the before message (id or link) or a valid Discord snowflake.<br/>
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel before <source> <destination> <before> [way=webhooks] [exclude_users_and_roles=[]]`
+ - Slash Usage: `/transferchannel before <source> <destination> <before> [way=webhooks] [exclude_users_and_roles=[]]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
 > 
@@ -75,12 +101,116 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>transferchannel user (Hybrid Command)
+=======
+## ,transferchannel between (Hybrid Command)
+Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
+
+Specify the between messages (id or link) or a valid snowflake.<br/>
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel between <source> <destination> <before> <after> [way=webhooks] [exclude_users_and_roles=[]]`
+ - Slash Usage: `/transferchannel between <source> <destination> <before> <after> [way=webhooks] [exclude_users_and_roles=[]]`
+Extended Arg Info
+> ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### destination: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+
+
+## ,transferchannel bot (Hybrid Command)
+Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
+
+Specify the bool option.<br/>
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel bot <source> <destination> [bot=True] [limit=None] [way=webhooks] [exclude_users_and_roles=[]]`
+ - Slash Usage: `/transferchannel bot <source> <destination> [bot=True] [limit=None] [way=webhooks] [exclude_users_and_roles=[]]`
+Extended Arg Info
+> ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### destination: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### bot: Optional[bool] = True
+> ```
+> Can be 1, 0, true, false, t, f
+> ```
+> ### limit: Optional[int] = None
+> ```
+> A number without decimal places.
+> ```
+
+
+## ,transferchannel messages (Hybrid Command)
+Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
+
+Specify the number of messages since the end of the channel.<br/>
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel messages <source> <destination> <limit> [way=webhooks] [exclude_users_and_roles=[]]`
+ - Slash Usage: `/transferchannel messages <source> <destination> <limit> [way=webhooks] [exclude_users_and_roles=[]]`
+Extended Arg Info
+> ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### destination: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### limit: int
+> ```
+> A number without decimal places.
+> ```
+
+
+## ,transferchannel user (Hybrid Command)
+>>>>>>> 9e308722 (Revamped and Fixed)
 Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
 
 Specify the user/member (id, name or mention).<br/>
 Remember that transfering other users' messages does not respect the TOS.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>transferchannel user <source> <destination> <user> [limit=None] [way=webhooks]`
+=======
+ - Usage: `,transferchannel user <source> <destination> <user> [limit=None] [way=webhooks]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/transferchannel user <source> <destination> <user> [limit=None] [way=webhooks]`
 Extended Arg Info
 > ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
@@ -118,6 +248,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>transferchannel bot (Hybrid Command)
 Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
 
@@ -243,11 +374,18 @@ Extended Arg Info
 
 
 ## <@1275521742961508432>transferchannel message (Hybrid Command)
+=======
+## ,transferchannel message (Hybrid Command)
+>>>>>>> 9e308722 (Revamped and Fixed)
 Transfer a specific message to another channel. This might take a long time.<br/>
 
 Specify the message to transfer, with its ID or its link.<br/>
 Remember that transfering other users' messages does not respect the TOS.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>transferchannel message <message> <destination> [way=webhooks]`
+=======
+ - Usage: `,transferchannel message <message> <destination> [way=webhooks]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/transferchannel message <message> <destination> [way=webhooks]`
 Extended Arg Info
 > ### message: discord.message.Message
@@ -265,3 +403,34 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
+=======
+## ,transferchannel after (Hybrid Command)
+Transfer a part of the messages from a channel to another channel. This might take a long time.<br/>
+
+Specify the after message (id or link) or a valid Discord snowflake.<br/>
+Remember that transfering other users' messages does not respect the TOS.<br/>
+ - Usage: `,transferchannel after <source> <destination> <after> [way=webhooks] [exclude_users_and_roles=[]]`
+ - Slash Usage: `/transferchannel after <source> <destination> <after> [way=webhooks] [exclude_users_and_roles=[]]`
+Extended Arg Info
+> ### source: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+> ### destination: Union[discord.channel.TextChannel, discord.channel.VoiceChannel, discord.threads.Thread]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by channel URL.
+>     4. Lookup by name
+> 
+>     
+
+
+>>>>>>> 9e308722 (Revamped and Fixed)

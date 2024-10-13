@@ -1,9 +1,15 @@
 Move
 ====
 
+<<<<<<< HEAD
 # <@1275521742961508432>move
 
  - Usage: `<@1275521742961508432>move <new_channel> <msg_ids>`
+=======
+# ,move
+
+ - Usage: `,move <new_channel> <msg_ids>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `MOD`
 Extended Arg Info
 > ### new_channel: discord.channel.TextChannel

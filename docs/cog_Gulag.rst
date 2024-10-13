@@ -3,11 +3,19 @@ Gulag
 
 Gulag users by restricting them to a channel
 
+<<<<<<< HEAD
 # <@1275521742961508432>gulag (Hybrid Command)
 Sends a member to the gulag.<br/>
 
 > This will take away all roles of a member and give them the gulag role.<br/>
  - Usage: `<@1275521742961508432>gulag <member>`
+=======
+# ,gulag (Hybrid Command)
+Sends a member to the gulag.<br/>
+
+> This will take away all roles of a member and give them the gulag role.<br/>
+ - Usage: `,gulag <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/gulag <member>`
  - Checks: `server_only`
 Extended Arg Info
@@ -25,11 +33,19 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>bail (Hybrid Command)
 Releases a member from the gulag.<br/>
 
 > This will take away gulag role and give back the roles the member previously had.<br/>
  - Usage: `<@1275521742961508432>bail <member>`
+=======
+# ,bail (Hybrid Command)
+Releases a member from the gulag.<br/>
+
+> This will take away gulag role and give back the roles the member previously had.<br/>
+ - Usage: `,bail <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/bail <member>`
  - Checks: `server_only`
 Extended Arg Info
@@ -47,6 +63,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>gulagset
 Commands for gulag management.<br/>
  - Usage: `<@1275521742961508432>gulagset`
@@ -55,6 +72,21 @@ Commands for gulag management.<br/>
 ## <@1275521742961508432>gulagset channel
 Configures the gulag channel.<br/>
  - Usage: `<@1275521742961508432>gulagset channel <channel>`
+=======
+# ,gulagset
+Commands for gulag management.<br/>
+ - Usage: `,gulagset`
+
+
+## ,gulagset clear
+Resets the gulag role and channel.<br/>
+ - Usage: `,gulagset clear`
+
+
+## ,gulagset channel
+Configures the gulag channel.<br/>
+ - Usage: `,gulagset channel <channel>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -67,9 +99,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>gulagset role
 Configures the gulag role.<br/>
  - Usage: `<@1275521742961508432>gulagset role <role>`
+=======
+## ,gulagset role
+Configures the gulag role.<br/>
+ - Usage: `,gulagset role <role>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### role: discord.role.Role
 > 
@@ -81,8 +119,11 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>gulagset clear
 Resets the gulag role and channel.<br/>
  - Usage: `<@1275521742961508432>gulagset clear`
 
 
+=======
+>>>>>>> 9e308722 (Revamped and Fixed)

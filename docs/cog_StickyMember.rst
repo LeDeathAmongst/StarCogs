@@ -1,9 +1,15 @@
 StickyMember
 ============
 
+<<<<<<< HEAD
 # <@1275521742961508432>stickymem
 
  - Usage: `<@1275521742961508432>stickymem <member>`
+=======
+# ,stickymem
+
+ - Usage: `,stickymem <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### member: discord.member.Member
@@ -20,9 +26,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>unstickymem
 
  - Usage: `<@1275521742961508432>unstickymem <member>`
+=======
+# ,unstickymem
+
+ - Usage: `,unstickymem <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
 Extended Arg Info
 > ### member: Union[discord.member.Member, int]

@@ -3,12 +3,21 @@ Banana
 
 Show someone your banana or eat theirs
 
+<<<<<<< HEAD
 # <@1275521742961508432>banana (Hybrid Command)
 Show someone your banana or eat theirs<br/>
 
 > [action] = `show` / `eat`        <br/>
 > example: `<@1275521742961508432>banana @e-girl show`<br/>
  - Usage: `<@1275521742961508432>banana <user> <action>`
+=======
+# ,banana (Hybrid Command)
+Show someone your banana or eat theirs<br/>
+
+> [action] = `show` / `eat`        <br/>
+> example: `,banana @e-girl show`<br/>
+ - Usage: `,banana <user> <action>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/banana <user> <action>`
  - Checks: `server_only`
 Extended Arg Info

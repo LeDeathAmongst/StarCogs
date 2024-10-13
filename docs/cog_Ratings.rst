@@ -3,9 +3,15 @@ Ratings
 
 Rate how simp you are.
 
+<<<<<<< HEAD
 # <@1275521742961508432>simprate
 Find out how much someone is simping for something.<br/>
  - Usage: `<@1275521742961508432>simprate <member> <simpable>`
+=======
+# ,simprate
+Find out how much someone is simping for something.<br/>
+ - Usage: `,simprate <member> <simpable>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### member: Optional[discord.member.Member]
 > 
@@ -25,9 +31,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>clownrate
 Reveal someone's clownery.<br/>
  - Usage: `<@1275521742961508432>clownrate <member>`
+=======
+# ,clownrate
+Reveal someone's clownery.<br/>
+ - Usage: `,clownrate <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### member: Optional[discord.member.Member]
 > 
@@ -43,9 +55,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>iqrate
 100% legit IQ test.<br/>
  - Usage: `<@1275521742961508432>iqrate <member>`
+=======
+# ,iqrate
+100% legit IQ test.<br/>
+ - Usage: `,iqrate <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `iq`
 Extended Arg Info
 > ### member: Optional[discord.member.Member]
@@ -62,9 +80,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>sanitycheck
 Check your sanity.<br/>
  - Usage: `<@1275521742961508432>sanitycheck <member>`
+=======
+# ,sanitycheck
+Check your sanity.<br/>
+ - Usage: `,sanitycheck <member>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `sanity`
 Extended Arg Info
 > ### member: Optional[discord.member.Member]

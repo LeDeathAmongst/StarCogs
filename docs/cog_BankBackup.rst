@@ -3,6 +3,7 @@ BankBackup
 
 Backup bank balances for all members of a guild
 
+<<<<<<< HEAD
 # <@1275521742961508432>bankbackup
 Backup your server's bank balances<br/>
  - Usage: `<@1275521742961508432>bankbackup`
@@ -10,12 +11,25 @@ Backup your server's bank balances<br/>
 
 
 # <@1275521742961508432>bankrestore
+=======
+# ,bankbackup
+Backup your server's bank balances<br/>
+ - Usage: `,bankbackup`
+ - Restricted to: `GUILD_OWNER`
+
+
+# ,bankrestore
+>>>>>>> 9e308722 (Revamped and Fixed)
 Restore your server's bank balances.<br/>
 Attach your backup file with this command.<br/>
 
 **Arguments**<br/>
 - `<set_or_add>`: Whether you want to `add` or `set` balances from the backup.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>bankrestore <set_or_add>`
+=======
+ - Usage: `,bankrestore <set_or_add>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `GUILD_OWNER`
 Extended Arg Info
 > ### set_or_add: str

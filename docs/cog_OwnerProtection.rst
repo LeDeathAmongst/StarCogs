@@ -3,6 +3,7 @@ OwnerProtection
 
 A cog to protect the bot owner/trusted owners from being muted, timed out, kicked, or banned.
 
+<<<<<<< HEAD
 # <@1275521742961508432>owner
 Group command for owner protection settings.<br/>
  - Usage: `<@1275521742961508432>owner`
@@ -82,6 +83,17 @@ Extended Arg Info
 ## <@1275521742961508432>owner resetsetting
 Reset a setting.<br/>
  - Usage: `<@1275521742961508432>owner resetsetting <setting>`
+=======
+# ,owner
+Group command for owner protection settings.<br/>
+ - Usage: `,owner`
+ - Checks: `server_only`
+
+
+## ,owner resetsetting
+Reset a setting.<br/>
+ - Usage: `,owner resetsetting <setting>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### setting: str
 > ```
@@ -89,6 +101,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>owner showsettings
 Show all settings for the cog with defaults and values.<br/>
  - Usage: `<@1275521742961508432>owner showsettings [with_dev=False]`
@@ -111,6 +124,14 @@ The name of the owner role.<br/>
 Default value: `...`<br/>
 Dev: `<class 'str'>`<br/>
  - Usage: `<@1275521742961508432>owner ownerrolename <value>`
+=======
+## ,owner supportrolename
+The name of the support role.<br/>
+
+Default value: `Support`<br/>
+Dev: `<class 'str'>`<br/>
+ - Usage: `,owner supportrolename <value>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### value: str
 > ```
@@ -118,12 +139,33 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>owner supportrolemessage
 Message sent when the support role is created.<br/>
 
 Default value: `Support role created successfully.`<br/>
 Dev: `<class 'str'>`<br/>
  - Usage: `<@1275521742961508432>owner supportrolemessage <value>`
+=======
+## ,owner give
+Give the support role to the command invoker if it exists.<br/>
+ - Usage: `,owner give`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,owner admin
+Toggle admin permissions for the support role.<br/>
+ - Usage: `,owner admin`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,owner supportrolemessage
+Message sent when the support role is created.<br/>
+
+Default value: `Support Role created successfully.`<br/>
+Dev: `<class 'str'>`<br/>
+ - Usage: `,owner supportrolemessage <value>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### value: str
 > ```
@@ -131,6 +173,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>owner admin
 Toggle admin permissions for the support role.<br/>
  - Usage: `<@1275521742961508432>owner admin`
@@ -145,6 +188,20 @@ Default value: `Hello {owner_name},<br/>
 I have created a role called '{role_name}' in {server_name} for bot support purposes. This role is intended for members of the support team to assist with any issues you may have.`<br/>
 Dev: `<class 'str'>`<br/>
  - Usage: `<@1275521742961508432>owner ownermessage <value>`
+=======
+## ,owner delete
+Delete the support role.<br/>
+ - Usage: `,owner delete`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,owner ownermessage
+Message sent to the server owner when the support role is created.<br/>
+
+Default value: `Support role made for support.`<br/>
+Dev: `<class 'str'>`<br/>
+ - Usage: `,owner ownermessage <value>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### value: str
 > ```
@@ -152,6 +209,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>owner modalconfig
 Set all settings for the cog with a Discord Modal.<br/>
  - Usage: `<@1275521742961508432>owner modalconfig [confirmation=False]`
@@ -167,6 +225,12 @@ Extended Arg Info
 Create the support role with specified permissions.<br/>
  - Usage: `<@1275521742961508432>owner create [name=None] [message=None]`
  - Checks: `OwnerProtection`
+=======
+## ,owner create
+Create the support role with specified permissions.<br/>
+ - Usage: `,owner create [name=None] [message=None]`
+ - Restricted to: `BOT_OWNER`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### name: str = None
 > ```
@@ -178,3 +242,82 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
+=======
+## ,owner modalconfig
+Set all settings for the cog with a Discord Modal.<br/>
+ - Usage: `,owner modalconfig [confirmation=False]`
+ - Aliases: `configmodal`
+Extended Arg Info
+> ### confirmation: Optional[bool] = False
+> ```
+> Can be 1, 0, true, false, t, f
+> ```
+
+
+## ,owner list
+List all protected owners.<br/>
+ - Usage: `,owner list`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,owner add
+Add a user to the protected owners list.<br/>
+ - Usage: `,owner add <owner>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### owner: discord.user.User
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by username#discriminator (deprecated).
+>     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
+>     5. Lookup by user name.
+>     6. Lookup by global name.
+> 
+>     
+
+
+## ,owner ownerrolename
+The name of the owner role.<br/>
+
+Default value: `...`<br/>
+Dev: `<class 'str'>`<br/>
+ - Usage: `,owner ownerrolename <value>`
+Extended Arg Info
+> ### value: str
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+## ,owner remove
+Remove a user from the protected owners list.<br/>
+ - Usage: `,owner remove <owner>`
+ - Restricted to: `BOT_OWNER`
+Extended Arg Info
+> ### owner: discord.user.User
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by username#discriminator (deprecated).
+>     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
+>     5. Lookup by user name.
+>     6. Lookup by global name.
+> 
+>     
+
+
+## ,owner showsettings
+Show all settings for the cog with defaults and values.<br/>
+ - Usage: `,owner showsettings [with_dev=False]`
+Extended Arg Info
+> ### with_dev: Optional[bool] = False
+> ```
+> Can be 1, 0, true, false, t, f
+> ```
+
+
+>>>>>>> 9e308722 (Revamped and Fixed)

@@ -7,6 +7,7 @@ WARNING: Some cooldowns are meant to be in place, meaning that they should not b
 Any contributors to this cog are not at fault if it is used improperly, and is instead at
 the fault of the person running the command.  By installing this cog, you agree to these terms.
 
+<<<<<<< HEAD
 # <@1275521742961508432>cooldown
 Group command for working with cooldowns for commands.<br/>
  - Usage: `<@1275521742961508432>cooldown`
@@ -14,15 +15,32 @@ Group command for working with cooldowns for commands.<br/>
 
 
 ## <@1275521742961508432>cooldown add
+=======
+# ,cooldown
+Group command for working with cooldowns for commands.<br/>
+ - Usage: `,cooldown`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,cooldown add
+>>>>>>> 9e308722 (Revamped and Fixed)
 Sets a cooldown for a command, allowing a certain amount of times in a certain amount of time for a certain type.  If a cooldown already exists for the specified command, then it will be overwritten and edited.<br/>
 
 The command argument does not require quotes, as it consumes the rest in order to make cooldowns for subcommands easier.<br/>
 
+<<<<<<< HEAD
 Example: `<@1275521742961508432>cooldown add 1 5s user ping`<br/>
 
 The above example will limit a user to using the `ping` command every 5 seconds.<br/>
 
 Example 2: `<@1275521742961508432>cooldown add 5 10m server alias add`<br/>
+=======
+Example: `,cooldown add 1 5s user ping`<br/>
+
+The above example will limit a user to using the `ping` command every 5 seconds.<br/>
+
+Example 2: `,cooldown add 5 10m server alias add`<br/>
+>>>>>>> 9e308722 (Revamped and Fixed)
 
 The above example (number 2) will limit people in a server to using the `alias add` command to 5 times every 10 minutes.<br/>
 
@@ -43,7 +61,11 @@ Arguments:<br/>
 -   Per:       during how long<br/>
 -   Type:      for what type<br/>
 -   Command:   for what command.  Do not use a prefix, and does not work with aliases.  Please pass the actual command for the alias if you wish.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>cooldown add <rate> <per> <btype> <command>`
+=======
+ - Usage: `,cooldown add <rate> <per> <btype> <command>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### rate: int
 > ```
@@ -63,7 +85,11 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>cooldown remove
+=======
+## ,cooldown remove
+>>>>>>> 9e308722 (Revamped and Fixed)
 Removes the cooldown from a command.<br/>
 
 The cooldown can be one set from this cog or from inside the cog's code.<br/>
@@ -73,7 +99,11 @@ The command argument does not require quotes, as it consumes the rest in order t
 Please do note however: some commands are meant to have cooldowns.  They may prevent something malicious from happening, or maybe your device from breaking or from being used too much.  I (Neuro Assassin <@473541068378341376>) or any other contributor to this cog take no responsibility for any complications that may result because of this.  Use at your own risk.<br/>
 
 Note: Does not actually remove the command cooldown (undocumented), so instead it allows for the command to be run 100000 times every 1 second until the next boot up, where it will not be added (unless you are removing a cooldown from outside of this cog, then it will be kept after restart).<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>cooldown remove <command>`
+=======
+ - Usage: `,cooldown remove <command>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### command
 > ```

@@ -3,6 +3,7 @@ Maintenance
 
 Put the bot on maintenance, and allow a customizable message to the people not whitelisted
 
+<<<<<<< HEAD
 # <@1275521742961508432>maintenance
 Control the bot's maintenance.<br/>
  - Usage: `<@1275521742961508432>maintenance`
@@ -10,6 +11,25 @@ Control the bot's maintenance.<br/>
 
 
 ## <@1275521742961508432>maintenance on
+=======
+# ,maintenance
+Control the bot's maintenance.<br/>
+ - Usage: `,maintenance`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,maintenance deleteafter
+Set the amount of seconds before the maintenance message is deleted.  Pass 0 to make it not delete the message.<br/>
+ - Usage: `,maintenance deleteafter <amount>`
+Extended Arg Info
+> ### amount: int
+> ```
+> A number without decimal places.
+> ```
+
+
+## ,maintenance on
+>>>>>>> 9e308722 (Revamped and Fixed)
 Puts the bot on maintenance, preventing everyone but you and people whitelisted from running commands.  Other people will just be told the bot is currently on maintenance.<br/>
 
 You can use the following arguments to specify things:<br/>
@@ -19,6 +39,7 @@ You can use the following arguments to specify things:<br/>
     --whitelist: Provide user IDs after this to whitelist people from the maintenance.<br/>
 
 Examples:<br/>
+<<<<<<< HEAD
 `<@1275521742961508432>maintenance on --start-in 5 seconds`; starts a maintenance in 5 seconds<br/>
 `<@1275521742961508432>maintenance on --start-in 5 seconds --end-in 10 seconds`; starts a maintenance in 5 seconds, then scheduled to end in 10 seconds, so it will only be on maintenance for 5 seconds.<br/>
 `<@1275521742961508432>maintenance on --start-in 10 seconds --end-after 10 seconds --whitelist 473541068378341376 473541068378341377`; starts a maintenance in 10 seconds, that lasts for 10 seconds after, and has the two user IDs who are exempted from the maintenance.<br/>
@@ -38,6 +59,27 @@ Tells the current settings of the cog.<br/>
 ## <@1275521742961508432>maintenance whitelist
 Remove or add a person from or to the whitelist for the current maintenance.  Note that this is only for the current maintenance, subsequent ones must have them set again.<br/>
  - Usage: `<@1275521742961508432>maintenance whitelist <user>`
+=======
+`,maintenance on --start-in 5 seconds`; starts a maintenance in 5 seconds<br/>
+`,maintenance on --start-in 5 seconds --end-in 10 seconds`; starts a maintenance in 5 seconds, then scheduled to end in 10 seconds, so it will only be on maintenance for 5 seconds.<br/>
+`,maintenance on --start-in 10 seconds --end-after 10 seconds --whitelist 473541068378341376 473541068378341377`; starts a maintenance in 10 seconds, that lasts for 10 seconds after, and has the two user IDs who are exempted from the maintenance.<br/>
+ - Usage: `,maintenance on [args]`
+
+
+## ,maintenance settings
+Tells the current settings of the cog.<br/>
+ - Usage: `,maintenance settings`
+
+
+## ,maintenance off
+Clears the bot from maintenance<br/>
+ - Usage: `,maintenance off`
+
+
+## ,maintenance whitelist
+Remove or add a person from or to the whitelist for the current maintenance.  Note that this is only for the current maintenance, subsequent ones must have them set again.<br/>
+ - Usage: `,maintenance whitelist <user>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### user: discord.user.User
 > 
@@ -52,9 +94,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>maintenance message
 Set the message sent when the bot is down for maintenance<br/>
  - Usage: `<@1275521742961508432>maintenance message <message>`
+=======
+## ,maintenance message
+Set the message sent when the bot is down for maintenance<br/>
+ - Usage: `,maintenance message <message>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message
 > ```
@@ -62,6 +110,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>maintenance deleteafter
 Set the amount of seconds before the maintenance message is deleted.  Pass 0 to make it not delete the message.<br/>
  - Usage: `<@1275521742961508432>maintenance deleteafter <amount>`
@@ -72,3 +121,5 @@ Extended Arg Info
 > ```
 
 
+=======
+>>>>>>> 9e308722 (Revamped and Fixed)

@@ -3,9 +3,15 @@ PyLavPlaylists
 
 PyLav playlist management commands
 
+<<<<<<< HEAD
 # <@1275521742961508432>playlist
 Control PyLav playlists<br/>
  - Usage: `<@1275521742961508432>playlist`
+=======
+# ,playlist
+Control PyLav playlists<br/>
+ - Usage: `,playlist`
+>>>>>>> 9e308722 (Revamped and Fixed)
 
 
 ## /playlist version (Slash Command)
@@ -210,9 +216,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 # <@1275521742961508432>__command_playlist_play
 
  - Usage: `<@1275521742961508432>__command_playlist_play <playlist>`
+=======
+# ,__command_playlist_play
+
+ - Usage: `,__command_playlist_play <playlist>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Checks: `always_hidden`
 
 

@@ -3,9 +3,15 @@ Praise
 
 Praise Kink style cog for Red-DiscordBot
 
+<<<<<<< HEAD
 # <@1275521742961508432>praise
 Praise a user with a default or custom message.<br/>
  - Usage: `<@1275521742961508432>praise [target=None] [custom_message]`
+=======
+# ,praise
+Praise a user with a default or custom message.<br/>
+ - Usage: `,praise [target=None] [custom_message]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### target: discord.member.Member = None
 > 
@@ -25,6 +31,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>praise list
 List all praise messages.<br/>
  - Usage: `<@1275521742961508432>praise list`
@@ -43,6 +50,11 @@ Extended Arg Info
 ## <@1275521742961508432>praise role
 Praise a role with a default or custom message.<br/>
  - Usage: `<@1275521742961508432>praise role <target> [custom_message]`
+=======
+## ,praise role
+Praise a role with a default or custom message.<br/>
+ - Usage: `,praise role <target> [custom_message]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### target: discord.role.Role
 > 
@@ -58,9 +70,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>praise remove
 Remove a praise message by its UUID.<br/>
  - Usage: `<@1275521742961508432>praise remove <praise_id>`
+=======
+## ,praise remove
+Remove a praise message by its UUID.<br/>
+ - Usage: `,praise remove <praise_id>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### praise_id: str
 > ```
@@ -68,3 +86,21 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
+=======
+## ,praise list
+List all praise messages.<br/>
+ - Usage: `,praise list`
+
+
+## ,praise add
+Add a new praise message to the list.<br/>
+ - Usage: `,praise add <new_praise>`
+Extended Arg Info
+> ### new_praise: str
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+>>>>>>> 9e308722 (Revamped and Fixed)

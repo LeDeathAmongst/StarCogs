@@ -1,13 +1,20 @@
 MemberHistory
 =============
 
+<<<<<<< HEAD
 # <@1275521742961508432>memberhistory
 
  - Usage: `<@1275521742961508432>memberhistory`
+=======
+# ,memberhistory
+
+ - Usage: `,memberhistory`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `memhis`
  - Checks: `server_only`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>memberhistory unignore
 Remove a user or role from the ignore list.<br/>
  - Usage: `<@1275521742961508432>memberhistory unignore`
@@ -17,6 +24,42 @@ Remove a user or role from the ignore list.<br/>
 ### <@1275521742961508432>memberhistory unignore server
 Remove a user or role from the ignore list.<br/>
  - Usage: `<@1275521742961508432>memberhistory unignore server <user_or_role>`
+=======
+## ,memberhistory ttl
+Set the time to live for the stored files.<br/>
+ - Usage: `,memberhistory ttl <time>`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,memberhistory ignore
+Add a user or role to the ignore list.<br/>
+ - Usage: `,memberhistory ignore`
+ - Restricted to: `ADMIN`
+
+
+### ,memberhistory ignore globally
+Add a user to the global ignore list.<br/>
+ - Usage: `,memberhistory ignore globally <user>`
+ - Restricted to: `BOT_OWNER`
+ - Aliases: `global`
+Extended Arg Info
+> ### user: discord.user.User
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by username#discriminator (deprecated).
+>     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
+>     5. Lookup by user name.
+>     6. Lookup by global name.
+> 
+>     
+
+
+### ,memberhistory ignore server
+Add a user or role to the ignore list.<br/>
+ - Usage: `,memberhistory ignore server <user_or_role>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `ADMIN`
  - Aliases: `server`
 Extended Arg Info
@@ -34,9 +77,41 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ### <@1275521742961508432>memberhistory unignore globally
 Remove a user from the global ignore list.<br/>
  - Usage: `<@1275521742961508432>memberhistory unignore globally <user>`
+=======
+## ,memberhistory unignore
+Remove a user or role from the ignore list.<br/>
+ - Usage: `,memberhistory unignore`
+ - Restricted to: `ADMIN`
+
+
+### ,memberhistory unignore server
+Remove a user or role from the ignore list.<br/>
+ - Usage: `,memberhistory unignore server <user_or_role>`
+ - Restricted to: `ADMIN`
+ - Aliases: `server`
+Extended Arg Info
+> ### user_or_role: Union[discord.member.Member, discord.role.Role]
+> 
+> 
+>     1. Lookup by ID.
+>     2. Lookup by mention.
+>     3. Lookup by username#discriminator (deprecated).
+>     4. Lookup by username#0 (deprecated, only gets users that migrated from their discriminator).
+>     5. Lookup by user name.
+>     6. Lookup by global name.
+>     7. Lookup by server nickname.
+> 
+>     
+
+
+### ,memberhistory unignore globally
+Remove a user from the global ignore list.<br/>
+ - Usage: `,memberhistory unignore globally <user>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
  - Aliases: `global`
 Extended Arg Info
@@ -53,6 +128,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>memberhistory storedusers
 Get a list of all users with stored files.<br/>
  - Usage: `<@1275521742961508432>memberhistory storedusers`
@@ -69,6 +145,17 @@ See the configured settings and additional data about MemberHistory.<br/>
 ## <@1275521742961508432>memberhistory purgeuser
 Purge all stored files for a user.<br/>
  - Usage: `<@1275521742961508432>memberhistory purgeuser <user>`
+=======
+## ,memberhistory storedusers
+Get a list of all users with stored files.<br/>
+ - Usage: `,memberhistory storedusers`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,memberhistory purgeuser
+Purge all stored files for a user.<br/>
+ - Usage: `,memberhistory purgeuser <user>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Restricted to: `BOT_OWNER`
 Extended Arg Info
 > ### user: discord.member.Member
@@ -85,6 +172,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>memberhistory purge
 Purge all stored files.<br/>
  - Usage: `<@1275521742961508432>memberhistory purge`
@@ -123,6 +211,29 @@ Extended Arg Info
 ### <@1275521742961508432>memberhistory avatar decoration
 
  - Usage: `<@1275521742961508432>memberhistory avatar decoration [user=operator.attrgetter('author')] [page=1]`
+=======
+## ,memberhistory showsettings
+See the configured settings and additional data about MemberHistory.<br/>
+ - Usage: `,memberhistory showsettings`
+ - Restricted to: `ADMIN`
+ - Aliases: `ss`
+
+
+## ,memberhistory purge
+Purge all stored files.<br/>
+ - Usage: `,memberhistory purge`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,memberhistory avatar
+Scroll through the avatar history of a user.<br/>
+ - Usage: `,memberhistory avatar`
+
+
+### ,memberhistory avatar decoration
+
+ - Usage: `,memberhistory avatar decoration [user=operator.attrgetter('author')] [page=1]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Aliases: `deco, decor, and decorations`
 Extended Arg Info
 > ### user: discord.member.Member = operator.attrgetter('author')
@@ -139,9 +250,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ### <@1275521742961508432>memberhistory avatar global
 
  - Usage: `<@1275521742961508432>memberhistory avatar global [user=operator.attrgetter('author')] [page=1]`
+=======
+### ,memberhistory avatar server
+
+ - Usage: `,memberhistory avatar server [user=operator.attrgetter('author')] [page=1]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### user: discord.member.Member = operator.attrgetter('author')
 > 
@@ -157,6 +274,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>memberhistory ignore
 Add a user or role to the ignore list.<br/>
  - Usage: `<@1275521742961508432>memberhistory ignore`
@@ -170,6 +288,13 @@ Add a user or role to the ignore list.<br/>
  - Aliases: `server`
 Extended Arg Info
 > ### user_or_role: Union[discord.member.Member, discord.role.Role]
+=======
+### ,memberhistory avatar global
+
+ - Usage: `,memberhistory avatar global [user=operator.attrgetter('author')] [page=1]`
+Extended Arg Info
+> ### user: discord.member.Member = operator.attrgetter('author')
+>>>>>>> 9e308722 (Revamped and Fixed)
 > 
 > 
 >     1. Lookup by ID.
@@ -183,6 +308,7 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ### <@1275521742961508432>memberhistory ignore globally
 Add a user to the global ignore list.<br/>
  - Usage: `<@1275521742961508432>memberhistory ignore globally <user>`
@@ -206,5 +332,11 @@ Extended Arg Info
 Set the time to live for the stored files.<br/>
  - Usage: `<@1275521742961508432>memberhistory ttl <time>`
  - Restricted to: `BOT_OWNER`
+=======
+## ,memberhistory toggle
+Toggle the current state of member history.<br/>
+ - Usage: `,memberhistory toggle`
+ - Restricted to: `GUILD_OWNER`
+>>>>>>> 9e308722 (Revamped and Fixed)
 
 

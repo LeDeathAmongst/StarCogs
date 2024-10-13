@@ -1,6 +1,7 @@
 DMAffiliates
 ============
 
+<<<<<<< HEAD
 # <@1275521742961508432>dmaffiliate
 Settings for the affiliate messages.<br/>
  - Usage: `<@1275521742961508432>dmaffiliate`
@@ -25,6 +26,17 @@ List all affiliate messages.<br/>
 ## <@1275521742961508432>dmaffiliate add
 Add a new affiliate message.<br/>
  - Usage: `<@1275521742961508432>dmaffiliate add <message>`
+=======
+# ,dmaffiliate
+Settings for the affiliate messages.<br/>
+ - Usage: `,dmaffiliate`
+ - Checks: `server_only`
+
+
+## ,dmaffiliate add
+Add a new affiliate message.<br/>
+ - Usage: `,dmaffiliate add <message>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message: str
 > ```
@@ -32,3 +44,21 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
+=======
+## ,dmaffiliate remove
+Remove an affiliate message by its index.<br/>
+ - Usage: `,dmaffiliate remove <index>`
+Extended Arg Info
+> ### index: int
+> ```
+> A number without decimal places.
+> ```
+
+
+## ,dmaffiliate list
+List all affiliate messages.<br/>
+ - Usage: `,dmaffiliate list`
+
+
+>>>>>>> 9e308722 (Revamped and Fixed)

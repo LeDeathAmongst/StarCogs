@@ -3,21 +3,34 @@ AutoMod
 
 Interact with and view discord's automod
 
+<<<<<<< HEAD
 # <@1275521742961508432>automod (Hybrid Command)
 Commnads for interacting with automod<br/>
  - Usage: `<@1275521742961508432>automod`
+=======
+# ,automod (Hybrid Command)
+Commnads for interacting with automod<br/>
+ - Usage: `,automod`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod`
  - Checks: `server_only`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>automod actions (Hybrid Command)
 View the servers saved automod actions<br/>
  - Usage: `<@1275521742961508432>automod actions`
+=======
+## ,automod actions (Hybrid Command)
+View the servers saved automod actions<br/>
+ - Usage: `,automod actions`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod actions`
  - Restricted to: `MOD`
  - Aliases: `action`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>automod rules (Hybrid Command)
 View the servers current automod rules<br/>
  - Usage: `<@1275521742961508432>automod rules`
@@ -29,20 +42,43 @@ View the servers current automod rules<br/>
 ## <@1275521742961508432>automod triggers (Hybrid Command)
 View the servers saved automod triggers<br/>
  - Usage: `<@1275521742961508432>automod triggers`
+=======
+## ,automod triggers (Hybrid Command)
+View the servers saved automod triggers<br/>
+ - Usage: `,automod triggers`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod triggers`
  - Restricted to: `MOD`
  - Aliases: `trigger`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>automod create (Hybrid Command)
 Create automod rules, triggers, and actions<br/>
  - Usage: `<@1275521742961508432>automod create`
+=======
+## ,automod rules (Hybrid Command)
+View the servers current automod rules<br/>
+ - Usage: `,automod rules`
+ - Slash Usage: `/automod rules`
+ - Restricted to: `MOD`
+ - Aliases: `list, rule, and view`
+
+
+## ,automod create (Hybrid Command)
+Create automod rules, triggers, and actions<br/>
+ - Usage: `,automod create`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod create`
  - Restricted to: `ADMIN`
  - Aliases: `c`
 
 
+<<<<<<< HEAD
 ### <@1275521742961508432>automod create trigger (Hybrid Command)
+=======
+### ,automod create trigger (Hybrid Command)
+>>>>>>> 9e308722 (Revamped and Fixed)
 Create a saved trigger for use in automod Rules.<br/>
 
 - `<name>` The name of this trigger for reference later.<br/>
@@ -56,8 +92,13 @@ Note: If you want to use `mentions` you cannot also use `presets`, `keywords` or
 `regex` in the same trigger. Likewise if you use any `presets` you cannot<br/>
 use `keywords`, `regex`, or `mentions`.<br/>
 Examples:<br/>
+<<<<<<< HEAD
     `<@1275521742961508432>automod create trigger mytrigger regex: ^b(a|@)dw(o|0)rd(s|5)$`<br/>
  - Usage: `<@1275521742961508432>automod create trigger <name> <trigger>`
+=======
+    `,automod create trigger mytrigger regex: ^b(a|@)dw(o|0)rd(s|5)$`<br/>
+ - Usage: `,automod create trigger <name> <trigger>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod create trigger <name> <trigger>`
  - Restricted to: `ADMIN`
 Extended Arg Info
@@ -67,6 +108,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ### <@1275521742961508432>automod create action (Hybrid Command)
 Create a saved action for use in automod Rules.<br/>
 
@@ -92,6 +134,9 @@ Extended Arg Info
 
 
 ### <@1275521742961508432>automod create rule (Hybrid Command)
+=======
+### ,automod create rule (Hybrid Command)
+>>>>>>> 9e308722 (Revamped and Fixed)
 Create an automod rule in the server<br/>
 
 Usage:<br/>
@@ -103,10 +148,17 @@ Usage:<br/>
 - `reason:` An optional reason for creating this rule.<br/>
 
 Example:<br/>
+<<<<<<< HEAD
     `<@1275521742961508432>automod create rule trigger: mytrigger actions: timeoutuser notifymods enabled: true roles: @mods`<br/>
     Will create an automod rule with the saved trigger `mytrigger` and<br/>
     the saved actions `timeoutuser` and `notifymods`.<br/>
  - Usage: `<@1275521742961508432>automod create rule <name> <rule>`
+=======
+    `,automod create rule trigger: mytrigger actions: timeoutuser notifymods enabled: true roles: @mods`<br/>
+    Will create an automod rule with the saved trigger `mytrigger` and<br/>
+    the saved actions `timeoutuser` and `notifymods`.<br/>
+ - Usage: `,automod create rule <name> <rule>`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/automod create rule <name> <rule>`
  - Restricted to: `ADMIN`
 Extended Arg Info
@@ -116,3 +168,30 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
+=======
+### ,automod create action (Hybrid Command)
+Create a saved action for use in automod Rules.<br/>
+
+- `<name>` The name of this action for reference later.<br/>
+Usage: `<action>`<br/>
+- `message:` The message to send to a user when triggered.<br/>
+- `channel:` The channel to send a notification to.<br/>
+- `duration:` How long to timeout the user for. Max 28 days.<br/>
+Only one of these options can be applied at a time.<br/>
+Examples:<br/>
+    `,automod create action grumpyuser message: You're being too grumpy`<br/>
+    `,automod create action notifymods channel: #modlog`<br/>
+    `,automod create action 2hrtimeout duration: 2 hours`<br/>
+ - Usage: `,automod create action <name> <action>`
+ - Slash Usage: `/automod create action <name> <action>`
+ - Restricted to: `ADMIN`
+ - Aliases: `a`
+Extended Arg Info
+> ### name: str
+> ```
+> A single word, if not using slash and multiple words are necessary use a quote e.g "Hello world".
+> ```
+
+
+>>>>>>> 9e308722 (Revamped and Fixed)

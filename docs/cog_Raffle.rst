@@ -3,6 +3,7 @@ Raffle
 
 Run simple Raffles for your server.
 
+<<<<<<< HEAD
 # <@1275521742961508432>raffle
 Raffle group command<br/>
  - Usage: `<@1275521742961508432>raffle`
@@ -21,6 +22,21 @@ Displays the currently installed version of raffle.<br/>
 
 
 ## <@1275521742961508432>raffle start
+=======
+# ,raffle
+Raffle group command<br/>
+ - Usage: `,raffle`
+ - Checks: `server_only`
+
+
+## ,raffle clear
+
+ - Usage: `,raffle clear`
+ - Restricted to: `BOT_OWNER`
+
+
+## ,raffle start
+>>>>>>> 9e308722 (Revamped and Fixed)
 Starts a raffle.<br/>
 
 Timer accepts a integer input that represents seconds or it will<br/>
@@ -32,7 +48,11 @@ Example timer inputs:<br/>
 `24:00:00` = 1 day or 24 hours<br/>
 
 Title should not be longer than 35 characters.<br/>
+<<<<<<< HEAD
  - Usage: `<@1275521742961508432>raffle start <timer> <title>`
+=======
+ - Usage: `,raffle start <timer> <title>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### timer
 > ```
@@ -44,9 +64,30 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>raffle reroll
 Reroll the winner for a raffle. Requires the channel and message id.<br/>
  - Usage: `<@1275521742961508432>raffle reroll <channel> <messageid>`
+=======
+## ,raffle end
+Ends a raffle early. A winner will still be chosen.<br/>
+ - Usage: `,raffle end [message_id=None]`
+Extended Arg Info
+> ### message_id: int = None
+> ```
+> A number without decimal places.
+> ```
+
+
+## ,raffle version
+Displays the currently installed version of raffle.<br/>
+ - Usage: `,raffle version`
+
+
+## ,raffle reroll
+Reroll the winner for a raffle. Requires the channel and message id.<br/>
+ - Usage: `,raffle reroll <channel> <messageid>`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel
 > 
@@ -63,9 +104,15 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>raffle cancel
 Cancels an on-going raffle. No winner is chosen.<br/>
  - Usage: `<@1275521742961508432>raffle cancel [message_id=None]`
+=======
+## ,raffle cancel
+Cancels an on-going raffle. No winner is chosen.<br/>
+ - Usage: `,raffle cancel [message_id=None]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### message_id: int = None
 > ```
@@ -73,6 +120,7 @@ Extended Arg Info
 > ```
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>raffle end
 Ends a raffle early. A winner will still be chosen.<br/>
  - Usage: `<@1275521742961508432>raffle end [message_id=None]`
@@ -92,6 +140,17 @@ Set Raffle group command<br/>
 ## <@1275521742961508432>setraffle channel
 Set the output channel for raffles.<br/>
  - Usage: `<@1275521742961508432>setraffle channel [channel=None]`
+=======
+# ,setraffle
+Set Raffle group command<br/>
+ - Usage: `,setraffle`
+ - Checks: `server_only`
+
+
+## ,setraffle channel
+Set the output channel for raffles.<br/>
+ - Usage: `,setraffle channel [channel=None]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### channel: discord.channel.TextChannel = None
 > 

@@ -1,9 +1,15 @@
 VerifyAll
 =========
 
+<<<<<<< HEAD
 # <@1275521742961508432>verifyall
 
  - Usage: `<@1275521742961508432>verifyall [member=None]`
+=======
+# ,verifyall
+
+ - Usage: `,verifyall [member=None]`
+>>>>>>> 9e308722 (Revamped and Fixed)
 Extended Arg Info
 > ### member: discord.member.Member = None
 > 

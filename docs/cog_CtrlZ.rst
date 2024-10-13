@@ -3,19 +3,33 @@ CtrlZ
 
 Revert some actions in servers, from the audit logs!
 
+<<<<<<< HEAD
 # <@1275521742961508432>ctrlz (Hybrid Command)
 Revert some actions in servers, from the audit logs.<br/>
  - Usage: `<@1275521742961508432>ctrlz`
+=======
+# ,ctrlz (Hybrid Command)
+Revert some actions in servers, from the audit logs.<br/>
+ - Usage: `,ctrlz`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ctrlz`
  - Restricted to: `GUILD_OWNER`
  - Checks: `bot_has_server_permissions and server_only`
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>ctrlz mass (Hybrid Command)
 Revert all the audit logs that can be reverted.<br/>
 
 You can choose the audit logs to ignore.<br/>
  - Usage: `<@1275521742961508432>ctrlz mass [displayed_actions=None] [user=None] [after=None] [before=None]`
+=======
+## ,ctrlz mass (Hybrid Command)
+Revert all the audit logs that can be reverted.<br/>
+
+You can choose the audit logs to ignore.<br/>
+ - Usage: `,ctrlz mass [displayed_actions=None] [user=None] [after=None] [before=None]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ctrlz mass [displayed_actions=None] [user=None] [after=None] [before=None]`
  - Checks: `bot_has_server_permissions and server_only`
 Extended Arg Info
@@ -32,9 +46,15 @@ Extended Arg Info
 >     
 
 
+<<<<<<< HEAD
 ## <@1275521742961508432>ctrlz view (Hybrid Command)
 View the audit logs that can be reverted.<br/>
  - Usage: `<@1275521742961508432>ctrlz view [include_already_reverted=True] [displayed_actions=None] [user=None] [after=None] [before=None]`
+=======
+## ,ctrlz view (Hybrid Command)
+View the audit logs that can be reverted.<br/>
+ - Usage: `,ctrlz view [include_already_reverted=True] [displayed_actions=None] [user=None] [after=None] [before=None]`
+>>>>>>> 9e308722 (Revamped and Fixed)
  - Slash Usage: `/ctrlz view [include_already_reverted=True] [displayed_actions=None] [user=None] [after=None] [before=None]`
  - Checks: `bot_has_server_permissions and server_only`
 Extended Arg Info
