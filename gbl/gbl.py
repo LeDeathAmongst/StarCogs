@@ -52,7 +52,8 @@ class GlobalBanList(Cog):
             auto_ban=True,
             notify_channel=None,
             exempt_roles=[],
-            general_log_channel=None
+            general_log_channel=None,
+            ban_list_channel=None
         )
 
         self.lists = ['raiders_nukers', 'scammers', 'tos_violators', 'dm_advertisers']
@@ -60,7 +61,6 @@ class GlobalBanList(Cog):
         self.cursors = {}
         self.setup_databases()
         self.is_unloading = False
-        self.periodic_check_task = None
 
     def setup_databases(self):
         for list_name in self.lists:
@@ -80,7 +80,6 @@ class GlobalBanList(Cog):
 
     async def cog_load(self):
         await super().cog_load()
-        self.periodic_check_task = self.bot.loop.create_task(self.periodic_check())
 
     @commands.group(name="globalbanlistowner", aliases=["gblo"])
     @commands.is_owner()
@@ -128,6 +127,33 @@ class GlobalBanList(Cog):
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
 
+    @gblo.command(name="setbanlistchannel")
+    @commands.has_permissions(administrator=True)
+    async def setbanlistchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        """Set the channel for displaying ban list embeds."""
+        if channel is None:
+            await self.config.guild(ctx.guild).ban_list_channel.clear()
+            await ctx.send("Ban list channel has been cleared.")
+        else:
+            await self.config.guild(ctx.guild).ban_list_channel.set(channel.id)
+            await ctx.send(f"Ban list channel has been set to {channel.mention}.")
+        await self.owner_log("Set Ban List Channel", ctx.author, f"Set ban list channel to {channel.mention if channel else 'None'}")
+
+    @gblo.command(name="refreshlists")
+    async def refreshlists(self, ctx: commands.Context, list_name: str = None):
+        """Manually refresh the embeds for a specific list or all lists."""
+        if list_name and list_name not in self.lists:
+            await ctx.send(f"The list '{list_name}' does not exist. Use `{ctx.prefix}gbl list` to see available lists.")
+            return
+
+        if list_name:
+            await self.update_list_embeds(ctx.guild, list_name)
+            await ctx.send(f"Embeds for the {list_name} list have been refreshed.")
+        else:
+            for lst in self.lists:
+                await self.update_list_embeds(ctx.guild, lst)
+            await ctx.send("Embeds for all lists have been refreshed.")
+
     @commands.hybrid_group(name="globalbanlist", aliases=["gbl"])
     async def gbl(self, ctx: commands.Context):
         """Manage the global ban list."""
@@ -167,7 +193,7 @@ class GlobalBanList(Cog):
 
         await ctx.send(f"User {user_obj} (ID: {user_id}) has been added to the {list_name} list.")
         await self.check_subscribed_servers(user_id, list_name)
-        await self.update_list_embeds(list_name)
+        await self.update_list_embeds(ctx.guild, list_name)
 
         await self.owner_log("Add to Ban List", ctx.author, f"Added {user_obj} to {list_name} list")
 
@@ -198,7 +224,7 @@ class GlobalBanList(Cog):
         self.databases[list_name].commit()
 
         await ctx.send(f"User {user_obj} (ID: {user_id}) has been removed from the {list_name} list.")
-        await self.update_list_embeds(list_name)
+        await self.update_list_embeds(ctx.guild, list_name)
 
         # Unban user from subscribed guilds
         await self.unban_from_subscribed_guilds(user_id, list_name)
@@ -400,48 +426,6 @@ class GlobalBanList(Cog):
                 except discord.Forbidden:
                     print(f"Failed to ban {member.name} from {member.guild.name} - Insufficient permissions")
 
-    async def periodic_check(self):
-        while not self.is_unloading:
-            try:
-                await asyncio.sleep(3600)  # Check every hour
-                if self.is_unloading:
-                    break
-                for guild in self.bot.guilds:
-                    guild_config = await self.config.guild(guild).all()
-                    if guild_config['auto_ban']:
-                        await self.check_guild_members(guild, guild_config['subscribed_lists'])
-            except asyncio.CancelledError:
-                break
-            except Exception as e:
-                print(f"Error in periodic check: {str(e)}")
-
-    async def check_guild_members(self, guild: discord.Guild, subscribed_lists: list):
-        if self.is_unloading:
-            return
-        for member in guild.members:
-            for list_name in subscribed_lists:
-                if list_name not in self.lists or self.is_unloading:
-                    continue
-                cursor = self.cursors[list_name]
-                try:
-                    cursor.execute("SELECT reason, proof FROM banned_users WHERE user_id = ?", (member.id,))
-                    ban_info = cursor.fetchone()
-                    if ban_info:
-                        reason, proof = ban_info
-                        try:
-                            await member.ban(reason=f"Global Ban List: {list_name} - {reason}")
-                            guild_config = await self.config.guild(guild).all()
-                            if guild_config['notify_channel']:
-                                channel = guild.get_channel(guild_config['notify_channel'])
-                                if channel:
-                                    await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
-                            await self.general_log(guild, "User Banned", member, list_name, reason, proof)
-                        except discord.Forbidden:
-                            print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
-                except sqlite3.ProgrammingError:
-                    if not self.is_unloading:
-                        print(f"Database for {list_name} is closed unexpectedly.")
-
     async def check_existing_members(self, guild: discord.Guild, list_name: str):
         cursor = self.cursors[list_name]
         cursor.execute("SELECT user_id FROM banned_users")
@@ -593,25 +577,41 @@ class GlobalBanList(Cog):
 
         return embeds
 
-    async def update_list_embeds(self, list_name: str):
-        for guild in self.bot.guilds:
-            for channel in guild.text_channels:
-                async for message in channel.history(limit=None):
-                    if message.author == self.bot.user and message.embeds:
-                        embed = message.embeds[0]
-                        if embed and embed.title and embed.title.startswith(f"Users in {list_name} list"):
-                            new_embeds = await self.create_list_embed(list_name)
-                            if len(new_embeds) == 1:
-                                await message.edit(embed=new_embeds[0])
-                            else:
-                                await message.delete()
-                                for new_embed in new_embeds:
-                                    await channel.send(embed=new_embed)
+    async def update_list_embeds(self, guild: discord.Guild, list_name: str):
+        channel_id = await self.config.guild(guild).ban_list_channel()
+        if not channel_id:
+            return
+
+        channel = guild.get_channel(channel_id)
+        if not channel:
+            return
+
+        new_embeds = await self.create_list_embed(list_name)
+
+        # Try to find an existing message for this list
+        existing_message = None
+        async for message in channel.history(limit=100):
+            if message.author == self.bot.user and message.embeds:
+                embed = message.embeds[0]
+                if embed.title and embed.title.startswith(f"Users in {list_name} list"):
+                    existing_message = message
+                    break
+
+        if existing_message:
+            # Update existing message
+            if len(new_embeds) == 1:
+                await existing_message.edit(embed=new_embeds[0])
+            else:
+                await existing_message.delete()
+                for new_embed in new_embeds:
+                    await channel.send(embed=new_embed)
+        else:
+            # Create new message(s)
+            for new_embed in new_embeds:
+                await channel.send(embed=new_embed)
 
     def cog_unload(self):
         self.is_unloading = True
-        if self.periodic_check_task:
-            self.periodic_check_task.cancel()
         asyncio.create_task(self._finish_unload())
 
     async def _finish_unload(self):
