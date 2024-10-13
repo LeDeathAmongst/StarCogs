@@ -19,7 +19,7 @@ for module in modules:
 del Star_Utils
 from redbot.core.bot import Red
 from redbot.core.utils import get_end_user_data_statement
-from .presencexp import Presencexp
+from .presencexp import PresenceXP
 __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 
 
