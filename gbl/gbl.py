@@ -733,3 +733,36 @@ class GlobalBanList(Cog):
                 await appeal_channel.send(embed=embed, view=buttons)
 
         await self.owner_log("Appeal Submitted", user, f"Appeal text: {appeal_text}")
+
+    async def update_list_embeds(self, guild: discord.Guild, list_name: str):
+        channel_id = await self.config.guild(guild).ban_list_channel()
+        if not channel_id:
+            return
+
+        channel = guild.get_channel(channel_id)
+        if not channel:
+            return
+
+        new_embeds = await self.create_list_embed(list_name)
+
+        # Try to find an existing message for this list
+        existing_message = None
+        async for message in channel.history(limit=100):
+            if message.author == self.bot.user and message.embeds:
+                embed = message.embeds[0]
+                if embed.title and embed.title.startswith(f"Users in {list_name} list"):
+                    existing_message = message
+                    break
+
+        if existing_message:
+            # Update existing message
+            if len(new_embeds) == 1:
+                await existing_message.edit(embed=new_embeds[0])
+            else:
+                await existing_message.delete()
+                for new_embed in new_embeds:
+                    await channel.send(embed=new_embed)
+        else:
+            # Create new message(s)
+            for new_embed in new_embeds:
+                await channel.send(embed=new_embed)
