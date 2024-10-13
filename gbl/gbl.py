@@ -311,7 +311,7 @@ class GlobalBanList(Cog):
         await self.config.guild(ctx.guild).general_log_channel.set(channel.id)
         await ctx.send(f"General log channel for this server has been set to {channel.mention}.")
 
-    @gbl.command(name="setbanlistchannel")
+    @gblo.command(name="setbanlistchannel")
     @commands.has_permissions(administrator=True)
     @app_commands.describe(channel="The channel to set for displaying ban lists")
     async def setbanlistchannel(self, ctx: commands.Context, channel: discord.TextChannel):
