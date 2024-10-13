@@ -1,5 +1,4 @@
 from Star_Utils import Cog
-<<<<<<< HEAD
 from redbot.core import errors
 import importlib
 import sys
@@ -26,11 +25,3 @@ __red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)
 async def setup(bot: Red) ->None:
     cog = Staffer(bot)
     await bot.add_cog(cog)
-=======
-from redbot.core.bot import Red
-from .staff import StaffManager
-
-
-async def setup(bot):
-    await bot.add_cog(StaffManager(bot))
->>>>>>> 9e308722 (Revamped and Fixed)
