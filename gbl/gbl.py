@@ -61,6 +61,7 @@ class GlobalBanList(Cog):
         self.cursors = {}
         self.setup_databases()
         self.is_unloading = False
+        self.periodic_check_task = None
 
     def setup_databases(self):
         for list_name in self.lists:
@@ -80,6 +81,7 @@ class GlobalBanList(Cog):
 
     async def cog_load(self):
         await super().cog_load()
+        self.periodic_check_task = self.bot.loop.create_task(self.periodic_check())
 
     async def cog_before_invoke(self, ctx: commands.Context):
         """This runs before every command in the cog"""
@@ -130,18 +132,6 @@ class GlobalBanList(Cog):
         await self.config.owner_log_channel.set(channel.id)
         await ctx.send(f"Owner log channel has been set to {channel.mention}.")
         await self.owner_log("Set Owner Log Channel", ctx.author, f"Set owner log channel to {channel.mention}")
-
-    @gblo.command(name="setbanlistchannel")
-    @commands.has_permissions(administrator=True)
-    async def setbanlistchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
-        """Set the channel for displaying ban list embeds."""
-        if channel is None:
-            await self.config.guild(ctx.guild).ban_list_channel.clear()
-            await ctx.send("Ban list channel has been cleared.")
-        else:
-            await self.config.guild(ctx.guild).ban_list_channel.set(channel.id)
-            await ctx.send(f"Ban list channel has been set to {channel.mention}.")
-        await self.owner_log("Set Ban List Channel", ctx.author, f"Set ban list channel to {channel.mention if channel else 'None'}")
 
     @gblo.command(name="refreshlists")
     async def refreshlists(self, ctx: commands.Context, list_name: str = None):
@@ -197,7 +187,7 @@ class GlobalBanList(Cog):
 
         await ctx.send(f"User {user_obj} (ID: {user_id}) has been added to the {list_name} list.")
         await self.check_subscribed_servers(user_id, list_name)
-        await self.update_list_embeds(list_name)
+        await self.update_list_embeds(ctx.guild, list_name)
 
         # Log the new ban in the general log for all subscribed guilds
         for guild in self.bot.guilds:
@@ -206,8 +196,6 @@ class GlobalBanList(Cog):
                 await self.general_log(guild, "New Ban Added", user_obj, list_name, reason, proof)
 
         await self.owner_log("Add to Ban List", ctx.author, f"Added {user_obj} to {list_name} list")
-
-
 
     @gbl.command(name="remove")
     @app_commands.describe(
@@ -323,6 +311,18 @@ class GlobalBanList(Cog):
         await self.config.guild(ctx.guild).general_log_channel.set(channel.id)
         await ctx.send(f"General log channel for this server has been set to {channel.mention}.")
 
+    @gbl.command(name="setbanlistchannel")
+    @commands.has_permissions(administrator=True)
+    async def setbanlistchannel(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        """Set the channel for displaying ban list embeds."""
+        if channel is None:
+            await self.config.guild(ctx.guild).ban_list_channel.clear()
+            await ctx.send("Ban list channel has been cleared.")
+        else:
+            await self.config.guild(ctx.guild).ban_list_channel.set(channel.id)
+            await ctx.send(f"Ban list channel has been set to {channel.mention}.")
+        await self.owner_log("Set Ban List Channel", ctx.author, f"Set ban list channel to {channel.mention if channel else 'None'} in {ctx.guild.name}")
+
     @gbl.command()
     async def appeal(self, ctx: commands.Context):
         """Submit an appeal for a global ban."""
@@ -437,6 +437,48 @@ class GlobalBanList(Cog):
                     await self.general_log(member.guild, "User Banned", member, list_name, reason, proof)
                 except discord.Forbidden:
                     print(f"Failed to ban {member.name} from {member.guild.name} - Insufficient permissions")
+
+    async def periodic_check(self):
+        while not self.is_unloading:
+            try:
+                await asyncio.sleep(3600)  # Check every hour
+                if self.is_unloading:
+                    break
+                for guild in self.bot.guilds:
+                    guild_config = await self.config.guild(guild).all()
+                    if guild_config['auto_ban']:
+                        await self.check_guild_members(guild, guild_config['subscribed_lists'])
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                print(f"Error in periodic check: {str(e)}")
+
+    async def check_guild_members(self, guild: discord.Guild, subscribed_lists: list):
+        if self.is_unloading:
+            return
+        for member in guild.members:
+            for list_name in subscribed_lists:
+                if list_name not in self.lists or self.is_unloading:
+                    continue
+                cursor = self.cursors[list_name]
+                try:
+                    cursor.execute("SELECT reason, proof FROM banned_users WHERE user_id = ?", (member.id,))
+                    ban_info = cursor.fetchone()
+                    if ban_info:
+                        reason, proof = ban_info
+                        try:
+                            await member.ban(reason=f"Global Ban List: {list_name} - {reason}")
+                            guild_config = await self.config.guild(guild).all()
+                            if guild_config['notify_channel']:
+                                channel = guild.get_channel(guild_config['notify_channel'])
+                                if channel:
+                                    await channel.send(f"{member} was banned due to being on the {list_name} global ban list.")
+                            await self.general_log(guild, "User Banned", member, list_name, reason, proof)
+                        except discord.Forbidden:
+                            print(f"Failed to ban {member.name} from {guild.name} - Insufficient permissions")
+                except sqlite3.ProgrammingError:
+                    if not self.is_unloading:
+                        print(f"Database for {list_name} is closed unexpectedly.")
 
     async def check_existing_members(self, guild: discord.Guild, list_name: str):
         cursor = self.cursors[list_name]
@@ -589,8 +631,43 @@ class GlobalBanList(Cog):
 
         return embeds
 
-    async def update_list_embeds(self, guild: discord.Guild, list_name: str):
-        channel_id = await self.config.guild(guild).ban_list_channel()
+    async def cog_unload(self):
+        self.is_unloading = True
+        if self.periodic_check_task:
+            self.periodic_check_task.cancel()
+        await self._finish_unload()
+
+    async def _finish_unload(self):
+        await asyncio.sleep(1)  # Wait for 1 second
+        for db in self.databases.values():
+            db.close()
+
+    async def is_authorized(self, user: discord.User) -> bool:
+        """Check if a user is authorized to manage the global ban list."""
+        authorized_users = await self.config.authorized_users()
+        return user.id in authorized_users or await self.bot.is_owner(user)
+
+    async def owner_log(self, action: str, user: discord.User, details: str):
+        """Log owner actions."""
+        channel_id = await self.config.owner_log_channel()
+        if not channel_id:
+            return
+
+        channel = self.bot.get_channel(channel_id)
+        if not channel:
+            return
+
+        embed = discord.Embed(title="Owner Action Log", color=discord.Color.blue(), timestamp=datetime.utcnow())
+        embed.add_field(name="Action", value=action, inline=False)
+        embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
+        embed.add_field(name="Details", value=details, inline=False)
+        embed.set_footer(text=f"User ID: {user.id}")
+
+        await channel.send(embed=embed)
+
+    async def general_log(self, guild: discord.Guild, action: str, user: typing.Union[discord.User, int], list_name: str, reason: str, proof: str):
+        """Log general actions for a specific guild."""
+        channel_id = await self.config.guild(guild).general_log_channel()
         if not channel_id:
             return
 
@@ -598,35 +675,61 @@ class GlobalBanList(Cog):
         if not channel:
             return
 
-        new_embeds = await self.create_list_embed(list_name)
+        embed = discord.Embed(title="Global Ban List Log", color=discord.Color.red(), timestamp=datetime.utcnow())
+        embed.add_field(name="Action", value=action, inline=False)
 
-        # Try to find an existing message for this list
-        existing_message = None
-        async for message in channel.history(limit=100):
-            if message.author == self.bot.user and message.embeds:
-                embed = message.embeds[0]
-                if embed.title and embed.title.startswith(f"Users in {list_name} list"):
-                    existing_message = message
-                    break
-
-        if existing_message:
-            # Update existing message
-            if len(new_embeds) == 1:
-                await existing_message.edit(embed=new_embeds[0])
-            else:
-                await existing_message.delete()
-                for new_embed in new_embeds:
-                    await channel.send(embed=new_embed)
+        if isinstance(user, (discord.User, discord.Member)):
+            user_str = f"{user} ({user.id})"
         else:
-            # Create new message(s)
-            for new_embed in new_embeds:
-                await channel.send(embed=new_embed)
+            user_obj = await self.bot.fetch_user(user)
+            user_str = f"{user_obj} ({user})" if user_obj else f"User ID: {user}"
 
-    def cog_unload(self):
-        self.is_unloading = True
-        asyncio.create_task(self._finish_unload())
+        embed.add_field(name="User", value=user_str, inline=False)
+        embed.add_field(name="List", value=list_name, inline=False)
+        embed.add_field(name="Reason", value=reason, inline=False)
+        embed.add_field(name="Proof", value=proof, inline=False)
+        embed.set_footer(text=f"User ID: {getattr(user, 'id', user)}")
 
-    async def _finish_unload(self):
-        await asyncio.sleep(1)  # Wait for 1 second
-        for db in self.databases.values():
-            db.close()
+        await channel.send(embed=embed)
+
+    async def submit_appeal(self, user: discord.User, appeal_text: str):
+        """Submit the appeal to the database and notify the appeal channel."""
+        appeal_channel_id = await self.config.ban_appeal_channel()
+        if appeal_channel_id:
+            appeal_channel = self.bot.get_channel(appeal_channel_id)
+            if appeal_channel:
+                embed = discord.Embed(title="New Ban Appeal", color=discord.Color.blue())
+                embed.add_field(name="User", value=f"{user} ({user.id})", inline=False)
+                embed.add_field(name="Appeal", value=appeal_text, inline=False)
+
+                async def handle_appeal_decision(view: Buttons, interaction: discord.Interaction):
+                    decision = "approved" if interaction.data["custom_id"] == "approve_appeal" else "denied"
+                    user_id = int(interaction.message.embeds[0].fields[0].value.split("(")[-1].split(")")[0])
+
+                    if decision == "approved":
+                        # Remove user from all ban lists
+                        for list_name in self.lists:
+                            cursor = self.cursors[list_name]
+                            cursor.execute("DELETE FROM banned_users WHERE user_id = ?", (user_id,))
+                            self.databases[list_name].commit()
+
+                    appeal_user = self.bot.get_user(user_id)
+                    if appeal_user:
+                        await appeal_user.send(f"Your ban appeal has been {decision}.")
+
+                    await interaction.message.edit(content=f"Appeal {decision} by {interaction.user}", view=None)
+                    await self.owner_log("Appeal Decision", interaction.user, f"Appeal for user {user_id} was {decision}")
+
+                buttons = Buttons(
+                    timeout=600,
+                    buttons=[
+                        {"style": discord.ButtonStyle.green, "label": "Approve", "custom_id": "approve_appeal"},
+                        {"style": discord.ButtonStyle.red, "label": "Deny", "custom_id": "deny_appeal"}
+                    ],
+                    members=self.bot.owner_ids,
+                    function=handle_appeal_decision
+                )
+
+                await appeal_channel.send(embed=embed, view=buttons)
+
+        await self.owner_log("Appeal Submitted", user, f"Appeal text: {appeal_text}")
