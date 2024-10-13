@@ -81,6 +81,10 @@ class GlobalBanList(Cog):
     async def cog_load(self):
         await super().cog_load()
 
+    async def cog_before_invoke(self, ctx: commands.Context):
+        """This runs before every command in the cog"""
+        await self.owner_log("Command Used", ctx.author, f"Command: {ctx.command.qualified_name}, Args: {ctx.args[2:]}, Kwargs: {ctx.kwargs}")
+
     @commands.group(name="globalbanlistowner", aliases=["gblo"])
     @commands.is_owner()
     async def gblo(self, ctx: commands.Context):
@@ -193,9 +197,17 @@ class GlobalBanList(Cog):
 
         await ctx.send(f"User {user_obj} (ID: {user_id}) has been added to the {list_name} list.")
         await self.check_subscribed_servers(user_id, list_name)
-        await self.update_list_embeds(ctx.guild, list_name)
+        await self.update_list_embeds(list_name)
+
+        # Log the new ban in the general log for all subscribed guilds
+        for guild in self.bot.guilds:
+            guild_config = await self.config.guild(guild).all()
+            if list_name in guild_config['subscribed_lists']:
+                await self.general_log(guild, "New Ban Added", user_obj, list_name, reason, proof)
 
         await self.owner_log("Add to Ban List", ctx.author, f"Added {user_obj} to {list_name} list")
+
+
 
     @gbl.command(name="remove")
     @app_commands.describe(
