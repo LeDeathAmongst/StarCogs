@@ -613,6 +613,29 @@ class GlobalBanList(Cog):
 
         await self.owner_log("Appeal Submitted", user, f"Appeal text: {appeal_text}")
 
+    async def autocomplete_list_name(self, interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name=list_name, value=list_name)
+            for list_name in self.lists if current.lower() in list_name.lower()
+        ]
+
+    async def autocomplete_banned_user(self, interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+        list_name = interaction.namespace.list_name
+        if list_name not in self.lists:
+            return []
+
+        cursor = self.cursors[list_name]
+        cursor.execute("SELECT user_id FROM banned_users")
+        banned_users = [row[0] for row in cursor.fetchall()]
+
+        choices = []
+        for user_id in banned_users:
+            user = self.bot.get_user(user_id)
+            if user and (current.lower() in user.name.lower() or current in str(user_id)):
+                choices.append(app_commands.Choice(name=f"{user.name} ({user_id})", value=str(user_id)))
+
+        return choices[:25]  # Discord limits to 25 choices
+
     def cog_unload(self):
         self.is_unloading = True
         if self.periodic_check_task:
