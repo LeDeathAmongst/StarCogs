@@ -1,66 +1,98 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-21 16:17+0200\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-14 06:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: redgettext 3.4.2\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: dashboard\dashboard.py:32
+#: dashboard.py:32
 msgid "This is not a valid URL."
 msgstr ""
 
-#: dashboard\dashboard.py:35
-msgid ""
-"This is not a valid Dashboard redirect URI: it must end with `/callback`."
+#: dashboard.py:35
+msgid "This is not a valid Dashboard redirect URI: it must end with `/callback`."
 msgstr ""
 
-#: dashboard\dashboard.py:44
+#: dashboard.py:44
 msgid "This third party is not available."
 msgstr ""
 
-#: dashboard\dashboard.py:50
-#, docstring
+#: dashboard.py:341
 msgid ""
-"Interact with your bot through a web Dashboard!\n"
-"\n"
-"    **Installation guide:** https://red-web-dashboard.readthedocs.io/en/latest\n"
-"    ⚠️ This package is a fork of Neuro Assassin's work, and isn't endorsed by the Org at all.\n"
-"    "
-msgstr ""
-
-#: dashboard\dashboard.py:347
-msgid ""
-"Red-Dashboard is not installed. Check <https://red-web-"
+"Starfire's Dashboard is not installed. Check <https://starfire-"
 "dashboard.readthedocs.io>."
 msgstr ""
 
-#: dashboard\dashboard.py:352
+#: dashboard.py:346
 msgid "You can't access the Dashboard."
 msgstr ""
 
-#: dashboard\dashboard.py:354
-msgid "Red-Dashboard"
+#: dashboard.py:348
+msgid "Dashboard"
 msgstr ""
 
-#: dashboard\dashboard.py:374
-#, docstring
-msgid "Set the client secret needed for Discord OAuth."
-msgstr ""
-
-#: dashboard\dashboard.py:383
+#: dashboard.py:377
 msgid "Discord Secret"
 msgstr ""
 
-#: dashboard\dashboard.py:391
+#: dashboard.py:385
 msgid "Discord OAuth secret set."
 msgstr ""
 
-#: dashboard\dashboard.py:427
+#: dashboard.py:408
+msgid "You are not allowed to use this interaction."
+msgstr ""
+
+#: dashboard.py:413
+msgid "Set Discord OAuth Secret"
+msgstr ""
+
+#: dashboard.py:421
 msgid "Click on the button below to set a secret for Discord OAuth."
 msgstr ""
+
+#: rpc/__init__.py:105
+msgid "{name} Dashboard"
+msgstr ""
+
+#: rpc/__init__.py:113
+msgid ""
+"Hello, welcome to the **Red-DiscordBot Dashboard** for {name}! {name} is "
+"based off the popular bot **Red-DiscordBot**, an open source, "
+"multifunctional bot. It has *tons of features* including moderation, "
+"audio, economy, fun and more! Here, you can control and interact with "
+"{name}'s settings. **So what are you waiting for? Invite it now!**"
+msgstr ""
+
+#: rpc/__init__.py:125
+msgid "Interactive Dashboard to control and interact with {name}."
+msgstr ""
+
+#: rpc/default_cogs.py:101
+msgid ""
+"You attempted to create a new alias with the name {name}, but that name "
+"is already a command on this bot."
+msgstr ""
+
+#: rpc/default_cogs.py:108
+msgid ""
+"You attempted to create a new alias with the name {name}, but the command"
+" {command} does not exist."
+msgstr ""
+
+#: rpc/default_cogs.py:182
+msgid "`{command}`: "
+msgstr ""
+

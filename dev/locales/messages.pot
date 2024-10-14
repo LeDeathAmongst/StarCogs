@@ -1,90 +1,93 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-21 16:17+0200\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-14 06:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: redgettext 3.4.2\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: dev\dev.py:468
-#, docstring
-msgid "Various development focused utilities!"
-msgstr ""
-
-#: dev\dev.py:745 dev\dev.py:807 dev\dev.py:1014
+#: dev.py:745 dev.py:807 dev.py:1014
 msgid "Unreadable attachment with `utf-8`."
 msgstr ""
 
-#: dev\dev.py:762
+#: dev.py:762
 msgid "This message isn't reachable."
 msgstr ""
 
-#: dev\dev.py:868
+#: dev.py:868
 msgid "Already running a REPL session in this channel. Exit it with `quit`."
 msgstr ""
 
-#: dev\dev.py:872
+#: dev.py:872
 msgid ""
 "Already running a REPL session in this channel. Resume the REPL with "
 "`{prefix}replresume`."
 msgstr ""
 
-#: dev\dev.py:884
+#: dev.py:884
 msgid ""
 "Enter code to execute or evaluate. `exit()` or `quit` to exit. "
 "`{prefix}replpause` to pause."
 msgstr ""
 
-#: dev\dev.py:929
+#: dev.py:929
 msgid "Exiting."
 msgstr ""
 
-#: dev\dev.py:937
+#: dev.py:937
 msgid "There is no currently running REPL session in this channel."
 msgstr ""
 
-#: dev\dev.py:943
+#: dev.py:943
 msgid "The REPL session in this channel has been resumed."
 msgstr ""
 
-#: dev\dev.py:945
+#: dev.py:945
 msgid "The REPL session in this channel is now paused."
 msgstr ""
 
-#: dev\dev.py:967
-msgid ""
-"Bot owners will now bypass all commands with cooldowns{optional_duration}."
+#: dev.py:967
+msgid "Bot owners will now bypass all commands with cooldowns{optional_duration}."
 msgstr ""
 
-#: dev\dev.py:977
+#: dev.py:977
 msgid ""
 "Bot owners will no longer bypass all commands with "
 "cooldowns{optional_duration}."
 msgstr ""
 
-#: dev\dev.py:1103
-#, docstring
-msgid "Display all Dev environment values."
-msgstr ""
-
-#: dev\dev.py:1112
-#, docstring
-msgid "Reset its own locals in evals."
-msgstr ""
-
-#: dev\view.py:38
+#: view.py:42
 msgid "Execute"
 msgstr ""
 
-#: dev\view.py:40
+#: view.py:44
 msgid "Code to Execute"
 msgstr ""
 
-#: dev\view.py:42
+#: view.py:46
 msgid "Write your code here..."
 msgstr ""
+
+#: view.py:84
+msgid "You are not allowed to use this interaction."
+msgstr ""
+
+#: view.py:102
+msgid "Execute Debug"
+msgstr ""
+
+#: view.py:110
+msgid "Execute Eval"
+msgstr ""
+

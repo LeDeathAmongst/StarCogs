@@ -17,7 +17,7 @@ class GuildManager(Cog):
     """Guild management tools."""
 
     def __init__(self, bot: Red) ->None:
-        super().__init__()
+        super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, 1234567890)
         default_global = {'whitelist': [], 'blacklist': [], 'serverlocked':

@@ -1,65 +1,58 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-21 16:17+0200\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-14 03:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: redgettext 3.4.2\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: memberprefix\memberprefix.py:20
-#, docstring
-msgid "A cog to allow a member to choose custom prefixes, just for them!"
-msgstr ""
-
-#: memberprefix\memberprefix.py:160
+#: memberprefix.py:160
 msgid "You now use this server or global prefixes."
 msgstr ""
 
-#: memberprefix\memberprefix.py:164
+#: memberprefix.py:164
 msgid ""
 "A prefix is above the maximal length (25 characters).\n"
-"This is possible for global or per-server prefixes, but not for per-member prefixes."
+"This is possible for global or per-server prefixes, but not for per-"
+"member prefixes."
 msgstr ""
 
-#: memberprefix\memberprefix.py:170
+#: memberprefix.py:170
 msgid ""
 "Prefixes cannot start with `/`, as it conflicts with Discord's slash "
 "commands."
 msgstr ""
 
-#: memberprefix\memberprefix.py:175
+#: memberprefix.py:175
 msgid ""
-"Prefix for you only set. You can use current prefixes or mention the bot to "
-"invoke a command, or reset your prefixes with the same command if you forget"
-" them."
-msgstr ""
-
-#: memberprefix\memberprefix.py:181
-msgid ""
-"Prefixes for you only set. You can use current prefixes or mention the bot "
+"Prefix for you only set. You can use current prefixes or mention the bot "
 "to invoke a command, or reset your prefixes with the same command if you "
 "forget them."
 msgstr ""
 
-#: memberprefix\memberprefix.py:196
-#, docstring
-msgid "Clear prefixes for a specified member in a specified server."
+#: memberprefix.py:181
+msgid ""
+"Prefixes for you only set. You can use current prefixes or mention the "
+"bot to invoke a command, or reset your prefixes with the same command if "
+"you forget them."
 msgstr ""
 
-#: memberprefix\memberprefix.py:198
+#: memberprefix.py:198
 msgid "Prefixes cleared for this member in this guild."
 msgstr ""
 
-#: memberprefix\memberprefix.py:202
-#, docstring
-msgid "Clear all members prefixes for a specified server."
-msgstr ""
-
-#: memberprefix\memberprefix.py:204
+#: memberprefix.py:204
 msgid "All members prefixes purged in this guild."
 msgstr ""
+

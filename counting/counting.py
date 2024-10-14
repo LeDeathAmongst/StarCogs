@@ -35,16 +35,13 @@ from redbot.core import Config, commands
 from redbot.core.utils.chat_formatting import box, humanize_number
 from redbot.core.utils.views import ConfirmView
 from tabulate import tabulate
+from Star_Utils import Cog
 
 log = logging.getLogger("red.maxcogs.counting")
 
 
-class Counting(commands.Cog):
+class Counting(Cog):
     """Count from 1 to infinity!"""
-
-    __version__: Final[str] = "1.3.3"
-    __author__: Final[str] = "MAX"
-    __docs__: Final[str] = "https://github.com/ltzmax/maxcogs/blob/master/docs/Counting.md"
 
     def __init__(self, bot):
         self.bot = bot
@@ -70,11 +67,6 @@ class Counting(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.config.register_user(**default_user)
-
-    def format_help_for_context(self, ctx: commands.Context) -> str:
-        """Thanks Sinbad!"""
-        pre_processed = super().format_help_for_context(ctx)
-        return f"{pre_processed}\n\nAuthor: {self.__author__}\nCog Version: {self.__version__}\nDocs: {self.__docs__}"
 
     async def red_delete_data_for_user(self, **kwargs: Any) -> None:
         """Nothing to delete."""

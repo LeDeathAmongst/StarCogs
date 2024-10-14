@@ -1,134 +1,71 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-21 16:17+0200\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-14 03:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: redgettext 3.4.2\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: devutils\devutils.py:51
+#: devutils.py:38
 msgid "No valid log level provided."
 msgstr ""
 
-#: devutils\devutils.py:80
+#: devutils.py:59
 msgid "No valid discord object provided."
 msgstr ""
 
-#: devutils\devutils.py:85
-#, docstring
-msgid "Various development utilities!"
-msgstr ""
-
-#: devutils\devutils.py:134
-#, docstring
-msgid ""
-"\n"
-"        Repeats a command a specified number of times.\n"
-"\n"
-"        `--sleep <int>` is an optional flag specifying how much time to wait between command invocations.\n"
-"        "
-msgstr ""
-
-#: devutils\devutils.py:155 devutils\devutils.py:235 devutils\devutils.py:251
+#: devutils.py:112 devutils.py:171 devutils.py:182
 msgid "You have not specified a correct command."
 msgstr ""
 
-#: devutils\devutils.py:157 devutils\devutils.py:253
+#: devutils.py:116 devutils.py:186
 msgid "You can't execute yourself this command."
 msgstr ""
 
-#: devutils\devutils.py:174
-#, docstring
-msgid "Execute multiple commands at once. Split them using |."
-msgstr ""
-
-#: devutils\devutils.py:189 devutils\devutils.py:211
+#: devutils.py:138 devutils.py:153
 msgid "`{command}` isn't a valid command."
 msgstr ""
 
-#: devutils\devutils.py:195 devutils\devutils.py:217
+#: devutils.py:143 devutils.py:158
 msgid "You can't execute yourself `{command}`."
 msgstr ""
 
-#: devutils\devutils.py:224
-#, docstring
-msgid "Bypass a command's checks and cooldowns."
-msgstr ""
-
-#: devutils\devutils.py:240
-#, docstring
-msgid "Run a command timing execution and catching exceptions."
-msgstr ""
-
-#: devutils\devutils.py:259
+#: devutils.py:191
 msgid "Command `{command}` finished in `{timing}`s."
 msgstr ""
 
-#: devutils\devutils.py:266
-#, docstring
-msgid ""
-"Reinvoke a command message.\n"
-"\n"
-"        You may reply to a message to reinvoke it or pass a message ID/link.\n"
-"        The command will be invoked with the author and the channel of the specified message.\n"
-"        "
-msgstr ""
-
-#: devutils\devutils.py:289
+#: devutils.py:213
 msgid "The command isn't valid."
 msgstr ""
 
-#: devutils\devutils.py:291
+#: devutils.py:217
 msgid "This command can't be executed."
 msgstr ""
 
-#: devutils\devutils.py:297
-#, docstring
-msgid ""
-"Change the logging level for a logger. If no name is provided, the root logger (`red`) is used.\n"
-"\n"
-"        Levels are the following:\n"
-"        - `0`: `CRITICAL`\n"
-"        - `1`: `ERROR`\n"
-"        - `2`: `WARNING`\n"
-"        - `3`: `INFO`\n"
-"        - `4`: `DEBUG`\n"
-"        - `5`: `VERBOSE`\n"
-"        - `6`: `TRACE`\n"
-"        "
-msgstr ""
-
-#: devutils\devutils.py:311
+#: devutils.py:236
 msgid "Logger `{logger_name}` level set to `{level}`."
 msgstr ""
 
-#: devutils\devutils.py:320
-#, docstring
-msgid ""
-"Force reload a module (to use code changes without restarting your bot).\n"
-"\n"
-"        ⚠️ Please only use this if you know what you're doing.\n"
-"        "
-msgstr ""
-
-#: devutils\devutils.py:336
+#: devutils.py:268
 msgid "I couldn't find any module with this name."
 msgstr ""
 
-#: devutils\devutils.py:340
+#: devutils.py:272
 msgid "Module(s) {modules} reloaded."
 msgstr ""
 
-#: devutils\devutils.py:346
+#: devutils.py:277
 msgid "Modules [...] reloaded."
 msgstr ""
 
-#: devutils\devutils.py:350
-#, docstring
-msgid "Display the JSON of a Discord object with a raw request."
-msgstr ""

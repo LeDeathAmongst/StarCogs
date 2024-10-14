@@ -1,23 +1,23 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-21 16:17+0200\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-14 05:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: redgettext 3.4.2\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: autotraceback\autotraceback.py:34
-#, docstring
-msgid ""
-"A cog to display the error traceback of a command automatically after the "
-"error!"
-msgstr ""
-
-#: autotraceback\autotraceback.py:61 autotraceback\dashboard_integration.py:35
+#: autotraceback.py:61 dashboard_integration.py:35
 msgid "No exception has occurred yet."
 msgstr ""
+
