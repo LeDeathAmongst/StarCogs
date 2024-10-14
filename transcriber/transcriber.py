@@ -9,7 +9,7 @@ class Transcriber(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.base_path = data_manager.cog_data_path(self) / "transcripts"
-        self.url_base = "https://example.com/assets/"  # Update this to your actual URL
+        self.url_base = "https://ufw.prismbot.icu/assets/"  # Update this to your actual URL
 
     async def create_directory(self):
         os.makedirs(self.base_path, exist_ok=True)
