@@ -15,7 +15,7 @@ from .common.formatting import humanize_size
 from .common.models import DB
 from .common.serializers import GuildBackup
 from .common.views import BackupMenu
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 
 log = logging.getLogger("red.vrt.cartographer")
 _ = Translator("Cartographer", __file__)
@@ -56,6 +56,7 @@ class Cartographer(Cog):
 
         self.db: DB = DB()
         self.saving = False
+        self.logs = CogsUtils.get_logger(cog=self)
 
     async def cog_load(self) -> None:
         asyncio.create_task(self.initialize())
