@@ -1,5 +1,5 @@
 import discord
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from datetime import timedelta, datetime
@@ -22,6 +22,7 @@ class Adwarn(Cog):
             warnings_issued={}, mod_warnings={}, softban_duration=120,
             timeout_duration=120, weekly_stats={}, monthly_stats={})
         self.config.register_member(warnings=[], untimeout_time=None)
+        self.logs = CogsUtils.get_logger(self=cog)
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
