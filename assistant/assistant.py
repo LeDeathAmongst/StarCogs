@@ -11,7 +11,7 @@ from redbot.core import Config, commands
 from redbot.core.bot import Red
 
 from .abc import CompositeMetaClass
-from .commands import AssistantCommands
+from .commands import AssistantCommands, chat_context_menu, draw_context_menu
 from .common.api import API
 from .common.chat import ChatHandler
 from .common.constants import (
@@ -76,11 +76,17 @@ class Assistant(
 
     async def cog_load(self) -> None:
         asyncio.create_task(self.init_cog())
+        await super().cog_load()
+        self.bot.tree.add_command(self.chat_context_menu)
+        self.bot.tree.add_command(self.draw_context_menu)
 
     async def cog_unload(self):
         self.save_loop.cancel()
         self.mp_pool.close()
         self.bot.dispatch("assistant_cog_remove")
+        async super().cog_unload()
+        self.bot.tree.remove_command(self.chat_context_menu.name, type=self.chat_context_menu.type)
+        self.bot.tree.remove_command(self.draw_context_menu.name, type=self.draw_context_menu.type)
 
     async def init_cog(self):
         await self.bot.wait_until_red_ready()
