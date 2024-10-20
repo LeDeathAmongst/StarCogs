@@ -23,9 +23,62 @@ from ..common.constants import IMAGE_COSTS, LOADING, READ_EXTENSIONS
 from ..common.models import Conversation
 from ..common.utils import can_use, get_attachments
 
-log = logging.getLogger("red.vrt.assistant.base")
 _ = Translator("Assistant", __file__)
 
+@app_commands.context_menu(name="Chat with Assistant")
+async def chat_context_menu(interaction: discord.Interaction, message: discord.Message):
+    bot = interaction.client
+    ctx = await bot.get_context(interaction)
+    cog = bot.get_cog("Assistant")  # Assuming your main cog is named "Assistant"
+    conf = cog.db.get_conf(interaction.guild)
+    if not await cog.can_call_llm(conf, ctx):
+        return await interaction.response.send_message(_("You don't have permission to use this command."), ephemeral=True)
+    if not await cog.can_use(message, conf.blacklist):
+        return await interaction.response.send_message(_("This message is blacklisted."), ephemeral=True)
+
+    await interaction.response.defer(thinking=True)
+    question = message.content
+    await cog.handle_message(message, question, conf)
+    await interaction.followup.send(_("Response sent in the channel."), ephemeral=True)
+
+@app_commands.context_menu(name="Draw with Assistant")
+async def draw_context_menu(interaction: discord.Interaction, message: discord.Message):
+    bot = interaction.client
+    cog = bot.get_cog("Assistant")  # Assuming your main cog is named "Assistant"
+    conf = cog.db.get_conf(interaction.guild)
+    if not conf.api_key:
+        return await interaction.response.send_message(_("The API key is not set up!"), ephemeral=True)
+    if not conf.image_command:
+        return await interaction.response.send_message(_("Image generation is disabled!"), ephemeral=True)
+
+    prompt = message.content
+    await interaction.response.defer(thinking=True)
+
+    color = await bot.get_embed_color(interaction.channel)
+    size = "1024x1024"
+    quality = "standard"
+    style = "vivid"
+
+    desc = _("-# Size: {}\n-# Quality: {}\n-# Style: {}").format(size, quality, style)
+    cost_key = f"{quality}{size}"
+    cost = cog.IMAGE_COSTS.get(cost_key, 0)
+
+    image = await cog.request_image_raw(prompt, conf.api_key, size, quality, style)
+    embed = discord.Embed(description=desc, color=color).set_image(url=image.url)
+    embed.set_footer(text=_("Cost: ${}").format(f"{cost:.2f}"))
+    if image.revised_prompt:
+        embed.add_field(name=_("Revised Prompt"), value=image.revised_prompt, inline=False)
+
+    await interaction.followup.send(embed=embed)
+    async def cog_load(self) -> None:
+        await super().cog_load()
+        self.bot.tree.add_command(self.chat_context_menu)
+        self.bot.tree.add_command(self.draw_context_menu)
+
+    async def cog_unload(self):
+        async super().cog_unload()
+        self.bot.tree.remove_command(self.chat_context_menu.name, type=self.chat_context_menu.type)
+        self.bot.tree.remove_command(self.draw_context_menu.name, type=self.draw_context_menu.type)
 
 @cog_i18n(_)
 class Base(MixinMeta):
