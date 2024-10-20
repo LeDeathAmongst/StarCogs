@@ -16,7 +16,9 @@ async def add_owner_context_menu(interaction: discord.Interaction, user: discord
         await interaction.response.send_message(f"{user.mention} is already an owner.", ephemeral=True)
         return
 
-    await bot.add_owner(user)
+    async with bot.get_cog("Core").config.owner_ids() as owner_ids:
+        owner_ids.append(user.id)
+
     await interaction.response.send_message(f"{user.mention} has been added as an owner.", ephemeral=True)
 
 @app_commands.context_menu(name="Remove Owner")
@@ -27,20 +29,11 @@ async def remove_owner_context_menu(interaction: discord.Interaction, user: disc
         await interaction.response.send_message(f"{user.mention} is not an owner.", ephemeral=True)
         return
 
-    await bot.remove_owner(user)
-    await interaction.response.send_message(f"{user.mention} has been removed as an owner.", ephemeral=True)
+    async with bot.get_cog("Core").config.owner_ids() as owner_ids:
+        if user.id in owner_ids:
+            owner_ids.remove(user.id)
 
-    async def assign_roles_to_owners(self, guild: discord.Guild):
-        """Assign the owner role to all owners present in the server."""
-        owners = await self.config.owners()
-        owner_role_id = await self.config.guild(guild).owner_role_id()
-        if owner_role_id:
-            owner_role = guild.get_role(owner_role_id)
-            if owner_role:
-                for owner_id in owners:
-                    member = guild.get_member(owner_id)
-                    if member and owner_role not in member.roles:
-                        await member.add_roles(owner_role)
+    await interaction.response.send_message(f"{user.mention} has been removed as an owner.", ephemeral=True)
 
 class OwnerProtection(Cog):
     """A cog to protect the bot owner/trusted owners from being muted, timed out, kicked, or banned."""
@@ -89,12 +82,10 @@ class OwnerProtection(Cog):
         )
 
     async def cog_load(self):
-        await super().cog_load()
         self.bot.tree.add_command(add_owner_context_menu)
         self.bot.tree.add_command(remove_owner_context_menu)
 
     async def cog_unload(self):
-        await super().cog_unload()
         self.bot.tree.remove_command(add_owner_context_menu.name, type=add_owner_context_menu.type)
         self.bot.tree.remove_command(remove_owner_context_menu.name, type=remove_owner_context_menu.type)
 
