@@ -39,7 +39,7 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
         self.cog = cog
         self.bot = bot
         self.message_content = message_content
-        self.log = CogsUtils.get_logger("FIFO"
+        self.log = CogsUtils.get_logger("FIFO")
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
