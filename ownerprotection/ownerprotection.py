@@ -6,37 +6,25 @@ from Star_Utils import Cog, CogsUtils, Settings
 import typing
 
 @app_commands.context_menu(name="Add Owner")
+@app_commands.check(checks.is_owner())
 async def add_owner_context_menu(interaction: discord.Interaction, user: discord.User):
-    if not await interaction.client.is_owner(interaction.user):
-        await interaction.response.send_message("You don't have permission to add owners.", ephemeral=True)
+    bot = interaction.client
+    if await bot.is_owner(user):
+        await interaction.response.send_message(f"{user.mention} is already an owner.", ephemeral=True)
         return
 
-    async with interaction.client.db.owners.get_lock():
-        owners = await interaction.client.db.owners()
-        if user.id in owners:
-            await interaction.response.send_message(f"{user.mention} is already an owner.", ephemeral=True)
-            return
-
-        owners.append(user.id)
-        await interaction.client.db.owners.set(owners)
-
+    await bot.add_owner(user)
     await interaction.response.send_message(f"{user.mention} has been added as an owner.", ephemeral=True)
 
 @app_commands.context_menu(name="Remove Owner")
+@app_commands.check(checks.is_owner())
 async def remove_owner_context_menu(interaction: discord.Interaction, user: discord.User):
-    if not await interaction.client.is_owner(interaction.user):
-        await interaction.response.send_message("You don't have permission to remove owners.", ephemeral=True)
+    bot = interaction.client
+    if not await bot.is_owner(user):
+        await interaction.response.send_message(f"{user.mention} is not an owner.", ephemeral=True)
         return
 
-    async with interaction.client.db.owners.get_lock():
-        owners = await interaction.client.db.owners()
-        if user.id not in owners:
-            await interaction.response.send_message(f"{user.mention} is not an owner.", ephemeral=True)
-            return
-
-        owners.remove(user.id)
-        await interaction.client.db.owners.set(owners)
-
+    await bot.remove_owner(user)
     await interaction.response.send_message(f"{user.mention} has been removed as an owner.", ephemeral=True)
 
     async def assign_roles_to_owners(self, guild: discord.Guild):
