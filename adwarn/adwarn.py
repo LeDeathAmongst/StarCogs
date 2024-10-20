@@ -73,11 +73,13 @@ class Adwarn(Cog):
             timeout_duration=120, weekly_stats={}, monthly_stats={})
         self.config.register_member(warnings=[], untimeout_time=None)
         self.logs = CogsUtils.get_logger("Adwarn")
+
     async def cog_load(self) -> None:
         await super().cog_load()
-        self.bot.tree.add_command(adwarn_context_menu)
+        self.bot.tree.add_command(adwarn_context_menu.name)
+
     async def cog_unload(self) -> None:
-        self.bot.tree.remove_command(adwarncontext_menu.name)
+        self.bot.tree.remove_command(adwarn_context_menu.name)
         await super().cog_unload()
 
     @commands.hybrid_command()
