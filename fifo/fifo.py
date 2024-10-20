@@ -81,13 +81,9 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
 @app_commands.context_menu(name="Create Scheduled Task")
 async def create_scheduled_task_context_menu(interaction: discord.Interaction, message: discord.Message):
     bot = interaction.client
+    ctx = await bot.get_context(message)
 
-    # Get the command prefix
-    if callable(bot.command_prefix):
-        prefixes = await bot.command_prefix(bot, message)
-        prefix = prefixes[0] if prefixes else '!'  # Default to '!' if no prefix is found
-    else:
-        prefix = bot.command_prefix
+    prefix = ctx.prefix
 
     if not message.content.startswith(prefix):
         await interaction.response.send_message("The selected message must be a command.", ephemeral=True)
