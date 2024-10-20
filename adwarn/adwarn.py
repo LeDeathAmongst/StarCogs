@@ -76,7 +76,7 @@ class Adwarn(Cog):
 
     async def cog_load(self) -> None:
         await super().cog_load()
-        self.bot.tree.add_command(adwarn_context_menu.name)
+        self.bot.tree.add_command(adwarn_context_menu)
 
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(adwarn_context_menu.name)
