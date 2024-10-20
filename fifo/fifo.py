@@ -19,6 +19,8 @@ from Star_Utils import Cog, CogsUtils
 from .datetime_cron_converters import CronConverter, DatetimeConverter, TimezoneConverter
 from .task import Task
 
+logger = logging.getLogger("lebot.star.FIFO")
+
 schedule_log = logging.getLogger("red.star.fifo.scheduler")
 schedule_log.setLevel(logging.DEBUG)
 
