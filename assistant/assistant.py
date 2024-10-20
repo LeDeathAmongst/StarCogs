@@ -27,8 +27,7 @@ from .common.models import DB, Embedding, EmbeddingEntryExists, NoAPIKey
 from .common.utils import json_schema_invalid
 from .listener import AssistantListener
 
-log = logging.getLogger("red.vrt.assistant")
-
+from Star_Utils import Cog, CogsUtils
 
 # redgettext -D views.py commands/admin.py commands/base.py common/api.py common/chat.py common/utils.py --command-docstring
 
@@ -39,7 +38,7 @@ class Assistant(
     AssistantFunctions,
     AssistantListener,
     ChatHandler,
-    commands.Cog,
+    Cog,
     metaclass=CompositeMetaClass,
 ):
     """
@@ -52,13 +51,6 @@ class Assistant(
     - **[p]convostats**: view a user's token usage/conversation message count for the channel
     - **[p]clearconvo**: reset your conversation with the assistant in the channel
     """
-
-    __author__ = "[vertyco](https://github.com/vertyco/vrt-cogs)"
-    __version__ = "6.8.0"
-
-    def format_help_for_context(self, ctx):
-        helpcmd = super().format_help_for_context(ctx)
-        return f"{helpcmd}\nVersion: {self.__version__}\nAuthor: {self.__author__}"
 
     async def red_delete_data_for_user(self, *, requester, user_id: int):
         """No data to delete"""
@@ -79,6 +71,8 @@ class Assistant(
 
         self.saving = False
         self.first_run = True
+
+        self.log = CogsUtils.get_logger("Assitant")
 
     async def cog_load(self) -> None:
         asyncio.create_task(self.init_cog())
