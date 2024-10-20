@@ -1,4 +1,4 @@
-from redbot.core import commands, Config
+from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 import discord
 from discord.utils import utcnow
