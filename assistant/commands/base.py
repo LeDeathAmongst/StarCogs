@@ -70,15 +70,6 @@ async def draw_context_menu(interaction: discord.Interaction, message: discord.M
         embed.add_field(name=_("Revised Prompt"), value=image.revised_prompt, inline=False)
 
     await interaction.followup.send(embed=embed)
-    async def cog_load(self) -> None:
-        await super().cog_load()
-        self.bot.tree.add_command(self.chat_context_menu)
-        self.bot.tree.add_command(self.draw_context_menu)
-
-    async def cog_unload(self):
-        async super().cog_unload()
-        self.bot.tree.remove_command(self.chat_context_menu.name, type=self.chat_context_menu.type)
-        self.bot.tree.remove_command(self.draw_context_menu.name, type=self.draw_context_menu.type)
 
 @cog_i18n(_)
 class Base(MixinMeta):
