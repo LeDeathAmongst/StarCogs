@@ -82,25 +82,21 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
     bot = interaction.client
     ctx = await bot.get_context(message)
 
-    prefix = ctx.prefix or await bot.get_prefix(message)
+    prefixes = await bot.get_prefix(message)
+    if isinstance(prefixes, str):
+        prefixes = [prefixes]
 
-    if isinstance(prefix, list):
-        prefix = prefix[0]  # Take the first prefix if it's a list
-
-    if not prefix:
-        await interaction.response.send_message("Unable to determine the command prefix.", ephemeral=True)
-        return
-
-    if not message.content.startswith(prefix):
-        await interaction.response.send_message("The selected message must be a command.", ephemeral=True)
-        return
+    command_to_execute = message.content
+    for prefix in prefixes:
+        if message.content.startswith(prefix):
+            command_to_execute = message.content[len(prefix):].strip()
+            break
 
     cog = bot.get_cog("FIFO")
     if not cog:
         await interaction.response.send_message("The FIFO cog is not loaded.", ephemeral=True)
         return
 
-    command_to_execute = message.content[len(prefix):]
     modal = TaskCreationModal(cog, command_to_execute, ctx)
     await interaction.response.send_modal(modal)
 
