@@ -1,4 +1,4 @@
-﻿from AAA3A_utils import Cog, Menu, Settings, CogsUtils  # isort:skip
+﻿from Star_Utils import Cog, Menu, Settings, CogsUtils  # isort:skip
 from redbot.core import commands, Config  # isort:skip
 from redbot.core.bot import Red  # isort:skip
 from redbot.core.i18n import Translator, cog_i18n  # isort:skip
