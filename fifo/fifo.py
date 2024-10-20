@@ -31,10 +31,11 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
     )
     trigger_value = discord.ui.TextInput(label="Trigger Value", placeholder="Enter duration/cron string")
 
-    def __init__(self, cog, message_content):
+    def __init__(self, cog, command_to_execute, ctx):
         super().__init__()
         self.cog = cog
-        self.message_content = message_content
+        self.command_to_execute = command_to_execute
+        self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -43,30 +44,28 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
         trigger_type = self.trigger_type.value.lower()
         trigger_value = self.trigger_value.value
 
-        ctx = await interaction.client.get_context(interaction)
-
         # First, create the task
-        await ctx.invoke(self.cog.fifo_add, task_name=task_name, command_to_execute=self.message_content)
+        await self.cog.fifo_add(self.ctx, task_name=task_name, command_to_execute=self.command_to_execute)
 
         # Then, add the trigger
         if trigger_type == "relative":
             try:
-                time_from_now = await TimedeltaConverter().convert(ctx, trigger_value)
-                await ctx.invoke(self.cog.fifo_trigger_relative, task_name=task_name, time_from_now=time_from_now)
+                time_from_now = await TimedeltaConverter().convert(self.ctx, trigger_value)
+                await self.cog.fifo_trigger_relative(self.ctx, task_name=task_name, time_from_now=time_from_now)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid relative time format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
                 return
         elif trigger_type == "cron":
             try:
-                cron_str = await CronConverter().convert(ctx, trigger_value)
-                await ctx.invoke(self.cog.fifo_trigger_cron, task_name=task_name, cron_str=cron_str)
+                cron_str = await CronConverter().convert(self.ctx, trigger_value)
+                await self.cog.fifo_trigger_cron(self.ctx, task_name=task_name, cron_str=cron_str)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid cron string. Please use a valid cron format.", ephemeral=True)
                 return
         elif trigger_type == "interval":
             try:
-                interval_str = await TimedeltaConverter().convert(ctx, trigger_value)
-                await ctx.invoke(self.cog.fifo_trigger_interval, task_name=task_name, interval_str=interval_str)
+                interval_str = await TimedeltaConverter().convert(self.ctx, trigger_value)
+                await self.cog.fifo_trigger_interval(self.ctx, task_name=task_name, interval_str=interval_str)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid interval format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
                 return
@@ -92,7 +91,8 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
         await interaction.response.send_message("The FIFO cog is not loaded.", ephemeral=True)
         return
 
-    modal = TaskCreationModal(cog, message.content[len(prefix):])
+    command_to_execute = message.content[len(prefix):]
+    modal = TaskCreationModal(cog, command_to_execute, ctx)
     await interaction.response.send_modal(modal)
 
 async def _execute_task(**task_state):
