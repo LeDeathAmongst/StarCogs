@@ -9,7 +9,7 @@ from apscheduler.job import Job
 from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.base import STATE_PAUSED, STATE_RUNNING
-from redbot.core import Config, checks, commands
+from redbot.core import Config, checks, commands, app_commands
 from redbot.core.bot import Red
 from redbot.core.commands import TimedeltaConverter
 from redbot.core.utils.chat_formatting import humanize_timedelta, pagify
