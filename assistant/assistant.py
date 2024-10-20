@@ -11,7 +11,8 @@ from redbot.core import Config, commands
 from redbot.core.bot import Red
 
 from .abc import CompositeMetaClass
-from .commands import AssistantCommands, chat_context_menu, draw_context_menu
+from .commands import AssistantCommands
+from .commands.base import chat_context_menu, draw_context_menu
 from .common.api import API
 from .common.chat import ChatHandler
 from .common.constants import (
