@@ -14,15 +14,13 @@ from redbot.core.bot import Red
 from redbot.core.commands import TimedeltaConverter
 from redbot.core.utils.chat_formatting import humanize_timedelta, pagify
 
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 
 from .datetime_cron_converters import CronConverter, DatetimeConverter, TimezoneConverter
 from .task import Task
 
 schedule_log = logging.getLogger("red.star.fifo.scheduler")
 schedule_log.setLevel(logging.DEBUG)
-
-log = logging.getLogger("red.star.fifo")
 
 class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
     task_name = discord.ui.TextInput(label="Task Name", placeholder="Enter a name")
@@ -37,9 +35,11 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
     trigger_value = discord.ui.TextInput(label="Trigger Value", placeholder="Enter duration/cron string")
 
     def __init__(self, cog, message_content):
-        super().__init__()
+        super().__init__(bot)
         self.cog = cog
+        self.bot = bot
         self.message_content = message_content
+        self.log = CogsUtils.get_logger("FIFO"
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
