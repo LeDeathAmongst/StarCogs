@@ -24,7 +24,7 @@ class Adwarn(Cog):
         self.config.register_member(warnings=[], untimeout_time=None)
         self.logs = CogsUtils.get_logger("Adwarn")
 
-    @commands.command()
+    @hybrid_commands.command()
     @commands.has_permissions(manage_messages=True)
     async def adwarn(self, ctx, user: discord.Member, *, reason: str):
         """Warn a user and send an embed to the default warning channel."""
