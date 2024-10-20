@@ -161,7 +161,7 @@ class FIFO(Cog):
 
         self.tz_cog = None
 
-        self.logs = CogsUtils.get_logger("FIFO")
+ #       self.logs = CogsUtils.get_logger("FIFO")
 
     async def cog_load(self) -> None:
         await super().cog_load()
