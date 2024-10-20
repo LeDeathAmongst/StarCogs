@@ -86,10 +86,10 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
     if isinstance(prefixes, str):
         prefixes = [prefixes]
 
-    command_to_execute = message.content
+    command_to_execute = message.content.strip()
     for prefix in prefixes:
-        if message.content.startswith(prefix):
-            command_to_execute = message.content[len(prefix):].strip()
+        if command_to_execute.startswith(prefix):
+            command_to_execute = command_to_execute[len(prefix):].strip()
             break
 
     cog = bot.get_cog("FIFO")
