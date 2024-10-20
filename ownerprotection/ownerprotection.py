@@ -5,8 +5,11 @@ from discord.utils import utcnow
 from Star_Utils import Cog, CogsUtils, Settings
 import typing
 
+async def is_owner(interaction: discord.Interaction):
+    return await interaction.client.is_owner(interaction.user)
+
 @app_commands.context_menu(name="Add Owner")
-@app_commands.check(checks.is_owner())
+@app_commands.check(is_owner)
 async def add_owner_context_menu(interaction: discord.Interaction, user: discord.User):
     bot = interaction.client
     if await bot.is_owner(user):
@@ -17,7 +20,7 @@ async def add_owner_context_menu(interaction: discord.Interaction, user: discord
     await interaction.response.send_message(f"{user.mention} has been added as an owner.", ephemeral=True)
 
 @app_commands.context_menu(name="Remove Owner")
-@app_commands.check(checks.is_owner())
+@app_commands.check(is_owner)
 async def remove_owner_context_menu(interaction: discord.Interaction, user: discord.User):
     bot = interaction.client
     if not await bot.is_owner(user):
