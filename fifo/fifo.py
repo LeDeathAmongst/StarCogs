@@ -80,7 +80,14 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
     bot = interaction.client
     ctx = await bot.get_context(message)
 
-    prefix = ctx.prefix
+    prefix = ctx.prefix or await bot.get_prefix(message)
+
+    if isinstance(prefix, list):
+        prefix = prefix[0]  # Take the first prefix if it's a list
+
+    if not prefix:
+        await interaction.response.send_message("Unable to determine the command prefix.", ephemeral=True)
+        return
 
     if not message.content.startswith(prefix):
         await interaction.response.send_message("The selected message must be a command.", ephemeral=True)
