@@ -38,7 +38,21 @@ async def adwarn_context_menu(interaction: discord.Interaction, message: discord
             )
             return
 
-        await interaction.followup.send(f"User {user.mention} has been warned for: {reason}", ephemeral=True)
+        # Attempt to delete the original message
+        try:
+            await message.delete()
+            deletion_status = "The original message has been deleted."
+        except discord.Forbidden:
+            deletion_status = "I couldn't delete the original message due to lack of permissions."
+        except discord.NotFound:
+            deletion_status = "The original message was already deleted."
+        except discord.HTTPException:
+            deletion_status = "An error occurred while trying to delete the original message."
+
+        await interaction.followup.send(
+            f"User {user.mention} has been warned for: {reason}\n{deletion_status}",
+            ephemeral=True
+        )
 
     modal.on_submit = modal_submit
     await interaction.response.send_modal(modal)
