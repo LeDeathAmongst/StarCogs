@@ -101,14 +101,11 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
     await interaction.response.send_modal(modal)
 
 async def _execute_task(**task_state):
-    cog = task_state.get('cog')
-    if cog is None:
-        return False
-    cog.logs.info(f"Executing {task_state.get('name')}")
+    logger.info(f"Executing {task_state.get('name')}")
     task = Task(**task_state)
     if await task.load_from_config():
         return await task.execute()
-    cog.logs.warning(f"Failed to load data on {task_state=}")
+    logger.warning(f"Failed to load data on {task_state=}")
     return False
 
 def _assemble_job_id(task_name, guild_id):
@@ -232,7 +229,7 @@ class FIFO(Cog):
 
         return scheduler.add_job(
             _execute_task,
-            kwargs={**task.__getstate__(), 'cog': self},
+            kwargs=task.__getstate__(),
             id=_assemble_job_id(task.name, task.guild_id),
             trigger=combined_trigger_,
             name=task.name,
