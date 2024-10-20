@@ -5,6 +5,52 @@ from discord.utils import utcnow
 from Star_Utils import Cog, CogsUtils, Settings
 import typing
 
+@app_commands.context_menu(name="Add Owner")
+async def add_owner_context_menu(interaction: discord.Interaction, user: discord.User):
+    if not await interaction.client.is_owner(interaction.user):
+        await interaction.response.send_message("You don't have permission to add owners.", ephemeral=True)
+        return
+
+    async with interaction.client.db.owners.get_lock():
+        owners = await interaction.client.db.owners()
+        if user.id in owners:
+            await interaction.response.send_message(f"{user.mention} is already an owner.", ephemeral=True)
+            return
+
+        owners.append(user.id)
+        await interaction.client.db.owners.set(owners)
+
+    await interaction.response.send_message(f"{user.mention} has been added as an owner.", ephemeral=True)
+
+@app_commands.context_menu(name="Remove Owner")
+async def remove_owner_context_menu(interaction: discord.Interaction, user: discord.User):
+    if not await interaction.client.is_owner(interaction.user):
+        await interaction.response.send_message("You don't have permission to remove owners.", ephemeral=True)
+        return
+
+    async with interaction.client.db.owners.get_lock():
+        owners = await interaction.client.db.owners()
+        if user.id not in owners:
+            await interaction.response.send_message(f"{user.mention} is not an owner.", ephemeral=True)
+            return
+
+        owners.remove(user.id)
+        await interaction.client.db.owners.set(owners)
+
+    await interaction.response.send_message(f"{user.mention} has been removed as an owner.", ephemeral=True)
+
+    async def assign_roles_to_owners(self, guild: discord.Guild):
+        """Assign the owner role to all owners present in the server."""
+        owners = await self.config.owners()
+        owner_role_id = await self.config.guild(guild).owner_role_id()
+        if owner_role_id:
+            owner_role = guild.get_role(owner_role_id)
+            if owner_role:
+                for owner_id in owners:
+                    member = guild.get_member(owner_id)
+                    if member and owner_role not in member.roles:
+                        await member.add_roles(owner_role)
+
 class OwnerProtection(Cog):
     """A cog to protect the bot owner/trusted owners from being muted, timed out, kicked, or banned."""
 
@@ -53,19 +99,13 @@ class OwnerProtection(Cog):
 
     async def cog_load(self):
         await super().cog_load()
-        await self.settings.add_commands()
+        self.bot.tree.add_command(add_owner_context_menu)
+        self.bot.tree.add_command(remove_owner_context_menu)
 
-    async def assign_roles_to_owners(self, guild: discord.Guild):
-        """Assign the owner role to all owners present in the server."""
-        owners = await self.config.owners()
-        owner_role_id = await self.config.guild(guild).owner_role_id()
-        if owner_role_id:
-            owner_role = guild.get_role(owner_role_id)
-            if owner_role:
-                for owner_id in owners:
-                    member = guild.get_member(owner_id)
-                    if member and owner_role not in member.roles:
-                        await member.add_roles(owner_role)
+    async def cog_unload(self):
+        await super().cog_unload()
+        self.bot.tree.remove_command(add_owner_context_menu.name, type=add_owner_context_menu.type)
+        self.bot.tree.remove_command(remove_owner_context_menu.name, type=remove_owner_context_menu.type)
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
