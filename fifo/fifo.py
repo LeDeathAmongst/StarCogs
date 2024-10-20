@@ -35,9 +35,8 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
     trigger_value = discord.ui.TextInput(label="Trigger Value", placeholder="Enter duration/cron string")
 
     def __init__(self, cog, message_content):
-        super().__init__(bot)
+        super().__init__()
         self.cog = cog
-        self.bot = bot
         self.message_content = message_content
         self.log = CogsUtils.get_logger("FIFO")
 
