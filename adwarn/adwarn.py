@@ -1,11 +1,47 @@
 import discord
 from Star_Utils import Cog, CogsUtils
-from redbot.core import commands, Config
+from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from datetime import timedelta, datetime
 import re
 import uuid
 import asyncio
+
+@app_commands.context_menu(name="Adwarn User")
+async def adwarn_context_menu(interaction: discord.Interaction, message: discord.Message):
+    modal = discord.ui.Modal(title="Adwarn User")
+    reason_input = discord.ui.TextInput(
+        label="Reason",
+        style=discord.TextStyle.paragraph,
+        placeholder="Enter the reason for the warning",
+        custom_id="warning_reason",
+        required=True,
+    )
+    modal.add_item(reason_input)
+
+    async def modal_submit(interaction: discord.Interaction):
+        await interaction.response.defer()
+        user = message.author
+        reason = reason_input.value
+
+        context = await CogsUtils.invoke_command(
+            bot=interaction.client,
+            author=interaction.user,
+            channel=interaction.channel,
+            command=f'adwarn {user.id} {reason}',
+        )
+
+        if not await discord.utils.async_all([check(context) for check in context.command.checks]):
+            await interaction.followup.send(
+                "You're not allowed to execute the `adwarn` command in this channel.",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.followup.send(f"User {user.mention} has been warned for: {reason}", ephemeral=True)
+
+    modal.on_submit = modal_submit
+    await interaction.response.send_modal(modal)
 
 class Emojis:
     MOD = discord.PartialEmoji(name="mod", id="1297394034624434246")
@@ -23,8 +59,14 @@ class Adwarn(Cog):
             timeout_duration=120, weekly_stats={}, monthly_stats={})
         self.config.register_member(warnings=[], untimeout_time=None)
         self.logs = CogsUtils.get_logger("Adwarn")
+    async def cog_load(self) -> None:
+        await super().cog_load()
+        self.bot.tree.add_command(adwarn_context_menu)
+    async def cog_unload(self) -> None:
+        self.bot.tree.remove_command(adwarncontext_menu.name)
+        await super().cog_unload()
 
-    @hybrid_commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True)
     async def adwarn(self, ctx, user: discord.Member, *, reason: str):
         """Warn a user and send an embed to the default warning channel."""
@@ -159,7 +201,7 @@ class Adwarn(Cog):
             error_embed = discord.Embed(title='Error 404', description=f'Warning with ID {warning_id} not found.', color=discord.Color.red())
             await ctx.send(embed=error_embed)
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True)
     async def warncount(self, ctx, user: discord.Member):
         """Get the total number of warnings a user has."""
@@ -174,7 +216,7 @@ class Adwarn(Cog):
                 , inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True)
     async def clearwarns(self, ctx, user: discord.User):
         """Clear all warnings for a user."""
@@ -195,7 +237,7 @@ class Adwarn(Cog):
             error_embed = discord.Embed(title='Error 404', description='No warning channel has been set. Please set it using `[p]warnset channel`.', color=discord.Color.red())
             await ctx.send(embed=error_embed)
 
-    @commands.command()
+    @commands.hybrid_command()
     @commands.has_permissions(manage_messages=True)
     async def unadwarn(self, ctx, user: discord.Member):
         """Clear the most recent warning for a user."""
