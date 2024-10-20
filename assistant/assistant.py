@@ -76,7 +76,6 @@ class Assistant(
 
     async def cog_load(self) -> None:
         asyncio.create_task(self.init_cog())
-        await super().cog_load()
         self.bot.tree.add_command(self.chat_context_menu)
         self.bot.tree.add_command(self.draw_context_menu)
 
@@ -84,7 +83,6 @@ class Assistant(
         self.save_loop.cancel()
         self.mp_pool.close()
         self.bot.dispatch("assistant_cog_remove")
-        async super().cog_unload()
         self.bot.tree.remove_command(self.chat_context_menu.name, type=self.chat_context_menu.type)
         self.bot.tree.remove_command(self.draw_context_menu.name, type=self.draw_context_menu.type)
 
