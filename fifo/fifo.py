@@ -23,14 +23,11 @@ schedule_log = logging.getLogger("red.star.fifo.scheduler")
 schedule_log.setLevel(logging.DEBUG)
 
 class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
-    task_name = discord.ui.TextInput(label="Task Name", placeholder="Enter a name")
-    trigger_type = discord.ui.Select(
-        placeholder="Select trigger type",
-        options=[
-            discord.SelectOption(label="Relative", description="Run once after a specified time from now"),
-            discord.SelectOption(label="Cron", description="Run on a schedule using cron syntax"),
-            discord.SelectOption(label="Interval", description="Run repeatedly at fixed intervals")
-        ]
+    task_name = discord.ui.TextInput(label="Task Name", placeholder="Enter a name for the task")
+    trigger_type = discord.ui.TextInput(
+        label="Trigger Type",
+        placeholder="Enter: Relative, Cron, or Interval",
+        max_length=8
     )
     trigger_value = discord.ui.TextInput(label="Trigger Value", placeholder="Enter duration/cron string")
 
@@ -38,13 +35,12 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
         super().__init__()
         self.cog = cog
         self.message_content = message_content
-        self.log = CogsUtils.get_logger("FIFO")
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
 
         task_name = self.task_name.value
-        trigger_type = self.trigger_type.values[0]
+        trigger_type = self.trigger_type.value.lower()
         trigger_value = self.trigger_value.value
 
         ctx = await interaction.client.get_context(interaction)
@@ -53,29 +49,32 @@ class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
         await ctx.invoke(self.cog.fifo_add, task_name=task_name, command_to_execute=self.message_content)
 
         # Then, add the trigger
-        if trigger_type == "Relative":
+        if trigger_type == "relative":
             try:
                 time_from_now = await TimedeltaConverter().convert(ctx, trigger_value)
                 await ctx.invoke(self.cog.fifo_trigger_relative, task_name=task_name, time_from_now=time_from_now)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid relative time format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
                 return
-        elif trigger_type == "Cron":
+        elif trigger_type == "cron":
             try:
                 cron_str = await CronConverter().convert(ctx, trigger_value)
                 await ctx.invoke(self.cog.fifo_trigger_cron, task_name=task_name, cron_str=cron_str)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid cron string. Please use a valid cron format.", ephemeral=True)
                 return
-        elif trigger_type == "Interval":
+        elif trigger_type == "interval":
             try:
                 interval_str = await TimedeltaConverter().convert(ctx, trigger_value)
                 await ctx.invoke(self.cog.fifo_trigger_interval, task_name=task_name, interval_str=interval_str)
             except commands.BadArgument:
                 await interaction.followup.send("Invalid interval format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
                 return
+        else:
+            await interaction.followup.send("Invalid trigger type. Please use 'Relative', 'Cron', or 'Interval'.", ephemeral=True)
+            return
 
-        await interaction.followup.send(f"Task '{task_name}' created with a {trigger_type.lower()} trigger.", ephemeral=True)
+        await interaction.followup.send(f"Task '{task_name}' created with a {trigger_type} trigger.", ephemeral=True)
 
 @app_commands.context_menu(name="Create Scheduled Task")
 async def create_scheduled_task_context_menu(interaction: discord.Interaction, message: discord.Message):
@@ -166,6 +165,8 @@ class FIFO(Cog):
         self.jobstore = None
 
         self.tz_cog = None
+
+        self.log = CogsUtils.get_logger("FIFO")
 
     async def cog_load(self) -> None:
         await super().cog_load()
