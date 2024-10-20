@@ -91,6 +91,25 @@ class OwnerProtection(Cog):
         self.bot.tree.remove_command(remove_owner_context_menu.name, type=remove_owner_context_menu.type)
         await super().cog_unload()
 
+    async def assign_roles_to_owners(self, guild: discord.Guild):
+        """Assign the support role to all protected owners in the guild."""
+        support_role_id = await self.config.guild(guild).support_role_id()
+        if not support_role_id:
+            return  # No support role set for this guild
+
+        support_role = guild.get_role(support_role_id)
+        if not support_role:
+            return  # Support role doesn't exist in the guild
+
+        owners = await self.config.owners()
+        for member in guild.members:
+            if member.id in owners:
+                if support_role not in member.roles:
+                    try:
+                        await member.add_roles(support_role, reason="Protected owner role assignment")
+                    except discord.Forbidden:
+                        continue  # Bot doesn't have permission to assign roles
+
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         """Check if the owner is muted or timed out and reverse it."""
