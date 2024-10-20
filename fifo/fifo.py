@@ -96,29 +96,23 @@ async def create_scheduled_task_context_menu(interaction: discord.Interaction, m
     await interaction.response.send_modal(modal)
 
 async def _execute_task(**task_state):
-    log.info(f"Executing {task_state.get('name')}")
+    cog = task_state.get('cog')
+    if cog is None:
+        return False
+    cog.logs.info(f"Executing {task_state.get('name')}")
     task = Task(**task_state)
     if await task.load_from_config():
         return await task.execute()
-    log.warning(f"Failed to load data on {task_state=}")
+    cog.logs.warning(f"Failed to load data on {task_state=}")
     return False
-
 
 def _assemble_job_id(task_name, guild_id):
     return f"{task_name}_{guild_id}"
 
-
 def _disassemble_job_id(job_id: str):
     return job_id.split("_")
 
-
 def _get_run_times(job: Job, now: datetime = None):
-    """
-    Computes the scheduled run times between ``next_run_time`` and ``now`` (inclusive).
-
-    Modified to be asynchronous and yielding instead of all-or-nothing
-
-    """
     if not job.next_run_time:
         raise StopIteration()
 
@@ -132,16 +126,12 @@ def _get_run_times(job: Job, now: datetime = None):
         yield next_run_time
         next_run_time = job.trigger.get_next_fire_time(next_run_time, now)
 
-
 class CapturePrint:
-    """Silly little class to get `print` output"""
-
     def __init__(self):
         self.string = None
 
     def write(self, string):
         self.string = string if self.string is None else self.string + "\n" + string
-
 
 class FIFO(Cog):
     """
@@ -170,42 +160,40 @@ class FIFO(Cog):
 
     async def cog_load(self) -> None:
         await super().cog_load()
+        await self.initialize()
         self.bot.tree.add_command(create_scheduled_task_context_menu)
 
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(create_scheduled_task_context_menu.name, type=create_scheduled_task_context_menu.type)
+        if self.scheduler is not None:
+            self.scheduler.shutdown()
         await super().cog_unload()
 
     async def red_delete_data_for_user(self, **kwargs):
         """Nothing to delete"""
         return
 
-    def cog_unload(self):
-        # self.scheduler.remove_all_jobs()
-        if self.scheduler is not None:
-            self.scheduler.shutdown()
-
     async def initialize(self):
+        if self.scheduler is not None:
+            return self.scheduler
 
         job_defaults = {
-            "coalesce": True,  # Multiple missed triggers within the grace time will only fire once
-            "max_instances": 5,  # This is probably way too high, should likely only be one
-            "misfire_grace_time": 15,  # 15 seconds ain't much, but it's honest work
-            "replace_existing": True,  # Very important for persistent data
+            "coalesce": True,
+            "max_instances": 5,
+            "misfire_grace_time": 15,
+            "replace_existing": True,
         }
 
-        # executors = {"default": AsyncIOExecutor()}
-
-        # Default executor is already AsyncIOExecutor
         self.scheduler = AsyncIOScheduler(job_defaults=job_defaults, logger=schedule_log)
 
-        from .redconfigjobstore import RedConfigJobStore  # Wait to import to prevent cyclic import
+        from .redconfigjobstore import RedConfigJobStore
 
         self.jobstore = RedConfigJobStore(self.config, self.bot)
         await self.jobstore.load_from_config()
         self.scheduler.add_jobstore(self.jobstore, "default")
 
         self.scheduler.start()
+        return self.scheduler
 
     async def _check_parsable_command(self, ctx: commands.Context, command_to_parse: str):
         message: discord.Message = ctx.message
@@ -225,28 +213,21 @@ class FIFO(Cog):
         await task.delete_self()
 
     async def _process_task(self, task: Task):
-        # None of this is necessar, we have `replace_existing` already
-        # job: Union[Job, None] = await self._get_job(task)
-        # if job is not None:
-        #     combined_trigger_ = await task.get_combined_trigger()
-        #     if combined_trigger_ is None:
-        #         job.remove()
-        #     else:
-        #         job.reschedule(combined_trigger_)
-        #     return job
         return await self._add_job(task)
 
     async def _get_job(self, task: Task) -> Job:
-        return self.scheduler.get_job(_assemble_job_id(task.name, task.guild_id))
+        scheduler = await self.initialize()
+        return scheduler.get_job(_assemble_job_id(task.name, task.guild_id))
 
     async def _add_job(self, task: Task):
+        scheduler = await self.initialize()
         combined_trigger_ = await task.get_combined_trigger()
         if combined_trigger_ is None:
             return None
 
-        return self.scheduler.add_job(
+        return scheduler.add_job(
             _execute_task,
-            kwargs=task.__getstate__(),
+            kwargs={**task.__getstate__(), 'cog': self},
             id=_assemble_job_id(task.name, task.guild_id),
             trigger=combined_trigger_,
             name=task.name,
@@ -262,14 +243,16 @@ class FIFO(Cog):
         return job
 
     async def _pause_job(self, task: Task):
+        scheduler = await self.initialize()
         try:
-            return self.scheduler.pause_job(job_id=_assemble_job_id(task.name, task.guild_id))
+            return scheduler.pause_job(job_id=_assemble_job_id(task.name, task.guild_id))
         except JobLookupError:
             return False
 
     async def _remove_job(self, task: Task):
+        scheduler = await self.initialize()
         try:
-            self.scheduler.remove_job(job_id=_assemble_job_id(task.name, task.guild_id))
+            scheduler.remove_job(job_id=_assemble_job_id(task.name, task.guild_id))
         except JobLookupError:
             pass
 
@@ -296,30 +279,24 @@ class FIFO(Cog):
     @commands.command()
     async def fifoclear(self, ctx: commands.Context):
         """Debug command to clear all current fifo data"""
-        self.scheduler.remove_all_jobs()
+        scheduler = await self.initialize()
+        scheduler.remove_all_jobs()
         await self.config.guild(ctx.guild).tasks.clear()
         await self.config.jobs.clear()
-        # await self.config.jobs_index.clear()
         await ctx.tick()
 
-    @checks.is_owner()  # Will be reduced when I figure out permissions later
+    @checks.is_owner()
     @commands.guild_only()
     @commands.group()
     async def fifo(self, ctx: commands.Context):
-        """
-        Base command for handling scheduling of tasks
-        """
+        """Base command for handling scheduling of tasks"""
         pass
 
     @fifo.command(name="wakeup")
     async def fifo_wakeup(self, ctx: commands.Context):
-        """Debug command to fix missed executions.
-
-        If you see a negative "Next run time" when adding a trigger, this may help resolve it.
-        Check the logs when using this command.
-        """
-
-        self.scheduler.wakeup()
+        """Debug command to fix missed executions."""
+        scheduler = await self.initialize()
+        scheduler.wakeup()
         await ctx.tick()
 
     @fifo.command(name="checktask", aliases=["checkjob", "check"])
@@ -329,9 +306,7 @@ class FIFO(Cog):
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         job = await self._get_job(task)
@@ -353,16 +328,12 @@ class FIFO(Cog):
         task_name: str,
         author_or_channel: Union[discord.Member, discord.TextChannel],
     ):
-        """
-        Sets a different author or in a different channel for execution of a task.
-        """
+        """Sets a different author or in a different channel for execution of a task."""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         if isinstance(author_or_channel, discord.Member):
@@ -392,8 +363,9 @@ class FIFO(Cog):
         If the task isn't currently scheduled, will schedule it
         """
         if task_name is None:
-            if self.scheduler.state == STATE_PAUSED:
-                self.scheduler.resume()
+            scheduler = await self.initialize()
+            if scheduler.state == STATE_PAUSED:
+                scheduler.resume()
                 await ctx.maybe_send_embed("All task execution for all guilds has been resumed")
             else:
                 await ctx.maybe_send_embed("Task execution is not paused, can't resume")
@@ -402,9 +374,7 @@ class FIFO(Cog):
             await task.load_from_config()
 
             if task.data is None:
-                await ctx.maybe_send_embed(
-                    f"Task by the name of {task_name} is not found in this guild"
-                )
+                await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
                 return
 
             if await self._resume_job(task):
@@ -420,8 +390,9 @@ class FIFO(Cog):
         Otherwise pauses execution of all tasks on all guilds
         """
         if task_name is None:
-            if self.scheduler.state == STATE_RUNNING:
-                self.scheduler.pause()
+            scheduler = await self.initialize()
+            if scheduler.state == STATE_RUNNING:
+                scheduler.pause()
                 await ctx.maybe_send_embed("All task execution for all guilds has been paused")
             else:
                 await ctx.maybe_send_embed("Task execution is not running, can't pause")
@@ -430,9 +401,7 @@ class FIFO(Cog):
             await task.load_from_config()
 
             if task.data is None:
-                await ctx.maybe_send_embed(
-                    f"Task by the name of {task_name} is not found in this guild"
-                )
+                await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
                 return
 
             if await self._pause_job(task):
@@ -442,23 +411,17 @@ class FIFO(Cog):
 
     @fifo.command(name="details")
     async def fifo_details(self, ctx: commands.Context, task_name: str):
-        """
-        Provide all the details on the specified task name
-        """
+        """Provide all the details on the specified task name"""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         embed = discord.Embed(title=f"Task: {task_name}")
 
-        embed.add_field(
-            name="Task command", value=f"{ctx.prefix}{task.get_command_str()}", inline=False
-        )
+        embed.add_field(name="Task command", value=f"{ctx.prefix}{task.get_command_str()}", inline=False)
 
         guild: discord.Guild = self.bot.get_guild(task.guild_id)
 
@@ -470,9 +433,9 @@ class FIFO(Cog):
                 embed.add_field(name="Author", value=author.mention)
             if channel is not None:
                 embed.add_field(name="Channel", value=channel.mention)
-
         else:
             embed.add_field(name="Server", value="Server not found", inline=False)
+
         triggers, expired_triggers = await task.get_triggers()
 
         trigger_str = "\n".join(str(t) for t in triggers)
@@ -520,7 +483,8 @@ class FIFO(Cog):
         Useful for debugging.
         """
         cp = CapturePrint()
-        self.scheduler.print_jobs(out=cp)
+        scheduler = await self.initialize()
+        scheduler.print_jobs(out=cp)
 
         out = cp.string
 
@@ -535,9 +499,7 @@ class FIFO(Cog):
 
     @fifo.command(name="add")
     async def fifo_add(self, ctx: commands.Context, task_name: str, *, command_to_execute: str):
-        """
-        Add a new task to this guild's task list
-        """
+        """Add a new task to this guild's task list"""
         if (await self.config.guild(ctx.guild).tasks.get_raw(task_name, default=None)) is not None:
             await ctx.maybe_send_embed(f"Task already exists with {task_name=}")
             return
@@ -547,9 +509,7 @@ class FIFO(Cog):
             return
 
         if not await self._check_parsable_command(ctx, command_to_execute):
-            await ctx.maybe_send_embed(
-                "Failed to parse command. Make sure not to include the prefix"
-            )
+            await ctx.maybe_send_embed("Failed to parse command. Make sure not to include the prefix")
             return
 
         task = Task(task_name, ctx.guild.id, self.config, ctx.author.id, ctx.channel.id, self.bot)
@@ -559,16 +519,12 @@ class FIFO(Cog):
 
     @fifo.command(name="delete")
     async def fifo_delete(self, ctx: commands.Context, task_name: str):
-        """
-        Deletes a task from this guild's task list
-        """
+        """Deletes a task from this guild's task list"""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         await self._delete_task(task)
@@ -581,14 +537,11 @@ class FIFO(Cog):
 
         Useful to start over with new trigger
         """
-
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         await task.clear_triggers()
@@ -597,33 +550,24 @@ class FIFO(Cog):
 
     @fifo.group(name="addtrigger", aliases=["trigger"])
     async def fifo_trigger(self, ctx: commands.Context):
-        """
-        Add a new trigger for a task from the current guild.
-        """
+        """Add a new trigger for a task from the current guild."""
         pass
 
     @fifo_trigger.command(name="interval")
     async def fifo_trigger_interval(
         self, ctx: commands.Context, task_name: str, *, interval_str: TimedeltaConverter
     ):
-        """
-        Add an interval trigger to the specified task
-        """
-
+        """Add an interval trigger to the specified task"""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()  # Will set the channel and author
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         result = await task.add_trigger("interval", interval_str)
         if not result:
-            await ctx.maybe_send_embed(
-                "Failed to add an interval trigger to this task, see console for logs"
-            )
+            await ctx.maybe_send_embed("Failed to add an interval trigger to this task, see console for logs")
             return
         await task.save_data()
         job: Job = await self._process_task(task)
@@ -637,26 +581,19 @@ class FIFO(Cog):
     async def fifo_trigger_relative(
         self, ctx: commands.Context, task_name: str, *, time_from_now: TimedeltaConverter
     ):
-        """
-        Add a "run once" trigger at a time relative from now to the specified task
-        """
-
+        """Add a "run once" trigger at a time relative from now to the specified task"""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         time_to_run = datetime.now(pytz.utc) + time_from_now
 
         result = await task.add_trigger("date", time_to_run, time_to_run.tzinfo)
         if not result:
-            await ctx.maybe_send_embed(
-                "Failed to add a date trigger to this task, see console for logs"
-            )
+            await ctx.maybe_send_embed("Failed to add a date trigger to this task, see console for logs")
             return
 
         await task.save_data()
@@ -671,26 +608,19 @@ class FIFO(Cog):
     async def fifo_trigger_date(
         self, ctx: commands.Context, task_name: str, *, datetime_str: DatetimeConverter
     ):
-        """
-        Add a "run once" datetime trigger to the specified task
-        """
-
+        """Add a "run once" datetime trigger to the specified task"""
         task = Task(task_name, ctx.guild.id, self.config, bot=self.bot)
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         maybe_tz = await self._get_tz(ctx.author)
 
         result = await task.add_trigger("date", datetime_str, maybe_tz)
         if not result:
-            await ctx.maybe_send_embed(
-                "Failed to add a date trigger to this task, see console for logs"
-            )
+            await ctx.maybe_send_embed("Failed to add a date trigger to this task, see console for logs")
             return
 
         await task.save_data()
@@ -719,9 +649,7 @@ class FIFO(Cog):
         await task.load_from_config()
 
         if task.data is None:
-            await ctx.maybe_send_embed(
-                f"Task by the name of {task_name} is not found in this guild"
-            )
+            await ctx.maybe_send_embed(f"Task by the name of {task_name} is not found in this guild")
             return
 
         if optional_tz is None:
@@ -729,9 +657,7 @@ class FIFO(Cog):
 
         result = await task.add_trigger("cron", cron_str, optional_tz)
         if not result:
-            await ctx.maybe_send_embed(
-                "Failed to add a cron trigger to this task, see console for logs"
-            )
+            await ctx.maybe_send_embed("Failed to add a cron trigger to this task, see console for logs")
             return
 
         await task.save_data()
