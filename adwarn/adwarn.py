@@ -8,7 +8,7 @@ import uuid
 import asyncio
 
 
-class AdWarn(Cog):
+class Adwarn(Cog):
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -17,6 +17,12 @@ class AdWarn(Cog):
             warnings_issued={}, mod_warnings={}, softban_duration=120,
             timeout_duration=120, weekly_stats={}, monthly_stats={})
         self.config.register_member(warnings=[], untimeout_time=None)
+
+        mod = discord.PartialEmoji(name="mod", id="1297394034624434246")
+        reason1 = discord.PartialEmoji(name="reason", id="1297394094263238707")
+        channel = discord.PartialEmoji(name="channel", id="1297394076672462858")
+        user = discord.PartialEmoji(name="user", id="1297394126173507624")
+        time = discord.PartialEmoji(name="time", id="1297394056023769118")
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -50,30 +56,24 @@ class AdWarn(Cog):
                 await self.config.guild(ctx.guild).mod_warnings.set(
                     mod_warnings)
                 timestamp = int(warning_time.timestamp())
-                embed = discord.Embed(title='New AdWarn', color=discord.
+                embed = discord.Embed(title='New Adwarn', color=discord.
                     Color.red())
-                embed.add_field(name='<:user:1270075210216902677> | User',
+                embed.add_field(name=f'{user} | User',
                     value=user.mention, inline=True)
                 embed.add_field(name=
-                    '<:channel:1270075226566295623> | Warned In', value=ctx
+                    f'{channel} | Warned In', value=ctx
                     .channel.mention, inline=True)
                 embed.add_field(name=
-                    '<:reason:1270075201694203956> | Reason', value=reason,
+                    '{reason1} | Reason', value=reason,
                     inline=False)
                 embed.add_field(name=
-                    '<:mod:1270075235785506847> | Moderator', value=ctx.
+                    f'{mod} | Moderator', value=ctx.
                     author.mention, inline=True)
-                embed.add_field(name='<:time:1273366594877259858> | Time',
+                embed.add_field(name=f'{time} | Time',
                     value=f'<t:{timestamp}:F>', inline=False)
                 embed.set_footer(text=f'Total warnings: {len(warnings)}')
                 await warn_channel.send(embed=embed)
                 await warn_channel.send(f'{user.mention}')
-                confirmation_embed = discord.Embed(title='Warning Issued',
-                    description=
-                    f'{user.mention} has been warned for: {reason} in {ctx.channel.mention}'
-                    , color=discord.Color.green())
-                confirmation_message = await ctx.send(embed=confirmation_embed)
-                await confirmation_message.delete(delay=3)
                 await self.check_thresholds(ctx, user, len(warnings))
             else:
                 error_embed = discord.Embed(title='Error 404', description=
@@ -175,16 +175,16 @@ class AdWarn(Cog):
             if warn_channel_id:
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
-                    embed = discord.Embed(title='AdWarn Removed', color=
+                    embed = discord.Embed(title='Adwarn Removed', color=
                         discord.Color.green())
                     embed.add_field(name=
-                        '<:reason:1270075201694203956> | Warning', value=
+                        f'{reason1} | Warning', value=
                         warning_to_remove['reason'], inline=False)
                     embed.add_field(name=
-                        '<:mod:1270075235785506847> | Moderator', value=ctx
+                        f'{mod} | Moderator', value=ctx
                         .author.mention, inline=True)
                     embed.add_field(name=
-                        '<:time:1273366594877259858> | Removed Time', value
+                        f'{time} | Removed Time', value
                         =f'<t:{int(discord.utils.utcnow().timestamp())}:F>',
                         inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -218,9 +218,9 @@ class AdWarn(Cog):
             timestamp = int(datetime.fromisoformat(warning['time']).timestamp()
                 )
             embed.add_field(name=f"Warning ID: {warning['id']}", value=
-                f"""<:reason:1270075201694203956> | Reason: {warning['reason']}
-<:mod:1270075235785506847> | Moderator: <@{warning['moderator']}>
-<:time:1273366594877259858> | Time: <t:{timestamp}:F>"""
+                f"""{reason1} | Reason: {warning['reason']}
+{mod} | Moderator: <@{warning['moderator']}>
+{time} | Time: <t:{timestamp}:F>"""
                 , inline=False)
         await ctx.send(embed=embed)
 
@@ -236,13 +236,13 @@ class AdWarn(Cog):
             if warn_channel:
                 embed = discord.Embed(title='All Warnings Cleared', color=
                     discord.Color.green())
-                embed.add_field(name='<:user:1268083437768671303> | User',
+                embed.add_field(name=f'{user} | User',
                     value=user.mention, inline=True)
                 embed.add_field(name=
-                    '<:mod:1270075235785506847> | Moderator', value=ctx.
+                    f'{mod} | Moderator', value=ctx.
                     author.mention, inline=True)
                 embed.add_field(name=
-                    '<:time:1273366594877259858> | Cleared Time', value=
+                    f'{time} | Cleared Time', value=
                     f'<t:{int(discord.utils.utcnow().timestamp())}:F>',
                     inline=True)
                 await warn_channel.send(embed=embed)
@@ -270,16 +270,16 @@ class AdWarn(Cog):
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
                     embed = discord.Embed(title=
-                        'Most Recent AdWarn Removed', color=discord.Color.
+                        'Most Recent Adwarn Removed', color=discord.Color.
                         green())
                     embed.add_field(name=
-                        '<:reason:1270075201694203956> | Warning', value=
+                        f'{reason1} | Warning', value=
                         removed_warning['reason'], inline=False)
                     embed.add_field(name=
-                        '<:mod:1270075235785506847> | Moderator', value=ctx
+                        f'{mod} | Moderator', value=ctx
                         .author.mention, inline=True)
                     embed.add_field(name=
-                        '<:time:1273366594877259858> | Removed Time', value
+                        f'{time} | Removed Time', value
                         =f'<t:{int(discord.utils.utcnow().timestamp())}:F>',
                         inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -315,16 +315,16 @@ class AdWarn(Cog):
             if warn_channel_id:
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
-                    embed = discord.Embed(title='AdWarn Edited', color=
+                    embed = discord.Embed(title='Adwarn Edited', color=
                         discord.Color.orange())
                     embed.add_field(name=
-                        '<:reason:1270075201694203956> | Warning', value=
+                        f'{reason1} | Warning', value=
                         new_reason, inline=False)
                     embed.add_field(name=
-                        '<:mod:1270075235785506847> | Moderator', value=ctx
+                        f'{mod} | Moderator', value=ctx
                         .author.mention, inline=True)
                     embed.add_field(name=
-                        '<:time:1273366594877259858> | Edited Time', value=
+                        f'{time} | Edited Time', value=
                         f'<t:{int(discord.utils.utcnow().timestamp())}:F>',
                         inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -381,11 +381,11 @@ class AdWarn(Cog):
                 timestamp = int(datetime.fromisoformat(warning['time']).
                     timestamp())
                 embed.add_field(name=
-                    f"<:user:1268083437768671303> | User Warned: {warned_user} (ID: {warning['user']})"
+                    f"{user} | User Warned: {warned_user} (ID: {warning['user']})"
                     , value=
-                    f"""<:reason:1270075201694203956> | Reason: {warning['reason']}
-<:time:1273366594877259858> | Time: <t:{timestamp}:F>
-<:channel:1270075226566295623> | Channel: <#{warning['channel']}>"""
+                    f"""{reason1} | Reason: {warning['reason']}
+{time} | Time: <t:{timestamp}:F>
+{channel} | Channel: <#{warning['channel']}>"""
                     , inline=False)
         else:
             embed = discord.Embed(title=
@@ -438,11 +438,11 @@ class AdWarn(Cog):
         if channel_id:
             channel = self.bot.get_channel(channel_id)
             embed.add_field(name=
-                '<:channel:1270075226566295623> | Current Warning Channel',
+                f'{channel} | Current Warning Channel',
                 value=channel.mention, inline=False)
         else:
             embed.add_field(name=
-                '<:channel:1270075226566295623> | Current Warning Channel',
+                f'{channel} | Current Warning Channel',
                 value='Not set', inline=False)
         if tholds:
             threshold_list = '\n'.join([
@@ -502,8 +502,8 @@ class AdWarn(Cog):
         custom_emoji = '<a:winner:1269746569872412785>'
         join_end_time = discord.utils.utcnow() + timedelta(seconds=60)
         join_end_timestamp = int(join_end_time.timestamp())
-        embed = discord.Embed(title='AdWarn Race Join', description=
-            f"""React with the custom emoji to join the AdWarn race!
+        embed = discord.Embed(title='Adwarn Race Join', description=
+            f"""React with the custom emoji to join the Adwarn race!
  To join, click the reaction <t:{join_end_timestamp}:R>."""
             , color=discord.Color.gold())
         join_message = await ctx.send(embed=embed)
@@ -541,7 +541,7 @@ Time's up! The race is starting now."""
             return
         race_start_time = discord.utils.utcnow()
         race_end_time = race_start_time + timedelta(minutes=duration)
-        embed = discord.Embed(title='AdWarn Race Started', color=discord.
+        embed = discord.Embed(title='Adwarn Race Started', color=discord.
             Color.gold())
         embed.add_field(name='Starts', value=
             f'<t:{int(race_start_time.timestamp())}:R>', inline=True)
@@ -563,7 +563,7 @@ Time's up! The race is starting now."""
             results[participant] = warnings
         sorted_results = sorted(results.items(), key=lambda item: item[1],
             reverse=True)
-        embed.title = 'AdWarn Race Results'
+        embed.title = 'Adwarn Race Results'
         embed.description = (
             f'The race lasted for {duration} minutes. Here are the results:')
         embed.clear_fields()
