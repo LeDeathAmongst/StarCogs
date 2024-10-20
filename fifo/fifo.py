@@ -148,7 +148,7 @@ class FIFO(Cog):
     """
 
     def __init__(self, bot: Red):
-        super().__init__()
+        super().__init__(bot)
         self.bot = bot
         self.config = Config.get_conf(self, identifier=70737079, force_registration=True)
 
