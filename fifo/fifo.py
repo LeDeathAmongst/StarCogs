@@ -24,6 +24,73 @@ schedule_log.setLevel(logging.DEBUG)
 
 log = logging.getLogger("red.star.fifo")
 
+class TaskCreationModal(discord.ui.Modal, title="Create Scheduled Task"):
+    task_name = discord.ui.TextInput(label="Task Name", placeholder="Enter a name")
+    trigger_type = discord.ui.Select(
+        placeholder="Select trigger type",
+        options=[
+            discord.SelectOption(label="Relative", description="Run once after a specified time from now"),
+            discord.SelectOption(label="Cron", description="Run on a schedule using cron syntax"),
+            discord.SelectOption(label="Interval", description="Run repeatedly at fixed intervals")
+        ]
+    )
+    trigger_value = discord.ui.TextInput(label="Trigger Value", placeholder="Enter duration/cron string")
+
+    def __init__(self, cog, message_content):
+        super().__init__()
+        self.cog = cog
+        self.message_content = message_content
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
+        task_name = self.task_name.value
+        trigger_type = self.trigger_type.values[0]
+        trigger_value = self.trigger_value.value
+
+        ctx = await interaction.client.get_context(interaction)
+
+        # First, create the task
+        await ctx.invoke(self.cog.fifo_add, task_name=task_name, command_to_execute=self.message_content)
+
+        # Then, add the trigger
+        if trigger_type == "Relative":
+            try:
+                time_from_now = await TimedeltaConverter().convert(ctx, trigger_value)
+                await ctx.invoke(self.cog.fifo_trigger_relative, task_name=task_name, time_from_now=time_from_now)
+            except commands.BadArgument:
+                await interaction.followup.send("Invalid relative time format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
+                return
+        elif trigger_type == "Cron":
+            try:
+                cron_str = await CronConverter().convert(ctx, trigger_value)
+                await ctx.invoke(self.cog.fifo_trigger_cron, task_name=task_name, cron_str=cron_str)
+            except commands.BadArgument:
+                await interaction.followup.send("Invalid cron string. Please use a valid cron format.", ephemeral=True)
+                return
+        elif trigger_type == "Interval":
+            try:
+                interval_str = await TimedeltaConverter().convert(ctx, trigger_value)
+                await ctx.invoke(self.cog.fifo_trigger_interval, task_name=task_name, interval_str=interval_str)
+            except commands.BadArgument:
+                await interaction.followup.send("Invalid interval format. Please use a valid duration (e.g., '1h30m').", ephemeral=True)
+                return
+
+        await interaction.followup.send(f"Task '{task_name}' created with a {trigger_type.lower()} trigger.", ephemeral=True)
+
+@app_commands.context_menu(name="Create Scheduled Task")
+async def create_scheduled_task_context_menu(interaction: discord.Interaction, message: discord.Message):
+    if not message.content.startswith(interaction.client.command_prefix):
+        await interaction.response.send_message("The selected message must be a command.", ephemeral=True)
+        return
+
+    cog = interaction.client.get_cog("FIFO")
+    if not cog:
+        await interaction.response.send_message("The FIFO cog is not loaded.", ephemeral=True)
+        return
+
+    modal = TaskCreationModal(cog, message.content[len(interaction.client.command_prefix):])
+    await interaction.response.send_modal(modal)
 
 async def _execute_task(**task_state):
     log.info(f"Executing {task_state.get('name')}")
@@ -95,6 +162,14 @@ class FIFO(Cog):
         self.jobstore = None
 
         self.tz_cog = None
+
+    async def cog_load(self) -> None:
+        await super().cog_load()
+        self.bot.tree.add_command(create_scheduled_task_context_menu)
+
+    async def cog_unload(self) -> None:
+        self.bot.tree.remove_command(create_scheduled_task_context_menu.name, type=create_scheduled_task_context_menu.type)
+        await super().cog_unload()
 
     async def red_delete_data_for_user(self, **kwargs):
         """Nothing to delete"""
