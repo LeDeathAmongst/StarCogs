@@ -22,7 +22,7 @@ class Adwarn(Cog):
             warnings_issued={}, mod_warnings={}, softban_duration=120,
             timeout_duration=120, weekly_stats={}, monthly_stats={})
         self.config.register_member(warnings=[], untimeout_time=None)
-        self.logs = CogsUtils.get_logger(self)
+        self.logs = CogsUtils.get_logger("Adwarn")
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
