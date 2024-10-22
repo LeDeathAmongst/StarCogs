@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config
 from typing import Optional
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 
 class SMC(Cog):
     def __init__(self, bot):
@@ -9,6 +9,8 @@ class SMC(Cog):
         self.config = Config.get_conf(self, identifier=1234567890)
         default_guild = {"channel_id": None}
         self.config.register_guild(**default_guild)
+        self.logs = CogsUtils.get_logger("SCM")
+
 
     @commands.group()
     @commands.admin_or_permissions(manage_guild=True)
