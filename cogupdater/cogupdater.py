@@ -1,10 +1,10 @@
 import os
 import re
 import shutil
-from redbot.core import commands
-from redbot.core import Config
+from redbot.core import commands, Config
+from Star_Utils import Cog
 
-class CogUpdater(commands.Cog):
+class CogUpdater(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -97,6 +97,7 @@ class CogUpdater(commands.Cog):
         new_content = []
         in_class = False
         in_init = False
+        has_init = False
         skip_block = False
         in_import_block = False
         has_star_utils_import = False
@@ -130,10 +131,11 @@ class CogUpdater(commands.Cog):
                 # Check for __init__ method
                 if 'def __init__' in line:
                     in_init = True
+                    has_init = True
 
                 # Replace super().__init__() with super().__init__(bot) in __init__ method
                 if in_init and 'super().__init__()' in line:
-                    line = line.replace('super().__init__()', 'super().__init__(bot)')
+                    line = line.replace('super().__init__()', 'super().__init__(bot=bot)')
                     updated = True
 
                 # Handle Cog.listener
@@ -189,6 +191,19 @@ class CogUpdater(commands.Cog):
                     continue
                 else:
                     new_content.insert(i, 'from Star_Utils import Cog\n')
+                    updated = True
+                    break
+
+        # Add __init__ method if it doesn't exist
+        if in_class and not has_init:
+            init_method = [
+                '    def __init__(self, bot: Red) -> None:\n',
+                '        super().__init__(bot=bot)\n'
+            ]
+            # Find the position to insert the __init__ method (after class definition)
+            for i, line in enumerate(new_content):
+                if 'class' in line and ':' in line:
+                    new_content[i+1:i+1] = init_method
                     updated = True
                     break
 
