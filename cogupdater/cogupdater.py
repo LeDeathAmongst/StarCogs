@@ -98,11 +98,14 @@ class CogUpdater(commands.Cog):
         in_class = False
         skip_block = False
         in_import_block = False
+        has_star_utils_import = False
 
         for i, line in enumerate(content):
-            # Check if we're in an import block
+            # Check if we're in an import block and for existing Star_Utils or AAA3A_utils import
             if line.strip().startswith('import ') or line.strip().startswith('from '):
                 in_import_block = True
+                if 'Star_Utils' in line or 'AAA3A_utils' in line:
+                    has_star_utils_import = True
                 new_content.append(line)
                 continue
             elif in_import_block and not (line.strip().startswith('import ') or line.strip().startswith('from ')):
@@ -154,8 +157,8 @@ class CogUpdater(commands.Cog):
             if not skip_block:
                 new_content.append(line)
 
-        # Add import statement if 'Cog' was found in class definition
-        if in_class:
+        # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
+        if in_class and not has_star_utils_import:
             for i, line in enumerate(new_content):
                 if line.strip().startswith('import ') or line.strip().startswith('from '):
                     continue
