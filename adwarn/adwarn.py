@@ -113,9 +113,9 @@ class Adwarn(Cog):
                 embed = discord.Embed(title='New Adwarn', color=discord.Color.red())
                 embed.add_field(name=f'{Emojis.USER} | User', value=user.mention, inline=True)
                 embed.add_field(name=f'{Emojis.CHANNEL} | Warned In', value=ctx.channel.mention, inline=True)
-                embed.add_field(name=f'{Emojis.REASON} | Reason', value=reason, inline=False)
+                embed.add_field(name=f'{Emojis.REASON} | Reason', value=reason, inline=True)
                 embed.add_field(name=f'{Emojis.MOD} | Moderator', value=ctx.author.mention, inline=True)
-                embed.add_field(name=f'{Emojis.TIME} | Time', value=f'<t:{timestamp}:F>', inline=False)
+                embed.add_field(name=f'{Emojis.TIME} | Time', value=f'<t:{timestamp}:F>', inline=True)
                 embed.set_footer(text=f'Total warnings: {len(warnings)}')
                 await warn_channel.send(embed=embed)
                 await warn_channel.send(f'{user.mention}')
@@ -202,7 +202,7 @@ class Adwarn(Cog):
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
                     embed = discord.Embed(title='Adwarn Removed', color=discord.Color.green())
-                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=warning_to_remove['reason'], inline=False)
+                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=warning_to_remove['reason'], inline=True)
                     embed.add_field(name=f'{Emojis.MOD} | Moderator', value=ctx.author.mention, inline=True)
                     embed.add_field(name=f'{Emojis.TIME} | Removed Time', value=f'<t:{int(discord.utils.utcnow().timestamp())}:F>', inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -229,7 +229,7 @@ class Adwarn(Cog):
                 f"""{Emojis.REASON} | Reason: {warning['reason']}
 {Emojis.MOD} | Moderator: <@{warning['moderator']}>
 {Emojis.TIME} | Time: <t:{timestamp}:F>"""
-                , inline=False)
+                , inline=True)
         await ctx.send(embed=embed)
 
     @commands.hybrid_command()
@@ -266,7 +266,7 @@ class Adwarn(Cog):
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
                     embed = discord.Embed(title='Most Recent Adwarn Removed', color=discord.Color.green())
-                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=removed_warning['reason'], inline=False)
+                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=removed_warning['reason'], inline=True)
                     embed.add_field(name=f'{Emojis.MOD} | Moderator', value=ctx.author.mention, inline=True)
                     embed.add_field(name=f'{Emojis.TIME} | Removed Time', value=f'<t:{int(discord.utils.utcnow().timestamp())}:F>', inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -295,7 +295,7 @@ class Adwarn(Cog):
                 warn_channel = self.bot.get_channel(warn_channel_id)
                 if warn_channel:
                     embed = discord.Embed(title='Adwarn Edited', color=discord.Color.orange())
-                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=new_reason, inline=False)
+                    embed.add_field(name=f'{Emojis.REASON} | Warning', value=new_reason, inline=True)
                     embed.add_field(name=f'{Emojis.MOD} | Moderator', value=ctx.author.mention, inline=True)
                     embed.add_field(name=f'{Emojis.TIME} | Edited Time', value=f'<t:{int(discord.utils.utcnow().timestamp())}:F>', inline=True)
                     embed.set_footer(text=f'Total warnings: {len(warnings)}')
@@ -320,9 +320,9 @@ class Adwarn(Cog):
         if sorted_users:
             for rank, (user_id, count) in enumerate(sorted_users[:5], start=1):
                 user = self.bot.get_user(int(user_id))
-                embed.add_field(name=f'{rank}. {user} (ID: {user_id})', value=f'Warnings Issued: {count}', inline=False)
+                embed.add_field(name=f'{rank}. {user} (ID: {user_id})', value=f'Warnings Issued: {count}', inline=True)
         else:
-            embed.add_field(name='No data available', value='No warnings have been issued yet.', inline=False)
+            embed.add_field(name='No data available', value='No warnings have been issued yet.', inline=True)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -333,7 +333,7 @@ class Adwarn(Cog):
         if str(moderator.id) in mod_warnings:
             warnings = mod_warnings[str(moderator.id)]
             embed = discord.Embed(title=f'Warnings Issued by {moderator}', color=discord.Color.blue())
-            embed.add_field(name='Total Warnings Issued', value=len(warnings), inline=False)
+            embed.add_field(name='Total Warnings Issued', value=len(warnings), inline=True)
             for warning in warnings:
                 warned_user = self.bot.get_user(warning['user'])
                 timestamp = int(datetime.fromisoformat(warning['time']).timestamp())
@@ -341,7 +341,7 @@ class Adwarn(Cog):
                     f"""{Emojis.REASON} | Reason: {warning['reason']}
 {Emojis.TIME} | Time: <t:{timestamp}:F>
 {Emojis.CHANNEL} | Channel: <#{warning['channel']}>"""
-                    , inline=False)
+                    , inline=True)
         else:
             embed = discord.Embed(title=f'{moderator} has not issued any warnings.', color=discord.Color.red())
         await ctx.send(embed=embed)
@@ -356,9 +356,9 @@ class Adwarn(Cog):
         if sorted_users:
             for rank, (user_id, count) in enumerate(sorted_users, start=1):
                 user = self.bot.get_user(int(user_id))
-                embed.add_field(name=f'{rank}. {user} (ID: {user_id})', value=f'Warnings Issued: {count}', inline=False)
+                embed.add_field(name=f'{rank}. {user} (ID: {user_id})', value=f'Warnings Issued: {count}', inline=True)
         else:
-            embed.add_field(name='No data available', value='No warnings have been issued yet.', inline=False)
+            embed.add_field(name='No data available', value='No warnings have been issued yet.', inline=True)
         await ctx.send(embed=embed)
 
     @commands.group()
@@ -383,14 +383,14 @@ class Adwarn(Cog):
         embed = discord.Embed(title='Warning System Configuration', color=discord.Color.blue())
         if channel_id:
             channel = self.bot.get_channel(channel_id)
-            embed.add_field(name=f'{Emojis.CHANNEL} | Current Warning Channel', value=channel.mention, inline=False)
+            embed.add_field(name=f'{Emojis.CHANNEL} | Current Warning Channel', value=channel.mention, inline=True)
         else:
-            embed.add_field(name=f'{Emojis.CHANNEL} | Current Warning Channel', value='Not set', inline=False)
+            embed.add_field(name=f'{Emojis.CHANNEL} | Current Warning Channel', value='Not set', inline=True)
         if tholds:
             threshold_list = '\n'.join([f"{threshold_id}: {threshold['count']} warnings -> {threshold['action']}" for threshold_id, threshold in tholds.items()])
-            embed.add_field(name='Warning Thresholds', value=threshold_list, inline=False)
+            embed.add_field(name='Warning Thresholds', value=threshold_list, inline=True)
         else:
-            embed.add_field(name='Warning Thresholds', value='No thresholds set', inline=False)
+            embed.add_field(name='Warning Thresholds', value='No thresholds set', inline=True)
         await ctx.send(embed=embed)
 
     @warnset.command()
@@ -473,7 +473,7 @@ Time's up! The race is starting now."""
         embed = discord.Embed(title='Adwarn Race Started', color=discord.Color.gold())
         embed.add_field(name='Starts', value=f'<t:{int(race_start_time.timestamp())}:R>', inline=True)
         embed.add_field(name='Ends', value=f'<t:{int(race_end_time.timestamp())}:R>', inline=True)
-        embed.add_field(name='Participants', value=participants_mentions, inline=False)
+        embed.add_field(name='Participants', value=participants_mentions, inline=True)
         race_message = await ctx.send(embed=embed)
         await asyncio.sleep(duration * 60)
         results = {}
@@ -489,5 +489,5 @@ Time's up! The race is starting now."""
         embed.description = f'The race lasted for {duration} minutes. Here are the results:'
         embed.clear_fields()
         for rank, (user, count) in enumerate(sorted_results, start=1):
-            embed.add_field(name=f'{rank}. {user}', value=f'Warnings: {count}', inline=False)
+            embed.add_field(name=f'{rank}. {user}', value=f'Warnings: {count}', inline=True)
         await race_message.edit(embed=embed)
