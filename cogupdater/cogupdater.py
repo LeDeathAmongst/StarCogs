@@ -1,10 +1,10 @@
 import os
 import re
 import shutil
-from redbot.core import commands
-from redbot.core import Config
+from redbot.core import commands, Config
+from Star_Utils import Cog
 
-class CogUpdater(commands.Cog):
+class CogUpdater(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -13,7 +13,7 @@ class CogUpdater(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def set_datapath(self, ctx, path: str):
+    async def setpath(self, ctx, path: str):
         """Set the path to the cog data directory."""
         await self.config.datapath.set(path)
         backup_path = os.path.join(path, "cog_backups")
@@ -22,7 +22,7 @@ class CogUpdater(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def update_cogs(self, ctx, *, cogs: str = None):
+    async def updatecogs(self, ctx, *, cogs: str = None):
         """Update specified cogs or all cogs if none specified."""
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
@@ -58,7 +58,7 @@ class CogUpdater(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def undo_updates(self, ctx, *, cogs: str = None):
+    async def undoupdates(self, ctx, *, cogs: str = None):
         """Undo the updates made to specified cogs or all cogs if none specified."""
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
