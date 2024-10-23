@@ -103,6 +103,8 @@ class CogUpdater(commands.Cog):
             # Check if we're in an import block
             if line.strip().startswith('import ') or line.strip().startswith('from '):
                 in_import_block = True
+                new_content.append(line)
+                continue
             elif in_import_block and not (line.strip().startswith('import ') or line.strip().startswith('from ')):
                 in_import_block = False
 
@@ -154,8 +156,13 @@ class CogUpdater(commands.Cog):
 
         # Add import statement if 'Cog' was found in class definition
         if in_class:
-            new_content.insert(2, 'from Star_Utils import Cog\n')
-            updated = True
+            for i, line in enumerate(new_content):
+                if line.strip().startswith('import ') or line.strip().startswith('from '):
+                    continue
+                else:
+                    new_content.insert(i, 'from Star_Utils import Cog\n')
+                    updated = True
+                    break
 
         if updated:
             with open(filepath, 'w', encoding='utf-8') as file:
