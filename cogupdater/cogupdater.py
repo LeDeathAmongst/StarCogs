@@ -197,8 +197,8 @@ class CogUpdater(Cog):
         # Add __init__ method if it doesn't exist
         if in_class and not has_init:
             init_method = [
-                '    def __init__(self, bot: Red) -> None:\n',
-                '        super().__init__(bot=bot)\n'
+                '    def __init__(self, bot):\n',
+                '        super().__init__(bot)\n'
             ]
             # Find the position to insert the __init__ method (after class definition)
             for i, line in enumerate(new_content):
