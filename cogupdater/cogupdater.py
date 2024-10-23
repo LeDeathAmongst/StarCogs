@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from redbot.core import commands, Config
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 
 class CogUpdater(Cog):
     def __init__(self, bot):
@@ -103,7 +103,6 @@ class CogUpdater(Cog):
         skip_block = False
         in_import_block = False
         has_star_utils_import = False
-        version_added = False
         class_name = None
         file_name = os.path.basename(os.path.dirname(filepath))
 
@@ -113,6 +112,11 @@ class CogUpdater(Cog):
                 in_import_block = True
                 if 'Star_Utils' in line or 'AAA3A_utils' in line:
                     has_star_utils_import = True
+                    if 'AAA3A_utils' in line:
+                        line = line.replace('AAA3A_utils', 'Star_Utils')
+                    if 'CogsUtils' not in line:
+                        line = line.replace('import Cog', 'import Cog, CogsUtils')
+                    updated = True
                 new_content.append(line)
                 continue
             elif in_import_block and not (line.strip().startswith('import ') or line.strip().startswith('from ')):
@@ -120,11 +124,6 @@ class CogUpdater(Cog):
 
             # Skip replacements if we're in an import block
             if not in_import_block:
-                # Replace 'AAA3A_utils' with 'Star_Utils'
-                if 'AAA3A_utils' in line:
-                    line = line.replace('AAA3A_utils', 'Star_Utils')
-                    updated = True
-
                 # Check for class definition
                 if 'class' in line and ':' in line:
                     in_class = True
@@ -143,6 +142,13 @@ class CogUpdater(Cog):
                     line = line.replace('super().__init__()', 'super().__init__(bot)')
                     updated = True
 
+                # Add logger initialization in __init__ method
+                if in_init and 'super().__init__(bot)' in line:
+                    new_content.append(line)
+                    new_content.append(f'        self.logs = CogsUtils.get_logger("{class_name}")\n')
+                    updated = True
+                    continue
+
                 # Fix Cog.__init__() missing 'bot' argument
                 if 'Cog.__init__()' in line:
                     line = line.replace('Cog.__init__()', 'Cog.__init__(bot)')
@@ -159,15 +165,10 @@ class CogUpdater(Cog):
                     line = re.sub(r'\bCog\b', 'commands.Cog', line)
                     updated = True
 
-            # Handle __version__ and remove other similar attributes
-            if re.match(r'\s*__(?:author|authors|contributors|[a-z_]+)__\s*=', line):
-                if '__version__' in line:
-                    line = '__version__ = "1.0.0"\n'
-                    version_added = True
-                    updated = True
-                else:
-                    updated = True
-                    continue
+            # Edit __version__ if it exists
+            if line.strip().startswith('__version__'):
+                line = '__version__ = "1.0.0"\n'
+                updated = True
 
             # Check for format_help_for_context method
             if 'def format_help_for_context' in line:
@@ -187,26 +188,22 @@ class CogUpdater(Cog):
             if not skip_block:
                 new_content.append(line)
 
-        # Add __version__ if it wasn't found in the file
-        if not version_added:
-            new_content.insert(0, '__version__ = "1.0.0"\n')
-            updated = True
-
         # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
         if in_class and not has_star_utils_import:
             for i, line in enumerate(new_content):
                 if line.strip().startswith('import ') or line.strip().startswith('from '):
                     continue
                 else:
-                    new_content.insert(i, 'from Star_Utils import Cog\n')
+                    new_content.insert(i, 'from Star_Utils import Cog, CogsUtils\n')
                     updated = True
                     break
 
         # Add __init__ method if it doesn't exist
         if in_class and not has_init:
             init_method = [
-                '    def __init__(self, bot):\n',
-                '        super().__init__(bot)\n'
+                f'    def __init__(self, bot):\n',
+                f'        super().__init__(bot)\n',
+                f'        self.logs = CogsUtils.get_logger("{class_name}")\n'
             ]
             # Find the position to insert the __init__ method (after class definition)
             for i, line in enumerate(new_content):
@@ -218,7 +215,7 @@ class CogUpdater(Cog):
         # Special handling for __init__.py files
         if os.path.basename(filepath) == '__init__.py' and class_name:
             new_content = [
-                "from Star_Utils import Cog\n",
+                "from Star_Utils import Cog, CogsUtils\n",
                 "from redbot.core import errors\n",
                 "import importlib\n",
                 "import sys\n",
