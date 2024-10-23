@@ -1,11 +1,13 @@
 import os
 import re
 import shutil
+import discord
 from redbot.core import commands, Config
+from redbot.core.bot import Red
 from Star_Utils import Cog, CogsUtils
 
 class CogUpdater(Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
         default_global = {"datapath": "", "backup_path": ""}
@@ -18,7 +20,9 @@ class CogUpdater(Cog):
         await self.config.datapath.set(path)
         backup_path = os.path.join(path, "cog_backups")
         await self.config.backup_path.set(backup_path)
-        await ctx.send(f"Data path set to: {path}\nBackup path set to: {backup_path}")
+        embed = discord.Embed(title="Path Set", color=discord.Color.green())
+        embed.description = f"Data path set to: {path}\nBackup path set to: {backup_path}"
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.is_owner()
@@ -27,7 +31,9 @@ class CogUpdater(Cog):
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
         if not datapath:
-            await ctx.send("Please set the data path first using `setpath`.")
+            embed = discord.Embed(title="Error", color=discord.Color.red())
+            embed.description = "Please set the data path first using `setpath`."
+            await ctx.send(embed=embed)
             return
 
         os.makedirs(backup_path, exist_ok=True)
@@ -35,6 +41,7 @@ class CogUpdater(Cog):
         cog_list = [cog.strip() for cog in cogs.split(',')] if cogs else None
 
         updated_files = 0
+        updated_cogs = set()
         for root, dirs, files in os.walk(datapath):
             for file in files:
                 if file.endswith('.py'):
@@ -52,11 +59,14 @@ class CogUpdater(Cog):
 
                     if updated:
                         updated_files += 1
+                        updated_cogs.add(cog_name)
 
+        embed = discord.Embed(title="Cogs Updated", color=discord.Color.green())
         if cog_list:
-            await ctx.send(f"Updated {updated_files} files for cogs: {', '.join(cog_list)}. Backups created in {backup_path}")
+            embed.description = f"Updated {updated_files} files for cogs: {', '.join(updated_cogs)}. Backups created in {backup_path}"
         else:
-            await ctx.send(f"Updated {updated_files} files across all cogs. Backups created in {backup_path}")
+            embed.description = f"Updated {updated_files} files across all cogs. Backups created in {backup_path}"
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.is_owner()
@@ -65,12 +75,15 @@ class CogUpdater(Cog):
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
         if not datapath or not backup_path:
-            await ctx.send("Please set the data path first using `setpath`.")
+            embed = discord.Embed(title="Error", color=discord.Color.red())
+            embed.description = "Please set the data path first using `setpath`."
+            await ctx.send(embed=embed)
             return
 
         cog_list = [cog.strip() for cog in cogs.split(',')] if cogs else None
 
         restored_files = 0
+        restored_cogs = set()
         for root, dirs, files in os.walk(backup_path):
             for file in files:
                 if file.endswith('.py'):
@@ -83,13 +96,16 @@ class CogUpdater(Cog):
                     original_file = os.path.join(datapath, relative_path)
                     shutil.copy2(backup_file, original_file)
                     restored_files += 1
+                    restored_cogs.add(cog_name)
 
+        embed = discord.Embed(title="Updates Undone", color=discord.Color.green())
         if cog_list:
-            await ctx.send(f"Restored {restored_files} files for cogs: {', '.join(cog_list)}.")
+            embed.description = f"Restored {restored_files} files for cogs: {', '.join(restored_cogs)}."
         else:
-            await ctx.send(f"Restored {restored_files} files across all cogs.")
+            embed.description = f"Restored {restored_files} files across all cogs."
             shutil.rmtree(backup_path)
-            await ctx.send("Backup directory has been removed.")
+            embed.add_field(name="Backup Removed", value="Backup directory has been removed.")
+        await ctx.send(embed=embed)
 
     async def update_file(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as file:
@@ -105,9 +121,9 @@ class CogUpdater(Cog):
         has_star_utils_import = False
         class_name = None
         file_name = os.path.basename(os.path.dirname(filepath))
+        needs_cog_import = False
 
         for i, line in enumerate(content):
-            # Check if we're in an import block and for existing Star_Utils or AAA3A_utils import
             if line.strip().startswith('import ') or line.strip().startswith('from '):
                 in_import_block = True
                 if 'Star_Utils' in line or 'AAA3A_utils' in line:
@@ -122,101 +138,77 @@ class CogUpdater(Cog):
             elif in_import_block and not (line.strip().startswith('import ') or line.strip().startswith('from ')):
                 in_import_block = False
 
-            # Skip replacements if we're in an import block
             if not in_import_block:
-                # Check for class definition
                 if 'class' in line and ':' in line:
                     in_class = True
                     class_name = line.strip().split()[1].split('(')[0]
+                    if '(Cog)' in line:
+                        needs_cog_import = True
                     if 'commands.Cog' in line:
                         line = line.replace('commands.Cog', 'Cog')
                         updated = True
 
-                # Check for __init__ method
                 if 'def __init__' in line:
                     in_init = True
                     has_init = True
 
-                # Replace super().__init__() with super().__init__(bot) in __init__ method
                 if in_init and 'super().__init__()' in line:
                     line = line.replace('super().__init__()', 'super().__init__(bot)')
                     updated = True
 
-                # Add logger initialization in __init__ method
                 if in_init and 'super().__init__(bot)' in line:
                     new_content.append(line)
                     new_content.append(f'        self.logs = CogsUtils.get_logger("{class_name}")\n')
                     updated = True
                     continue
 
-                # Fix Cog.__init__() missing 'bot' argument
                 if 'Cog.__init__()' in line:
                     line = line.replace('Cog.__init__()', 'Cog.__init__(bot)')
                     updated = True
 
-                # Handle Cog.listener
                 if 'Cog.listener' in line:
                     if not line.strip().startswith('commands.Cog.listener'):
                         line = line.replace('Cog.listener', 'commands.Cog.listener')
                         updated = True
 
-                # Replace 'Cog' with 'commands.Cog' outside of class definition
                 if not in_class and re.search(r'\bCog\b', line):
                     line = re.sub(r'\bCog\b', 'commands.Cog', line)
                     updated = True
 
-            # Edit __version__ if it exists
             if line.strip().startswith('__version__'):
                 line = '__version__ = "1.0.0"\n'
                 updated = True
 
-            # Check for format_help_for_context method
             if 'def format_help_for_context' in line:
                 skip_block = True
                 updated = True
                 continue
 
-            # If we're skipping a block and find a line that's not indented, stop skipping
             if skip_block and not line.startswith((' ', '\t')):
                 skip_block = False
 
-            # Reset in_init when leaving the __init__ method
             if in_init and not line.strip():
                 in_init = False
 
-            # Add the line if we're not skipping
             if not skip_block:
                 new_content.append(line)
 
-        # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
-        if in_class and not has_star_utils_import:
-            for i, line in enumerate(new_content):
-                if line.strip().startswith('import ') or line.strip().startswith('from '):
-                    continue
-                else:
-                    new_content.insert(i, 'from Star_Utils import Cog, CogsUtils\n')
-                    updated = True
-                    break
+        if needs_cog_import and not has_star_utils_import:
+            new_content.insert(0, 'from Star_Utils import Cog, CogsUtils\n')
+            updated = True
 
-        # Add __init__ method if it doesn't exist
         if in_class and not has_init:
             init_method = [
                 f'    def __init__(self, bot):\n',
                 f'        super().__init__(bot)\n',
                 f'        self.logs = CogsUtils.get_logger("{class_name}")\n'
             ]
-            # Find the position to insert the __init__ method (after class definition)
             for i, line in enumerate(new_content):
                 if 'class' in line and ':' in line:
                     new_content[i+1:i+1] = init_method
                     updated = True
                     break
-    # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
-        if needs_cog_import and not has_star_utils_import:
-            new_content.insert(0, 'from Star_Utils import Cog\n')
-            updated = True
 
-        # Special handling for __init__.py files
         if os.path.basename(filepath) == '__init__.py' and class_name:
             new_content = [
                 "from Star_Utils import Cog, CogsUtils\n",
