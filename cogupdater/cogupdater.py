@@ -227,17 +227,19 @@ class CogUpdater(Cog):
         with open(filepath, 'r', encoding='utf-8') as file:
             content = file.readlines()
 
-        updated = False
-        new_content = []
         class_name = None
         existing_imports = []
         file_name = os.path.basename(os.path.dirname(filepath))
 
         for line in content:
             if line.strip().startswith('from') or line.strip().startswith('import'):
-                existing_imports.append(line.strip())
+                if not line.strip().startswith('from Star_Utils') and not line.strip().startswith('import Star_Utils'):
+                    existing_imports.append(line.strip())
             if line.strip().startswith('class ') and line.strip().endswith(':'):
                 class_name = line.strip().split()[1].split('(')[0]
+
+        if not class_name:
+            return False  # No changes if we can't find the class name
 
         new_content = [
             "from Star_Utils import Cog\n",
@@ -249,9 +251,8 @@ class CogUpdater(Cog):
             "except ModuleNotFoundError:\n",
             "    raise errors.CogLoadError(\n",
             "        \"The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary.\"\n",
-            "        )\n",
-            "modules = sorted([module for module in sys.modules if module.split('.')[0] ==\n",
-            "    'Star_Utils'], reverse=True)\n",
+            "    )\n",
+            "modules = sorted([module for module in sys.modules if module.split('.')[0] == 'Star_Utils'], reverse=True)\n",
             "for module in modules:\n",
             "    try:\n",
             "        importlib.reload(sys.modules[module])\n",
@@ -264,21 +265,19 @@ class CogUpdater(Cog):
 
         # Add existing imports
         for imp in existing_imports:
-            if imp not in new_content and not imp.startswith('from Star_Utils'):
-                new_content.append(imp + '\n')
+            new_content.append(imp + '\n')
 
         new_content.extend([
             f"from .{file_name} import {class_name}\n",
+            "\n",
             "__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)\n",
-            "\n\n",
+            "\n",
             "async def setup(bot: Red) -> None:\n",
             f"    cog = {class_name}(bot)\n",
             "    await bot.add_cog(cog)\n"
         ])
 
-        if ''.join(new_content) != ''.join(content):
-            updated = True
-            with open(filepath, 'w', encoding='utf-8') as file:
-                file.writelines(new_content)
+        with open(filepath, 'w', encoding='utf-8') as file:
+            file.writelines(new_content)
 
-        return updated
+        return True
