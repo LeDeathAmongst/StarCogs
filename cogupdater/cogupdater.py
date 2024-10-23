@@ -27,7 +27,7 @@ class CogUpdater(Cog):
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
         if not datapath:
-            await ctx.send("Please set the data path first using `set_datapath`.")
+            await ctx.send("Please set the data path first using `setpath`.")
             return
 
         os.makedirs(backup_path, exist_ok=True)
@@ -38,7 +38,7 @@ class CogUpdater(Cog):
         for root, dirs, files in os.walk(datapath):
             for file in files:
                 if file.endswith('.py'):
-                    cog_name = file[:-3]
+                    cog_name = os.path.splitext(file)[0]
                     if cog_list and cog_name not in cog_list:
                         continue
 
@@ -47,7 +47,12 @@ class CogUpdater(Cog):
                     backup_file = os.path.join(backup_path, relative_path)
                     os.makedirs(os.path.dirname(backup_file), exist_ok=True)
                     shutil.copy2(filepath, backup_file)
-                    updated = await self.update_file(filepath)
+
+                    if file == '__init__.py':
+                        updated = await self.update_init_file(filepath)
+                    else:
+                        updated = await self.update_file(filepath)
+
                     if updated:
                         updated_files += 1
 
@@ -63,7 +68,7 @@ class CogUpdater(Cog):
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
         if not datapath or not backup_path:
-            await ctx.send("Please set the data path first using `set_datapath`.")
+            await ctx.send("Please set the data path first using `setpath`.")
             return
 
         cog_list = [cog.strip() for cog in cogs.split(',')] if cogs else None
@@ -135,8 +140,9 @@ class CogUpdater(Cog):
 
                 # Replace super().__init__() with super().__init__(bot) in __init__ method
                 if in_init and 'super().__init__()' in line:
-                    line = line.replace('super().__init__()', 'super().__init__(bot=bot)')
+                    line = line.replace('super().__init__()', 'super().__init__(bot)')
                     updated = True
+
                 # Fix Cog.__init__() missing 'bot' argument
                 if 'Cog.__init__()' in line:
                     line = line.replace('Cog.__init__()', 'Cog.__init__(bot)')
@@ -210,6 +216,33 @@ class CogUpdater(Cog):
                     new_content[i+1:i+1] = init_method
                     updated = True
                     break
+
+        if updated:
+            with open(filepath, 'w', encoding='utf-8') as file:
+                file.writelines(new_content)
+
+        return updated
+
+    async def update_init_file(self, filepath):
+        with open(filepath, 'r', encoding='utf-8') as file:
+            content = file.readlines()
+
+        updated = False
+        new_content = []
+        class_name = None
+
+        for line in content:
+            if line.strip().startswith('class ') and line.strip().endswith(':'):
+                class_name = line.strip().split()[1].split('(')[0]
+
+            if 'bot.add_cog' in line:
+                if class_name:
+                    new_line = f"    await bot.add_cog({class_name}(bot))\n"
+                    if new_line != line:
+                        line = new_line
+                        updated = True
+
+            new_content.append(line)
 
         if updated:
             with open(filepath, 'w', encoding='utf-8') as file:
