@@ -99,6 +99,7 @@ class CogUpdater(commands.Cog):
         skip_block = False
         in_import_block = False
         has_star_utils_import = False
+        version_added = False
 
         for i, line in enumerate(content):
             # Check if we're in an import block and for existing Star_Utils or AAA3A_utils import
@@ -138,10 +139,15 @@ class CogUpdater(commands.Cog):
                     line = re.sub(r'\bCog\b', 'commands.Cog', line)
                     updated = True
 
-            # Remove lines with __author__, __authors__, __version__, __contributors__, or similar
-            if re.match(r'\s*__(?:author|authors|version|contributors|[a-z_]+)__\s*=', line):
-                updated = True
-                continue
+            # Handle __version__ and remove other similar attributes
+            if re.match(r'\s*__(?:author|authors|contributors|[a-z_]+)__\s*=', line):
+                if '__version__' in line:
+                    line = '__version__ = "1.0.0"\n'
+                    version_added = True
+                    updated = True
+                else:
+                    updated = True
+                    continue
 
             # Check for format_help_for_context method
             if 'def format_help_for_context' in line:
@@ -156,6 +162,11 @@ class CogUpdater(commands.Cog):
             # Add the line if we're not skipping
             if not skip_block:
                 new_content.append(line)
+
+        # Add __version__ if it wasn't found in the file
+        if not version_added:
+            new_content.insert(0, '__version__ = "1.0.0"\n')
+            updated = True
 
         # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
         if in_class and not has_star_utils_import:
