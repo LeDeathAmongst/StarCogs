@@ -48,10 +48,7 @@ class CogUpdater(Cog):
                     os.makedirs(os.path.dirname(backup_file), exist_ok=True)
                     shutil.copy2(filepath, backup_file)
 
-                    if file == '__init__.py':
-                        updated = await self.update_init_file(filepath)
-                    else:
-                        updated = await self.update_file(filepath)
+                    updated = await self.update_file(filepath)
 
                     if updated:
                         updated_files += 1
@@ -107,6 +104,8 @@ class CogUpdater(Cog):
         in_import_block = False
         has_star_utils_import = False
         version_added = False
+        class_name = None
+        file_name = os.path.basename(os.path.dirname(filepath))
 
         for i, line in enumerate(content):
             # Check if we're in an import block and for existing Star_Utils or AAA3A_utils import
@@ -129,6 +128,7 @@ class CogUpdater(Cog):
                 # Check for class definition
                 if 'class' in line and ':' in line:
                     in_class = True
+                    class_name = line.strip().split()[1].split('(')[0]
                     if 'commands.Cog' in line:
                         line = line.replace('commands.Cog', 'Cog')
                         updated = True
@@ -150,11 +150,9 @@ class CogUpdater(Cog):
 
                 # Handle Cog.listener
                 if 'Cog.listener' in line:
-                    if in_class:
+                    if not line.strip().startswith('commands.Cog.listener'):
                         line = line.replace('Cog.listener', 'commands.Cog.listener')
-                    else:
-                        line = line.replace('Cog.listener', 'commands.Cog.listener')
-                    updated = True
+                        updated = True
 
                 # Replace 'Cog' with 'commands.Cog' outside of class definition
                 if not in_class and re.search(r'\bCog\b', line):
@@ -217,67 +215,40 @@ class CogUpdater(Cog):
                     updated = True
                     break
 
+        # Special handling for __init__.py files
+        if os.path.basename(filepath) == '__init__.py' and class_name:
+            new_content = [
+                "from Star_Utils import Cog\n",
+                "from redbot.core import errors\n",
+                "import importlib\n",
+                "import sys\n",
+                "try:\n",
+                "    import Star_Utils\n",
+                "except ModuleNotFoundError:\n",
+                "    raise errors.CogLoadError(\n",
+                "        \"The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary.\"\n",
+                "    )\n",
+                "modules = sorted([module for module in sys.modules if module.split('.')[0] == 'Star_Utils'], reverse=True)\n",
+                "for module in modules:\n",
+                "    try:\n",
+                "        importlib.reload(sys.modules[module])\n",
+                "    except ModuleNotFoundError:\n",
+                "        pass\n",
+                "del Star_Utils\n",
+                "from redbot.core.bot import Red\n",
+                "from redbot.core.utils import get_end_user_data_statement\n",
+                f"from .{file_name} import {class_name}\n",
+                "\n",
+                "__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)\n",
+                "\n",
+                "async def setup(bot: Red) -> None:\n",
+                f"    cog = {class_name}(bot)\n",
+                "    await bot.add_cog(cog)\n"
+            ]
+            updated = True
+
         if updated:
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.writelines(new_content)
 
         return updated
-
-    async def update_init_file(self, filepath):
-        with open(filepath, 'r', encoding='utf-8') as file:
-            content = file.readlines()
-
-        class_name = None
-        existing_imports = []
-        file_name = os.path.basename(os.path.dirname(filepath))
-
-        for line in content:
-            if line.strip().startswith('from') or line.strip().startswith('import'):
-                if not line.strip().startswith('from Star_Utils') and not line.strip().startswith('import Star_Utils'):
-                    existing_imports.append(line.strip())
-            if line.strip().startswith('class ') and line.strip().endswith(':'):
-                class_name = line.strip().split()[1].split('(')[0]
-
-        if not class_name:
-            return False  # No changes if we can't find the class name
-
-        new_content = [
-            "from Star_Utils import Cog\n",
-            "from redbot.core import errors\n",
-            "import importlib\n",
-            "import sys\n",
-            "try:\n",
-            "    import Star_Utils\n",
-            "except ModuleNotFoundError:\n",
-            "    raise errors.CogLoadError(\n",
-            "        \"The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary.\"\n",
-            "    )\n",
-            "modules = sorted([module for module in sys.modules if module.split('.')[0] == 'Star_Utils'], reverse=True)\n",
-            "for module in modules:\n",
-            "    try:\n",
-            "        importlib.reload(sys.modules[module])\n",
-            "    except ModuleNotFoundError:\n",
-            "        pass\n",
-            "del Star_Utils\n",
-            "from redbot.core.bot import Red\n",
-            "from redbot.core.utils import get_end_user_data_statement\n",
-        ]
-
-        # Add existing imports
-        for imp in existing_imports:
-            new_content.append(imp + '\n')
-
-        new_content.extend([
-            f"from .{file_name} import {class_name}\n",
-            "\n",
-            "__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)\n",
-            "\n",
-            "async def setup(bot: Red) -> None:\n",
-            f"    cog = {class_name}(bot)\n",
-            "    await bot.add_cog(cog)\n"
-        ])
-
-        with open(filepath, 'w', encoding='utf-8') as file:
-            file.writelines(new_content)
-
-        return True
