@@ -4,9 +4,9 @@ import shutil
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog, CogsUtils
+from Star_Utils import Cog as StarCog, CogsUtils
 
-class CogUpdater(Cog):
+class CogUpdater(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -167,16 +167,19 @@ class CogUpdater(Cog):
                     updated = True
 
                 if 'Cog.listener' in line:
+                    # Remove all 'commands.' prefixes
+                    line = re.sub(r'(commands\.)+', '', line)
+                    # Add a single 'commands.' prefix if it's not already there
                     if not line.strip().startswith('commands.Cog.listener'):
                         line = line.replace('Cog.listener', 'commands.Cog.listener')
-                        updated = True
+                    updated = True
 
                 if not in_class and re.search(r'\bCog\b', line):
                     line = re.sub(r'\bCog\b', 'commands.Cog', line)
                     updated = True
 
-            if line.strip().startswith('    __version__'):
-                line = '    __version__ = "1.0.0"\n'
+            if line.strip().startswith('__version__'):
+                line = '__version__ = "1.0.0"\n'
                 updated = True
 
             if 'def format_help_for_context' in line:
