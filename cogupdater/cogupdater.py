@@ -211,6 +211,10 @@ class CogUpdater(Cog):
                     new_content[i+1:i+1] = init_method
                     updated = True
                     break
+    # Add import statement if 'Cog' was found in class definition and no existing Star_Utils import
+        if needs_cog_import and not has_star_utils_import:
+            new_content.insert(0, 'from Star_Utils import Cog\n')
+            updated = True
 
         # Special handling for __init__.py files
         if os.path.basename(filepath) == '__init__.py' and class_name:
