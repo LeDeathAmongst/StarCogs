@@ -175,8 +175,8 @@ class CogUpdater(Cog):
                     line = re.sub(r'\bCog\b', 'commands.Cog', line)
                     updated = True
 
-            if line.strip().startswith('__version__'):
-                line = '__version__ = "1.0.0"\n'
+            if line.strip().startswith('    __version__'):
+                line = '    __version__ = "1.0.0"\n'
                 updated = True
 
             if 'def format_help_for_context' in line:
