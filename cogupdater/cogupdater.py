@@ -1,10 +1,10 @@
 import os
 import re
 import shutil
-from redbot.core import commands, Config
-from Star_Utils import Cog
+from redbot.core import commands
+from redbot.core import Config
 
-class CogUpdater(Cog):
+class CogUpdater(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -13,7 +13,7 @@ class CogUpdater(Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def setpath(self, ctx, path: str):
+    async def set_datapath(self, ctx, path: str):
         """Set the path to the cog data directory."""
         await self.config.datapath.set(path)
         backup_path = os.path.join(path, "cog_backups")
@@ -22,7 +22,7 @@ class CogUpdater(Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def updatecogs(self, ctx, *, cogs: str = None):
+    async def update_cogs(self, ctx, *, cogs: str = None):
         """Update specified cogs or all cogs if none specified."""
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
@@ -58,7 +58,7 @@ class CogUpdater(Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def undoupdates(self, ctx, *, cogs: str = None):
+    async def undo_updates(self, ctx, *, cogs: str = None):
         """Undo the updates made to specified cogs or all cogs if none specified."""
         datapath = await self.config.datapath()
         backup_path = await self.config.backup_path()
@@ -96,6 +96,7 @@ class CogUpdater(Cog):
         updated = False
         new_content = []
         in_class = False
+        in_init = False
         skip_block = False
         in_import_block = False
         has_star_utils_import = False
@@ -125,6 +126,15 @@ class CogUpdater(Cog):
                     if 'commands.Cog' in line:
                         line = line.replace('commands.Cog', 'Cog')
                         updated = True
+
+                # Check for __init__ method
+                if 'def __init__' in line:
+                    in_init = True
+
+                # Replace super().__init__() with super().__init__(bot) in __init__ method
+                if in_init and 'super().__init__()' in line:
+                    line = line.replace('super().__init__()', 'super().__init__(bot)')
+                    updated = True
 
                 # Handle Cog.listener
                 if 'Cog.listener' in line:
@@ -158,6 +168,10 @@ class CogUpdater(Cog):
             # If we're skipping a block and find a line that's not indented, stop skipping
             if skip_block and not line.startswith((' ', '\t')):
                 skip_block = False
+
+            # Reset in_init when leaving the __init__ method
+            if in_init and not line.strip():
+                in_init = False
 
             # Add the line if we're not skipping
             if not skip_block:
