@@ -137,6 +137,10 @@ class CogUpdater(Cog):
                 if in_init and 'super().__init__()' in line:
                     line = line.replace('super().__init__()', 'super().__init__(bot=bot)')
                     updated = True
+                # Fix Cog.__init__() missing 'bot' argument
+                if 'Cog.__init__()' in line:
+                    line = line.replace('Cog.__init__()', 'Cog.__init__(bot)')
+                    updated = True
 
                 # Handle Cog.listener
                 if 'Cog.listener' in line:
