@@ -30,7 +30,6 @@ class CogUpdater(commands.Cog):
             await ctx.send("Please set the data path first using `set_datapath`.")
             return
 
-        # Create backup directory
         os.makedirs(backup_path, exist_ok=True)
 
         cog_list = [cog.strip() for cog in cogs.split(',')] if cogs else None
@@ -39,7 +38,7 @@ class CogUpdater(commands.Cog):
         for root, dirs, files in os.walk(datapath):
             for file in files:
                 if file.endswith('.py'):
-                    cog_name = file[:-3]  # Remove .py extension
+                    cog_name = file[:-3]
                     if cog_list and cog_name not in cog_list:
                         continue
 
@@ -73,7 +72,7 @@ class CogUpdater(commands.Cog):
         for root, dirs, files in os.walk(backup_path):
             for file in files:
                 if file.endswith('.py'):
-                    cog_name = file[:-3]  # Remove .py extension
+                    cog_name = file[:-3]
                     if cog_list and cog_name not in cog_list:
                         continue
 
@@ -87,7 +86,6 @@ class CogUpdater(commands.Cog):
             await ctx.send(f"Restored {restored_files} files for cogs: {', '.join(cog_list)}.")
         else:
             await ctx.send(f"Restored {restored_files} files across all cogs.")
-            # Remove the entire backup directory only if restoring all cogs
             shutil.rmtree(backup_path)
             await ctx.send("Backup directory has been removed.")
 
@@ -97,7 +95,8 @@ class CogUpdater(commands.Cog):
 
         updated = False
         new_content = []
-        cog_in_class = False
+        in_class = False
+        skip_block = False
 
         for i, line in enumerate(content):
             # Replace 'AAA3A_utils' with 'Star_Utils'
@@ -105,35 +104,52 @@ class CogUpdater(commands.Cog):
                 line = line.replace('AAA3A_utils', 'Star_Utils')
                 updated = True
 
-            # Check for 'commands.Cog' in class definition
-            if 'class' in line and 'commands.Cog' in line:
-                line = line.replace('commands.Cog', 'Cog')
-                cog_in_class = True
+            # Check for class definition
+            if 'class' in line and ':' in line:
+                in_class = True
+                if 'commands.Cog' in line:
+                    line = line.replace('commands.Cog', 'Cog')
+                    updated = True
+
+            # Handle Cog.listener
+            if 'Cog.listener' in line:
+                if in_class:
+                    line = line.replace('Cog.listener', 'commands.Cog.listener')
+                else:
+                    line = line.replace('Cog.listener', 'commands.Cog.listener')
                 updated = True
 
-            # Remove __author__, __version__, and __contributors__
-            if any(attr in line for attr in ['__author__', '__version__', '__contributors__']):
+            # Replace 'Cog' with 'commands.Cog' outside of class definition
+            if not in_class and re.search(r'\bCog\b', line):
+                line = re.sub(r'\bCog\b', 'commands.Cog', line)
+                updated = True
+
+            # Remove lines with __author__, __authors__, __version__, __contributors__, or similar
+            if re.match(r'\s*__(?:author|authors|version|contributors|[a-z_]+)__\s*=', line):
                 updated = True
                 continue
 
-            new_content.append(line)
+            # Check for format_help_for_context method
+            if 'def format_help_for_context' in line:
+                skip_block = True
+                updated = True
+                continue
+
+            # If we're skipping a block and find a line that's not indented, stop skipping
+            if skip_block and not line.startswith((' ', '\t')):
+                skip_block = False
+
+            # Add the line if we're not skipping
+            if not skip_block:
+                new_content.append(line)
 
         # Add import statement if 'Cog' was found in class definition
-        if cog_in_class:
+        if in_class:
             new_content.insert(2, 'from Star_Utils import Cog\n')
             updated = True
 
-        # Remove the format_help_for_context method
-        content_str = ''.join(new_content)
-        content_str = re.sub(
-            r'def format_help_for_context\(self, ctx\):.*?return info\n',
-            '',
-            content_str,
-            flags=re.DOTALL
-        )
-
         if updated:
             with open(filepath, 'w', encoding='utf-8') as file:
-                file.write(content_str)
+                file.writelines(new_content)
 
         return updated
