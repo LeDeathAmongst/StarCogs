@@ -4,9 +4,9 @@ import shutil
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from Star_Utils import Cog as StarCog, CogsUtils
+from Star_Utils import Cog, CogsUtils
 
-class CogUpdater(commands.Cog):
+class CogUpdater(Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -126,12 +126,24 @@ class CogUpdater(commands.Cog):
         for i, line in enumerate(content):
             if line.strip().startswith('import ') or line.strip().startswith('from '):
                 in_import_block = True
-                if 'Star_Utils' in line or 'AAA3A_utils' in line:
+                if line.strip().startswith('from Star_Utils import'):
                     has_star_utils_import = True
-                    if 'AAA3A_utils' in line:
-                        line = line.replace('AAA3A_utils', 'Star_Utils')
                     if 'CogsUtils' not in line:
-                        line = line.replace('import Cog', 'import Cog, CogsUtils')
+                        line = line.rstrip()
+                        if line.endswith(','):
+                            line += ' CogsUtils\n'
+                        else:
+                            line = line[:-1] + ', CogsUtils\n'
+                    updated = True
+                elif 'AAA3A_utils' in line:
+                    line = line.replace('AAA3A_utils', 'Star_Utils')
+                    has_star_utils_import = True
+                    if 'CogsUtils' not in line:
+                        line = line.rstrip()
+                        if line.endswith(','):
+                            line += ' CogsUtils\n'
+                        else:
+                            line = line[:-1] + ', CogsUtils\n'
                     updated = True
                 new_content.append(line)
                 continue
@@ -196,7 +208,7 @@ class CogUpdater(commands.Cog):
             if not skip_block:
                 new_content.append(line)
 
-        if needs_cog_import and not has_star_utils_import:
+        if (needs_cog_import and not has_star_utils_import) or not has_star_utils_import:
             new_content.insert(0, 'from Star_Utils import Cog, CogsUtils\n')
             updated = True
 
