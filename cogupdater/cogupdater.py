@@ -230,21 +230,54 @@ class CogUpdater(Cog):
         updated = False
         new_content = []
         class_name = None
+        existing_imports = []
+        file_name = os.path.basename(os.path.dirname(filepath))
 
         for line in content:
+            if line.strip().startswith('from') or line.strip().startswith('import'):
+                existing_imports.append(line.strip())
             if line.strip().startswith('class ') and line.strip().endswith(':'):
                 class_name = line.strip().split()[1].split('(')[0]
 
-            if 'bot.add_cog' in line:
-                if class_name:
-                    new_line = f"    await bot.add_cog({class_name}(bot))\n"
-                    if new_line != line:
-                        line = new_line
-                        updated = True
+        new_content = [
+            "from Star_Utils import Cog\n",
+            "from redbot.core import errors\n",
+            "import importlib\n",
+            "import sys\n",
+            "try:\n",
+            "    import Star_Utils\n",
+            "except ModuleNotFoundError:\n",
+            "    raise errors.CogLoadError(\n",
+            "        \"The needed utils to run the cog were not found. Please execute the command `[p]pipinstall git+https://github.com/LeDeathAmongst/Star_Utils.git`. A restart of the bot isn't necessary.\"\n",
+            "        )\n",
+            "modules = sorted([module for module in sys.modules if module.split('.')[0] ==\n",
+            "    'Star_Utils'], reverse=True)\n",
+            "for module in modules:\n",
+            "    try:\n",
+            "        importlib.reload(sys.modules[module])\n",
+            "    except ModuleNotFoundError:\n",
+            "        pass\n",
+            "del Star_Utils\n",
+            "from redbot.core.bot import Red\n",
+            "from redbot.core.utils import get_end_user_data_statement\n",
+        ]
 
-            new_content.append(line)
+        # Add existing imports
+        for imp in existing_imports:
+            if imp not in new_content and not imp.startswith('from Star_Utils'):
+                new_content.append(imp + '\n')
 
-        if updated:
+        new_content.extend([
+            f"from .{file_name} import {class_name}\n",
+            "__red_end_user_data_statement__ = get_end_user_data_statement(file=__file__)\n",
+            "\n\n",
+            "async def setup(bot: Red) -> None:\n",
+            f"    cog = {class_name}(bot)\n",
+            "    await bot.add_cog(cog)\n"
+        ])
+
+        if ''.join(new_content) != ''.join(content):
+            updated = True
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.writelines(new_content)
 
