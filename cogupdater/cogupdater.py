@@ -97,32 +97,41 @@ class CogUpdater(commands.Cog):
         new_content = []
         in_class = False
         skip_block = False
+        in_import_block = False
 
         for i, line in enumerate(content):
-            # Replace 'AAA3A_utils' with 'Star_Utils'
-            if 'AAA3A_utils' in line:
-                line = line.replace('AAA3A_utils', 'Star_Utils')
-                updated = True
+            # Check if we're in an import block
+            if line.strip().startswith('import ') or line.strip().startswith('from '):
+                in_import_block = True
+            elif in_import_block and not (line.strip().startswith('import ') or line.strip().startswith('from ')):
+                in_import_block = False
 
-            # Check for class definition
-            if 'class' in line and ':' in line:
-                in_class = True
-                if 'commands.Cog' in line:
-                    line = line.replace('commands.Cog', 'Cog')
+            # Skip replacements if we're in an import block
+            if not in_import_block:
+                # Replace 'AAA3A_utils' with 'Star_Utils'
+                if 'AAA3A_utils' in line:
+                    line = line.replace('AAA3A_utils', 'Star_Utils')
                     updated = True
 
-            # Handle Cog.listener
-            if 'Cog.listener' in line:
-                if in_class:
-                    line = line.replace('Cog.listener', 'commands.Cog.listener')
-                else:
-                    line = line.replace('Cog.listener', 'commands.Cog.listener')
-                updated = True
+                # Check for class definition
+                if 'class' in line and ':' in line:
+                    in_class = True
+                    if 'commands.Cog' in line:
+                        line = line.replace('commands.Cog', 'Cog')
+                        updated = True
 
-            # Replace 'Cog' with 'commands.Cog' outside of class definition
-            if not in_class and re.search(r'\bCog\b', line):
-                line = re.sub(r'\bCog\b', 'commands.Cog', line)
-                updated = True
+                # Handle Cog.listener
+                if 'Cog.listener' in line:
+                    if in_class:
+                        line = line.replace('Cog.listener', 'commands.Cog.listener')
+                    else:
+                        line = line.replace('Cog.listener', 'commands.Cog.listener')
+                    updated = True
+
+                # Replace 'Cog' with 'commands.Cog' outside of class definition
+                if not in_class and re.search(r'\bCog\b', line):
+                    line = re.sub(r'\bCog\b', 'commands.Cog', line)
+                    updated = True
 
             # Remove lines with __author__, __authors__, __version__, __contributors__, or similar
             if re.match(r'\s*__(?:author|authors|version|contributors|[a-z_]+)__\s*=', line):
