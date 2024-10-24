@@ -2,7 +2,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "StarCogs"
+project = "Starfire Documentations"
 copyright = "2023 - Present | Star"
 
 # -- General configuration ---------------------------------------------------
@@ -34,11 +34,11 @@ html_theme_options = {
 
 html_context = {
     "style": ""
-#    "site_name": 'Starfire Docs',
-#    "bot_name": 'Starfire',
-#    "prefix": ',',
-#    "invite_link": 'https://discord.com/oauth2/authorize?client_id=1275521742961508432',
-#    "support_server": 'https://discord.gg/HXdan6NnfJ',
+    "site_name": 'Starfire Docs',
+    "bot_name": 'Starfire',
+    "prefix": ',',
+    "invite_link": 'https://discord.com/oauth2/authorize?client_id=1275521742961508432',
+    "support_server": 'https://discord.gg/HXdan6NnfJ',
 }
 
 rst_epilog = """

@@ -1,8 +1,8 @@
-# StarCogs
+# Starfire Documentations
 
 This documentation is here for support. Everything you need *should* be here. If not, ask me with `/contact` or join the [support server](https://discord.gg/ggQ7GcPm7P)
 
-## Useful Links
+<!--## Useful Links
 
 * [Github Repository](https://github.com/LeDeathAmongst/StarCogs)
 
@@ -11,9 +11,9 @@ This documentation is here for support. Everything you need *should* be here. If
 - [Installation](repo_installation.md)
 - [License](repo_license.md)
 - [Support](repo_support.md)
-- [Telemetry](repo_telemetry.md)
+- [Telemetry](repo_telemetry.md)-->
 
-## Cogs Documentation
+## Feature Documentation
 
 - [Activities](cog_activities.md)
 - [AddImage](cog_addimage.md)
