@@ -1,3 +1,0 @@
-# ,hostinfo
-
- - Usage: `,hostinfo`
