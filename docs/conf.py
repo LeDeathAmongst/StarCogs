@@ -13,7 +13,7 @@ exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "topos-theme"
+html_theme = "pydata_sphyinx_theme"
 html_title = "Starfire Docs"
 
 html_theme_options = {
