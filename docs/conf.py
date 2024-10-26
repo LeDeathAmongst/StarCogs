@@ -1,4 +1,9 @@
 # Configuration file for the Sphinx documentation builder.
+import os
+import sys
+sys.path.insert(0, os.path.abspath('_themes'))
+html_theme = 'hypixel_theme'
+html_theme_path = ['_themes']
 
 # -- Project information -----------------------------------------------------
 
@@ -13,7 +18,7 @@ exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "pydata_sphinx_theme"
+# html_theme = "pydata_sphinx_theme"
 html_title = "Starfire Docs"
 
 html_theme_options = {
