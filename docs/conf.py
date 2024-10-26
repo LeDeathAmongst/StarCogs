@@ -18,6 +18,7 @@ html_title = "Starfire Docs"
 
 html_theme_options = {
     "navbar_start": ["navbar-logo"],
+    "use_edit_page_button": True,
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
     "navbar_persistent": ["search-button"],
@@ -32,6 +33,12 @@ html_theme_options = {
         {"name": "Features", "url": "features"},
         {"name": "Support", "url": "support"},
     ]
+}
+
+html_context = {
+    "github_user": "LeDeathAmongst",
+    "github_repo": "StarCogs",
+    "github_version": "master",  # or the branch name where your docs are located
 }
 
 # Source file suffix
