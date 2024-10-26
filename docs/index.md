@@ -1,19 +1,25 @@
-# Starfire Documentations
+# Starfire: Your Ultimate Discord Bot!
+
+Unleash the Power of 1,100+ Commands
+
+Starfire is more than just a bot; it's your **versatile Discord companion**. With over **1,100 commands** at your fingertips, Starfire can handle virtually **any task**, making it an **indispensable tool** for your server.
+
+## Starfire's Features:
+
+- **AI**: Experience the power of artificial intelligence integrated into your server.
+- **Anti-Nuke & Anti-Raid**: Keep your server safe and secure from malicious attacks.
+- **Fun and Games**: Enjoy a variety of fun features, including economy, slots, and the exciting Trick or Treat event for Halloween.
+- **Customization**: Tailor Starfire to your server's specific needs with extensive customization options.
+- **Comprehensive Documentation**: Easily learn and utilize Starfire's features with our detailed documentation.
+
+## Support
 
 This documentation is here for support. Everything you need *should* be here. If not, ask me with `/contact` or join the [support server](https://discord.gg/ggQ7GcPm7P)
 
-<!--## Useful Links
-
-* [Github Repository](https://github.com/LeDeathAmongst/StarCogs)
-
-## Repository
-
-- [Installation](repo_installation.md)
-- [License](repo_license.md)
-- [Support](repo_support.md)
-- [Telemetry](repo_telemetry.md)-->
-
 ## Feature Documentation
+
+<details>
+<summary>Click to expand the full list of features</summary>
 
 - [Activities](cog_activities.md)
 - [AddImage](cog_addimage.md)
@@ -295,3 +301,5 @@ This documentation is here for support. Everything you need *should* be here. If
 - [Werewolf](cog_werewolf.md)
 - [WordScramble](cog_wordscramble.md)
 - [YTDownloader](cog_ytdownloader.md)
+
+</details>
