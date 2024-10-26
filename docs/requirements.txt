@@ -1,5 +1,5 @@
 sphinx_rtd_theme
 furo
 myst-parser
-topos-theme
+pydata-sphinx-theme
 recommonmark
