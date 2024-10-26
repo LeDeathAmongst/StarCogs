@@ -17,14 +17,21 @@ html_theme = "pydata_sphinx_theme"
 html_title = "Starfire Docs"
 
 html_theme_options = {
-    'logo_only': True,
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': False,
-    # Toc options
-    'collapse_navigation': True,
-    'includehidden': False,
-    'titles_only': False,
+    "navbar_start": ["navbar-logo"],
+    "navbar_center": ["navbar-nav"],
+    "navbar_end": ["navbar-icon-links"],
+    "navbar_persistent": ["search-button"],
+    "navbar_align": "content",
+    "primary_sidebar_end": ["sidebar-ethical-ads"],
+    "article_footer_items": ["contentinfo", "last-updated", "edit-this-page"],
+    "navigation_with_keys": True,
+    "use_edit_page_button": True,
+    "show_toc_level": 2,
+    "navbar_links": [
+        {"name": "Home", "url": "index"},
+        {"name": "Features", "url": "features"},
+        {"name": "Support", "url": "support"},
+    ],
     "display_github": True,
     "github_user": "LeDeathAmongst",
     "github_repo": "StarCogs",
