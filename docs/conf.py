@@ -37,7 +37,7 @@ html_theme_options = {
 
 html_context = {
     "github_user": "LeDeathAmongst",
-    "github_repo": "StarCogs",
+    "github_repo": "StarCogs/docs",
     "github_version": "master",  # or the branch name where your docs are located
 }
 
