@@ -8,7 +8,7 @@ copyright = "2023 - Present | Star"
 # -- General configuration ---------------------------------------------------
 
 extensions = ["myst_parser","sphinx_rtd_theme"]
-# templates_path = ["_templates"]
+templates_path = ["_templates"]
 exclude_patterns = ["Thumbs.db", ".DS_Store", ".venv", "venv"]
 
 # -- Options for HTML output -------------------------------------------------
@@ -23,7 +23,7 @@ html_theme_options = {
     "navbar_persistent": ["search-button"],
     "navbar_align": "content",
     "primary_sidebar_end": ["sidebar-ethical-ads"],
-    "article_footer_items": ["contentinfo", "last-updated", "edit-this-page"],
+    "article_footer_items": ["last-updated", "edit-this-page"],
     "navigation_with_keys": True,
     "use_edit_page_button": True,
     "show_toc_level": 2,
