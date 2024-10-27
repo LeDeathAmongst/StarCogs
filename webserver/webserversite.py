@@ -1,25 +1,35 @@
 import os
 import logging
 import signal
-from flask import Flask, request, jsonify, render_template, abort
+from flask import Flask, request, jsonify, render_template, abort, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 import asyncio
 import nacl.signing
 import nacl.exceptions
 import json
 from hypercorn.config import Config
+from asgiref.wsgi import WsgiToAsgi
+import sentry_sdk
 from hypercorn.asyncio import serve
+sentry_sdk.init(dsn=None)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+asgi_app = WsgiToAsgi(app)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 # Global variables to store configurations
 bot = None
 public_key = None
 application_id = None
+
+def setup_webserver(red_bot, port, pk, app_id):
+    global bot, public_key, application_id
+    bot = red_bot
+    public_key = pk
+    application_id = app_id
 
 def verify_signature(signature: str, timestamp: str, body: str) -> bool:
     if not public_key:
@@ -66,6 +76,27 @@ def discord_webhook():
         logger.info("Responding with 400 Bad Request")
         return '', 400
 
+@app.route('/help')
+def help_page():
+    # Path to the JSON file
+    json_path = os.path.join(os.path.dirname(__file__), 'static', 'commands_data.json')
+
+    # Read the JSON file
+    with open(json_path, 'r') as file:
+        commands_data = json.load(file)
+
+    # Render the template with the commands data
+    return render_template('help.html', commands=commands_data)
+
+@app.route('/commands_data.json')
+def commands_data():
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), 'commands_data.json')
+
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
 @app.route('/webhook-logs')
 def webhook_logs():
     if not bot:
@@ -100,10 +131,10 @@ def invite_page():
     if not application_id:
         return jsonify({'error': 'Application ID not set'}), 503
     invite_links = {
-        'Main Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot',
-        'Admin Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot&permissions=8',
+        'Main Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot%20applications.commands',
+        'Admin Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot%20applications.commands&permissions=8',
         'Support Server': 'https://discord.gg/your_support_server',
-        'Universal Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot%20applications.commands'
+        'Basic Perms Invite': f'https://discord.com/oauth2/authorize?client_id={application_id}&scope=bot%20applications.commands&permissions=8'
     }
     return render_template('invite.html', invite_links=invite_links)
 
@@ -169,6 +200,6 @@ def start_webserver(red_bot, port, pk, app_id):
         loop.run_until_complete(shutdown(loop))
         logger.info("Successfully shut down the webserver.")
 
-if __name__ == '__main__':
+if __name__ == '__webserver__':
     # This is just for testing the webserver independently
-    start_webserver(None, 8000, None, None)
+    app.run(host='0.0.0.0', port=8000)
