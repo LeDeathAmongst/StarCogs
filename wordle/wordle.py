@@ -77,12 +77,12 @@ class Wordle(Cog):
 
         return None
 
-    @commands.group()
+    @commands.group(name="wordle", aliases=["w","word"])
     async def wordle(self, ctx):
         """Wordle game commands"""
         pass
 
-    @wordle.command(name="start")
+    @wordle.command(name="start", aliases=["s","go","play"])
     async def wordle_start(self, ctx):
         """Start a new Wordle game."""
         if ctx.author.id in self.games:
@@ -104,7 +104,7 @@ class Wordle(Cog):
         await ctx.send(f"New Wordle game started! You have {settings['max_tries']} tries to guess the {settings['word_length']}-letter word.")
         await self.send_wordle_image(ctx, self.games[ctx.author.id])
 
-    @wordle.command(name="guess")
+    @wordle.command(name="guess", aliases=["g","try"])
     async def wordle_guess(self, ctx, guess: str):
         """Make a guess in your active Wordle game."""
         if ctx.author.id not in self.games:
@@ -141,7 +141,7 @@ class Wordle(Cog):
         else:
             await self.send_wordle_image(ctx, game)
 
-    @wordle.command(name="settings")
+    @wordle.command(name="settings", aliases=["set","configure","config"])
     async def wordle_settings(self, ctx, setting: str, value: str):
         """Change your Wordle game settings."""
         valid_settings = {
@@ -172,7 +172,7 @@ class Wordle(Cog):
         await self.config.user(ctx.author).set_raw(setting, value=value)
         await ctx.send(f"{setting} has been set to {value}")
 
-    @wordle.command(name="stats")
+    @wordle.command(name="stats", aliases=]"statistics"])
     async def wordle_stats(self, ctx, user: discord.User = None):
         """View Wordle statistics for a user."""
         user = user or ctx.author
@@ -194,7 +194,7 @@ class Wordle(Cog):
 
         await ctx.send(embed=embed)
 
-    @wordle.command(name="leaderboard")
+    @wordle.command(name="leaderboard", aliases=["lb","top"])
     async def wordle_leaderboard(self, ctx):
         """View the Wordle leaderboard."""
         leaderboard = await self.config.leaderboard()
