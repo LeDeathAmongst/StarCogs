@@ -248,11 +248,12 @@ class Wordle(Cog):
         return image
 
     async def update_stats(self, user, won, guesses):
-        async with self.config.stats.get_raw(str(user.id), default={}) as stats:
-            stats["games_played"] = stats.get("games_played", 0) + 1
-            if won:
-                stats["games_won"] = stats.get("games_won", 0) + 1
-                stats["total_guesses"] = stats.get("total_guesses", 0) + guesses
+        stats = await self.config.stats.get_raw(str(user.id), default={})
+        stats["games_played"] = stats.get("games_played", 0) + 1
+        if won:
+            stats["games_won"] = stats.get("games_won", 0) + 1
+            stats["total_guesses"] = stats.get("total_guesses", 0) + guesses
+        await self.config.stats.set_raw(str(user.id), value=stats)
 
         async with self.config.leaderboard() as leaderboard:
             leaderboard[str(user.id)] = leaderboard.get(str(user.id), 0) + (10 if won else 1)
