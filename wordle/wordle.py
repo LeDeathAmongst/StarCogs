@@ -90,9 +90,9 @@ class Wordle(Cog):
             return
 
         settings = await self.config.user(ctx.author).all()
-        word = await self.get_random_word(settings['word_length'])
+        word = self.get_random_word(settings['word_length'])  # Remove 'await' from here
         if not word:
-            await ctx.send("Failed to get a word. Please try again later.")
+            await ctx.send(f"No words available for length {settings['word_length']}. Please choose a different word length.")
             return
 
         self.games[ctx.author.id] = {
