@@ -172,7 +172,7 @@ class Wordle(Cog):
         await self.config.user(ctx.author).set_raw(setting, value=value)
         await ctx.send(f"{setting} has been set to {value}")
 
-    @wordle.command(name="stats", aliases=]"statistics"])
+    @wordle.command(name="stats", aliases=["statistics"])
     async def wordle_stats(self, ctx, user: discord.User = None):
         """View Wordle statistics for a user."""
         user = user or ctx.author
