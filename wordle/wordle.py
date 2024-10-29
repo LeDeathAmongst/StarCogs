@@ -32,19 +32,17 @@ class Wordle(Cog):
         self.font_path = None
         self.word_lists = self.load_words_from_file()
 
-    def load_words_from_file(self):
+    def load_words_from_files(self):
         word_lists = {i: [] for i in range(3, 13)}
-        file_path = os.path.join(os.path.dirname(__file__), "wordle_words.txt")
+        words_dir = os.path.join(os.path.dirname(__file__), "wordle_words")
 
-        try:
-            with open(file_path, 'r') as file:
-                for word in file:
-                    word = word.strip().upper()
-                    length = len(word)
-                    if 3 <= length <= 12:
-                        word_lists[length].append(word)
-        except FileNotFoundError:
-            print(f"Word file not found: {file_path}")
+        for length in range(3, 13):
+            file_path = os.path.join(words_dir, f"wordle_words_{length}.txt")
+            try:
+                with open(file_path, 'r') as file:
+                    word_lists[length] = [word.strip().upper() for word in file]
+            except FileNotFoundError:
+                print(f"Word file not found: {file_path}")
 
         return word_lists
 
