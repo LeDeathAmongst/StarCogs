@@ -77,7 +77,7 @@ class Wordle(Cog):
 
         return None
 
-    @commands.group(name="wordle", aliases=["w","word"])
+    @commands.hybrid_group(name="wordle", aliases=["w","word"])
     async def wordle(self, ctx):
         """Wordle game commands"""
         pass
@@ -128,18 +128,16 @@ class Wordle(Cog):
         game["guesses"].append(guess)
         game["tries"] -= 1
 
+        await self.send_wordle_image(ctx, game)
+
         if guess == game["word"]:
             await ctx.send("Congratulations! You've guessed the word!")
-            await self.send_wordle_image(ctx, game)
             await self.update_stats(ctx.author, True, len(game['guesses']))
             del self.games[ctx.author.id]
         elif game["tries"] == 0:
             await ctx.send(f"Game over! The word was {game['word']}.")
-            await self.send_wordle_image(ctx, game)
             await self.update_stats(ctx.author, False, len(game['guesses']))
             del self.games[ctx.author.id]
-        else:
-            await self.send_wordle_image(ctx, game)
 
     @wordle.command(name="settings", aliases=["set","configure","config"])
     async def wordle_settings(self, ctx, setting: str, value: str):
@@ -238,13 +236,12 @@ class Wordle(Cog):
 
     async def create_wordle_image(self, game):
         word_length = len(game['word'])
-        width, height = word_length * 60, game['settings']['max_tries'] * 60
+        width, height = word_length * 60, 60 if not game['settings']['hard_mode'] else 120
         image = Image.new('RGB', (width, height), color='white')
         draw = ImageDraw.Draw(image)
 
         font_path = await self.fetch_google_font()
         if not font_path:
-            # Fallback to a system font if Google Font fails
             font = ImageFont.load_default()
         else:
             font = ImageFont.truetype(font_path, 36)
@@ -252,19 +249,30 @@ class Wordle(Cog):
         colors = {
             'correct': 'green' if not game['settings']['colorblind'] else 'orange',
             'present': 'yellow' if not game['settings']['colorblind'] else 'blue',
-            'absent': 'lightgray'
+            'absent': 'lightgray',
+            'unfilled': 'white'
         }
 
-        for i, guess in enumerate(game["guesses"]):
+        def draw_guess(guess, row):
             for j, letter in enumerate(guess):
-                color = colors['absent']
+                color = colors['unfilled']
                 if letter == game["word"][j]:
                     color = colors['correct']
                 elif letter in game["word"]:
                     color = colors['present']
+                elif letter != ' ':
+                    color = colors['absent']
 
-                draw.rectangle([j*60, i*60, (j+1)*60, (i+1)*60], fill=color, outline='black')
-                draw.text((j*60+20, i*60+10), letter, fill='black', font=font)
+                draw.rectangle([j*60, row*60, (j+1)*60, (row+1)*60], fill=color, outline='black')
+                if letter != ' ':
+                    draw.text((j*60+20, row*60+10), letter, fill='black', font=font)
+
+        if game['settings']['hard_mode'] and len(game["guesses"]) > 1:
+            draw_guess(game["guesses"][-2], 0)
+            draw_guess(game["guesses"][-1], 1)
+        else:
+            current_guess = game["guesses"][-1] if game["guesses"] else ' ' * word_length
+            draw_guess(current_guess, 0)
 
         return image
 
