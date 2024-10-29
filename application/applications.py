@@ -41,7 +41,8 @@ class Applications(Cog):
             "log_channel": None,
             "application_channel": None,
             "apply_message": "Select an application type from the dropdown below to start your application.",
-            "apply_message_id": None
+            "apply_message_id": None,
+            "applications_locked": False
         }
         self.config.register_guild(**default_guild)
         self.applications = {}
@@ -52,6 +53,64 @@ class Applications(Cog):
     async def appset(self, ctx: commands.Context):
         """Configure the application system."""
         pass
+
+    @appset.command(name="remove")
+    async def remove_application(self, ctx: commands.Context, app_name: str):
+        """Remove an application type and store it in memory for easy re-adding."""
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name not in app_types:
+                await ctx.send(f"Application type '{app_name}' does not exist.")
+                return
+
+            removed_app = app_types.pop(app_name)
+
+            if not hasattr(self, 'removed_apps'):
+                self.removed_apps = {}
+
+            self.removed_apps[ctx.guild.id] = self.removed_apps.get(ctx.guild.id, {})
+            self.removed_apps[ctx.guild.id][app_name] = removed_app
+
+            await ctx.send(f"Application type '{app_name}' has been removed and stored in memory.")
+
+    @appset.command(name="readd")
+    async def readd_application(self, ctx: commands.Context, app_name: str):
+        """Re-add a previously removed application type."""
+        if not hasattr(self, 'removed_apps') or ctx.guild.id not in self.removed_apps or app_name not in self.removed_apps[ctx.guild.id]:
+            await ctx.send(f"No removed application type '{app_name}' found in memory.")
+            return
+
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name in app_types:
+                await ctx.send(f"An application type named '{app_name}' already exists. Please choose a different name.")
+                return
+
+            app_types[app_name] = self.removed_apps[ctx.guild.id].pop(app_name)
+
+            if not self.removed_apps[ctx.guild.id]:
+                del self.removed_apps[ctx.guild.id]
+
+            await ctx.send(f"Application type '{app_name}' has been re-added.")
+
+    @appset.command(name="lock")
+    async def lock_applications(self, ctx: commands.Context):
+        """Lock all applications, preventing new submissions."""
+        await self.config.guild(ctx.guild).applications_locked.set(True)
+        await ctx.send("Applications are now locked. No new submissions will be accepted.")
+
+    @appset.command(name="unlock")
+    async def unlock_applications(self, ctx: commands.Context):
+        """Unlock applications, allowing new submissions."""
+        await self.config.guild(ctx.guild).applications_locked.set(False)
+        await ctx.send("Applications are now unlocked. New submissions will be accepted.")
+
+    async def start_application(self, interaction: discord.Interaction, app_type: str):
+        guild = interaction.guild
+        user = interaction.user
+
+        # Check if applications are locked
+        if await self.config.guild(guild).applications_locked():
+            await interaction.response.send_message("Applications are currently closed. Please try again later.", ephemeral=True)
+            return
 
     @appset.command(name="setlogchannel")
     async def set_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
