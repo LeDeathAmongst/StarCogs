@@ -30,20 +30,34 @@ class Wordle(Cog):
         self.games = {}
         self.session = aiohttp.ClientSession()
         self.font_path = None
-        self.logs = CogsUtils.get_logger("Wordle")
+        self.word_lists = self.load_words_from_file()
+
+    def load_words_from_file(self):
+        word_lists = {i: [] for i in range(3, 13)}
+        file_path = os.path.join(os.path.dirname(__file__), "wordle_words.txt")
+
+        try:
+            with open(file_path, 'r') as file:
+                for word in file:
+                    word = word.strip().upper()
+                    length = len(word)
+                    if 3 <= length <= 12:
+                        word_lists[length].append(word)
+        except FileNotFoundError:
+            print(f"Word file not found: {file_path}")
+
+        return word_lists
+
+    def get_random_word(self, length):
+        if length in self.word_lists and self.word_lists[length]:
+            return random.choice(self.word_lists[length])
+        else:
+            return None
  
     def cog_unload(self):
         asyncio.create_task(self.session.close())
         if self.font_path and os.path.exists(self.font_path):
             os.remove(self.font_path)
-
-    async def get_random_word(self, length):
-        async with self.session.get(f"https://random-word-api.herokuapp.com/word?length={length}") as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                return data[0].upper()
-            else:
-                return None
 
     async def fetch_google_font(self):
         if self.font_path and os.path.exists(self.font_path):
