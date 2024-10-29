@@ -143,7 +143,28 @@ class Wordle(Cog):
 
     @wordle.command(name="settings", aliases=["set","configure","config"])
     async def wordle_settings(self, ctx, setting: str, value: str):
-        """Change your Wordle game settings."""
+        """
+        Change your personal Wordle game settings.
+    
+        Parameters:
+        - setting: The setting you want to change. Valid options are:
+            - word_length: Set the length of words for your games (3-12 letters).
+            - max_tries: Set the maximum number of guesses allowed (1-20 tries).
+            - colorblind: Enable or disable colorblind mode (true/false).
+            - hard_mode: Enable or disable hard mode (true/false).
+        - value: The new value for the setting.
+
+        Examples:
+        - ,wordle settings word_length 5
+        - ,wordle settings max_tries 6
+        - ,wordle settings colorblind true
+        - ,wordle settings hard_mode false
+
+        Note:
+        - Word length and max tries must be within the specified ranges.
+        - Colorblind and hard mode settings accept only 'true' or 'false'.
+        - Settings are personal and do not affect other players.
+        """
         valid_settings = {
             "word_length": (3, 12),
             "max_tries": (1, 20),
