@@ -30,7 +30,7 @@ class Wordle(Cog):
         self.games = {}
         self.session = aiohttp.ClientSession()
         self.font_path = None
-        self.word_lists = self.load_words_from_file()
+        self.word_lists = self.load_words_from_files()
 
     def load_words_from_files(self):
         word_lists = {i: [] for i in range(3, 13)}
