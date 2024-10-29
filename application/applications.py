@@ -54,9 +54,81 @@ class Applications(Cog):
         """Configure the application system."""
         pass
 
+    @appset.group(name="edit")
+    async def edit_application(self, ctx: commands.Context):
+        """Edit an existing application type."""
+        pass
+
+    @edit_application.command(name="add")
+    async def add_question(self, ctx: commands.Context, app_name: str, index: int):
+        """Add a new question to an existing application type at the specified index."""
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name not in app_types:
+                await ctx.send(f"Application type '{app_name}' does not exist.")
+                return
+
+            questions = app_types[app_name]["questions"]
+
+            if index < 1 or index > len(questions) + 1:
+                await ctx.send(f"Invalid index. Please choose a number between 1 and {len(questions) + 1}.")
+                return
+
+            question_type = await self.get_question_type(ctx)
+            if question_type is None:
+                return
+
+            question = await self.get_question(ctx)
+            if question is None:
+                return
+
+            questions.insert(index - 1, (question, question_type))
+            await ctx.send(f"Question added at index {index} in application '{app_name}'.")
+
+    @edit_application.command(name="remove")
+    async def remove_question(self, ctx: commands.Context, app_name: str, index: int):
+        """Remove a question from an existing application type at the specified index."""
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name not in app_types:
+                await ctx.send(f"Application type '{app_name}' does not exist.")
+                return
+
+            questions = app_types[app_name]["questions"]
+
+            if index < 1 or index > len(questions):
+                await ctx.send(f"Invalid index. Please choose a number between 1 and {len(questions)}.")
+                return
+
+            removed_question = questions.pop(index - 1)
+            await ctx.send(f"Question removed from index {index} in application '{app_name}':\n{removed_question[0]}")
+
+    @edit_application.command(name="list")
+    async def list_questions(self, ctx: commands.Context, app_name: str):
+        """List all questions in an existing application type."""
+        async with self.config.guild(ctx.guild).application_types() as app_types:
+            if app_name not in app_types:
+                await ctx.send(f"Application type '{app_name}' does not exist.")
+                return
+
+            questions = app_types[app_name]["questions"]
+
+            if not questions:
+                await ctx.send(f"Application '{app_name}' has no questions.")
+                return
+
+            embed = discord.Embed(title=f"Questions for {app_name}", color=discord.Color.blue())
+            for i, (question, q_type) in enumerate(questions, 1):
+                embed.add_field(name=f"Q{i} ({q_type})", value=question, inline=False)
+
+            await ctx.send(embed=embed)
+
     @appset.command(name="remove")
-    async def remove_application(self, ctx: commands.Context, app_name: str):
-        """Remove an application type and store it in memory for easy re-adding."""
+    async def remove_application(self, ctx: commands.Context, app_name: str, permanent: bool = False):
+        """
+        Remove an application type.
+
+        If 'permanent' is not specified or is False, the application will be stored in memory for easy re-adding.
+        If 'permanent' is True, the application will be permanently deleted.
+        """
         async with self.config.guild(ctx.guild).application_types() as app_types:
             if app_name not in app_types:
                 await ctx.send(f"Application type '{app_name}' does not exist.")
@@ -64,13 +136,16 @@ class Applications(Cog):
 
             removed_app = app_types.pop(app_name)
 
-            if not hasattr(self, 'removed_apps'):
-                self.removed_apps = {}
+            if permanent:
+                await ctx.send(f"Application type '{app_name}' has been permanently removed.")
+            else:
+                if not hasattr(self, 'removed_apps'):
+                    self.removed_apps = {}
 
-            self.removed_apps[ctx.guild.id] = self.removed_apps.get(ctx.guild.id, {})
-            self.removed_apps[ctx.guild.id][app_name] = removed_app
+                self.removed_apps[ctx.guild.id] = self.removed_apps.get(ctx.guild.id, {})
+                self.removed_apps[ctx.guild.id][app_name] = removed_app
 
-            await ctx.send(f"Application type '{app_name}' has been removed and stored in memory.")
+                await ctx.send(f"Application type '{app_name}' has been removed and stored in memory for potential re-adding.")
 
     @appset.command(name="readd")
     async def readd_application(self, ctx: commands.Context, app_name: str):
