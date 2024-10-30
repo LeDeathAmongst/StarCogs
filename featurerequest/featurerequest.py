@@ -16,14 +16,22 @@ class FeatureRequest(Cog):
         self.config.register_global(**default_global)
 
     async def save_to_json(self, request_data):
-        file_path = 'feature_requests.json'
+        file_path = 'feature_requests.json'  # or 'slash_requests.json' for SlashRequest
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 data = json.load(f)
         else:
             data = []
 
-        data.append(request_data)
+        # Check if the request already exists
+        for i, request in enumerate(data):
+            if request['request_id'] == request_data['request_id']:
+            # Update existing request
+                data[i] = request_data
+                break
+        else:
+            # Add new request if not found
+            data.append(request_data)
 
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
@@ -143,14 +151,22 @@ class SlashRequest(Cog):
         self.config.register_global(**default_global)
 
     async def save_to_json(self, request_data):
-        file_path = 'slash_requests.json'
+        file_path = 'slash_requests.json'  # or 'slash_requests.json' for SlashRequest
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 data = json.load(f)
         else:
             data = []
 
-        data.append(request_data)
+        # Check if the request already exists
+        for i, request in enumerate(data):
+            if request['request_id'] == request_data['request_id']:
+            # Update existing request
+                data[i] = request_data
+                break
+        else:
+            # Add new request if not found
+            data.append(request_data)
 
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
