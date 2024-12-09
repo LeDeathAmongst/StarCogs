@@ -8,7 +8,7 @@ class LockUnlock(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log - CogsUtils.get_logger("LockUnlock")
+#        self.log - CogsUtils.get_logger("LockUnlock")
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
