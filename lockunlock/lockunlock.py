@@ -1,6 +1,6 @@
 import discord
 from redbot.core import commands
-from Star_Utils import Cog
+from Star_Utils import Cog, CogsUtils
 
 
 class LockUnlock(Cog):
