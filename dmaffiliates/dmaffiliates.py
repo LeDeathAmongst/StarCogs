@@ -5,7 +5,7 @@ import re
 
 from Star_Utils import Cog
 
-class ButtonDM(Cog):
+class DMAffiliates(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -21,7 +21,7 @@ class ButtonDM(Cog):
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
     async def dmaffiliate(self, ctx):
-        """Group command for managing ButtonDM settings."""
+        """Group command for managing DMAffiliates settings."""
         pass
 
     @dmaffiliate.command()
@@ -93,4 +93,4 @@ class ButtonDM(Cog):
                 print(f"Could not send welcome message to {member.name}.")
 
 async def setup(bot):
-    await bot.add_cog(ButtonDM(bot))
+    await bot.add_cog(DMAffiliates(bot))
