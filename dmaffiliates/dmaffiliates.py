@@ -1,56 +1,74 @@
-import discord
-from redbot.core import commands, Config
-from redbot.core.bot import Red
+from redbot.core import commands, Config, checks
+
 from Star_Utils import Cog
 
-class DMAffiliates(Cog):
-    def __init__(self, bot: Red):
+class DMAffiliate(Cog):
+    def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=9876543210)  # Replace with a unique identifier
-        self.config.register_guild(affiliates=[])
+        self.config = Config.get_conf(self, identifier=1234567890)
+
+        default_guild = {
+            "message": None,
+            "buttons": []
+        }
+
+        self.config.register_guild(**default_guild)
 
     @commands.group()
     @commands.guild_only()
-    @commands.has_permissions(administrator=True)
+    @checks.admin_or_permissions(administrator=True)
     async def dmaffiliate(self, ctx):
-        """Settings for the affiliate messages."""
+        """Group command for managing dmaffiliate settings."""
         pass
 
     @dmaffiliate.command()
-    async def add(self, ctx, *, message: str):
-        """Add a new affiliate message."""
-        async with self.config.guild(ctx.guild).affiliates() as affiliates:
-            affiliates.append(message)
-        await ctx.send("Affiliate message added.")
+    async def setmessage(self, ctx, *, message: str):
+        """Set the message to send to new members."""
+        await self.config.guild(ctx.guild).message.set(message)
+        await ctx.send("Message set!")
 
     @dmaffiliate.command()
-    async def remove(self, ctx, index: int):
-        """Remove an affiliate message by its index."""
-        async with self.config.guild(ctx.guild).affiliates() as affiliates:
-            if 0 <= index < len(affiliates):
-                affiliates.pop(index)
-                await ctx.send("Affiliate message removed.")
+    async def addbutton(self, ctx, label: str, url: str):
+        """Add a button to the message."""
+        async with self.config.guild(ctx.guild).buttons() as buttons:
+            if len(buttons) >= 25:
+                await ctx.send("You can only add up to 25 buttons.")
+                return
+            buttons.append({"label": label, "url": url})
+        await ctx.send(f"Button '{label}' added!")
+
+    @dmaffiliate.command()
+    async def clearbuttons(self, ctx):
+        """Clear all buttons."""
+        await self.config.guild(ctx.guild).buttons.set([])
+        await ctx.send("All buttons cleared!")
+
+    @dmaffiliate.command()
+    async def removebutton(self, ctx, index: int):
+        """Remove a button by its index (starting from 1)."""
+        async with self.config.guild(ctx.guild).buttons() as buttons:
+            if 1 <= index <= len(buttons):
+                removed_button = buttons.pop(index - 1)
+                await ctx.send(f"Button '{removed_button['label']}' removed!")
             else:
-                await ctx.send("Invalid index.")
+                await ctx.send("Invalid button index.")
 
-    @dmaffiliate.command()
-    async def list(self, ctx):
-        """List all affiliate messages."""
-        affiliates = await self.config.guild(ctx.guild).affiliates()
-        if affiliates:
-            messages = "\n".join(f"{i+1}. {message}" for i, message in enumerate(affiliates))
-            await ctx.send(f"Affiliate Messages:\n{messages}")
-        else:
-            await ctx.send("No affiliate messages set.")
+    @ext_commands.Cog.listener()
+    async def on_member_join(self, member):
+        guild = member.guild
+        message = await self.config.guild(guild).message()
+        buttons = await self.config.guild(guild).buttons()
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member: discord.Member):
-        """Send affiliate messages to a new member."""
-        affiliates = await self.config.guild(member.guild).affiliates()
-        if affiliates:
-            for message in affiliates:
-                try:
-                    await member.send(message)
-                except discord.Forbidden:
-                    # Handle the case where the bot can't send a DM to the user
-                    pass
+        if message and buttons:
+            view = discord.ui.View()
+            for button in buttons:
+                view.add_item(discord.ui.Button(label=button["label"], url=button["url"]))
+
+            try:
+                await member.send(content=message, view=view)
+                print(f"Sent welcome message to {member.name}.")
+            except discord.Forbidden:
+                print(f"Could not send welcome message to {member.name}.")
+
+async def setup(bot):
+    await bot.add_cog(DMAffiliate(bot))
