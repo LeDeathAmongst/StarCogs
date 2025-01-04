@@ -53,7 +53,7 @@ class DMAffiliate(Cog):
             else:
                 await ctx.send("Invalid button index.")
 
-    @ext_commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         guild = member.guild
         message = await self.config.guild(guild).message()
