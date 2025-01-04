@@ -3,15 +3,13 @@ from discord.ext import commands as ext_commands
 import discord
 import re
 
-from Star_Utils import Cog
-
-class DMAffiliates(Cog):
+class DMAffiliates(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
 
         default_guild = {
-            "message": None,
+            "welcome_message": None,
             "buttons": []
         }
 
@@ -26,23 +24,25 @@ class DMAffiliates(Cog):
 
     @dmaffiliate.command()
     async def setmessage(self, ctx, *, message: str):
-        """Set the message to send to new members."""
-        await self.config.guild(ctx.guild).message.set(message)
-        await ctx.send("Message set!")
+        """Set the welcome message to send to new members."""
+        await self.config.guild(ctx.guild).welcome_message.set(message)
+        await ctx.send("Welcome message set!")
 
     @dmaffiliate.command()
-    async def addbutton(self, ctx, label: str, url: str):
-        """Add a button to the message."""
-        if not re.match(r'^(http|https|discord)://', url):
-            await ctx.send("Invalid URL. URL must start with http, https, or discord.")
+    async def addbutton(self, ctx, label: str, *, message: str):
+        """Add buttons from a message containing links."""
+        links = re.findall(r'(http[s]?://\S+)', message)
+        if not links:
+            await ctx.send("No valid links found in the message.")
             return
 
         async with self.config.guild(ctx.guild).buttons() as buttons:
-            if len(buttons) >= 25:
-                await ctx.send("You can only add up to 25 buttons.")
-                return
-            buttons.append({"label": label, "url": url})
-        await ctx.send(f"Button '{label}' added!")
+            for url in links:
+                if len(buttons) >= 25:
+                    await ctx.send("You can only add up to 25 buttons.")
+                    return
+                buttons.append({"label": label, "url": url})
+        await ctx.send(f"Buttons for '{label}' added!")
 
     @dmaffiliate.command()
     async def clearbuttons(self, ctx):
@@ -62,32 +62,31 @@ class DMAffiliates(Cog):
 
     @dmaffiliate.command()
     async def preview(self, ctx):
-        """Preview the message with buttons."""
-        message = await self.config.guild(ctx.guild).message()
+        """Preview the welcome message with buttons."""
+        welcome_message = await self.config.guild(ctx.guild).welcome_message()
         buttons = await self.config.guild(ctx.guild).buttons()
 
-        if message and buttons:
+        if welcome_message:
+            await ctx.send(content=welcome_message)
+        else:
+            await ctx.send("No welcome message configured.")
+
+        if buttons:
             view = discord.ui.View()
             for button in buttons:
                 view.add_item(discord.ui.Button(label=button["label"], url=button["url"]))
-
-            await ctx.send(content=message, view=view)
+            await ctx.send("Here is a preview of the buttons:", view=view)
         else:
-            await ctx.send("No message or buttons configured.")
+            await ctx.send("No buttons configured.")
 
     @ext_commands.Cog.listener()
     async def on_member_join(self, member):
         guild = member.guild
-        message = await self.config.guild(guild).message()
-        buttons = await self.config.guild(guild).buttons()
+        welcome_message = await self.config.guild(guild).welcome_message()
 
-        if message and buttons:
-            view = discord.ui.View()
-            for button in buttons:
-                view.add_item(discord.ui.Button(label=button["label"], url=button["url"]))
-
+        if welcome_message:
             try:
-                await member.send(content=message, view=view)
+                await member.send(content=welcome_message)
                 print(f"Sent welcome message to {member.name}.")
             except discord.Forbidden:
                 print(f"Could not send welcome message to {member.name}.")
