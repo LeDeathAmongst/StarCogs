@@ -1,4 +1,5 @@
 from redbot.core import commands, Config, checks
+import discord
 
 from Star_Utils import Cog
 
