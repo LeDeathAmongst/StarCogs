@@ -53,6 +53,21 @@ class DMAffiliates(Cog):
             else:
                 await ctx.send("Invalid button index.")
 
+    @dmaffiliate.command()
+    async def preview(self, ctx):
+        """Preview the message with buttons."""
+        message = await self.config.guild(ctx.guild).message()
+        buttons = await self.config.guild(ctx.guild).buttons()
+
+        if message and buttons:
+            view = discord.ui.View()
+            for button in buttons:
+                view.add_item(discord.ui.Button(label=button["label"], url=button["url"]))
+
+            await ctx.send(content=message, view=view)
+        else:
+            await ctx.send("No message or buttons configured.")
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         guild = member.guild
