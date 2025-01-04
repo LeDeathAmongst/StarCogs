@@ -2,7 +2,7 @@ from redbot.core import commands, Config, checks
 
 from Star_Utils import Cog
 
-class DMAffiliate(Cog):
+class DMAffiliates(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -69,6 +69,3 @@ class DMAffiliate(Cog):
                 print(f"Sent welcome message to {member.name}.")
             except discord.Forbidden:
                 print(f"Could not send welcome message to {member.name}.")
-
-async def setup(bot):
-    await bot.add_cog(DMAffiliate(bot))
