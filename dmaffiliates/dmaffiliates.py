@@ -1,9 +1,11 @@
 from redbot.core import commands, Config, checks
+from discord.ext import commands as ext_commands
 import discord
+import re
 
 from Star_Utils import Cog
 
-class DMAffiliates(Cog):
+class ButtonDM(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1234567890)
@@ -19,7 +21,7 @@ class DMAffiliates(Cog):
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
     async def dmaffiliate(self, ctx):
-        """Group command for managing dmaffiliate settings."""
+        """Group command for managing ButtonDM settings."""
         pass
 
     @dmaffiliate.command()
@@ -31,6 +33,10 @@ class DMAffiliates(Cog):
     @dmaffiliate.command()
     async def addbutton(self, ctx, label: str, url: str):
         """Add a button to the message."""
+        if not re.match(r'^(http|https|discord)://', url):
+            await ctx.send("Invalid URL. URL must start with http, https, or discord.")
+            return
+
         async with self.config.guild(ctx.guild).buttons() as buttons:
             if len(buttons) >= 25:
                 await ctx.send("You can only add up to 25 buttons.")
@@ -69,7 +75,7 @@ class DMAffiliates(Cog):
         else:
             await ctx.send("No message or buttons configured.")
 
-    @commands.Cog.listener()
+    @ext_commands.Cog.listener()
     async def on_member_join(self, member):
         guild = member.guild
         message = await self.config.guild(guild).message()
@@ -85,3 +91,6 @@ class DMAffiliates(Cog):
                 print(f"Sent welcome message to {member.name}.")
             except discord.Forbidden:
                 print(f"Could not send welcome message to {member.name}.")
+
+async def setup(bot):
+    await bot.add_cog(ButtonDM(bot))
